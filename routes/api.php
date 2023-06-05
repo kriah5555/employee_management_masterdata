@@ -23,15 +23,3 @@ Route::get('/testing', function () {
       'message' => 'Test API.'
   ]);
 });
-
-Route::prefix('v1')->group(function () {
-    // Routes for API version 1
-    Route::get('users', 'UserController@index');
-    // ...
-});
-
-Route::prefix('v2')->group(function () {
-    // Routes for API version 2
-    Route::get('users', 'UserController@indexV2');
-    // ...
-});
