@@ -1,7 +1,5 @@
 FROM php:8.2-fpm
 
-LABEL Maintainer="Infanion" Description="INDII 2.0"
-
 # Get frequently used tools
 RUN apt-get update && apt-get install -y \
   build-essential \
@@ -41,7 +39,7 @@ RUN docker-php-ext-install \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy existing app directory
-COPY ./backend /var/www
+COPY ./laravel /var/www
 WORKDIR /var/www
 
 
