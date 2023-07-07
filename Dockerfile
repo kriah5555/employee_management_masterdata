@@ -39,7 +39,7 @@ RUN docker-php-ext-install \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy existing app directory
-COPY ./laravel /var/www
+COPY ./ /var/www
 WORKDIR /var/www
 
 
