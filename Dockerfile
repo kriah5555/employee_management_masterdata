@@ -47,11 +47,13 @@ WORKDIR /var/www
 ARG PUID=1000
 ENV PUID ${PUID}
 ARG PGID=1000
-ENV PGID ${PGID}`
+ENV PGID ${PGID}
 
-# RUN groupmod -o -g ${PGID} www-data && usermod -o -u ${PUID} -g www-data www-data
+RUN groupmod -o -g ${PGID} www-data && usermod -o -u ${PUID} -g www-data www-data
 
-#RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www
+
+USER www-data
 
 # Copy and run composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
