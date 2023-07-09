@@ -1,7 +1,5 @@
 FROM php:8.2-fpm
 
-LABEL Maintainer="Infanion" Description="INDII 2.0"
-
 # Get frequently used tools
 RUN apt-get update && apt-get install -y \
   build-essential \
@@ -41,7 +39,7 @@ RUN docker-php-ext-install \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy existing app directory
-COPY ./backend /var/www
+COPY ./ /var/www
 WORKDIR /var/www
 
 
@@ -49,11 +47,13 @@ WORKDIR /var/www
 ARG PUID=1000
 ENV PUID ${PUID}
 ARG PGID=1000
-ENV PGID ${PGID}`
+ENV PGID ${PGID}
 
-# RUN groupmod -o -g ${PGID} www-data && usermod -o -u ${PUID} -g www-data www-data
+RUN groupmod -o -g ${PGID} www-data && usermod -o -u ${PUID} -g www-data www-data
 
-#RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www
+
+USER www-data
 
 # Copy and run composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
