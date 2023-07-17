@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmployeeTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +24,13 @@ Route::get('/testing', function () {
       'message' => 'Test API.'
   ]);
 });
+
+Route::get('/get-employee-types-list', [EmployeeTypeController::class,'index']);
+
+Route::post('/create-employee-type', [EmployeeTypeController::class,'store']);
+
+Route::post('/update-employee-type', [EmployeeTypeController::class,'update']);
+
+Route::post('/delete-employee-type', [EmployeeTypeController::class,'destroy']);
+
+Route::post('/get-employee-type', [EmployeeTypeController::class,'show']);
