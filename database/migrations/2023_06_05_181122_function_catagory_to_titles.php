@@ -14,12 +14,12 @@ return new class extends Migration
         if (Schema::hasTable('function_titles') && Schema::hasTable('function_catagory')) {
             Schema::create('function_catagory_to_titles', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('function_title_id')->references('function_title_id')->on('function_titles');
-                $table->foreignId('function_catagory_id')->references('function_catagory_id')->on('function_catagory');
-                $table->integer('status')->default(1);
+                $table->foreignId('function_title_id')->references('id')->on('function_titles')->onDelete('cascade');
+                $table->foreignId('function_catagory_id')->references('id')->on('function_catagory')->onDelete('cascade');
+                $table->boolean('status')->default(true);
                 $table->timestamps();
-                $table->integer('created_by');
-                $table->integer('updated_by');
+                $table->integer('created_by')->nullable(true);
+                $table->integer('updated_by')->nullable(true);
             });
         }
     }

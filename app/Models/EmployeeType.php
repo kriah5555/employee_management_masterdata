@@ -44,23 +44,8 @@ class EmployeeType extends Model
         'name',
         'key',
         'description',
-        'status'
+        'status',
+        'created_by',
+        'updated_by',
     ];
-
-    // protected $with = ['nullColumns'];
-
-    // public function nullColumns()
-    // {
-    //     return $this->withDefault();
-    // }
-
-    // public function getEmployeeTypeName()
-    // {
-    //     return 'Some value';
-    // }
-
-    // public function setEmployeeTypeName($value)
-    // {
-    //     $this->attributes['name'] = strtolower($value);
-    // }
 }

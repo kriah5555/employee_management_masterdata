@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\SectorController;
+use App\Http\Controllers\FunctionTitleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,17 +25,8 @@ Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
 
-Route::get('/testing', function () {
-  return response()->json([
-      'message' => 'Test API.'
-  ]);
-});
-Route::get('/get-employee-types-list', [EmployeeTypeController::class,'index']);
+Route::resource('employee-types', EmployeeTypeController::class);
 
-Route::post('/create-employee-type', [EmployeeTypeController::class,'store']);
+Route::resource('sectors', SectorController::class);
 
-Route::post('/update-employee-type', [EmployeeTypeController::class,'update']);
-
-Route::post('/delete-employee-type', [EmployeeTypeController::class,'destroy']);
-
-Route::post('/get-employee-type', [EmployeeTypeController::class,'show']);
+Route::resource('function-titles', FunctionTitleController::class);

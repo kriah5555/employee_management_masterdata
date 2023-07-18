@@ -13,13 +13,15 @@ return new class extends Migration
     {
         if (!Schema::hasTable('function_titles')) {
             Schema::create('function_titles', function (Blueprint $table) {
-                $table->id('function_title_id');
-                $table->string('function_title_name');
-                $table->longText('description')->nullable(TRUE);
-                $table->integer('status')->default(1);
+                $table->id();
+                $table->string('name');
+                $table->string('function_code');
+                $table->longText('description')->nullable(true);
+                $table->boolean('status')->default(true);
+                $table->foreignId('function_category_id')->nullable()->references('id')->on('function_category')->onDelete('cascade');
+                $table->integer('created_by')->nullable(true);
+                $table->integer('updated_by')->nullable(true);
                 $table->timestamps();
-                $table->integer('created_by');
-                $table->integer('updated_by');
             });
         }
     }

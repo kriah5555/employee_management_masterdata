@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sector;
+use App\Models\FunctionTitle;
 use Illuminate\Http\Request;
-use App\Http\Requests\Sector\CreateSectorRequest;
-use App\Http\Requests\Sector\UpdateSectorRequest;
+use App\Http\Requests\FunctionTitle\CreateFunctionTitleRequest;
+use App\Http\Requests\FunctionTitle\UpdateFunctionTitleRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 
-class SectorController extends Controller
+class FunctionTitleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = Sector::all();
+        $data = FunctionTitle::all();
         return response()->json($data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateSectorRequest $request)
+    public function store(CreateFunctionTitleRequest $request)
     {
         try {
-            $sector = Sector::create($request->validated());
+            $function = FunctionTitle::create($request->validated());
             $data = [
-                'message' => 'Sector created successfully',
-                'data' => $sector,
+                'message' => 'Function created successfully',
+                'data' => $function,
             ];
             return response()->json($data);
         } catch (Exception $e) {
@@ -45,21 +45,21 @@ class SectorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Sector $sector)
+    public function show(FunctionTitle $function_title)
     {
-        return response()->json($sector);
+        return response()->json($function_title);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSectorRequest $request, Sector $sector)
+    public function update(UpdateFunctionTitleRequest $request, FunctionTitle $function_title)
     {
         try {
-            $sector->update($request->all());
+            $function_title->update($request->all());
             $data = [
-                'message' => 'Sector updated successfully',
-                'data' => $sector,
+                'message' => 'Function updated successfully',
+                'data' => $function_title,
             ];
             return response()->json($data);
         } catch (Exception $e) {
@@ -74,11 +74,11 @@ class SectorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Sector $sector)
+    public function destroy(FunctionTitle $function_title)
     {
-        $sector->delete();
+        $function_title->delete();
         $data = [
-            'message' => 'Sector deleted'
+            'message' => 'Function deleted'
         ];
         return response()->json($data);
     }

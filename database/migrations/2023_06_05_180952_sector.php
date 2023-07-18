@@ -13,14 +13,14 @@ return new class extends Migration
     {
         if (!Schema::hasTable('sectors')) {
             Schema::create('sectors', function (Blueprint $table) {
-                $table->id('sector_id');
-                $table->string('sector_name');
+                $table->id();
+                $table->string('name');
                 $table->float('sector_number', 9, 6);
-                $table->longText('description')->nullable(TRUE);
-                $table->integer('status')->default(1);
+                $table->longText('description')->nullable(true);
+                $table->boolean('status')->default(true);
                 $table->timestamps();
-                $table->integer('created_by');
-                $table->integer('updated_by');
+                $table->integer('created_by')->nullable(true);
+                $table->integer('updated_by')->nullable(true);
             });
         }
     }
