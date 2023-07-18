@@ -21,7 +21,7 @@ class Sector extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'sector_id';
+    protected $primaryKey = 'id';
 
     /**
      * Indicates if the model should be timestamped.
@@ -36,15 +36,16 @@ class Sector extends Model
      * @var array
      */
     protected $fillable = [
-        'sector_id',
-        'sector_name',
+        'name',
         'sector_number',
         'description',
         'status',
         'created_by',
         'updated_by',
     ];
-  
 
-
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
 }

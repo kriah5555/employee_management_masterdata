@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\SectorController;
+use App\Http\Controllers\FunctionTitleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,18 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/testing', function () {
-  return response()->json([
-      'message' => 'Test API.'
-  ]);
-});
+Route::resource('employee-types', EmployeeTypeController::class);
 
-Route::get('/get-employee-types-list', [EmployeeTypeController::class,'index']);
+Route::resource('sectors', SectorController::class);
 
-Route::post('/create-employee-type', [EmployeeTypeController::class,'store']);
-
-Route::post('/update-employee-type', [EmployeeTypeController::class,'update']);
-
-Route::post('/delete-employee-type', [EmployeeTypeController::class,'destroy']);
-
-Route::post('/get-employee-type', [EmployeeTypeController::class,'show']);
+Route::resource('function-titles', FunctionTitleController::class);

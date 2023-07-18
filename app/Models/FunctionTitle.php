@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\FunctionCategory;
 
 class FunctionTitle extends Model
 {
@@ -21,7 +22,7 @@ class FunctionTitle extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'function_title_id';
+    protected $primaryKey = 'id';
 
     /**
      * Indicates if the model should be timestamped.
@@ -30,17 +31,28 @@ class FunctionTitle extends Model
      */
     public $timestamps = true;
 
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'function_title_id',
-        'function_title_name',
+        'name',
+        'function_code',
         'description',
         'status',
+        'function_category_id',
         'created_by',
         'updated_by',
     ];
+
+    public function functionCategory()
+    {
+        return $this->belongsTo(FunctionCategory::class);
+    }
 }

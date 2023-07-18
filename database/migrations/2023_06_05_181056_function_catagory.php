@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('sectors') && !Schema::hasTable('sector_age_salary')) {
-            Schema::create('sector_age_salary', function (Blueprint $table) {
+        if (!Schema::hasTable('function_category')) {
+            Schema::create('function_category', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
-                $table->integer('age');
-                $table->float('percentage');
+                $table->string('name');
+                $table->longText('description')->nullable(true);
                 $table->boolean('status')->default(true);
                 $table->timestamps();
                 $table->integer('created_by')->nullable(true);
@@ -30,8 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sector_age_salary', function (Blueprint $table) {
-            $table->dropForeign('sector_id');
-        });
+        Schema::dropIfExists('function_category');
     }
 };

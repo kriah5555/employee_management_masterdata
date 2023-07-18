@@ -15,7 +15,6 @@ return new class extends Migration
             Schema::create('employee_types', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
-                $table->string('key')->nullable(true);
                 $table->longText('description')->nullable(true);
                 $table->boolean('status')->default(true);
                 $table->integer('created_by')->nullable(true);

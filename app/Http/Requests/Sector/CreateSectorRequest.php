@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Sector;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\JsonResponse;
 
-class EmployeeTypeRequest extends FormRequest
+class CreateSectorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,23 +25,22 @@ class EmployeeTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'numeric',
             'name' => 'required|string|max:255',
-            'key' => 'string|max:255',
-            'description' => 'string|max:255',
-            'status' => 'boolean'
+            'sector_number' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'status' => 'required|boolean'
         ];
 
     }
     public function messages()
     {
         return [
-            'name.required' => 'Employee type name is required.',
-            'name.string' => 'Employee type must be a string.',
-            'name.max' => 'Employee type cannot be greater than 255 characters.',
-            'key.required' => 'Key is required.',
-            'key.string' => 'Key must be a string.',
-            'key.max' => 'Key cannot be greater than 255 characters.',
+            'name.required' => 'Name is required.',
+            'name.string' => 'Name must be a string.',
+            'name.max' => 'Name cannot be greater than 255 characters.',
+            'sector_number.required' => 'Sector number is required.',
+            'sector_number.string' => 'Sector number must be a string.',
+            'sector_number.max' => 'Sector number cannot be greater than 255 characters.',
             'description.string' => 'Description must be a string.',
             'description.max' => 'Description cannot be greater than 255 characters.',
             'status.boolean' => 'Status must be a boolean value.'

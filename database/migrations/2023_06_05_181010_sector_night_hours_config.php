@@ -14,13 +14,13 @@ return new class extends Migration
         if (Schema::hasTable('sectors') && !Schema::hasTable('sector_night_hours_config')) {
             Schema::create('sector_night_hours_config', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('sector_id')->references('sector_id')->on('sectors');
+                $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
                 $table->time('start_at');
                 $table->time('end_at');
-                $table->integer('status')->default(1);
+                $table->boolean('status')->default(true);
                 $table->timestamps();
-                $table->integer('created_by');
-                $table->integer('updated_by');
+                $table->integer('created_by')->nullable(true);
+                $table->integer('updated_by')->nullable(true);
             });
         }
     }
