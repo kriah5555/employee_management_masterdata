@@ -43,4 +43,19 @@ class FunctionCatagoryToTitles extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function createFunctionCatagory()
+    {
+        
+    }
+
+    public function EditFunctionCatagory()
+    {
+
+    }
+
+    public functoin deleteFunctionCatagory()
+    {
+
+    }
 }

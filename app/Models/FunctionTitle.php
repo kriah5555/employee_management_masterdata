@@ -43,4 +43,24 @@ class FunctionTitle extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function createFunctionTitle()
+    {
+        
+    }
+
+    public function updateFunctionTitle()
+    {
+
+    }
+
+    public function deleteFunctionTitle()
+    {
+
+    }
+
+    public function archiveFunctionTitle()
+    {
+
+    }
 }

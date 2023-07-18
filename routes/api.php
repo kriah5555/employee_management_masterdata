@@ -18,6 +18,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['middleware' => 'service-registry'], function () {
+    // Your API routes
+});
+
 Route::get('/testing', function () {
   return response()->json([
       'message' => 'Test API.'
