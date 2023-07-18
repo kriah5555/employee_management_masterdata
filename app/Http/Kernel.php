@@ -64,6 +64,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 	'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 	'service-registry' => App\Http\Middleware\ServiceRegistryMiddleware::class,
-
+        'decrypt-request' => \App\Http\Middleware\DecryptRequest::class,
+        'encrypt-response' => \App\Http\Middleware\EncryptResponse::class,
     ];
 }

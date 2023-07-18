@@ -39,8 +39,8 @@ RUN docker-php-ext-install \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy existing app directory
-COPY ./ /var/www
-WORKDIR /var/www
+COPY ./ /var/www/masterdata
+WORKDIR /var/www/masterdata
 
 
 # Configure non-root user.
@@ -51,7 +51,7 @@ ENV PGID ${PGID}
 
 RUN groupmod -o -g ${PGID} www-data && usermod -o -u ${PUID} -g www-data www-data
 
-RUN chown -R www-data:www-data /var/www
+RUN chown -R www-data:www-data /var/www/masterdata
 
 USER www-data
 
