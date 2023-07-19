@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\FunctionCatagoryToTitles;
+use App\Models\Sector;
 
 class FunctionCategory extends Model
 {
@@ -15,14 +15,14 @@ class FunctionCategory extends Model
      *
      * @var string
      */
-    protected $table = 'function_catagory';
+    protected $table = 'function_category';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'function_catagory_id';
+    protected $primaryKey = 'id';
 
     /**
      * Indicates if the model should be timestamped.
@@ -31,18 +31,31 @@ class FunctionCategory extends Model
      */
     public $timestamps = true;
 
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'function_catagory_id',
         'sector_id',
-        'function_catagory_name',
+        'name',
         'description',
+        'category',
         'status',
         'created_by',
         'updated_by',
     ];
+
+    // protected $with = ['sector'];
+
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class);
+    }
+
 }

@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmployeeType;
-use App\Http\Requests\EmployeeType\CreateEmployeeTypeRequest;
-use App\Http\Requests\EmployeeType\UpdateEmployeeTypeRequest;
+use App\Http\Requests\EmployeeTypeRequest;
 use Illuminate\Http\JsonResponse;
 
 class EmployeeTypeController extends Controller
@@ -21,7 +20,7 @@ class EmployeeTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateEmployeeTypeRequest $request)
+    public function store(EmployeeTypeRequest $request)
     {
         try {
             $employee_type = EmployeeType::create($request->validated());
@@ -50,7 +49,7 @@ class EmployeeTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeTypeRequest $request, EmployeeType $employee_type)
+    public function update(EmployeeTypeRequest $request, EmployeeType $employee_type)
     {
         try {
             $employee_type->update($request->all());

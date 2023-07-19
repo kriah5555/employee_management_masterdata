@@ -54,7 +54,7 @@ class FunctionCatagoryToTitles extends Model
 
     }
 
-    public functoin deleteFunctionCatagory()
+    public function deleteFunctionCatagory()
     {
 
     }

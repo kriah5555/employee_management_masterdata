@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sector;
 use Illuminate\Http\Request;
-use App\Http\Requests\Sector\CreateSectorRequest;
-use App\Http\Requests\Sector\UpdateSectorRequest;
+use App\Http\Requests\SectorRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +23,7 @@ class SectorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateSectorRequest $request)
+    public function store(SectorRequest $request)
     {
         try {
             $sector = Sector::create($request->validated());
@@ -53,7 +52,7 @@ class SectorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSectorRequest $request, Sector $sector)
+    public function update(SectorRequest $request, Sector $sector)
     {
         try {
             $sector->update($request->all());

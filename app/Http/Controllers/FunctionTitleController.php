@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FunctionTitle;
 use Illuminate\Http\Request;
-use App\Http\Requests\FunctionTitle\CreateFunctionTitleRequest;
-use App\Http\Requests\FunctionTitle\UpdateFunctionTitleRequest;
+use App\Http\Requests\FunctionTitleRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +23,7 @@ class FunctionTitleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateFunctionTitleRequest $request)
+    public function store(FunctionTitleRequest $request)
     {
         try {
             $function = FunctionTitle::create($request->validated());
@@ -53,7 +52,7 @@ class FunctionTitleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateFunctionTitleRequest $request, FunctionTitle $function_title)
+    public function update(FunctionTitleRequest $request, FunctionTitle $function_title)
     {
         try {
             $function_title->update($request->all());

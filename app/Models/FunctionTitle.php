@@ -51,6 +51,8 @@ class FunctionTitle extends Model
         'updated_by',
     ];
 
+    // protected $with = ['functionCategory'];
+
     public function createFunctionTitle()
     {
         

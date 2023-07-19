@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\FunctionTitleController;
+use App\Http\Controllers\FunctionCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +31,5 @@ Route::resource('employee-types', EmployeeTypeController::class);
 Route::resource('sectors', SectorController::class);
 
 Route::resource('function-titles', FunctionTitleController::class);
+
+Route::resource('function-categories', FunctionCategoryController::class);
