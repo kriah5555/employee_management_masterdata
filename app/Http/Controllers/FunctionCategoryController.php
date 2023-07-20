@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FunctionCategory;
 use Illuminate\Http\Request;
-use App\Http\Requests\FunctionCategory\FunctionCategoryRequest;
+use App\Http\Requests\FunctionCategoryRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;

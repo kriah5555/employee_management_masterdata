@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Sector;
 use Illuminate\Validation\Rule;
 
-class FunctionCategory extends FormRequest
+class FunctionCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

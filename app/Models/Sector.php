@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EmployeeType;
 
 class Sector extends Model
 {
@@ -37,7 +38,7 @@ class Sector extends Model
      */
     protected $fillable = [
         'name',
-        'sector_number',
+        'paritair_committee',
         'description',
         'status',
         'created_by',
@@ -48,4 +49,9 @@ class Sector extends Model
         'created_at',
         'updated_at'
     ];
+    protected $with = ['employeeTypes'];
+    public function employeeTypes()
+    {
+        return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
+    }
 }

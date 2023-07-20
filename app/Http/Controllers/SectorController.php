@@ -27,6 +27,8 @@ class SectorController extends Controller
     {
         try {
             $sector = Sector::create($request->validated());
+            $employee_types = $request->validated()['employee_types'];
+            $sector->employeeTypes()->sync($employee_types);
             $data = [
                 'message' => 'Sector created successfully',
                 'data' => $sector,
@@ -55,7 +57,9 @@ class SectorController extends Controller
     public function update(SectorRequest $request, Sector $sector)
     {
         try {
-            $sector->update($request->all());
+            $sector->update($request->validated());
+            $employee_types = $request->validated()['employee_types'];
+            $sector->employeeTypes()->sync($employee_types);
             $data = [
                 'message' => 'Sector updated successfully',
                 'data' => $sector,

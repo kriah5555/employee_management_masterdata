@@ -15,7 +15,7 @@ return new class extends Migration
             Schema::create('sectors', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
-                $table->float('sector_number', 9, 6);
+                $table->float('paritair_committee', 9, 6)->nullable(true);
                 $table->longText('description')->nullable(true);
                 $table->boolean('status')->default(true);
                 $table->timestamps();
