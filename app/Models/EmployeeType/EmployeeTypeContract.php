@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\EmployeeType;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class EmployeeType extends Model
+class EmployeeTypeContract extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_types';
+    protected $table = 'employee_type_contracts';
 
     /**
      * The primary key associated with the table.
@@ -29,23 +31,23 @@ class EmployeeType extends Model
      */
     public $timestamps = true;
 
-
-    protected $dates = [
-        'created_at',
-        'updated_at'
-    ];
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name',
-        'key',
-        'description',
+        'employee_type_id',
+        'contract_type_id',
+        'contract_renewal_id',
         'status',
         'created_by',
-        'updated_by',
+        'updated_by'
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 }
