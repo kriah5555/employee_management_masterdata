@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Rules;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
-use App\Models\Sector;
-use Illuminate\Validation\Rule;
 
-class FunctionCategoryRequest extends FormRequest
+class EmployeeTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,26 +25,21 @@ class FunctionCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'category' => 'required|integer',
+            'name'        => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'status' => 'required|boolean',
-            'sector_id' => [
-                'required',
-                Rule::exists('sectors', 'id'),
-            ],
+            'status'      => 'required|boolean'
         ];
 
     }
     public function messages()
     {
         return [
-            'name.required' => 'Name is required.',
-            'name.string' => 'Name must be a string.',
-            'name.max' => 'Name cannot be greater than 255 characters.',
+            'name.required'      => 'Employee type name is required.',
+            'name.string'        => 'Employee type must be a string.',
+            'name.max'           => 'Employee type cannot be greater than 255 characters.',
             'description.string' => 'Description must be a string.',
-            'description.max' => 'Description cannot be greater than 255 characters.',
-            'status.boolean' => 'Status must be a boolean value.'
+            'description.max'    => 'Description cannot be greater than 255 characters.',
+            'status.boolean'     => 'Status must be a boolean value.'
         ];
     }
 
@@ -54,9 +47,11 @@ class FunctionCategoryRequest extends FormRequest
     {
         throw new HttpResponseException(
             response()->json([
-                'success' => false,
+                'status'  => 422, # validation error status
                 'message' => 'Validation error',
-                'errors' => $validator->errors(),
+                'data'    => [
+                    'errors' => $validator->errors()
+                ],
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
         );
     }

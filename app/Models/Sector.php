@@ -40,6 +40,7 @@ class Sector extends Model
         'name',
         'paritair_committee',
         'description',
+        'category',
         'status',
         'created_by',
         'updated_by',
