@@ -9,7 +9,6 @@ use App\Models\EmployeeType;
 class Sector extends Model
 {
     use HasFactory;
-
     /**
      * The table associated with the model.
      *
@@ -50,9 +49,19 @@ class Sector extends Model
         'created_at',
         'updated_at'
     ];
+    
     protected $with = ['employeeTypes'];
     public function employeeTypes()
     {
         return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
+    }
+
+    protected $casts = [
+        'status' => 'boolean',
+    ];
+
+    public function getStatusAttribute($value)
+    {
+        return $value ? 'active' : 'inactive';
     }
 }

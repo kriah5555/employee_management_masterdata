@@ -44,4 +44,13 @@ class SectorAgeSalary extends Model
         'created_by',
         'updated_by',
     ];
+
+    protected $casts = [
+        'status' => 'boolean',
+    ];
+
+    public function getStatusAttribute($value)
+    {
+        return $value ? 'active' : 'inactive';
+    }
 }

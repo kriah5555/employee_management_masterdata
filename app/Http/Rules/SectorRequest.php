@@ -26,13 +26,13 @@ class SectorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name'               => 'required|string|max:255',
             'paritair_committee' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'status' => 'required|boolean',
-            'employee_types' => 'nullable|array',
-            'employee_types.*' => [
+            'category'           => 'required|string|max:255',
+            'description'        => 'nullable|string|max:255',
+            'status'             => 'required|boolean',
+            'employee_types'     => 'nullable|array',
+            'employee_types.*'   => [
                 Rule::exists('employee_types', 'id'),
             ],
         ];
@@ -51,7 +51,6 @@ class SectorRequest extends FormRequest
             'status.boolean' => 'Status must be a boolean value.',      
             'category.required' => 'Category is required.',
             'category.max' => 'Category cannot be greater than 255 characters.',
-            'category.custom_integer_rule' => 'Category must be an integer.', // Add this message
         ];
     }
 

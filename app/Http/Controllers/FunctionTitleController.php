@@ -3,13 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FunctionTitle;
-use Illuminate\Http\Request;
 use App\Http\Rules\FunctionTitleRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\App;
-
 class FunctionTitleController extends Controller
 {
 
@@ -18,7 +13,7 @@ class FunctionTitleController extends Controller
      */
     public function index()
     {
-        return api_response(200, 'Function titles received successfully', FunctionTitle::all());
+        return api_response(true, 'Function titles received successfully', FunctionTitle::all(), 200);
     }
 
     /**
@@ -27,9 +22,9 @@ class FunctionTitleController extends Controller
     public function store(FunctionTitleRequest $request)
     {
         try {
-            return api_response(201, 'Function created successfully', FunctionTitle::create($request->validated()));
+            return api_response(true, 'Function created successfully', FunctionTitle::create($request->validated()), 201);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return api_response(false, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -38,7 +33,10 @@ class FunctionTitleController extends Controller
      */
     public function show(FunctionTitle $function_title)
     {
-        return api_response(200, 'Function title received successfully', $function_title);
+        if (!$function_title) {
+            return api_response(false, 'Function title rnot found', $function_title, 404);
+        }
+        return api_response(true, 'Function title received successfully', $function_title, 200);
     }
 
     /**
@@ -47,10 +45,13 @@ class FunctionTitleController extends Controller
     public function update(FunctionTitleRequest $request, FunctionTitle $function_title)
     {
         try {
+            if (!$function_title) {
+                return api_response(fasle, 'Function title not found', '', 404);
+            }
             $function_title->update($request->all());
-            return api_response(202, 'Function updated successfully', $function_title);
+            return api_response(true, 'Function updated successfully', $function_title, 202);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return api_response(false, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -59,7 +60,10 @@ class FunctionTitleController extends Controller
      */
     public function destroy(FunctionTitle $function_title)
     {
+        if (!$function_title) {
+            return api_response(false, 'Function title not found', '', 404);
+        }
         $function_title->delete();
-        return api_response(204, 'Function title deleted');
+        return api_response(true, 'Function title deleted', '', 204);
     }
 }

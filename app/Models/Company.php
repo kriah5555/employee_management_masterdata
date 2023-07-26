@@ -4,40 +4,56 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Sector;
 
 class Company extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'address'];
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'companies';
 
-    // Create a new Company
-    public static function createCompany($name, $address)
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    
+    protected $fillable = [
+        'company_name',
+        'street',
+        'postal_code',
+        'city',
+        'country',
+        'customer_type',
+        'status',
+        'logo',
+    ];
+
+    protected $with = ['sectors'];
+    public function sectors()
     {
-        return Company::create([
-            'name' => $name,
-            'address' => $address,
-        ]);
+        return $this->belongsToMany(Sector::class, 'sector_to_company');
     }
 
-    // Read a company by ID
-    public static function getCompany($id)
-    {
-        return Company::findOrFail($id);
-    }
+    protected $casts = [
+        'status' => 'boolean',
+    ];
 
-    // Update a company
-    public function updateCompany($name, $address)
+    public function getStatusAttribute($value)
     {
-        $this->name = $name;
-        $this->address = $address;
-        $this->save();
-        return $this;
-    }
-
-    // Delete a company
-    public function deleteCompany()
-    {
-        $this->delete();
+        return $value ? 'active' : 'inactive';
     }
 }
+    

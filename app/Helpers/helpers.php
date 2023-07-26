@@ -4,7 +4,7 @@ if (!function_exists('api_response')) {
     function api_response($status, $message, $data = '', $server_error_status = '')
     {
         $return_data = [
-            'status'  => $status,
+            'success'  => $status,
             'message' => $message,
         ];
 

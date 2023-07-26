@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
+use App\Http\Controllers\CompanyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,8 @@ use App\Http\Controllers\FunctionCategoryController;
     404 => request dosent exists (data not found)
     405 => http request get, put not allowed
     403 => forbidden no authentication
+
+    500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -48,3 +51,5 @@ Route::resource('sectors', SectorController::class);
 Route::resource('function-titles', FunctionTitleController::class);
 
 Route::resource('function-categories', FunctionCategoryController::class);
+
+Route::resource('company', CompanyController::class);

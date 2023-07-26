@@ -3,13 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FunctionCategory;
-use Illuminate\Http\Request;
 use App\Http\Rules\FunctionCategoryRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\App;
-
 class FunctionCategoryController extends Controller
 {
     /**
@@ -17,7 +12,7 @@ class FunctionCategoryController extends Controller
      */
     public function index()
     {
-        return api_response(200, 'Function categories received successfully', FunctionCategory::all());
+        return api_response(true, 'Function categories received successfully', FunctionCategory::all(), 200);
     }
 
     /**
@@ -27,9 +22,9 @@ class FunctionCategoryController extends Controller
     {
         try {
             $function = FunctionCategory::create($request->validated());
-            return api_response(201, 'Function category created successfully', $function);
+            return api_response(true, 'Function category created successfully', $function, 201);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return api_response(false, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -38,7 +33,7 @@ class FunctionCategoryController extends Controller
      */
     public function show($id)
     {
-        return api_response(200, 'Function category received successfully', FunctionCategory::find($id));
+        return api_response(true, 'Function category received successfully', FunctionCategory::find($id), 200);
     }
 
     /**
@@ -48,13 +43,13 @@ class FunctionCategoryController extends Controller
     {
         try {
             $function_category = FunctionCategory::find($id);
-            if ($function_category) {
-                return api_response(404, 'Function category data not found');
+            if (!$function_category) {
+                return api_response(false, 'Function category not found', '', 404);
             }
             $function_category->update($request->all());
-            return api_response(202, 'Function category updated successfully', $function_category);
+            return api_response(true, 'Function category updated successfully', $function_category, 202);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return api_response(true, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR, 400);
         }
     }
 
@@ -65,9 +60,9 @@ class FunctionCategoryController extends Controller
     {   
         $function_category = FunctionCategory::find($id);
         if (!$function_category) {
-            return api_response(404, 'Function category data not found');
+            return api_response(false, 'Function category data not found', '', 404);
         }
         $function_category->delete();
-        return api_response(204, 'Function category deleted');
+        return api_response(true, 'Function category deleted', '', 204);
     }
 }
