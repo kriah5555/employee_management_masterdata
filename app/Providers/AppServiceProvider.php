@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\CommonServices;
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -12,7 +10,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // $this->app->bind(CommonServices::class);
     }
 
     /**
@@ -20,7 +17,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
     }
 
 }
