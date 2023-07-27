@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\Files;
 use App\Http\Rules\CompanyRules;
 class CompanyController extends Controller
 {
@@ -22,11 +23,13 @@ class CompanyController extends Controller
     try {
         $request_data = $request->all();
 
-        // Replace spaces in the company name with underscores to form the filename.
         $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request->file('logo')->getClientOriginalName();
-        $request_data['logo'] = $request->file('logo')->storeAs('company_logos', $filename);
+        $file = Files::create([
+            'file_name' => $filename,
+            'file_path' => $request->file('logo')->storeAs('company_logos', $filename)
+        ]);
+        $request_data['logo'] = $file->id;
 
-        // Create the company using the $request_data array.
         $company = Company::create($request_data);
 
         $sectors = $request['sectors'];
