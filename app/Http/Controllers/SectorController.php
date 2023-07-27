@@ -28,7 +28,11 @@ class SectorController extends Controller
     {
         try {
             $sector = Sector::create($request->validated());
-            $employee_types = $request->validated()['employee_types'];
+            if (array_key_exists('employee_types', $request->validated())) {
+                $employee_types = $request->validated()['employee_types'];
+            } else {
+                $employee_types = [];
+            }
             $sector->employeeTypes()->sync($employee_types);
             return response()->json([
                 'success' => true,
@@ -42,7 +46,6 @@ class SectorController extends Controller
                 'error' => $e->getMessage(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     /**
@@ -59,18 +62,25 @@ class SectorController extends Controller
     public function update(SectorRequest $request, Sector $sector)
     {
         try {
+            $sector->update($request->validated());
             if (array_key_exists('employee_types', $request->validated())) {
                 $employee_types = $request->validated()['employee_types'];
             } else {
                 $employee_types = [];
             }
-            $sector->update($request->validated());
-            $employee_types = $request->validated()['employee_types'];
             $sector->employeeTypes()->sync($employee_types);
             $sector->refresh();
-            return api_response(202, 'Sector updated successfully', $sector);
+            return response()->json([
+                'success' => true,
+                'message' => 'Sector updated successfully',
+                'data' => $sector,
+            ]);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -80,6 +90,9 @@ class SectorController extends Controller
     public function destroy(Sector $sector)
     {
         $sector->delete();
-        return api_response(204, 'Sector deleted');
+        return response()->json([
+            'success' => true,
+            'message' => 'Sector deleted successfully'
+        ], JsonResponse::HTTP_OK);
     }
 }

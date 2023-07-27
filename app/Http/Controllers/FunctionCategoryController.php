@@ -17,7 +17,8 @@ class FunctionCategoryController extends Controller
      */
     public function index()
     {
-        return api_response(200, 'Function categories received successfully', FunctionCategory::all());
+        $data = FunctionCategory::all();
+        return response()->json($data);
     }
 
     /**
@@ -26,48 +27,59 @@ class FunctionCategoryController extends Controller
     public function store(FunctionCategoryRequest $request)
     {
         try {
-            $function = FunctionCategory::create($request->validated());
-            return api_response(201, 'Function category created successfully', $function);
+            $function_category = FunctionCategory::create($request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Function category created successfully',
+                'data' => $function_category,
+            ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(FunctionCategory $function_category)
     {
-        return api_response(200, 'Function category received successfully', FunctionCategory::find($id));
+        return response()->json($function_category);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(FunctionCategoryRequest $request, $id)
+    public function update(FunctionCategoryRequest $request, FunctionCategory $function_category)
     {
         try {
-            $function_category = FunctionCategory::find($id);
-            if ($function_category) {
-                return api_response(404, 'Function category data not found');
-            }
-            $function_category->update($request->all());
-            return api_response(202, 'Function category updated successfully', $function_category);
+            $function_category->update($request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Function category updated successfully',
+                'data' => $function_category,
+            ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
-    {   
-        $function_category = FunctionCategory::find($id);
-        if (!$function_category) {
-            return api_response(404, 'Function category data not found');
-        }
+    public function destroy(FunctionCategory $function_category)
+    {
         $function_category->delete();
-        return api_response(204, 'Function category deleted');
+        return response()->json([
+            'success' => true,
+            'message' => 'Function category deleted successfully'
+        ], JsonResponse::HTTP_OK);
     }
 }

@@ -18,7 +18,8 @@ class FunctionTitleController extends Controller
      */
     public function index()
     {
-        return api_response(200, 'Function titles received successfully', FunctionTitle::all());
+        $data = FunctionTitle::all();
+        return response()->json($data);
     }
 
     /**
@@ -27,9 +28,18 @@ class FunctionTitleController extends Controller
     public function store(FunctionTitleRequest $request)
     {
         try {
-            return api_response(201, 'Function created successfully', FunctionTitle::create($request->validated()));
+            $function = FunctionTitle::create($request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Function created successfully',
+                'data' => $function,
+            ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -38,7 +48,7 @@ class FunctionTitleController extends Controller
      */
     public function show(FunctionTitle $function_title)
     {
-        return api_response(200, 'Function title received successfully', $function_title);
+        return response()->json($function_title);
     }
 
     /**
@@ -47,10 +57,18 @@ class FunctionTitleController extends Controller
     public function update(FunctionTitleRequest $request, FunctionTitle $function_title)
     {
         try {
-            $function_title->update($request->all());
-            return api_response(202, 'Function updated successfully', $function_title);
+            $function_title->update($request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Function updated successfully',
+                'data' => $function_title,
+            ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -60,6 +78,9 @@ class FunctionTitleController extends Controller
     public function destroy(FunctionTitle $function_title)
     {
         $function_title->delete();
-        return api_response(204, 'Function title deleted');
+        return response()->json([
+            'success' => true,
+            'message' => 'Function deleted successfully'
+        ], JsonResponse::HTTP_OK);
     }
 }
