@@ -32,7 +32,7 @@ class CompanyRules extends FormRequest
             'city'          => 'required|string|max:255',
             'country'       => 'required|string|max:255',
             'status'        => 'required|boolean',
-            // 'logo'          => 'required|file|max:255',
+            'logo'          => 'required',
             'sectors'       => 'required|array',
             'sectors.*'     => [
                 Rule::exists('sectors', 'id'),
