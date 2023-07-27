@@ -18,17 +18,26 @@ class CompanyController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(CompanyRules $request, Company $company)
-    {
-        try {
-            $company = Company::create($request->all());
-            $sectors = $request['sectors'];
-            $company->sectors()->sync($sectors);
-            $company->refresh();
-            return api_response(true, 'Company created successfully', $company, 201);
-        } catch (Exception $e) {
-            return api_response(false, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }    
-    }
+{
+    try {
+        $request_data = $request->all();
+
+        // Replace spaces in the company name with underscores to form the filename.
+        $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request->file('logo')->getClientOriginalName();
+        $request_data['logo'] = $request->file('logo')->storeAs('company_logos', $filename);
+
+        // Create the company using the $request_data array.
+        $company = Company::create($request_data);
+
+        $sectors = $request['sectors'];
+        $company->sectors()->sync($sectors);
+        $company->refresh();
+
+        return api_response(true, 'Company created successfully', $company, 201);
+    } catch (Exception $e) {
+        return api_response(false, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+    }    
+}
 
     /**
      * Display the specified resource.
@@ -55,7 +64,16 @@ class CompanyController extends Controller
             } else {
                 $sectors = [];
             }
-            $company->update($request->all());
+
+            $request_data = $request->all();
+
+            // Replace spaces in the company name with underscores to form the filename.
+            $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request->file('logo')->getClientOriginalName();
+            $request_data['logo'] = $request->file('logo')->storeAs('company_logos', $filename);
+
+
+            
+            $company->update($request_data);
             $company->sectors()->sync($sectors);
             $company->refresh();
             return api_response(false, 'company updated successfully', $company, 202);
