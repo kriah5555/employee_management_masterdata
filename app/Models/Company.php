@@ -46,14 +46,5 @@ class Company extends Model
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company');
     }
-
-    protected $casts = [
-        'status' => 'boolean',
-    ];
-
-    public function getStatusAttribute($value)
-    {
-        return $value ? 'active' : 'inactive';
-    }
 }
     

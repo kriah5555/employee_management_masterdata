@@ -55,13 +55,4 @@ class Sector extends Model
     {
         return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
     }
-
-    protected $casts = [
-        'status' => 'boolean',
-    ];
-
-    public function getStatusAttribute($value)
-    {
-        return $value ? 'active' : 'inactive';
-    }
 }

@@ -57,14 +57,4 @@ class FunctionCategory extends Model
     {
         return $this->belongsTo(Sector::class);
     }
-
-    protected $casts = [
-        'status' => 'boolean',
-    ];
-
-    public function getStatusAttribute($value)
-    {
-        return $value ? 'active' : 'inactive';
-    }
-
 }

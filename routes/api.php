@@ -52,4 +52,4 @@ Route::resource('function-titles', FunctionTitleController::class);
 
 Route::resource('function-categories', FunctionCategoryController::class);
 
-Route::resource('company', CompanyController::class);
+Route::resource('companies', CompanyController::class);

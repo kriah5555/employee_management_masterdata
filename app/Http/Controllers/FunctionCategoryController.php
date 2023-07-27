@@ -31,18 +31,20 @@ class FunctionCategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(FunctionCategory $function_category)
     {
-        return api_response(true, 'Function category received successfully', FunctionCategory::find($id), 200);
+        if (!$function_category) {
+            return api_response(false, 'Function category not found', '', 404);
+        }
+        return api_response(true, 'Function category received successfully', $function_category, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(FunctionCategoryRequest $request, $id)
+    public function update(FunctionCategoryRequest $request, FunctionCategory $function_category)
     {
         try {
-            $function_category = FunctionCategory::find($id);
             if (!$function_category) {
                 return api_response(false, 'Function category not found', '', 404);
             }
@@ -56,9 +58,8 @@ class FunctionCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(FunctionCategory $function_category)
     {   
-        $function_category = FunctionCategory::find($id);
         if (!$function_category) {
             return api_response(false, 'Function category data not found', '', 404);
         }

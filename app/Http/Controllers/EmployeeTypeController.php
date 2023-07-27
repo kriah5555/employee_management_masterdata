@@ -34,6 +34,9 @@ class EmployeeTypeController extends Controller
      */
     public function show(EmployeeType $employee_type)
     {
+        if (!$employee_type) {
+            return api_response(false, 'Employee type not found', '', 404);
+        }
         return api_response(true, 'Employee type received successfully', $employee_type, 200);
     }
 

@@ -58,13 +58,4 @@ class FunctionCatagoryToTitles extends Model
     {
 
     }
-
-    protected $casts = [
-        'status' => 'boolean',
-    ];
-
-    public function getStatusAttribute($value)
-    {
-        return $value ? 'active' : 'inactive';
-    }
 }

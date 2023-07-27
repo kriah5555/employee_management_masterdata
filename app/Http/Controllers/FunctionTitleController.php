@@ -34,7 +34,7 @@ class FunctionTitleController extends Controller
     public function show(FunctionTitle $function_title)
     {
         if (!$function_title) {
-            return api_response(false, 'Function title rnot found', $function_title, 404);
+            return api_response(false, 'Function title not found', $function_title, 404);
         }
         return api_response(true, 'Function title received successfully', $function_title, 200);
     }
