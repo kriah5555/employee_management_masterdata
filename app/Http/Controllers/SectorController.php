@@ -17,7 +17,8 @@ class SectorController extends Controller
      */
     public function index()
     {
-        return api_response(200, 'Sectors received successfully', Sector::all());
+        $data = Sector::all();
+        return response()->json($data);
     }
 
     /**
@@ -29,11 +30,19 @@ class SectorController extends Controller
             $sector = Sector::create($request->validated());
             $employee_types = $request->validated()['employee_types'];
             $sector->employeeTypes()->sync($employee_types);
-            $sector->refresh();
-            return api_response(201, 'Sector created successfully', $sector);
+            return response()->json([
+                'success' => true,
+                'message' => 'Sector created successfully',
+                'data' => $sector,
+            ]);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
+
     }
 
     /**
@@ -41,7 +50,7 @@ class SectorController extends Controller
      */
     public function show(Sector $sector)
     {
-        return api_response(200, 'Sector received successfully', $sector);
+        return response()->json($sector);
     }
 
     /**

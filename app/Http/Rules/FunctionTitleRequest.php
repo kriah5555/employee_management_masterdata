@@ -2,21 +2,14 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Rules\ApiRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
-class FunctionTitleRequest extends FormRequest
+class FunctionTitleRequest extends ApiRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -47,18 +40,5 @@ class FunctionTitleRequest extends FormRequest
             'description.max' => 'Description cannot be greater than 255 characters.',
             'status.boolean' => 'Status must be a boolean value.'
         ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'status'  => 422, # validation error status
-                'message' => 'Validation error',
-                'data'    => [
-                    'errors' => $validator->errors()
-                ],
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
-        );
     }
 }
