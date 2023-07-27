@@ -56,7 +56,14 @@ class FunctionCategory extends Model
 
     public function sector()
     {
-        return $this->belongsTo(Sector::class);
+        return $this->belongsTo(Sector::class)->withTrashed();
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
     }
 
 }

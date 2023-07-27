@@ -21,7 +21,7 @@ class SectorRequest extends ApiRequest
         return [
             'name' => 'required|string|max:255',
             'paritair_committee' => 'required|string|max:255',
-            'category' => 'required|integer|max:255',
+            'category' => 'required|integer|max:50',
             'description' => 'nullable|string|max:255',
             'status' => 'required|boolean',
             'employee_types' => 'nullable|array',

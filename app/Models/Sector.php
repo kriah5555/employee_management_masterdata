@@ -56,4 +56,11 @@ class Sector extends Model
     {
         return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
     }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
+    }
 }
