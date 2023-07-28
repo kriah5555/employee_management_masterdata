@@ -9,12 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sector extends Model
 {
-<<<<<<< HEAD
-    use HasFactory;
-=======
     use HasFactory, SoftDeletes;
 
->>>>>>> 67a7308b3c02be04631c53fa24c4cd9bb4d15fc0
     /**
      * The table associated with the model.
      *
