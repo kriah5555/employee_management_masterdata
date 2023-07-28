@@ -52,7 +52,7 @@ class Company extends Model
     {
         return $this->belongsTo(Files::class, 'logo');
     }
-
+    
     // Override toArray method to include the logoFile relationship in the JSON response
     public function toArray()
     {
