@@ -2,21 +2,14 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Rules\ApiRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
-class SectorRequest extends FormRequest
+class SectorRequest extends ApiRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -28,7 +21,7 @@ class SectorRequest extends FormRequest
         return [
             'name'               => 'required|string|max:255',
             'paritair_committee' => 'required|string|max:255',
-            'category'           => 'required|string|max:255',
+            'category'           => 'required|string|max:50',
             'description'        => 'nullable|string|max:255',
             'status'             => 'required|boolean',
             'employee_types'     => 'nullable|array',
@@ -48,22 +41,9 @@ class SectorRequest extends FormRequest
             'paritair_committee.max' => 'Paritair committee cannot be greater than 255 characters.',
             'description.string' => 'Description must be a string.',
             'description.max' => 'Description cannot be greater than 255 characters.',
-            'status.boolean' => 'Status must be a boolean value.',      
+            'status.boolean' => 'Status must be a boolean value.',
             'category.required' => 'Category is required.',
-            'category.max' => 'Category cannot be greater than 255 characters.',
+            'category.max' => 'Category cannot be greater than 50.',
         ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'status'  => 422, # validation error status
-                'message' => 'Validation error',
-                'data'    => [
-                    'errors' => $validator->errors()
-                ],
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
-        );
     }
 }

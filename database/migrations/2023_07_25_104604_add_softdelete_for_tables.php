@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sectors', function (Blueprint $table) {
-            $table->integer('category')->after('paritair_committee')->nullable();
+            $table->softDeletes();
+        });
+        Schema::table('function_category', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+        Schema::table('function_titles', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -21,8 +27,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sectors', function (Blueprint $table) {
-            $table->dropColumn('category');
-        });
     }
 };

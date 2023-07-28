@@ -13,7 +13,10 @@ class EmployeeTypeController extends Controller
     public function index()
     {
         $data = EmployeeType::all();
-        return api_response(true, 'Employee types received successfully', $data, 200);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
     }
 
     /**
@@ -23,9 +26,16 @@ class EmployeeTypeController extends Controller
     {
         try {
             $employee_type = EmployeeType::create($request->validated());
-            return api_response(true, 'Employee type created successfully', $employee_type, 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee type created successfully',
+                'data' => $employee_type,
+            ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return api_response(true, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -34,10 +44,10 @@ class EmployeeTypeController extends Controller
      */
     public function show(EmployeeType $employee_type)
     {
-        if (!$employee_type) {
-            return api_response(false, 'Employee type not found', '', 404);
-        }
-        return api_response(true, 'Employee type received successfully', $employee_type, 200);
+        return response()->json([
+            'success' => true,
+            'data' => $employee_type,
+        ]);
     }
 
     /**
@@ -46,13 +56,17 @@ class EmployeeTypeController extends Controller
     public function update(EmployeeTypeRequest $request, EmployeeType $employee_type)
     {
         try {
-            if (!$employee_type) {
-                return api_response(false, 'Employee type not found', $employee_type, 404);
-            }
             $employee_type->update($request->all());
-            return api_response(true, 'Employee type updated successfully', $employee_type, 202);
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee type updated successfully',
+                'data' => $employee_type,
+            ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return api_response(false, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -61,10 +75,10 @@ class EmployeeTypeController extends Controller
      */
     public function destroy(EmployeeType $employee_type)
     {
-        if (!$employee_type) {
-            return api_response(false, 'Employee type not found', '', 404);
-        }
         $employee_type->delete();
-        return api_response(true, 'Employee type deleted', '', 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee type deleted successfully'
+        ]);
     }
 }

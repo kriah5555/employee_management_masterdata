@@ -5,10 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeType;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sector extends Model
 {
+<<<<<<< HEAD
     use HasFactory;
+=======
+    use HasFactory, SoftDeletes;
+
+>>>>>>> 67a7308b3c02be04631c53fa24c4cd9bb4d15fc0
     /**
      * The table associated with the model.
      *
@@ -54,5 +60,12 @@ class Sector extends Model
     public function employeeTypes()
     {
         return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
     }
 }

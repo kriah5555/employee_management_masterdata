@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\FunctionCategory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FunctionTitle extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -51,30 +52,17 @@ class FunctionTitle extends Model
         'updated_by',
     ];
 
-    // protected $with = ['functionCategory'];
-
-    public function createFunctionTitle()
-    {
-        
-    }
-
-    public function updateFunctionTitle()
-    {
-
-    }
-
-    public function deleteFunctionTitle()
-    {
-
-    }
-
-    public function archiveFunctionTitle()
-    {
-
-    }
+    protected $with = ['functionCategory'];
 
     public function functionCategory()
     {
-        return $this->belongsTo(FunctionCategory::class);
+        return $this->belongsTo(FunctionCategory::class)->withTrashed();
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
     }
 }

@@ -48,4 +48,11 @@ class EmployeeType extends Model
         'created_by',
         'updated_by',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
+    }
 }

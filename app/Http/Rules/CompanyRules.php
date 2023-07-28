@@ -2,13 +2,13 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
+use App\Http\Rules\ApiRequest;
 
-class CompanyRules extends FormRequest
+class CompanyRules extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -72,18 +72,5 @@ class CompanyRules extends FormRequest
             'sector_id.array' => 'Sector ID must be an array.',
             'sector_id.*.exists' => 'One or more selected sector IDs are invalid.',
         ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'status'  => 422, # validation error status
-                'message' => 'Validation error',
-                'data'    => [
-                    'errors' => $validator->errors()
-                ],
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
-        );
     }
 }
