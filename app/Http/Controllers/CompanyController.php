@@ -72,10 +72,12 @@ class CompanyController extends Controller
 
             // Replace spaces in the company name with underscores to form the filename.
             $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request->file('logo')->getClientOriginalName();
-            $request_data['logo'] = $request->file('logo')->storeAs('company_logos', $filename);
+            $file = Files::create([
+                'file_name' => $filename,
+                'file_path' => $request->file('logo')->storeAs('company_logos', $filename)
+            ]);
+            $request_data['logo'] = $file->id;
 
-
-            
             $company->update($request_data);
             $company->sectors()->sync($sectors);
             $company->refresh();
