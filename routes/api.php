@@ -44,12 +44,12 @@ Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
 
-Route::resource('employee-types', EmployeeTypeController::class);
+Route::resource('employee-types', EmployeeTypeController::class)->withTrashed(['show']);
 
-Route::resource('sectors', SectorController::class);
+Route::resource('sectors', SectorController::class)->withTrashed(['show']);
 
-Route::resource('function-titles', FunctionTitleController::class);
+Route::resource('function-titles', FunctionTitleController::class)->withTrashed(['show']);
 
-Route::resource('function-categories', FunctionCategoryController::class);
+Route::resource('function-categories', FunctionCategoryController::class)->withTrashed(['show']);
 
 Route::resource('companies', CompanyController::class);

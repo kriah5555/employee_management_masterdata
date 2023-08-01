@@ -3,20 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sector;
+use App\Models\SectorSalaryConfig;
+use App\Models\SectorSalarySteps;
+use App\Models\EmployeeType;
 use App\Http\Rules\SectorRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Services\SectorService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 class SectorController extends Controller
 {
+    protected $sectorService;
+
+    public function __construct(SectorService $sectorService)
+    {
+        $this->sectorService = $sectorService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = Sector::all();
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
+        try {
+            $data = $this->sectorService->getAllSectors();
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -25,13 +45,7 @@ class SectorController extends Controller
     public function store(SectorRequest $request)
     {
         try {
-            $sector = Sector::create($request->validated());
-            if (array_key_exists('employee_types', $request->validated())) {
-                $employee_types = $request->validated()['employee_types'];
-            } else {
-                $employee_types = [];
-            }
-            $sector->employeeTypes()->sync($employee_types);
+            $sector = $this->sectorService->createNewSector($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Sector created successfully',
@@ -50,10 +64,32 @@ class SectorController extends Controller
      */
     public function show(Sector $sector)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $sector,
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data' => $sector,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function edit(Sector $sector)
+    {
+        try {
+            return response()->json([
+                'success' => true,
+                'data' => $this->sectorService->getSectorForEdit($sector),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -62,13 +98,7 @@ class SectorController extends Controller
     public function update(SectorRequest $request, Sector $sector)
     {
         try {
-            $sector->update($request->validated());
-            if (array_key_exists('employee_types', $request->validated())) {
-                $employee_types = $request->validated()['employee_types'];
-            } else {
-                $employee_types = [];
-            }
-            $sector->employeeTypes()->sync($employee_types);
+            $this->sectorService->updateSector($sector, $request->validated());
             $sector->refresh();
             return response()->json([
                 'success' => true,
@@ -76,6 +106,7 @@ class SectorController extends Controller
                 'data' => $sector,
             ]);
         } catch (Exception $e) {
+            DB::rollback();
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

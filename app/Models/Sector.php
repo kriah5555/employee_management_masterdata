@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeType;
+use App\Models\SectorSalaryConfig;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Sector extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
      * The table associated with the model.
@@ -51,11 +54,23 @@ class Sector extends Model
         'created_at',
         'updated_at'
     ];
-    
-    protected $with = ['employeeTypes'];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['name', 'paritair_committee', 'description', 'category'])
+        ->logOnlyDirty(['name', 'paritair_committee', 'description', 'category'])
+        ->dontSubmitEmptyLogs();
+    }
+
     public function employeeTypes()
     {
         return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
+    }
+
+    public function salaryConfig()
+    {
+        return $this->hasOne(SectorSalaryConfig::class);
     }
 
     protected static function booted()
