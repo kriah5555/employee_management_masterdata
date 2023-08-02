@@ -43,7 +43,7 @@ class SectorService
             foreach($values['experience'] as $data) {
                 $sector_salary_step = SectorSalarySteps::firstOrCreate([
                     'sector_salary_config_id' => $sector_salary_config->id,
-                    'step_number' => $data['level']
+                    'level' => $data['level']
                 ]);
                 $sector_salary_step->from = $data['from'];
                 $sector_salary_step->to = $data['to'];
