@@ -8,6 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 use App\Rules\SectorExperienceRule;
+use App\Rules\SectorAgeSalaryRule;
 
 class SectorRequest extends ApiRequest
 {
@@ -29,7 +30,8 @@ class SectorRequest extends ApiRequest
             'employee_types.*'   => [
                 Rule::exists('employee_types', 'id'),
             ],
-            'experience' => ['required', 'array', new SectorExperienceRule]
+            'experience' => ['required', 'array', new SectorExperienceRule],
+            'age' => ['required', 'array', new SectorAgeSalaryRule]
         ];
     }
     public function messages()
