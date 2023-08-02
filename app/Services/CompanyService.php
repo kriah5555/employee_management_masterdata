@@ -26,21 +26,12 @@ class CompanyService
     {
             try {
             DB::beginTransaction();
-            $request_data = $values;
-            if ($request_data['logo']) {
-                $filename     = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request_data['logo']->getClientOriginalName();
-                $file         = Files::create([
-                    'file_name' => $filename,
-                    'file_path' => $request_data['logo']->storeAs('company_logos', $filename)
-                ]);
-                $request_data['logo'] = $file->id;
-            }
-
+            $request_data         = $values;
+            $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
             $company              = Company::create($request_data);
             $sectors              = $values['sectors'];
             $company->sectors()->sync($sectors);
             $company->refresh();
-
             DB::commit();
             return $company ;
         } catch (Exception $e) {
@@ -62,24 +53,8 @@ class CompanyService
             $request_data = $values;
 
             if ($request_data['logo']) {
-                // Remove the old logo if it exists
-                if ($company->logo) {
-                    $oldLogo = Files::find($company->logo);
-                    if ($oldLogo) {
-                        Storage::delete($oldLogo->file_path);
-                        $oldLogo->delete();
-                    }
-                }
-    
-                // Store the new logo
-                $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request_data['logo']->getClientOriginalName();
-                $file = Files::create([
-                    'file_name' => $filename,
-                    'file_path' => $request_data['logo']->storeAs('company_logos', $filename)
-                ]);
-                $request_data['logo'] = $file->id;
+                $request_data['logo'] = self::addCompanyLogo($request_data, $company->id);
             } else {
-                // If no new logo provided, keep the existing logo
                 unset($request_data['logo']);
             }
 
@@ -103,5 +78,26 @@ class CompanyService
     public function getCompanySectors(Company $company)
     {
         return $company->sectors;
+    }
+
+    public function addCompanyLogo($request_data, $company_id = '')
+    {
+        if ($company_id) { # while updating
+            $company = Company::find($company_id); // Corrected: Use $company_id instead of $id
+            // Remove the old logo if it exists
+            if ($company->logo) {
+                $old_logo = Files::find($company->logo);
+                if ($old_logo) {
+                    Storage::delete($old_logo->file_path);
+                    $old_logo->delete();
+                }
+            }
+        }
+        $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request_data['logo']->getClientOriginalName();
+        $file     = Files::create([
+            'file_name' => $filename,
+            'file_path' => $request_data['logo']->storeAs('company_logos', $filename)
+        ]);
+        return $file->id;
     }
 }

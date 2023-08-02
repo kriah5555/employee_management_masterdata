@@ -3,21 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\HolidayCodes;
+use App\Services\HolidayCodeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\HolidayCodeRequest;
 
+
 class HolidayCodesController extends Controller
 {
+    protected $holiday_code_service;
+
+    public function __construct(HolidayCodeService $holiday_code_service)
+    {
+        $this->holiday_code_service = $holiday_code_service;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = HolidayCodes::all();
-        return response()->json([
-            'success' => true,
-            'data'    => $data,
-        ]);    
+        try {
+            $data = $this->holiday_code_service->getAllHolidayCodes();
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }   
     }
 
     /**
@@ -26,11 +41,11 @@ class HolidayCodesController extends Controller
     public function store(HolidayCodeRequest $request)
     {
         try {
-            $holidayCodes = HolidayCodes::create($request->validated());
+            $data = $this->holiday_code_service->getAllHolidayCodes($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Holiday code created successfully',
-                'data'    => $holidayCodes,
+                'data'    => $data,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([
@@ -57,7 +72,9 @@ class HolidayCodesController extends Controller
     public function update(HolidayCodeRequest $request, HolidayCodes $holiday_code)
     {
         try {
-            $holiday_code->update($request->validated());
+            $this->holiday_code_service->updateHolidayCode($holiday_code, $request->validated());
+            $holiday_code->refresh();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Holiday code updated successfully',

@@ -6,6 +6,9 @@ use App\Models\Company;
 use App\Http\Rules\CompanyRules;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
+
+use App\Models\Files;
+
 class CompanyController extends Controller
 {
     protected $company_service;
