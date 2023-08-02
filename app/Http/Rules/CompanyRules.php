@@ -32,7 +32,6 @@ class CompanyRules extends ApiRequest
             'city'          => 'required|string|max:255',
             'country'       => 'required|string|max:255',
             'status'        => 'required|boolean',
-            'logo'          => 'required',
             'sectors'       => 'required|array',
             'sectors.*'     => [
                 Rule::exists('sectors', 'id'),
@@ -64,9 +63,9 @@ class CompanyRules extends ApiRequest
             'status.required' => 'Status is required.',
             'status.boolean'  => 'Status must be a boolean value.',
 
-            'logo.required' => 'Logo is required.',
-            'logo.string'   => 'Logo must be a string.',
-            'logo.max'      => 'Logo cannot be greater than 255 characters.',
+            // 'logo.required' => 'Logo is required.',
+            // 'logo.string'   => 'Logo must be a string.',
+            // 'logo.max'      => 'Logo cannot be greater than 255 characters.',
 
             'sector_id.required' => 'Sector ID is required.',
             'sector_id.array' => 'Sector ID must be an array.',

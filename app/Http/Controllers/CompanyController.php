@@ -3,19 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
-use App\Models\Files;
 use App\Http\Rules\CompanyRules;
+use App\Services\CompanyService;
+use Illuminate\Http\JsonResponse;
 class CompanyController extends Controller
 {
+    protected $company_service;
+
+    public function __construct(CompanyService $company_service)
+    {
+        $this->company_service = $company_service;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return response()->json([
-            'success' => true,
-            'data' => Company::all(),
-        ]);
+        try {
+            $data = $this->company_service->getAllCompanies();
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -24,20 +39,7 @@ class CompanyController extends Controller
     public function store(CompanyRules $request)
     {
         try {
-            $request_data = $request->all();
-
-            $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request->file('logo')->getClientOriginalName();
-            $file = Files::create([
-                'file_name' => $filename,
-                'file_path' => $request->file('logo')->storeAs('company_logos', $filename)
-            ]);
-            $request_data['logo'] = $file->id;
-
-            $company = Company::create($request_data);
-
-            $sectors = $request['sectors'];
-            $company->sectors()->sync($sectors);
-            $company->refresh();
+            $company = $this->company_service->createNewCompany($request->all());
 
             return response()->json([
                 'success' => true,
@@ -69,25 +71,9 @@ class CompanyController extends Controller
     public function update(CompanyRules $request, Company $company)
     {
         try {
-            if (isset($request['sectors'])) {
-                $sectors = $request['sectors'];
-            } else {
-                $sectors = [];
-            }
-
-            $request_data = $request->all();
-
-            // Replace spaces in the company name with underscores to form the filename.
-            $filename = str_replace(' ', '_', $request_data['company_name']) . '_' . time() . '_' . $request->file('logo')->getClientOriginalName();
-            $file = Files::create([
-                'file_name' => $filename,
-                'file_path' => $request->file('logo')->storeAs('company_logos', $filename)
-            ]);
-            $request_data['logo'] = $file->id;
-
-            $company->update($request_data);
-            $company->sectors()->sync($sectors);
+            $this->company_service->updateCompany($company, $request->all());
             $company->refresh();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Company updated successfully',
