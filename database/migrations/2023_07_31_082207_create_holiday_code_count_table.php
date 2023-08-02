@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('files')) {
-        
-            Schema::create('files', function (Blueprint $table) {
+        if (!Schema::hasTable('holiday_code_count')) {
+            Schema::create('holiday_code_count', function (Blueprint $table) {
                 $table->id();
-                $table->string('file_name');
-                $table->string('file_path');
+                $table->integer('count'); # always in hours
+                $table->foreign('holiday_code_id')->references('id')->on('holiday_codes')->onDelete('cascade');
+                $table->boolean('status')->default(true);
                 $table->timestamps();
             });
         }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('files');
+        Schema::dropIfExists('holiday_code_count');
     }
 };

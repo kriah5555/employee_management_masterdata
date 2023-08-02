@@ -41,6 +41,11 @@ class Company extends Model
         'logo',
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
+
     protected $with = ['sectors'];
     public function sectors()
     {

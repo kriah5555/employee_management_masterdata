@@ -2,11 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\SectorController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
-use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\HolidayCodeCountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,3 +55,7 @@ Route::resource('function-titles', FunctionTitleController::class);
 Route::resource('function-categories', FunctionCategoryController::class);
 
 Route::resource('companies', CompanyController::class);
+
+Route::resource('holiday-codes', HolidayCodesController::class);
+
+Route::resource('holiday-code-count', HolidayCodeCountController::class);

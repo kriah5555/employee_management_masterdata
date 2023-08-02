@@ -20,7 +20,7 @@ return new class extends Migration
                 $table->integer('postal_code')->nullable();
                 $table->string('city')->nullable();
                 $table->string('country')->nullable();
-                $table->string('status')->nullable();
+                $table->string('status')->default(true);
                 $table->string('logo')->nullable();
                 $table->integer('created_by')->nullable(true);
                 $table->integer('updated_by')->nullable(true);
