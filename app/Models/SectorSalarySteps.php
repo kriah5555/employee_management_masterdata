@@ -40,7 +40,7 @@ class SectorSalarySteps extends Model
      */
     protected $fillable = [
         'sector_salary_config_id',
-        'step_number',
+        'level',
         'from',
         'to',
     ];
