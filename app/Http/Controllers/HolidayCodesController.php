@@ -41,7 +41,7 @@ class HolidayCodesController extends Controller
     public function store(HolidayCodeRequest $request)
     {
         try {
-            $data = $this->holiday_code_service->getAllHolidayCodes($request->validated());
+            $data = $this->holiday_code_service->createNewHolidayCode($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Holiday code created successfully',

@@ -62,6 +62,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
+        // echo asset('company_logos/Company_updated_1690985303_Screenshot_from_2023-08-01_15-27-29.png');exit;
         return response()->json([
             'success' => true,
             'data' => $company,

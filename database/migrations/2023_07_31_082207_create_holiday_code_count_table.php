@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('holiday_code_count')) {
-            Schema::create('holiday_code_count', function (Blueprint $table) {
-                $table->id();
-                $table->integer('count'); # always in hours
-                $table->foreign('holiday_code_id')->references('id')->on('holiday_codes')->onDelete('cascade');
-                $table->boolean('status')->default(true);
-                $table->timestamps();
-            });
-        }
+        Schema::create('holiday_code_count', function (Blueprint $table) {
+            $table->id();
+            $table->integer('count'); # always in hours
+            $table->foreignId('holiday_code_id')->constrained('holiday_codes')->onDelete('cascade');
+            $table->boolean('status')->default(true);
+            $table->timestamps();
+        });
     }
 
     /**

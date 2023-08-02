@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('sector_to_company')) {
-            Schema::create('sector_to_company', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
-                $table->foreignId('company_id')->references('id')->on('companies')->onDelete('cascade');
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
+        Schema::create('sector_to_company', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
+            $table->foreignId('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**

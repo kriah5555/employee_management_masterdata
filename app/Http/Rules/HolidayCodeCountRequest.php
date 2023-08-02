@@ -32,10 +32,10 @@ class HolidayCodeCountRequest extends ApiRequest
     {
         return [
             'count.required' => 'The Holiday count field is required',
-            'count.integer' => 'The Holiday count code must be an integer.',
+            'count.integer'  => 'The Holiday count code must be an integer.',
             
             'holiday_code_id.required' => 'The Holiday code field is required',
-            'holiday_code_id.exists' => 'Invalid Holiday code',
+            'holiday_code_id.exists'   => 'Invalid Holiday code',
         ];
     }
 }

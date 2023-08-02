@@ -11,22 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('companies')) {
 
-            Schema::create('companies', function (Blueprint $table) {
-                $table->id();
-                $table->string('company_name');
-                $table->string('street')->nullable();
-                $table->integer('postal_code')->nullable();
-                $table->string('city')->nullable();
-                $table->string('country')->nullable();
-                $table->string('status')->default(true);
-                $table->string('logo')->nullable();
-                $table->integer('created_by')->nullable(true);
-                $table->integer('updated_by')->nullable(true);
-                $table->timestamps();
-            });
-        }
+        Schema::create('companies', function (Blueprint $table) {
+            $table->id();
+            $table->string('company_name');
+            $table->string('street')->nullable();
+            $table->integer('postal_code')->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
+            $table->string('status')->default(true);
+            $table->string('logo')->nullable();
+            $table->integer('created_by')->nullable(true);
+            $table->integer('updated_by')->nullable(true);
+            $table->timestamps();
+        });
     }
 
     /**
