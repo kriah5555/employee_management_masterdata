@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeType;
 use App\Models\SectorSalaryConfig;
+use App\Models\SectorAgeSalary;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
@@ -71,6 +72,11 @@ class Sector extends Model
     public function salaryConfig()
     {
         return $this->hasOne(SectorSalaryConfig::class);
+    }
+
+    public function sectorAgeSalary()
+    {
+        return $this->hasMany(SectorAgeSalary::class);
     }
 
     protected static function booted()
