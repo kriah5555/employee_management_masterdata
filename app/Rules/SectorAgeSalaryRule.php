@@ -16,7 +16,7 @@ class SectorAgeSalaryRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         foreach($value as $val) {
-            if (!is_int($val) || $val < 0 || $val > 100)
+            if (!is_int((int)$val) || $val < 0 || $val > 100)
             {
                 $error = "Incorrect salary percentage.";
                 $fail($error);
