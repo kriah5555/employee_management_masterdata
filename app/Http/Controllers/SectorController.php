@@ -62,8 +62,9 @@ class SectorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Sector $sector)
+    public function show($id)
     {
+        $sector = $this->sectorService->getSectorDetails($id);
         try {
             return response()->json([
                 'success' => true,
@@ -77,12 +78,12 @@ class SectorController extends Controller
         }
     }
 
-    public function edit(Sector $sector)
+    public function edit($id)
     {
         try {
             return response()->json([
                 'success' => true,
-                'data' => $this->sectorService->getSectorForEdit($sector),
+                'data' => $this->sectorService->getSectorForEdit($id),
             ]);
         } catch (Exception $e) {
             return response()->json([

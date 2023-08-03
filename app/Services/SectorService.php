@@ -13,7 +13,13 @@ class SectorService
 {
     public function getSectorDetails($id)
     {
-        return Sector::findOrFail($id);
+        $sector = Sector::with('employeeTypes')->with('salaryConfig')->with('salaryConfig.salarySteps')->with('sectorAgeSalary')->findOrFail($id);
+        $temp = [];
+        foreach($sector->sectorAgeSalary as $data) {
+            $temp[$data->age] = $data->percentage;
+        }
+        $sector->age = $temp;
+        return $sector;
     }
 
     public function getAllSectors()
@@ -23,7 +29,7 @@ class SectorService
 
     public function getActiveSectors()
     {
-        return Sector::where('status', '=', true)->get();
+        return Sector::where('status', true)->get();
     }
 
     public function createNewSector($values)
@@ -140,20 +146,10 @@ class SectorService
         }
     }
 
-    public function getSectorForEdit(Sector $sector)
+    public function getSectorForEdit($id)
     {
         try {
-            $sector->employeeTypes;
-            $sector->salaryConfig;
-            $sector->salaryConfig->salarySteps;
-            $sector->salaryConfig->sectorAgeSalary;
-            $age_data = SectorAgeSalary::where('sector_id', $sector->id)->get();
-            $temp = [];
-            foreach($age_data as $data) {
-                $temp[$data->age] = $data->percentage;
-            }
-            $sector->age = $temp;
-            return $sector;
+            return $this->getSectorDetails($id);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

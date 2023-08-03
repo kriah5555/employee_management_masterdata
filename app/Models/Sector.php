@@ -85,4 +85,14 @@ class Sector extends Model
             $query->orderBy('name', 'asc');
         });
     }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted_at !== null;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status;
+    }
 }
