@@ -5,11 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeType;
+use App\Models\SectorSalaryConfig;
+use App\Models\SectorAgeSalary;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Sector extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
      * The table associated with the model.
@@ -51,11 +55,28 @@ class Sector extends Model
         'created_at',
         'updated_at'
     ];
-    
-    protected $with = ['employeeTypes'];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['name', 'paritair_committee', 'description', 'category'])
+        ->logOnlyDirty(['name', 'paritair_committee', 'description', 'category'])
+        ->dontSubmitEmptyLogs();
+    }
+
     public function employeeTypes()
     {
         return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
+    }
+
+    public function salaryConfig()
+    {
+        return $this->hasOne(SectorSalaryConfig::class);
+    }
+
+    public function sectorAgeSalary()
+    {
+        return $this->hasMany(SectorAgeSalary::class);
     }
 
     protected static function booted()
@@ -63,5 +84,15 @@ class Sector extends Model
         static::addGlobalScope('sort', function ($query) {
             $query->orderBy('name', 'asc');
         });
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted_at !== null;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status;
     }
 }

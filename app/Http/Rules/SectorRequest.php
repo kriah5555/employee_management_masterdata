@@ -7,6 +7,8 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
+use App\Rules\SectorExperienceRule;
+use App\Rules\SectorAgeSalaryRule;
 
 class SectorRequest extends ApiRequest
 {
@@ -21,13 +23,15 @@ class SectorRequest extends ApiRequest
         return [
             'name'               => 'required|string|max:255',
             'paritair_committee' => 'required|string|max:255',
-            'category'           => 'required|string|max:50',
+            'category'           => 'required|integer|max:50',
             'description'        => 'nullable|string|max:255',
             'status'             => 'required|boolean',
             'employee_types'     => 'nullable|array',
             'employee_types.*'   => [
                 Rule::exists('employee_types', 'id'),
             ],
+            'experience' => ['required', 'array', new SectorExperienceRule],
+            'age' => ['required', 'array', new SectorAgeSalaryRule]
         ];
     }
     public function messages()
@@ -44,6 +48,7 @@ class SectorRequest extends ApiRequest
             'status.boolean' => 'Status must be a boolean value.',
             'category.required' => 'Category is required.',
             'category.max' => 'Category cannot be greater than 50.',
+            'experience.sector_experience_rule' => 'test'
         ];
     }
 }

@@ -16,7 +16,7 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
                 $table->integer('age');
-                $table->float('percentage');
+                $table->float('percentage')->nullable(true);
                 $table->boolean('status')->default(true);
                 $table->timestamps();
                 $table->integer('created_by')->nullable(true);
