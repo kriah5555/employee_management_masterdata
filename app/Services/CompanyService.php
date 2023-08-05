@@ -4,7 +4,12 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Company;
+use App\Models\Address;
+use App\Models\LocationRequest;
 use App\Models\Files;
+use App\Services\AddressService;
+use App\Services\LocationService;
+
 class CompanyService
 {
     public function getCompanyDetails($id)
@@ -24,12 +29,26 @@ class CompanyService
 
     public function createNewCompany($values)
     {
-            try {
+        try {
             DB::beginTransaction();
-            $request_data         = $values;
-            $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
-            $company              = Company::create($request_data);
-            $sectors              = $values['sectors'];
+            $request_data    = $values;
+            $address_service = new AddressService();
+            
+            $company_address         = $address_service->createNewAddress($values['address']);
+            $request_data['address'] = $company_address->id;
+            // $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
+            $company                 = Company::create($request_data);
+            $sectors                 = $values['sectors'];
+            
+            # add company location
+            if (isset($values['locations'])) {
+                $location_service = new LocationService();
+                foreach ($values['locations'] as $index => $location) {
+                    $location['company'] = $company->id;
+                    $location_service->createNewLocations($location);
+                }
+            }
+
             $company->sectors()->sync($sectors);
             $company->refresh();
             DB::commit();
