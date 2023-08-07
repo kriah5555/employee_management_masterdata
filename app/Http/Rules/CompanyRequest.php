@@ -4,7 +4,8 @@ namespace App\Http\Rules;
 
 use Illuminate\Validation\Rule;
 use App\Rules\AddressRule;
-use App\Rules\CompanyCreationLocationRule;
+use App\Rules\LocationRule;
+use App\Rules\WorkstationRule;
 class CompanyRequest extends ApiRequest
 {
     public function authorize(): bool
@@ -16,15 +17,17 @@ class CompanyRequest extends ApiRequest
     {
         return [
             'company_name' => 'required|string|max:255',
-            'status' => 'required|boolean',
-            'sectors' => 'required|array',
-            'sectors.*' => [
+            'status'       => 'required|boolean',
+            'sectors'      => 'required|array',
+            'address'      => ['required', new AddressRule()],
+            'locations'    => ['nullable', 'array', new LocationRule()],
+            'workstations' => ['nullable', 'array', new WorkstationRule()],
+            'sectors.*'    => [
                 Rule::exists('sectors', 'id'),
             ],
-            'address' => ['required', new AddressRule()],
-            'locations' => ['nullable', 'array', new CompanyCreationLocationRule()],
         ];
     }
+    
     public function messages()
     {
 

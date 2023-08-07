@@ -9,6 +9,7 @@ use App\Models\LocationRequest;
 use App\Models\Files;
 use App\Services\AddressService;
 use App\Services\LocationService;
+use App\Services\WorkstationService;
 
 class CompanyService
 {
@@ -40,16 +41,11 @@ class CompanyService
             $company                 = Company::create($request_data);
             $sectors                 = $values['sectors'];
             
-            # add company location
-            if (isset($values['locations'])) {
-                $location_service = new LocationService();
-                foreach ($values['locations'] as $index => $location) {
-                    $location['company'] = $company->id;
-                    $location_service->createNewLocations($location);
-                }
-            }
+            $location_ids = $this->createCompanyLocations($company, $values); # add company locations
 
-            $company->sectors()->sync($sectors);
+            $this->createCompanyWorkstations($values, $location_ids); # add workstations to location with function titles
+
+            $company->sectors()->sync($sectors); # link sectors to company
             $company->refresh();
             DB::commit();
             return $company ;
@@ -57,6 +53,32 @@ class CompanyService
             DB::rollback();
             error_log($e->getMessage());
             throw $e;
+        }
+    }
+
+    private function createCompanyLocations(Company $company, $values)
+    {
+        $location_ids = [];
+        if (isset($values['locations'])) {
+            $location_service = new LocationService();
+            foreach ($values['locations'] as $index => $location) {
+                $location['company'] = $company->id;
+                $location_ids[$index] = $location_service->createNewLocations($location)->id;
+            }
+        }
+        return $location_ids;
+    }
+
+    private function createCompanyWorkstations($values, $location_ids)
+    {
+        $workstation_service = new WorkstationService();
+        if (!empty($location_ids) && isset($values['workstations'])) {
+            foreach ($values['workstations'] as $index => $workstation) {
+                $workstation['locations'] = array_map(function ($value) use ($location_ids) {
+                    return $location_ids[$value];
+                }, $workstation['locations_index']);
+                $workstation_service->createNewWorkstation($workstation);
+            }
         }
     }
 

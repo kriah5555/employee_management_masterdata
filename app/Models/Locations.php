@@ -19,4 +19,11 @@ class Locations extends Model
         'company',
         'address'
     ];
+
+    protected $with = ['workstations'];
+    
+    public function workstations()
+    {
+        return $this->belongsToMany(Workstation::class, 'locations_to_workstations');
+    }
 }

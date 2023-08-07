@@ -4,9 +4,9 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Rules\AddressRule;
-
-class CompanyCreationLocationRule implements ValidationRule
+use Illuminate\Validation\Rule;
+use App\Services\WorkstationService;
+class WorkstationRule implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -15,14 +15,9 @@ class CompanyCreationLocationRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        foreach ($value as $index => $location) {
-            $locationRules = [
-                'location_name' => 'required|string|max:255',
-                'status' => 'required|boolean',
-                'address' => ['required', new AddressRule()],
-            ];
-
-            $validator = \Validator::make($location, $locationRules);
+        $workstation_rules = WorkstationService::getWorkstationRules();
+        foreach ($value as $index => $workstation) {
+            $validator = \Validator::make($workstation, $workstation_rules);
 
             if ($validator->fails()) {
                 $errors = $validator->errors()->all();

@@ -5,19 +5,13 @@ namespace App\Http\Rules;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Services\LocationService;
 
 class LocationRequest extends Rule
 {   
     public function rules() :array
     {
-        return [
-            'loaction_name'  => 'required|string|max:255',
-            'status'         => 'boolean',
-            'company'        => [
-                'required',
-                Rule::exists('company', 'id'),
-            ],            
-        ];
+        return LocationService::getLocationRules();    
     }
 
     public function messages()
