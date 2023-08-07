@@ -25,6 +25,13 @@ class CompanyRequest extends ApiRequest
             'sectors.*'    => [
                 Rule::exists('sectors', 'id'),
             ],
+
+            'employer_id'             => 'nullable|digits_between:1,11',
+            'sender_number'           => 'nullable|digits_between:1,11',
+            'joint_commission_number' => 'nullable|digits_between:1,11',
+            'rsz_number'              => 'nullable|digits_between:1,11',
+            'social_secretary_number' => 'nullable|digits_between:1,11',
+            'username'                => 'nullable|string|max:50',
         ];
     }
     
@@ -46,6 +53,13 @@ class CompanyRequest extends ApiRequest
             'sector_id.required' => 'Sector ID is required.',
             'sector_id.array'    => 'Sector ID must be an array.',
             'sector_id.*.exists' => 'One or more selected sector IDs are invalid.',
+
+            'employer_id.digits_between'             => 'The :attribute must have between :min and :max digits.',
+            'sender_number.digits_between'           => 'The :attribute must have between :min and :max digits.',
+            'joint_commission_number.digits_between' => 'The :attribute must have between :min and :max digits.',
+            'rsz_number.digits_between'              => 'The :attribute must have between :min and :max digits.',
+            'social_secretary_number.digits_between' => 'The :attribute must have between :min and :max digits.',
+            'username.max'                           => 'The :attribute must not exceed :max characters.',
         ];
     }
 }
