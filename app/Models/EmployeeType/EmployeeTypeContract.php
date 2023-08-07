@@ -50,4 +50,17 @@ class EmployeeTypeContract extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function employeeType()
+    {
+        return $this->belongsTo(EmployeeType::class, 'employee_type_id');
+    }
+
+    public function contractType()
+    {
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
+    }
+    public function getEmployeeTypeContract() {
+        $employeeTypeContracts = EmployeeTypeContract::with('employeeType', 'contractType')->get();
+    }
 }

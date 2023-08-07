@@ -53,26 +53,6 @@ class FunctionTitle extends Model
 
     // protected $with = ['functionCategory'];
 
-    public function createFunctionTitle()
-    {
-        
-    }
-
-    public function updateFunctionTitle()
-    {
-
-    }
-
-    public function deleteFunctionTitle()
-    {
-
-    }
-
-    public function archiveFunctionTitle()
-    {
-
-    }
-
     public function functionCategory()
     {
         return $this->belongsTo(FunctionCategory::class);

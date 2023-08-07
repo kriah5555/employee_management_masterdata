@@ -42,6 +42,8 @@ Route::group(['middleware' => 'service-registry'], function () {
 });
 
 Route::resource('employee-types', EmployeeTypeController::class);
+Route::get('getEmployeeTypeOptions', [EmployeeTypeController::class, 'getEmployeeTypeOptions']);
+
 
 Route::resource('sectors', SectorController::class);
 
