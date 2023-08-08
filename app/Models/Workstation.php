@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\FunctionTitle;
 use App\Models\Locations;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workstation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'workstations';
 

@@ -39,13 +39,15 @@ class CompanyService
             $request_data['address'] = $company_address->id;
             // $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
             $company                 = Company::create($request_data);
+
             $sectors                 = $values['sectors'];
             
+            
             $location_ids = $this->createCompanyLocations($company, $values); # add company locations
-
+            
             $this->createCompanyWorkstations($values, $location_ids); # add workstations to location with function titles
-
-            $company->sectors()->sync($sectors); # link sectors to company
+            
+            $this->syncSectors($company, $values);
             $company->refresh();
             DB::commit();
             return $company ;
@@ -86,21 +88,13 @@ class CompanyService
     {
         try {
             DB::beginTransaction();
-            if (isset($values['sectors'])) {
-                $sectors = $values['sectors'];
-            } else {
-                $sectors = [];
-            }
-            $request_data = $values;
-
-            if ($request_data['logo']) {
-                $request_data['logo'] = self::addCompanyLogo($request_data, $company->id);
-            } else {
-                unset($request_data['logo']);
-            }
-
-            $company->update($request_data);
-            $company->sectors()->sync($sectors);
+            // $this->updateCompanyLodoData($company, $values);
+            $address_service = new AddressService();
+            $company_address = $address_service->updateAddress($company->address, $values['address']);
+            unset($values['address']);
+            $company->update($values);
+            $this->syncSectors($company, $values);
+            // $company->sectors()->sync($sectors);
             $company->refresh();
 
             DB::commit();
@@ -110,6 +104,31 @@ class CompanyService
             throw $e;
         }
     }
+
+    private function updateCompanyLodoData(Company $company, $values)
+    {
+        $request_data = $values;
+
+        if ($request_data['logo']) {
+            $request_data['logo'] = self::addCompanyLogo($request_data, $company->id);
+        } else {
+            unset($request_data['logo']);
+        }
+
+        $company->update($request_data);
+    }
+
+    private function syncSectors(Company $company, $values)
+    {
+        if (isset($values['sectors'])) {
+            $sectors = $values['sectors'];
+        } else {
+            $sectors = [];
+        }
+
+        $company->sectors()->sync($sectors);
+    }
+
 
     public function getCompanyLogo(Company $company)
     {

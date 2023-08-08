@@ -21,10 +21,10 @@ class AddressService
         }
     }
 
-    public function updateAddress(Address $address, $values)
+    public function updateAddress($address_id, $values)
     {
         try {
-            $address->update($values);
+            $address = Address::where('id', '=', $address_id)->update($values);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

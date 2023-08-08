@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\HolidayCodes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class HolidayCodeCount extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'holiday_code_count';
     protected $fillable = ['count', 'holiday_code_id'];
