@@ -9,6 +9,8 @@ use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
 use App\Http\Controllers\HolidayCodeCountController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\WorkstationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,3 +61,7 @@ Route::resource('companies', CompanyController::class);
 Route::resource('holiday-codes', HolidayCodesController::class);
 
 Route::resource('holiday-code-count', HolidayCodeCountController::class);
+
+Route::resource('locations', LocationController::class);
+
+Route::resource('workstations', WorkstationController::class);

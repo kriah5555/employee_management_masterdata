@@ -65,7 +65,7 @@ class CompanyService
             $location_service = new LocationService();
             foreach ($values['locations'] as $index => $location) {
                 $location['company'] = $company->id;
-                $location_ids[$index] = $location_service->createNewLocations($location)->id;
+                $location_ids[$index] = $location_service->createNewLocation($location)->id;
             }
         }
         return $location_ids;

@@ -35,6 +35,7 @@ return new class extends Migration
             $table->string('country')->nullable();
 
             // Drop the newly added column
+            $table->dropForeign(['address']);
             $table->dropColumn('address');
         });
     }

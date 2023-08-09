@@ -9,6 +9,21 @@ use Illuminate\Validation\Rule;
 
 class WorkstationService
 {
+    public function getAllWorkstation()
+    {
+        return Workstation::all();
+    }
+
+    public function getActiveWorkstation()
+    {
+        return Workstation::where('status', '=', true)->get();
+    }
+
+    public function getWorkstationDetails($id)
+    {
+        return Workstation::findOrFail($id);
+    }
+
     public static function getWorkstationRules($for_company_creation = true) 
     {
         $rules = [
@@ -44,11 +59,6 @@ class WorkstationService
             Rule::exists('locations', 'id')
         ];
         return $rules;
-    }
-    
-    public function getWorkstationDetails($id)
-    {
-        return Workstation::findOrFail($id);
     }
 
     public function createNewWorkstation($values)

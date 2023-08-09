@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Sector;
 use App\Models\Files;
 use App\Models\Address;
-use App\Models\Locations;
+use App\Models\Location;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
@@ -60,6 +60,7 @@ class Company extends Model
     ];
 
     protected $with = ['sectors','address'];
+
     public function sectors()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company');
@@ -67,7 +68,7 @@ class Company extends Model
 
     public function locations()
     {
-        return $this->belongsToMany(Locations::class, 'company_to_locations');
+        return $this->belongsToMany(Location::class, 'company_to_locations');
     }
 
     // public function logoFile()

@@ -2,16 +2,19 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Services\LocationService;
 
-class LocationRequest extends Rule
+class LocationRequest extends ApiRequest
 {   
     public function rules() :array
     {
-        return LocationService::getLocationRules();    
+        $location_rules = LocationService::getLocationRules(false);
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            unset($location_rules['company']);
+        }
+        return $location_rules;    
     }
 
     public function messages()
@@ -25,6 +28,8 @@ class LocationRequest extends Rule
 
             'company.required' => 'The company field is required.',
             'company.exists'   => 'The selected company does not exist.',
+
+            'address.required' => 'The address field is required.',
         ];
     }
 }

@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Address;
 
-class Locations extends Model
+class Location extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -21,10 +22,15 @@ class Locations extends Model
         'address'
     ];
 
-    protected $with = ['workstations'];
+    // protected $with = ['workstations', 'address'];
     
     public function workstations()
     {
         return $this->belongsToMany(Workstation::class, 'locations_to_workstations');
     }
+
+    // public function address()
+    // {
+    //     return $this->belongsTo(Address::class, 'address');
+    // }
 }

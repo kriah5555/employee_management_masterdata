@@ -21,31 +21,34 @@ return new class extends Migration
         'locations_to_workstations',
         'workstation_to_funcitons',
     ];
+
+    protected $tables_to_add_created_updates = [
+        'sector_to_company',
+        'locations_to_workstations',
+        'workstation_to_funcitons'
+    ];
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('sector_to_company', function (Blueprint $table) {
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);        
-        });
-
-        Schema::table('locations_to_workstations', function (Blueprint $table) {
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);        
-        });
-
-        Schema::table('workstation_to_funcitons', function (Blueprint $table) {
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);        
-        });
+        foreach ($this->tables_to_add_created_updates as $table) {
+            Schema::table($table, function (Blueprint $table) {
+                $table->integer('created_by')->nullable(true);
+                $table->integer('updated_by')->nullable(true);  
+                $table->boolean('status')->default(true);
+            });
+        }
 
         foreach ($this->tables_to_add_soft_delete as $table) {
             Schema::table($table, function (Blueprint $table) {
                 $table->softDeletes();
             });    
         } 
+
+        Schema::table('workstations', function (Blueprint $table) {
+            $table->foreignId('company')->nullable()->references('id')->on('companies')->onDelete('cascade');
+        });
     }
 
     /**
@@ -53,22 +56,21 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sector_to_company', function (Blueprint $table) {
-            $table->dropColumn(['created_by', 'updated_by']);
-        });
-
-        Schema::table('locations_to_workstations', function (Blueprint $table) {
-            $table->dropColumn(['created_by', 'updated_by']);
-        });
-
-        Schema::table('workstation_to_funcitons', function (Blueprint $table) {
-            $table->dropColumn(['created_by', 'updated_by']);
-        });
+        foreach ($this->tables_to_add_created_updates as $table) {
+            Schema::table($table, function (Blueprint $table) {
+                $table->dropColumn(['created_by', 'updated_by', 'status']);
+            });
+        }
 
         foreach ($this->tables_to_add_soft_delete as $table) {
             Schema::table($table, function (Blueprint $table) {
                 $table->dropSoftDeletes();
             });    
         }
+
+        Schema::table('workstations', function (Blueprint $table) {
+            $table->dropForeign(['company']);
+            $table->dropColumn('company');
+        });
     }
 };
