@@ -6,10 +6,11 @@ use App\Models\Workstation;
 use App\Services\AddressService;
 use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class WorkstationService
 {
-    public function getAllWorkstation()
+    public function getAllWorkstations()
     {
         return Workstation::all();
     }
@@ -19,7 +20,7 @@ class WorkstationService
         return Workstation::where('status', '=', true)->get();
     }
 
-    public function getWorkstationDetails($id)
+    public function getWorkstationDetails($id)  
     {
         return Workstation::findOrFail($id);
     }
@@ -30,16 +31,16 @@ class WorkstationService
             'workstation_name'  => 'required|string|max:255',
             'sequence_number'   => 'required|integer',
             'status'            => 'required|boolean',
-            'function_titles'   => 'required|array',
+            'function_titles'   => 'nullable|array',
             'function_titles.*' => [
                 Rule::exists('function_titles', 'id'),
             ],
         ];
 
-        if ($for_company_creation) {
+        if ($for_company_creation) {    
             $rules = self::addCompanyCreationRules($rules);
         } else {
-            $rules = self::addWorkstationCompanyCreationRules($rules);
+            $rules = self::addWorkstationRules($rules);
         }
 
         return $rules;
@@ -52,11 +53,16 @@ class WorkstationService
         return $rules;
     }
 
-    private static function addWorkstationCompanyCreationRules($rules)
+    private static function addWorkstationRules($rules)
     {
-        $rules['locations']   = 'required|array';
+        $rules['locations']   = 'nullable|array';
         $rules['locations.*'] = [
             Rule::exists('locations', 'id')
+        ];
+        $rules['company']     = [
+            'required', 
+            'integer', 
+            Rule::exists('companies', 'id')
         ];
         return $rules;
     }
@@ -64,6 +70,7 @@ class WorkstationService
     public function createNewWorkstation($values)
     {
         try {   
+            DB::beginTransaction();
             $locations       = $values['locations'] ?? [];
             $function_titles = $values['function_titles'] ?? [];
             unset($values['locations']);
@@ -72,9 +79,32 @@ class WorkstationService
             $workstation = Workstation::create($values);
             $workstation->locations()->sync($locations);
             $workstation->functionTitles()->sync($function_titles);
+            DB::commit();
             
             return $workstation;
         } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateWorkstation(Workstation $workstation, $values) 
+    {
+        try {
+            DB::beginTransaction();
+            $locations       = $values['locations'] ?? [];
+            $function_titles = $values['function_titles'] ?? [];
+            $workstation->locations()->sync($locations);
+            $workstation->functionTitles()->sync($function_titles);
+            unset($values['locations']);
+            unset($values['function_titles']);
+
+            $workstation->update($values);
+            DB::commit();
+            return $workstation;
+        } catch (Exception $e) {
+            DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
