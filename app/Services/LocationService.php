@@ -7,9 +7,15 @@ use App\Services\AddressService;
 use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Services\BaseService;
 
-class LocationService
+class LocationService extends BaseService
 {
+    public function __construct(Location $location)
+    {
+        parent::__construct($location);
+    }
+
     public static function getLocationRules($for_company_creation = true) 
     {
         return [
@@ -23,23 +29,7 @@ class LocationService
         ];
     }
 
-    public function getAllLocations()
-    {
-        return Location::all();
-    }
-
-    public function getActiveLocations()
-    {
-        return Location::where('status', '=', true)->get();
-    }
-
-    
-    public function getLocationDetails($id)
-    {
-        return Location::findOrFail($id);
-    }
-
-    public function createNewLocation($values)
+    public function create($values)
     {
         try {
             DB::beginTransaction();
@@ -56,7 +46,7 @@ class LocationService
         }
     }
 
-    public function updateLocation(Location $location, $values) 
+    public function update($location, $values) 
     {
         try {
             DB::beginTransaction();

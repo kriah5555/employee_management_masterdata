@@ -8,12 +8,19 @@ use App\Models\EmployeeType;
 use App\Models\SectorSalaryConfig;
 use App\Models\SectorSalarySteps;
 use App\Models\SectorAgeSalary;
+use App\Services\BaseService;
 
 class SectorService
 {
     public function getSectorDetails($id)
     {
-        $sector = Sector::with('employeeTypes')->with('salaryConfig')->with('salaryConfig.salarySteps')->with('sectorAgeSalary')->findOrFail($id);
+        $sector = Sector::with([
+            'employeeTypes',
+            'salaryConfig',
+            'salaryConfig.salarySteps',
+            'sectorAgeSalary',
+            ])->findOrFail($id);
+        // $sector = Sector::with('employeeTypes')->with('salaryConfig')->with('salaryConfig.salarySteps')->with('sectorAgeSalary')->findOrFail($id);
         $temp = [];
         foreach($sector->sectorAgeSalary as $data) {
             $temp[$data->age] = $data->percentage;
@@ -143,16 +150,6 @@ class SectorService
             ]);
             $sector_age_salary->percentage = $percentage;
             $sector_age_salary->save();
-        }
-    }
-
-    public function getSectorForEdit($id)
-    {
-        try {
-            return $this->getSectorDetails($id);
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
         }
     }
 

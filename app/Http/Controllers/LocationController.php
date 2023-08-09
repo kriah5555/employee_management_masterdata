@@ -18,7 +18,7 @@ class LocationController extends Controller
     public function index()
     {
         try {
-            $data = $this->location_service->getAllLocations();
+            $data = $this->location_service->getAll();
             return response()->json([
                 'success' => true,
                 'data' => $data,
@@ -37,7 +37,7 @@ class LocationController extends Controller
     public function store(LocationRequest $request)
     {
         try {
-            $location = $this->location_service->createNewLocation($request->all());
+            $location = $this->location_service->create($request->all());
             return response()->json([
                 'success' => true,
                 'message' => 'Location created successfully',
@@ -68,7 +68,7 @@ class LocationController extends Controller
     public function update(LocationRequest $request, Location $location)
     {
         try {
-            $this->location_service->updateLocation($location, $request->validated());
+            $this->location_service->update($location, $request->validated());
             $location->refresh();
 
             return response()->json([

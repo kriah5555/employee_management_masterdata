@@ -10,54 +10,61 @@ use App\Models\Files;
 use App\Services\AddressService;
 use App\Services\LocationService;
 use App\Services\WorkstationService;
+use App\Services\BaseService;
 
-class CompanyService
+class CompanyService extends BaseService
 {
-    public function getCompanyDetails($id)
+    public function __construct(Company $company)
     {
-        return Company::findOrFail($id);
+        parent::__construct($company);
     }
 
-    public function getAllCompanies()
+    public function create($values)
     {
-        return Company::all();
+        try {
+
+            return DB::transaction(function () use ($values) {
+                $request_data    = $values;
+                $address_service = new AddressService();
+                
+                $company_address         = $address_service->createNewAddress($values['address']);
+                $request_data['address'] = $company_address->id;
+                // $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
+                $company                 = Company::create($request_data);
+                $sectors                 = $values['sectors'];
+                $location_ids            = $this->createCompanyLocations($company, $values); # add company locations
+                $this->createCompanyWorkstations($values, $location_ids); # add workstations to location with function titles
+                $this->syncSectors($company, $values);
+                $company->refresh();
+                return $company ;
+            });
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
-    public function getActiveCompanies()
-    {
-        return Company::where('status', '=', true)->get();
-    }
-
-    public function createNewCompany($values)
+    public function update($company, $values)
     {
         try {
             DB::beginTransaction();
-            $request_data    = $values;
+            // $this->updateCompanyLogoData($company, $values);
             $address_service = new AddressService();
-            
-            $company_address         = $address_service->createNewAddress($values['address']);
-            $request_data['address'] = $company_address->id;
-            // $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
-            $company                 = Company::create($request_data);
-
-            $sectors                 = $values['sectors'];
-            
-            
-            $location_ids = $this->createCompanyLocations($company, $values); # add company locations
-            
-            $this->createCompanyWorkstations($values, $location_ids); # add workstations to location with function titles
-            
+            $company_address = $address_service->updateAddress($company->address, $values['address']);
+            unset($values['address']);
+            $company->update($values);
             $this->syncSectors($company, $values);
+            // $company->sectors()->sync($sectors);
             $company->refresh();
+
             DB::commit();
-            return $company ;
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
     }
-
+    
     private function createCompanyLocations(Company $company, $values)
     {
         $location_ids = [];
@@ -65,7 +72,7 @@ class CompanyService
             $location_service = new LocationService();
             foreach ($values['locations'] as $index => $location) {
                 $location['company'] = $company->id;
-                $location_ids[$index] = $location_service->createNewLocation($location)->id;
+                $location_ids[$index] = $location_service->create($location)->id;
             }
         }
         return $location_ids;
@@ -84,28 +91,7 @@ class CompanyService
         }
     }
 
-    public function updateCompany(Company $company, $values)
-    {
-        try {
-            DB::beginTransaction();
-            // $this->updateCompanyLodoData($company, $values);
-            $address_service = new AddressService();
-            $company_address = $address_service->updateAddress($company->address, $values['address']);
-            unset($values['address']);
-            $company->update($values);
-            $this->syncSectors($company, $values);
-            // $company->sectors()->sync($sectors);
-            $company->refresh();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    private function updateCompanyLodoData(Company $company, $values)
+    private function updateCompanyLogoData(Company $company, $values)
     {
         $request_data = $values;
 
@@ -128,7 +114,6 @@ class CompanyService
 
         $company->sectors()->sync($sectors);
     }
-
 
     public function getCompanyLogo(Company $company)
     {
