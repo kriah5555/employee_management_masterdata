@@ -7,6 +7,7 @@ use App\Services\AddressService;
 use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Rules\FunctionTitlesLinkedToSectorRule;
 
 class WorkstationService
 {
@@ -34,6 +35,7 @@ class WorkstationService
             'function_titles'   => 'nullable|array',
             'function_titles.*' => [
                 Rule::exists('function_titles', 'id'),
+                new FunctionTitlesLinkedToSectorRule(request()->input('sectors'))
             ],
         ];
 

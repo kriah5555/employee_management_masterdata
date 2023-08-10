@@ -18,15 +18,19 @@ class LocationService extends BaseService
 
     public static function getLocationRules($for_company_creation = true) 
     {
-        return [
+        $location_rules = [
             'location_name' => 'required|string|max:255',
-            'status'        => 'required|boolean',
             'address'       => ['required', new AddressRule()],
             'company'       => [
                 $for_company_creation ? 'nullable' : 'required',
                 Rule::exists('companies', 'id')
             ],
         ];
+
+        if (!$for_company_creation) {
+            $location_rules['status'] = 'required|boolean';
+        }
+        return $location_rules;
     }
 
     public function create($values)

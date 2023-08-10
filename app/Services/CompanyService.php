@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company;
 use App\Models\Address;
+use App\Models\Location;
 use App\Models\LocationRequest;
 use App\Models\Files;
 use App\Services\AddressService;
@@ -34,6 +35,7 @@ class CompanyService extends BaseService
                 $sectors                 = $values['sectors'];
                 $location_ids            = $this->createCompanyLocations($company, $values); # add company locations
                 $this->createCompanyWorkstations($values, $location_ids); # add workstations to location with function titles
+                
                 $this->syncSectors($company, $values);
                 $company->refresh();
                 return $company ;
@@ -69,7 +71,7 @@ class CompanyService extends BaseService
     {
         $location_ids = [];
         if (isset($values['locations'])) {
-            $location_service = new LocationService();
+            $location_service = new LocationService(new Location());
             foreach ($values['locations'] as $index => $location) {
                 $location['company'] = $company->id;
                 $location_ids[$index] = $location_service->create($location)->id;

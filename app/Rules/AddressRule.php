@@ -19,10 +19,10 @@ class AddressRule implements ValidationRule
             $address_rules = [
                 'street'      => 'required|string|max:255',
                 'house_no'    => 'required|string|max:50',
-                'postal_code' => 'required|string|max:20',
-                'city'        => 'required|string|max:100',
-                'country'     => 'required|string|max:100',
-                'status'      => 'required|boolean',
+                'postal_code' => 'required|string|max:50',
+                'city'        => 'required|string|max:50',
+                'country'     => 'required|string|max:50',
+                // 'status'      => 'required|boolean',
             ];
 
             $validator = \Validator::make($value, $address_rules);
