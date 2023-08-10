@@ -64,4 +64,6 @@ Route::resource('holiday-code-count', HolidayCodeCountController::class);
 
 Route::resource('locations', LocationController::class);
 
+Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations']);
+
 Route::resource('workstations', WorkstationController::class);

@@ -15,10 +15,26 @@ class LocationController extends Controller
         $this->location_service = $location_service;
     }
 
-    public function index()
+    // public function index()
+    // {
+    //     try {
+    //         $data = $this->location_service->getAll();
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => $data,
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $e->getMessage(),
+    //         ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
+    public function locations($company_id, $status = 1)
     {
         try {
-            $data = $this->location_service->getAll();
+            $data = $this->location_service->getAll(['company_id' => $company_id, 'status' => $status]);
             return response()->json([
                 'success' => true,
                 'data' => $data,
@@ -83,10 +99,6 @@ class LocationController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Location $location)
     {
         $location->delete();

@@ -22,7 +22,10 @@ class BaseService implements CrudServiceInterface
         }
     }
 
-    public function getAll()
+    /**
+     * the args can be as follows ['status' => 1, 'company' => 3, 'with' => ['sectors]......]
+     */
+    public function getAll(array $args = [])
     {
         return $this->model::all();
     }
@@ -51,5 +54,13 @@ class BaseService implements CrudServiceInterface
     public function getAllActive()
     {
         return $this->model::where('status', '=', true)->get();
+    }
+
+    /**
+     * to get location options we need topass few args like status, company ets exe : ['status' => 1, 'company_id' => 1]
+     */
+    public function getOptions(array $args = [])
+    {
+        return;
     }
 }

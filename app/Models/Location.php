@@ -29,8 +29,8 @@ class Location extends Model
         return $this->belongsToMany(Workstation::class, 'locations_to_workstations');
     }
 
-    // public function address()
-    // {
-    //     return $this->belongsTo(Address::class, 'address');
-    // }
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address');
+    }
 }

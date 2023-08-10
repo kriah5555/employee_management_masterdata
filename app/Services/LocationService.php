@@ -16,6 +16,15 @@ class LocationService extends BaseService
         parent::__construct($location);
     }
 
+    public function getAll(array $args = [])
+    {
+        return $this->model
+            ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
+            ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
+            ->when(isset($args['with']), fn($q) => $q->with($args['with']))
+            ->get();    
+    }
+
     public static function getLocationRules($for_company_creation = true) 
     {
         $location_rules = [
@@ -40,7 +49,7 @@ class LocationService extends BaseService
             $address           = new AddressService();
             $address           = $address->createNewAddress($values['address']);
             $values['address'] = $address->id;
-            $location          = Location::create($values);
+            $location          = $this->model->create($values);
             DB::commit();
             return $location ;
         } catch (Exception $e) {
