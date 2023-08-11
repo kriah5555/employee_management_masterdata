@@ -63,11 +63,7 @@ class EmployeeTypeController extends Controller
 
     public function getEmployeeTypeOptions(EmployeeType $employee_type)
     {
-        
-        
-        $result = $employee_type->all();
-
-        return api_response(202, 'Employee type updated successfully', $result);
-        exit;
+        $data = $employee_type->getEmployeeTypeOptions();
+        return api_response(200, 'Employee type options', $data);
     }
 }

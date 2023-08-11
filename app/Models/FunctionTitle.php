@@ -57,4 +57,4 @@ class FunctionTitle extends Model
     {
         return $this->belongsTo(FunctionCategory::class);
     }
-}
+} 

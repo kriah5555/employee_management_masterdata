@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_type_id')->references('id')->on('employee_types')->onDelete('cascade');
             $table->foreignId('dimona_type_id')->references('id')->on('dimona_types')->onDelete('cascade');
+            $table->string('dimona_key');
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();

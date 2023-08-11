@@ -50,7 +50,7 @@ class ContractTypes extends Model
      */
     protected $fillable = [
         'name',
-        'contract_type',
+        'contract_type_key',
         'status',
         'created_by',
         'updated_by'

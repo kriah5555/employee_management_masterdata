@@ -39,7 +39,7 @@ class DimonaType extends Model
      */
     protected $fillable = [
         'name',
-        'dimona_type',
+        'dimona_type_key',
         'status',
         'created_by',
         'updated_by'

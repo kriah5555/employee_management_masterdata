@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('renewal_type')->nullable(true);
+            $table->string('duration')->nullable(true);
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();

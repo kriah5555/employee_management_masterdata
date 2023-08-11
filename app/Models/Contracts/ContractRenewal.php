@@ -50,6 +50,7 @@ class ContractRenewal extends Model
     protected $fillable = [
         'name',
         'renewal_type',
+        'duration',
         'status',
         'created_by',
         'updated_by'

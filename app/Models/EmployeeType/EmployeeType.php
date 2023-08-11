@@ -9,8 +9,9 @@ use App\Models\EmployeeType\EmployeeTypeCategory;
 use App\Models\EmployeeType\EmployeeTypeContract;
 use App\Models\EmployeeType\EmployeeTypeDimona;
 use App\Models\Contracts\ContractRenewal;
-use App\Models\Contracts\ContractTypeList;
+// use App\Models\Contracts\ContractTypeList;
 use App\Models\Contracts\ContractTypes;
+use App\Models\Dimona\DimonaType;
 
 class EmployeeType extends Model
 {
@@ -59,6 +60,22 @@ class EmployeeType extends Model
 
     public function employeeTypeCategory()
     {
-        return $this->belongsTo(EmployeeTypeCategory::class, 'employee_type_categories_id');
+        return $this->belongsTo(EmployeeTypeCategory::class);
     }
+
+    public function getEmployeeTypeOptions()
+    {
+        $options['contract_types'] = $this->getDataFromQuery(ContractTypes::select(['id', 'name as value', 'contract_type_key']));
+        $options['contract_renewal'] = $this->getDataFromQuery(ContractRenewal::select(['id', 'name as value', 'duration']));
+        $options['dimona_type'] = $this->getDataFromQuery(DimonaType::select(['id', 'name as value', 'dimona_type_key']));
+        return $options;
+    }
+
+    public function getDataFromQuery($query)
+    {
+        return $query->where('status', '=', true)
+        ->get()
+        ->toArray();
+    }
+
 }

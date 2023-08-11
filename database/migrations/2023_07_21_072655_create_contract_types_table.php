@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('contract_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('contract_type')->references('id')->on('contract_type_lists')->onDelete('cascade');
+            $table->string('contract_type_key');
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();

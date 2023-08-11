@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('dimona_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('dimona_type')->references('id')->on('dimona_type_lists')->onDelete('cascade');
+            $table->string('dimona_type_key');
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
