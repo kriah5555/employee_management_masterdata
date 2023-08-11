@@ -2,67 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FunctionTitle;
-use App\Http\Rules\FunctionTitleRequest;
+use App\Models\HolidayCodeCount;
 use Illuminate\Http\JsonResponse;
-class FunctionTitleController extends Controller
-{
+use App\Http\Rules\HolidayCodeCountRequest;
 
+class HolidayCodeCountController extends Controller
+{
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = FunctionTitle::all();
+        $holiday_code_count = HolidayCodeCount::with('holidayCodes')->get();
         return response()->json([
             'success' => true,
-            'data' => $data,
-        ]);
+            'data' => $holiday_code_count,
+        ]);        
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(FunctionTitleRequest $request)
+    public function store(HolidayCodeCountRequest $request)
     {
+
         try {
-            $function = FunctionTitle::create($request->validated());
+            $holiday_code_count = HolidayCodeCount::create($request->validated());
             return response()->json([
                 'success' => true,
-                'message' => 'Function created successfully',
-                'data' => $function,
-            ], JsonResponse::HTTP_CREATED);
+                'message' => 'Holiday count created successfully',
+                'data' => $holiday_code_count,
+            ]);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
+
+
+        return response()->json($holiday_code_count, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(FunctionTitle $function_title)
+    public function show(HolidayCodeCount $holiday_code_count)
     {
+        $holiday_code_count->holidayCodes;
         return response()->json([
             'success' => true,
-            'data' => $function_title,
+            'data' => $holiday_code_count,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(FunctionTitleRequest $request, FunctionTitle $function_title)
+    public function update(HolidayCodeCountRequest $request, HolidayCodeCount $holiday_code_count)
     {
         try {
-            $function_title->update($request->validated());
+            $holiday_code_count->update($request->all());
             return response()->json([
                 'success' => true,
-                'message' => 'Function updated successfully',
-                'data' => $function_title,
-            ], JsonResponse::HTTP_CREATED);
+                'message' => 'Holiday count updated successfully',
+                'data' => $holiday_code_count,
+            ]);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -74,12 +79,13 @@ class FunctionTitleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(FunctionTitle $function_title)
+    public function destroy(HolidayCodeCount $holiday_code_count)
     {
-        $function_title->delete();
+        $holiday_code_count->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Function deleted successfully'
+            'message' => 'Holiday count deleted successfully'
         ]);
+        return response()->json(null, 204);
     }
 }

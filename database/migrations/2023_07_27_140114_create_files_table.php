@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sectors', function (Blueprint $table) {
-            $table->integer('category')->after('paritair_committee')->nullable();
+        
+        Schema::create('files', function (Blueprint $table) {
+            $table->id();
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sectors', function (Blueprint $table) {
-            $table->dropColumn('category');
-        });
+        Schema::dropIfExists('files');
     }
 };

@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Sector;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FunctionCategory extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -55,7 +56,13 @@ class FunctionCategory extends Model
 
     public function sector()
     {
-        return $this->belongsTo(Sector::class);
+        return $this->belongsTo(Sector::class)->withTrashed();
     }
 
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
+    }
 }

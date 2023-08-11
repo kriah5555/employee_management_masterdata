@@ -2,10 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\SectorController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
+use App\Http\Controllers\HolidayCodeCountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +34,8 @@ use App\Http\Controllers\FunctionCategoryController;
     404 => request dosent exists (data not found)
     405 => http request get, put not allowed
     403 => forbidden no authentication
+
+    500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -41,12 +46,18 @@ Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
 
-Route::resource('employee-types', EmployeeTypeController::class);
 Route::get('get-type-options', [EmployeeTypeController::class, 'getEmployeeTypeOptions']);
 
+Route::resource('employee-types', EmployeeTypeController::class)->withTrashed(['show']);
 
-Route::resource('sectors', SectorController::class);
+Route::resource('sectors', SectorController::class)->withTrashed(['show']);
 
-Route::resource('function-titles', FunctionTitleController::class);
+Route::resource('function-titles', FunctionTitleController::class)->withTrashed(['show']);
 
-Route::resource('function-categories', FunctionCategoryController::class);
+Route::resource('function-categories', FunctionCategoryController::class)->withTrashed(['show']);
+
+Route::resource('companies', CompanyController::class);
+
+Route::resource('holiday-codes', HolidayCodesController::class);
+
+Route::resource('holiday-code-count', HolidayCodeCountController::class);

@@ -4,17 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EmployeeType;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Sector;
+use App\Models\SectorSalarySteps;
 
-class FunctionCatagoryToTitles extends Model
+class SectorSalaryConfig extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'function_catagory_to_titles';
+    protected $table = 'sector_salary_config';
 
     /**
      * The primary key associated with the table.
@@ -36,26 +40,24 @@ class FunctionCatagoryToTitles extends Model
      * @var array
      */
     protected $fillable = [
-        'id',
-        'function_title_id',
-        'function_catagory_id',
-        'status',
+        'sector_id',
+        'category',
+        'steps',
         'created_by',
         'updated_by',
     ];
 
-    public function createFunctionCatagory()
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
+
+    public function sector()
     {
-        
+        return $this->belongsTo(Sector::class);
     }
-
-    public function EditFunctionCatagory()
+    public function salarySteps()
     {
-
-    }
-
-    public function deleteFunctionCatagory()
-    {
-
+        return $this->hasMany(SectorSalarySteps::class);
     }
 }

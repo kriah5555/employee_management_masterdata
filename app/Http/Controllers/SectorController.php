@@ -3,21 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sector;
-use Illuminate\Http\Request;
+use App\Models\SectorSalaryConfig;
+use App\Models\SectorSalarySteps;
+use App\Models\EmployeeType;
 use App\Http\Rules\SectorRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use App\Services\SectorService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SectorController extends Controller
 {
+    protected $sectorService;
+
+    public function __construct(SectorService $sectorService)
+    {
+        $this->sectorService = $sectorService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return api_response(200, 'Sectors received successfully', Sector::all());
+        try {
+            $data = $this->sectorService->getAllSectors();
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -26,22 +45,52 @@ class SectorController extends Controller
     public function store(SectorRequest $request)
     {
         try {
-            $sector = Sector::create($request->validated());
-            $employee_types = $request->validated()['employee_types'];
-            $sector->employeeTypes()->sync($employee_types);
-            $sector->refresh();
-            return api_response(201, 'Sector created successfully', $sector);
+            $sector = $this->sectorService->createNewSector($request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Sector created successfully',
+                'data' => $sector,
+            ]);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Sector $sector)
+    public function show($id)
     {
-        return api_response(200, 'Sector received successfully', $sector);
+        $sector = $this->sectorService->getSectorDetails($id);
+        try {
+            return response()->json([
+                'success' => true,
+                'data' => $sector,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function edit($id)
+    {
+        try {
+            return response()->json([
+                'success' => true,
+                'data' => $this->sectorService->getSectorForEdit($id),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -50,18 +99,19 @@ class SectorController extends Controller
     public function update(SectorRequest $request, Sector $sector)
     {
         try {
-            if (array_key_exists('employee_types', $request->validated())) {
-                $employee_types = $request->validated()['employee_types'];
-            } else {
-                $employee_types = [];
-            }
-            $sector->update($request->validated());
-            $employee_types = $request->validated()['employee_types'];
-            $sector->employeeTypes()->sync($employee_types);
+            $this->sectorService->updateSector($sector, $request->validated());
             $sector->refresh();
-            return api_response(202, 'Sector updated successfully', $sector);
+            return response()->json([
+                'success' => true,
+                'message' => 'Sector updated successfully',
+                'data' => $sector,
+            ]);
         } catch (Exception $e) {
-            return api_response(400, 'Internal server error', $e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -71,6 +121,9 @@ class SectorController extends Controller
     public function destroy(Sector $sector)
     {
         $sector->delete();
-        return api_response(204, 'Sector deleted');
+        return response()->json([
+            'success' => true,
+            'message' => 'Sector deleted successfully'
+        ]);
     }
 }

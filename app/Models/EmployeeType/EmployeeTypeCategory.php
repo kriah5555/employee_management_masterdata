@@ -49,4 +49,11 @@ class EmployeeTypeCategory extends Model
         'updated_at',
         'created_at'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
+    }
 }
