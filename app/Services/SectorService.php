@@ -47,10 +47,8 @@ class SectorService
             $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
-            DB::commit();
             return $sector;
         } catch (Exception $e) {
-            DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }

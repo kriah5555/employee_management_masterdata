@@ -8,22 +8,44 @@ use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Rules\FunctionTitlesLinkedToSectorRule;
+use App\Rules\FunctionTitlesLinkedToCompany;
+use App\Rules\LocationLinkedToCompanyRule;
+use App\Services\BaseService;
+use Illuminate\Database\Eloquent\Builder;
 
-class WorkstationService
+class WorkstationService extends BaseService
 {
-    public function getAllWorkstations()
+    protected $workstation;
+
+    public function __construct(Workstation $workstation)
     {
-        return Workstation::all();
+        parent::__construct($workstation);
     }
 
-    public function getActiveWorkstation()
+    public function getAll(array $args = [])
     {
-        return Workstation::where('status', '=', true)->get();
-    }
+        // return $this->model
+        //     ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
+        //     ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
+        //     ->when(isset($args['with']), fn($q) => $q->with($args['with']))
+        //     ->get();  
 
-    public function getWorkstationDetails($id)  
-    {
-        return Workstation::findOrFail($id);
+        return $this->model
+            ->when(isset($args['status']) && $args['status'] !== 'all', function (Builder $q) use ($args) {
+                $q->where('status', $args['status']);
+            })
+            ->when(isset($args['company_id']), function (Builder $q) use ($args) {
+                $q->where('company', $args['company_id']);
+            })
+            ->when(isset($args['with']), function (Builder $q) use ($args) {
+                $q->with($args['with']);
+            })
+            ->when(isset($args['location_id']), function (Builder $q) use ($args) {
+                $q->whereHas('locations', function (Builder $subQ) use ($args) {
+                    $subQ->where('locations.id', $args['location_id']);
+                });
+            })
+            ->get();
     }
 
     public static function getWorkstationRules($for_company_creation = true) 
@@ -35,7 +57,6 @@ class WorkstationService
             'function_titles'   => 'nullable|array',
             'function_titles.*' => [
                 Rule::exists('function_titles', 'id'),
-                new FunctionTitlesLinkedToSectorRule(request()->input('sectors'))
             ],
         ];
 
@@ -52,6 +73,7 @@ class WorkstationService
     {
         $rules['locations_index']   = 'required|array';
         $rules['locations_index.*'] = 'integer';
+        $rules['function_titles.*'][] = new FunctionTitlesLinkedToSectorRule(request()->input('sectors')); # to validate if the selected function title is linked to the sector selected
         return $rules;
     }
 
@@ -59,30 +81,41 @@ class WorkstationService
     {
         $rules['locations']   = 'nullable|array';
         $rules['locations.*'] = [
-            Rule::exists('locations', 'id')
+            Rule::exists('locations', 'id'),
+            new LocationLinkedToCompanyRule(request()->input('company'))
         ];
+        
         $rules['company']     = [
             'required', 
             'integer', 
             Rule::exists('companies', 'id')
         ];
+        $rules['function_titles.*'][] = new FunctionTitlesLinkedToCompany(request()->input('company')); # to validate if the selected function title is linked to the sector selected
         return $rules;
     }
 
-    public function createNewWorkstation($values)
+    public function create($values)
     {
         try {   
             DB::beginTransaction();
-            $locations       = $values['locations'] ?? [];
+            
+            $locations = $values['locations'] ?? [];
             $function_titles = $values['function_titles'] ?? [];
+            
             unset($values['locations']);
             unset($values['locations_index']);
             
-            $workstation = Workstation::create($values);
+            $workstation = parent::create($values);
+    
+            // Attach locations and function titles
             $workstation->locations()->sync($locations);
             $workstation->functionTitles()->sync($function_titles);
+    
+            // Save the workstation
+            $workstation->save();
+    
             DB::commit();
-            
+    
             return $workstation;
         } catch (Exception $e) {
             DB::rollback();
@@ -101,7 +134,7 @@ class WorkstationService
             $workstation->functionTitles()->sync($function_titles);
             unset($values['locations']);
             unset($values['function_titles']);
-
+            unset($locations['company']);
             $workstation->update($values);
             DB::commit();
             return $workstation;

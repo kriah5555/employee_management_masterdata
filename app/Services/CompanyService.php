@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Company;
 use App\Models\Address;
 use App\Models\Location;
+use App\Models\Workstation;
 use App\Models\LocationRequest;
 use App\Models\Files;
 use App\Services\AddressService;
@@ -34,7 +35,7 @@ class CompanyService extends BaseService
                 $company                 = Company::create($request_data);
                 $sectors                 = $values['sectors'];
                 $location_ids            = $this->createCompanyLocations($company, $values); # add company locations
-                $this->createCompanyWorkstations($values, $location_ids); # add workstations to location with function titles
+                $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
                 
                 $this->syncSectors($company, $values);
                 $company->refresh();
@@ -61,7 +62,6 @@ class CompanyService extends BaseService
 
             DB::commit();
         } catch (Exception $e) {
-            DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -80,15 +80,16 @@ class CompanyService extends BaseService
         return $location_ids;
     }
 
-    private function createCompanyWorkstations($values, $location_ids)
+    private function createCompanyWorkstations($values, $location_ids, $company_id)
     {
-        $workstation_service = new WorkstationService();
+        $workstation_service = new WorkstationService(new Workstation());
         if (!empty($location_ids) && isset($values['workstations'])) {
             foreach ($values['workstations'] as $index => $workstation) {
                 $workstation['locations'] = array_map(function ($value) use ($location_ids) {
                     return $location_ids[$value];
                 }, $workstation['locations_index']);
-                $workstation_service->createNewWorkstation($workstation);
+                $workstation['company'] = $company_id;
+                $workstation_service->create($workstation);
             }
         }
     }

@@ -16,10 +16,42 @@ class WorkstationController extends Controller
         $this->workstation_service = $workstation_service;
     }
 
-    public function index()
+    // public function index()
+    // {
+    //     try {
+    //         $data = $this->workstation_service->getAll();
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => $data,
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $e->getMessage(),
+    //         ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
+    public function companyWorkstations($company_id, $status)
     {
         try {
-            $data = $this->workstation_service->getAllWorkstations();
+            $data = $this->workstation_service->getAll(['company_id' => $company_id, 'status' => $status]);
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function locationWorkstations($location_id, $status)
+    {
+        try {
+            $data = $this->workstation_service->getAll(['location_id' => $location_id, 'status' => $status]);
             return response()->json([
                 'success' => true,
                 'data' => $data,
@@ -35,7 +67,7 @@ class WorkstationController extends Controller
     public function store(WorkstationRequest $request)
     {
         try {
-            $location = $this->workstation_service->createNewWorkstation($request->validated());
+            $location = $this->workstation_service->create($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Workstation created successfully',

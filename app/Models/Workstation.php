@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\FunctionTitle;
 use App\Models\Location;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workstation extends Model
@@ -21,6 +22,7 @@ class Workstation extends Model
         'workstation_name',
         'sequence_number',
         'status',
+        'company',
     ];
 
     public function locations()
@@ -33,4 +35,8 @@ class Workstation extends Model
         return $this->belongsToMany(FunctionTitle::class, 'workstation_to_funcitons', 'workstation_id', 'function_title_id');
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company');
+    }
 }
