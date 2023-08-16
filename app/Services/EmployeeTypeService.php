@@ -5,6 +5,10 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\EmployeeType\EmployeeTypeContract;
+use App\Models\EmployeeType\EmployeeTypeCategory;
+use App\Models\Contracts\ContractTypes;
+use App\Models\Contracts\ContractRenewal;
+use App\Models\Dimona\DimonaType;
 
 class EmployeeTypeService
 {
@@ -42,7 +46,7 @@ class EmployeeTypeService
     {
         try {
             DB::beginTransaction();
-            $employee_type = EmployeeType::update($values);
+            EmployeeType::update($values);
             self::craeteOrUpdateEmployeeTypeContract($values, $employee_type->id);
             DB::commit();
         } catch (Exception $e) {
@@ -52,7 +56,7 @@ class EmployeeTypeService
         }
     }
 
-    public function craeteOrUpdateEmployeeTypeContract($values, $employee_type_id) 
+    public function craeteOrUpdateEmployeeTypeContract($values, $employee_type_id)
     {
         EmployeeTypeContract::where('employee_type_id', $employee_type_id)
             ->update(['status' => 0]);
@@ -60,15 +64,60 @@ class EmployeeTypeService
         return EmployeeTypeContract::updateOrCreate(
             [
                 'employee_type_id'    => $employee_type_id,
-                'contract_type_id'    => $values['contract_type_id'], 
+                'contract_type_id'    => $values['contract_type_id'],
                 'contract_renewal_id' => $values['contract_renewal_id'],
             ], # conditions
             [
             'employee_type_id'    => $employee_type_id,
-            'contract_type_id'    => $values['contract_type_id'], 
+            'contract_type_id'    => $values['contract_type_id'],
             'contract_renewal_id' => $values['contract_renewal_id'],
             'status'              => 1
             ]
         );
+    }
+
+    public function getCreateEmployeeTypeOptions()
+    {
+        $options['employee_categories'] = $this->getEmployeeCategoryOptions();
+        $options['contract_types'] = $this->getContractTypesOptions();
+        $options['dimona_types'] = $this->getDimonaTypesOptions();
+        return $options;
+    }
+
+    public function getEmployeeCategoryOptions()
+    {
+        $options = [];
+        $contract_types = EmployeeTypeCategory::where('status', '=', true)->get();
+        foreach ($contract_types as $value) {
+            $options[] = [
+                'value' => $value['id'],
+                'label' => $value['name'],
+            ];
+        }
+        return $options;
+    }
+    public function getContractTypesOptions()
+    {
+        $options = [];
+        $contract_types = ContractTypes::where('status', '=', true)->get();
+        foreach ($contract_types as $value) {
+            $options[] = [
+                'value' => $value['id'],
+                'label' => $value['name'],
+            ];
+        }
+        return $options;
+    }
+    public function getDimonaTypesOptions()
+    {
+        $options = [];
+        $contract_types = DimonaType::where('status', '=', true)->get();
+        foreach ($contract_types as $value) {
+            $options[] = [
+                'value' => $value['id'],
+                'label' => $value['name'],
+            ];
+        }
+        return $options;
     }
 }

@@ -14,7 +14,6 @@ return new class extends Migration
         if (Schema::hasTable('employee_types') && Schema::hasTable('employee_type_categories')) {
             Schema::table('employee_types', function (Blueprint $table) {
                 $table->foreignId('employee_type_categories_id')->references('id')->on('employee_type_categories')->onDelete('cascade');
-                $table->softDeletes();
             });
         }
     }
@@ -27,7 +26,6 @@ return new class extends Migration
         Schema::table('employee_types', function (Blueprint $table) {
             $table->dropForeign(['employee_type_categories_id']);
             $table->dropColumn('employee_type_categories_id');
-            $table->dropSoftDeletes();
         });
     }
 };
