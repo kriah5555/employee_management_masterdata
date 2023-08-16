@@ -64,10 +64,10 @@ class EmployeeTypeService
                 'contract_renewal_id' => $values['contract_renewal_id'],
             ], # conditions
             [
-            'employee_type_id'    => $employee_type_id,
-            'contract_type_id'    => $values['contract_type_id'], 
-            'contract_renewal_id' => $values['contract_renewal_id'],
-            'status'              => 1
+            'employee_type_id'            => $employee_type_id,
+            'contract_type_id'            => $values['contract_type_id'], 
+            'contract_renewal_id'         => $values['contract_renewal_id'],
+            'status'                      => 1
             ]
         );
     }

@@ -7,11 +7,17 @@ use App\Models\EmployeeType\EmployeeType;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Database\Factories\EmployeeTypeCategoryFactory;
+use Database\Factories\ContractRenewalFactory;
+use Database\Factories\ContractTypesFactory;
+use Database\Factories\EmployeetypeFactory;
+use Database\Factories\EmployeeTypeContractFactory;
 
 class EmployeeTypeControllerTest extends TestCase
 {
     use DatabaseTransactions, WithFaker;
-
+    
     /**
      * Test the index method.
      */
@@ -31,10 +37,13 @@ class EmployeeTypeControllerTest extends TestCase
     public function test_store()
     {
         $data = [
-            'name' => $this->faker->word,
-            'description' => $this->faker->sentence,
-            // Add other required fields here
-        ];
+            'name'                        => "test employee data",
+            'description'                 => $this->faker->sentence,
+            'employee_type_categories_id' => EmployeeTypeCategoryFactory::new()->create()->id,
+            'contract_type_id'            => ContractTypesFactory::new()->create()->id,
+            'contract_renewal_id'         => ContractRenewalFactory::new()->create()->id,
+            'status'                      => 1
+        ];  
 
         $response = $this->post('/api/employee-types', $data);
 
@@ -43,12 +52,9 @@ class EmployeeTypeControllerTest extends TestCase
             ->assertJson(['success' => true]);
     }
 
-    /**
-     * Test the show method.
-     */
     public function test_show()
     {
-        // Assuming you have an EmployeeType instance in the database
+        EmployeeTypeContractFactory::new()->create();
         $employeeType = EmployeeType::first();
 
         $response = $this->get("/api/employee-types/{$employeeType->id}");
@@ -63,12 +69,15 @@ class EmployeeTypeControllerTest extends TestCase
      */
     public function test_update()
     {
-        // Assuming you have an EmployeeType instance in the database
+        EmployeeTypeContractFactory::new()->create();
         $employeeType = EmployeeType::first();
         $updatedData = [
-            'name' => $this->faker->word,
-            'description' => $this->faker->sentence,
-            // Add other fields to update here
+            'name'                        => $this->faker->word,
+            'description'                 => $this->faker->sentence,
+            'employee_type_categories_id' => EmployeeTypeCategoryFactory::new()->create()->id,
+            'contract_type_id'            => ContractTypesFactory::new()->create()->id,
+            'contract_renewal_id'         => ContractRenewalFactory::new()->create()->id,
+            'status'                      => 1
         ];
 
         $response = $this->put("/api/employee-types/{$employeeType->id}", $updatedData);
@@ -83,8 +92,8 @@ class EmployeeTypeControllerTest extends TestCase
      */
     public function test_destroy()
     {
-        // Assuming you have an EmployeeType instance in the database
-        $employeeType = EmployeeType::first();
+        EmployeeTypeContractFactory::new()->create();
+        $employeeType = EmployeeType::latest()->first();
 
         $response = $this->delete("/api/employee-types/{$employeeType->id}");
 
