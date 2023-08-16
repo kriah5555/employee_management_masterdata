@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\FunctionTitle;
+use App\Models\Function\FunctionTitle;
 use App\Models\Company;
 
 class FunctionTitlesLinkedToCompany implements Rule

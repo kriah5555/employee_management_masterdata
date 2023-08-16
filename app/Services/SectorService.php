@@ -180,4 +180,27 @@ class SectorService
         return $options;
     }
 
+    public function getSectorOptions()
+    {
+        $options = [];
+        $employee_types = Sector::where('status', '=', true)->get();
+        foreach ($employee_types as $value) {
+            $options[] = [
+                'value' => $value['id'],
+                'label' => $value['name'],
+            ];
+        }
+        return $options;
+    }
+
+    public function getCategoriesForSector()
+    {
+        $data = [];
+        $sectors = Sector::where('status', true)->with('salaryConfig')->get();
+        foreach ($sectors as $item) {
+            $data[$item->id] = $item->salaryConfig->category;
+        }
+        return $data;
+    }
+
 }

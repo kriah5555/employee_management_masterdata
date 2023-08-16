@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Function;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Sector\Sector;
+use App\Models\Function\FunctionCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FunctionCategory extends Model
+class FunctionTitle extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -16,7 +16,7 @@ class FunctionCategory extends Model
      *
      * @var string
      */
-    protected $table = 'function_category';
+    protected $table = 'function_titles';
 
     /**
      * The primary key associated with the table.
@@ -43,20 +43,20 @@ class FunctionCategory extends Model
      * @var array
      */
     protected $fillable = [
-        'sector_id',
         'name',
+        'function_code',
         'description',
-        'category',
         'status',
+        'function_category_id',
         'created_by',
         'updated_by',
     ];
 
-    // protected $with = ['sector'];
+    // protected $with = ['functionCategory'];
 
-    public function sector()
+    public function functionCategory()
     {
-        return $this->belongsTo(Sector::class)->withTrashed();
+        return $this->belongsTo(FunctionCategory::class)->withTrashed();
     }
 
     protected static function booted()
@@ -65,4 +65,4 @@ class FunctionCategory extends Model
             $query->orderBy('name', 'asc');
         });
     }
-}
+} 

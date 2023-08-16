@@ -64,8 +64,8 @@ class SectorController extends Controller
      */
     public function show($id)
     {
-        $sector = $this->sectorService->getSectorDetails($id);
         try {
+            $sector = $this->sectorService->getSectorDetails($id);
             return response()->json([
                 'success' => true,
                 'data' => $sector,

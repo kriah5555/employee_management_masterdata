@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FunctionTitle;
+use App\Models\Function\FunctionTitle;
 use App\Http\Rules\FunctionTitleRequest;
 use Illuminate\Http\JsonResponse;
+use App\Services\FunctionService;
+
 class FunctionTitleController extends Controller
 {
+    protected $functionService;
+
+    public function __construct(FunctionService $functionService)
+    {
+        $this->functionService = $functionService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -43,12 +51,20 @@ class FunctionTitleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(FunctionTitle $function_title)
+    public function show($id)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $function_title,
-        ]);
+        try {
+            $function_title = $this->functionService->getFunctionTitleDetails($id);
+            return response()->json([
+                'success' => true,
+                'data' => $function_title,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -82,4 +98,31 @@ class FunctionTitleController extends Controller
             'message' => 'Function deleted successfully'
         ]);
     }
+
+    public function create()
+    {
+        $data = $this->functionService->getCreateFunctionTitleOptions();
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function edit($id)
+    {
+        try {
+            $data = $this->functionService->getCreateFunctionTitleOptions();
+            $data['details'] = $this->functionService->getFunctionTitleDetails($id);
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
