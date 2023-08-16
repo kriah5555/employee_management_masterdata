@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\EmployeeType;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\FunctionCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FunctionTitle extends Model
+class EmployeeTypeContract extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -16,7 +15,7 @@ class FunctionTitle extends Model
      *
      * @var string
      */
-    protected $table = 'function_titles';
+    protected $table = 'employee_type_contracts';
 
     /**
      * The primary key associated with the table.
@@ -32,37 +31,36 @@ class FunctionTitle extends Model
      */
     public $timestamps = true;
 
-    protected $dates = [
-        'created_at',
-        'updated_at'
-    ];
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name',
-        'function_code',
-        'description',
+        'employee_type_id',
+        'contract_type_id',
+        'contract_renewal_id',
         'status',
-        'function_category_id',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
 
-    protected $with = ['functionCategory'];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 
-    public function functionCategory()
+    public function employeeType()
     {
-        return $this->belongsTo(FunctionCategory::class)->withTrashed();
+        return $this->belongsTo(EmployeeType::class, 'employee_type_id');
     }
 
-    protected static function booted()
+    public function contractType()
     {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
-        });
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
     }
-} 
+    public function getEmployeeTypeContract() {
+        $employeeTypeContracts = EmployeeTypeContract::with('employeeType', 'contractType')->get();
+    }
+}

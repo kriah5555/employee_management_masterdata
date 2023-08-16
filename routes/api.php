@@ -24,7 +24,7 @@ use App\Http\Controllers\WorkstationController;
 */
 
 /*
- Status codes 
+ Status codes
     200 => make ok
     201 => created
     202 => updated
@@ -47,6 +47,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
+
+Route::get('get-type-options', [EmployeeTypeController::class, 'getEmployeeTypeOptions']);
 
 Route::resource('employee-types', EmployeeTypeController::class)->withTrashed(['show']);
 

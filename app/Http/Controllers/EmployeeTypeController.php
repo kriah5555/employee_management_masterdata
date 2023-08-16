@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmployeeType;
+use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\EmployeeTypeRequest;
 use Illuminate\Http\JsonResponse;
 class EmployeeTypeController extends Controller
@@ -80,5 +80,11 @@ class EmployeeTypeController extends Controller
             'success' => true,
             'message' => 'Employee type deleted successfully'
         ]);
+    }
+
+    public function getEmployeeTypeOptions(EmployeeType $employee_type)
+    {
+        $data = $employee_type->getEmployeeTypeOptions();
+        return api_response(200, 'Employee type options', $data);
     }
 }
