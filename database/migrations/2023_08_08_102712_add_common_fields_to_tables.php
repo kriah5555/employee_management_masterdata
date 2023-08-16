@@ -9,7 +9,7 @@ return new class extends Migration
     private $tables_to_add_soft_delete = [
         'sector_night_hours_config',
         'sector_age_salary',
-        'employee_types',
+        // 'employee_types',
         'sector_to_employee_types',
         'companies',
         'files',
