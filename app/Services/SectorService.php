@@ -2,16 +2,24 @@
 
 namespace App\Services;
 
-use App\Models\Sector;
+use App\Models\Sector\Sector;
 use Illuminate\Support\Facades\DB;
-use App\Models\EmployeeType;
-use App\Models\SectorSalaryConfig;
-use App\Models\SectorSalarySteps;
-use App\Models\SectorAgeSalary;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\Sector\SectorSalaryConfig;
+use App\Models\Sector\SectorSalarySteps;
+use App\Models\Sector\SectorAgeSalary;
 use App\Services\BaseService;
+use App\Services\EmployeeTypeService;
 
 class SectorService
 {
+    protected $employeeTypeService;
+
+    public function __construct(EmployeeTypeService $employeeTypeService)
+    {
+        $this->employeeTypeService = $employeeTypeService;
+    }
+
     public function getSectorById($id)
     {
         return Sector::findOrFail($id);
@@ -24,8 +32,7 @@ class SectorService
             'salaryConfig',
             'salaryConfig.salarySteps',
             'sectorAgeSalary',
-            ])->findOrFail($id);
-        // $sector = Sector::with('employeeTypes')->with('salaryConfig')->with('salaryConfig.salarySteps')->with('sectorAgeSalary')->findOrFail($id);
+        ])->findOrFail($id);
         $temp = [];
         foreach($sector->sectorAgeSalary as $data) {
             $temp[$data->age] = $data->percentage;
@@ -48,27 +55,23 @@ class SectorService
     {
         try {
             DB::beginTransaction();
-            $sector = $this->store($values);
+            $sector = Sector::create($values);
+            if (array_key_exists('employee_types', $values)) {
+                $employee_types = $values['employee_types'];
+            } else {
+                $employee_types = [];
+            }
+            $sector->employeeTypes()->sync($employee_types);
             $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
+            DB::commit();
             return $sector;
         } catch (Exception $e) {
+            DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
-    }
-
-    public function store($values)
-    {
-        $sector = Sector::create($values);
-        if (array_key_exists('employee_types', $values)) {
-            $employee_types = $values['employee_types'];
-        } else {
-            $employee_types = [];
-        }
-        $sector->employeeTypes()->sync($employee_types);
-        return $sector;
     }
 
     public function createSectorSalaryConfig(Sector $sector, $categories, $steps)
@@ -97,7 +100,13 @@ class SectorService
     {
         try {
             DB::beginTransaction();
-            $this->update($sector, $values);
+            $sector->update($values);
+            if (array_key_exists('employee_types', $values)) {
+                $employee_types = $values['employee_types'];
+            } else {
+                $employee_types = [];
+            }
+            $sector->employeeTypes()->sync($employee_types);
             $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
@@ -107,17 +116,6 @@ class SectorService
             error_log($e->getMessage());
             throw $e;
         }
-    }
-
-    public function update(Sector $sector, $values)
-    {
-        $sector->update($values);
-        if (array_key_exists('employee_types', $values)) {
-            $employee_types = $values['employee_types'];
-        } else {
-            $employee_types = [];
-        }
-        $sector->employeeTypes()->sync($employee_types);
     }
 
     public function updateSectorSalaryConfig(Sector $sector, $categories, $steps)
@@ -131,6 +129,8 @@ class SectorService
 
     public function updateSectorSalarySteps(SectorSalaryConfig $sector_salary_config, $experience)
     {
+        SectorSalarySteps::where('sector_salary_config_id', $sector_salary_config->id)
+        ->where('level', '>=', $sector_salary_config->steps)->delete();
         foreach($experience as $data) {
             $sector_salary_step = SectorSalarySteps::firstOrCreate([
                 'sector_salary_config_id' => $sector_salary_config->id,
@@ -144,6 +144,9 @@ class SectorService
 
     public function updateSectorAgeSalary(Sector $sector, $age_values)
     {
+        $age = array_keys($age_values);
+        SectorAgeSalary::where('sector_id', $sector->id)
+        ->whereNotIn('age', $age)->delete();
         foreach($age_values as $age => $percentage) {
             $sector_age_salary = SectorAgeSalary::firstOrCreate([
                 'sector_id' => $sector->id,
@@ -170,4 +173,11 @@ class SectorService
     {
         return $salary_config->salarySteps;
     }
+
+    public function getCreateSectorOptions()
+    {
+        $options['employee_types'] = $this->employeeTypeService->getEmployeeTypeOptions();
+        return $options;
+    }
+
 }

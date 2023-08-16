@@ -22,12 +22,16 @@ class EmployeeTypeRequest extends ApiRequest
             'name'                        => 'required|string|max:255',
             'description'                 => 'nullable|string|max:255',
             'status'                      => 'required|boolean',
-            'category_id' => [
+            'employee_type_category_id' => [
                 'required',
                 Rule::exists('employee_type_categories', 'id'),
             ],
-            'contract_type_id' => [
-                'required',
+            // 'contract_type_id' => [
+            //     'required',
+            //     Rule::exists('contract_types', 'id'),
+            // ],
+            'contract_types'     => 'nullable|array',
+            'contract_types.*'   => [
                 Rule::exists('contract_types', 'id'),
             ],
             'dimona_type_id' => [

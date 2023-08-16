@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\Sector;
+use App\Models\Sector\Sector;
 use App\Services\SectorService;
 
 class MinimumSalariesLevelsRule implements ValidationRule

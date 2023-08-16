@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Sector;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EmployeeType;
-use App\Models\SectorSalaryConfig;
-use App\Models\SectorAgeSalary;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\Sector\SectorSalaryConfig;
+use App\Models\Sector\SectorAgeSalary;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;

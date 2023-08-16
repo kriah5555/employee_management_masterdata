@@ -17,7 +17,7 @@ class EmployeetypeFactory extends Factory
         return [
             'name'        => $this->faker->randomElement(['Normal employee', 'Student', 'Flex', 'Ext']),
             'description' => $this->faker->sentence,
-            'employee_type_categories_id' => EmployeeTypeCategoryFactory::new()->create()->id,
+            'employee_type_category_id' => EmployeeTypeCategoryFactory::new()->create()->id,
             'status'      => 1
         ];
     }

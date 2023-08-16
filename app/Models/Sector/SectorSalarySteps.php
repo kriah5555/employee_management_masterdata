@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Sector;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EmployeeType;
+use App\Models\EmployeeType\EmployeeType;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Sector;
+use App\Models\Sector\Sector;
 use App\Models\MinimumSalary;
 
 class SectorSalarySteps extends Model

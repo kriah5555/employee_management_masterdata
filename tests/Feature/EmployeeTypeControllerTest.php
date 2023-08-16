@@ -39,7 +39,7 @@ class EmployeeTypeControllerTest extends TestCase
         $data = [
             'name' => "test employee data",
             'description' => $this->faker->sentence,
-            'employee_type_categories_id' => EmployeeTypeCategoryFactory::new()->create()->id,
+            'employee_type_category_id' => EmployeeTypeCategoryFactory::new()->create()->id,
             'contract_type_id' => ContractTypesFactory::new()->create()->id,
             'contract_renewal_id' => ContractRenewalFactory::new()->create()->id,
             'status' => 1
@@ -86,7 +86,7 @@ class EmployeeTypeControllerTest extends TestCase
         $updatedData = [
             'name' => $this->faker->word,
             'description' => $this->faker->sentence,
-            'employee_type_categories_id' => EmployeeTypeCategoryFactory::new()->create()->id,
+            'employee_type_category_id' => EmployeeTypeCategoryFactory::new()->create()->id,
             'contract_type_id' => ContractTypesFactory::new()->create()->id,
             'contract_renewal_id' => ContractRenewalFactory::new()->create()->id,
             'status' => 1

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Sector;
+use App\Models\Sector\Sector;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FunctionCategory extends Model

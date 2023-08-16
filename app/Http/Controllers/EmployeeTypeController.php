@@ -110,10 +110,10 @@ class EmployeeTypeController extends Controller
     public function edit($id)
     {
         $data = $this->employee_type_service->getCreateEmployeeTypeOptions();
-        $employee_type = $this->employee_type_service->getEmployeeTypeDetails($id);
+        $data['details'] = $this->employee_type_service->getEmployeeTypeDetails($id);
         return response()->json([
             'success' => true,
-            'data' => $employee_type,
+            'data' => $data,
         ]);
     }
 }

@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Sector;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EmployeeType;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Sector;
-use App\Models\SectorSalarySteps;
 
-class SectorSalaryConfig extends Model
+class SectorAgeSalary extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -18,7 +15,7 @@ class SectorSalaryConfig extends Model
      *
      * @var string
      */
-    protected $table = 'sector_salary_config';
+    protected $table = 'sector_age_salary';
 
     /**
      * The primary key associated with the table.
@@ -40,24 +37,12 @@ class SectorSalaryConfig extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'sector_id',
-        'category',
-        'steps',
+        'age',
+        'percentage',
+        'status',
         'created_by',
         'updated_by',
     ];
-
-    protected $dates = [
-        'created_at',
-        'updated_at'
-    ];
-
-    public function sector()
-    {
-        return $this->belongsTo(Sector::class);
-    }
-    public function salarySteps()
-    {
-        return $this->hasMany(SectorSalarySteps::class);
-    }
 }

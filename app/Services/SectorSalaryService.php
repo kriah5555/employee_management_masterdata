@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Sector;
+use App\Models\Sector\Sector;
 use Illuminate\Support\Facades\DB;
 use App\Models\MinimumSalary;
 use App\Services\SectorService;
 
 class SectorSalaryService
 {
-    protected $sectorService;
+    protected $sector_service;
 
     public function __construct(SectorService $sectorService)
     {
