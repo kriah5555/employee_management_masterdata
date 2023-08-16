@@ -37,31 +37,42 @@ class EmployeeTypeControllerTest extends TestCase
     public function test_store()
     {
         $data = [
-            'name'                        => "test employee data",
-            'description'                 => $this->faker->sentence,
+            'name' => "test employee data",
+            'description' => $this->faker->sentence,
             'employee_type_categories_id' => EmployeeTypeCategoryFactory::new()->create()->id,
-            'contract_type_id'            => ContractTypesFactory::new()->create()->id,
-            'contract_renewal_id'         => ContractRenewalFactory::new()->create()->id,
-            'status'                      => 1
-        ];  
+            'contract_type_id' => ContractTypesFactory::new()->create()->id,
+            'contract_renewal_id' => ContractRenewalFactory::new()->create()->id,
+            'status' => 1
+        ];
 
         $response = $this->post('/api/employee-types', $data);
 
         $response->assertStatus(201)
             ->assertJsonStructure(['success', 'message', 'data'])
             ->assertJson(['success' => true]);
+
+        // Validate the response data
+        $responseData = $response->json('data');
+        $this->assertEquals($data['name'], $responseData['name']);
+        $this->assertEquals($data['description'], $responseData['description']);
+        // Add more assertions for other fields
     }
 
     public function test_show()
     {
         EmployeeTypeContractFactory::new()->create();
-        $employeeType = EmployeeType::first();
+        $employeeType = EmployeeType::orderBy('updated_at', 'desc')->first(); // Get last updated
 
         $response = $this->get("/api/employee-types/{$employeeType->id}");
 
         $response->assertStatus(200)
             ->assertJsonStructure(['success', 'data'])
             ->assertJson(['success' => true]);
+
+        // Validate the response data
+        $responseData = $response->json('data');
+        $this->assertEquals($employeeType->name, $responseData['name']);
+        $this->assertEquals($employeeType->description, $responseData['description']);
     }
 
     /**
@@ -70,14 +81,15 @@ class EmployeeTypeControllerTest extends TestCase
     public function test_update()
     {
         EmployeeTypeContractFactory::new()->create();
-        $employeeType = EmployeeType::first();
+        $employeeType = EmployeeType::orderBy('updated_at', 'desc')->first(); // Get last updated
+
         $updatedData = [
-            'name'                        => $this->faker->word,
-            'description'                 => $this->faker->sentence,
+            'name' => $this->faker->word,
+            'description' => $this->faker->sentence,
             'employee_type_categories_id' => EmployeeTypeCategoryFactory::new()->create()->id,
-            'contract_type_id'            => ContractTypesFactory::new()->create()->id,
-            'contract_renewal_id'         => ContractRenewalFactory::new()->create()->id,
-            'status'                      => 1
+            'contract_type_id' => ContractTypesFactory::new()->create()->id,
+            'contract_renewal_id' => ContractRenewalFactory::new()->create()->id,
+            'status' => 1
         ];
 
         $response = $this->put("/api/employee-types/{$employeeType->id}", $updatedData);
@@ -100,5 +112,8 @@ class EmployeeTypeControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure(['success', 'message'])
             ->assertJson(['success' => true]);
+
+        // Validate that the record has been deleted
+        $this->assertNull(EmployeeType::find($employeeType->id));
     }
 }
