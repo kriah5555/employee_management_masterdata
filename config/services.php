@@ -30,12 +30,4 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
-    'auth_server' => [
-        'base_uri' => env('AUTH_SERVER_URL'),
-        'client_id' => env('AUTH_CLIENT_ID'),
-        'client_secret' => env('AUTH_CLIENT_SECRET'),
-        'redirect' => env('APP_URL') . '/callback',
-    ],
-
 ];

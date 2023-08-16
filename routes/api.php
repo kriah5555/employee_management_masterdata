@@ -10,7 +10,6 @@ use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
 use App\Http\Controllers\HolidayCodeCountController;
 use App\Http\Controllers\SalaryController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
 
