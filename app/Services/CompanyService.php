@@ -4,70 +4,118 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Company;
+use App\Models\Address;
+use App\Models\Location;
+use App\Models\Workstation;
+use App\Models\LocationRequest;
 use App\Models\Files;
-class CompanyService
+use App\Services\AddressService;
+use App\Services\LocationService;
+use App\Services\WorkstationService;
+use App\Services\BaseService;
+
+class CompanyService extends BaseService
 {
-    public function getCompanyDetails($id)
+    public function __construct(Company $company)
     {
-        return Company::findOrFail($id);
+        parent::__construct($company);
     }
 
-    public function getAllCompanies()
+    public function create($values)
     {
-        return Company::all();
-    }
+        try {
 
-    public function getActiveCompanies()
-    {
-        return Company::where('status', '=', true)->get();
-    }
-
-    public function createNewCompany($values)
-    {
-            try {
-            DB::beginTransaction();
-            $request_data         = $values;
-            $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
-            $company              = Company::create($request_data);
-            $sectors              = $values['sectors'];
-            $company->sectors()->sync($sectors);
-            $company->refresh();
-            DB::commit();
-            return $company ;
+            return DB::transaction(function () use ($values) {
+                $request_data    = $values;
+                $address_service = new AddressService();
+                
+                $company_address         = $address_service->createNewAddress($values['address']);
+                $request_data['address'] = $company_address->id;
+                // $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
+                $company                 = Company::create($request_data);
+                $sectors                 = $values['sectors'];
+                $location_ids            = $this->createCompanyLocations($company, $values); # add company locations
+                $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
+                
+                $this->syncSectors($company, $values);
+                $company->refresh();
+                return $company ;
+            });
         } catch (Exception $e) {
-            DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
     }
 
-    public function updateCompany(Company $company, $values)
+    public function update($company, $values)
     {
         try {
             DB::beginTransaction();
-            if (isset($values['sectors'])) {
-                $sectors = $values['sectors'];
-            } else {
-                $sectors = [];
-            }
-            $request_data = $values;
-
-            if ($request_data['logo']) {
-                $request_data['logo'] = self::addCompanyLogo($request_data, $company->id);
-            } else {
-                unset($request_data['logo']);
-            }
-
-            $company->update($request_data);
-            $company->sectors()->sync($sectors);
+            // $this->updateCompanyLogoData($company, $values);
+            $address_service = new AddressService();
+            $company_address = $address_service->updateAddress($company->address, $values['address']);
+            unset($values['address']);
+            $company->update($values);
+            $this->syncSectors($company, $values);
+            // $company->sectors()->sync($sectors);
             $company->refresh();
 
             DB::commit();
         } catch (Exception $e) {
-            DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
+    }
+    
+    private function createCompanyLocations(Company $company, $values)
+    {
+        $location_ids = [];
+        if (isset($values['locations'])) {
+            $location_service = new LocationService(new Location());
+            foreach ($values['locations'] as $index => $location) {
+                $location['company'] = $company->id;
+                $location_ids[$index] = $location_service->create($location)->id;
+            }
+        }
+        return $location_ids;
+    }
+
+    private function createCompanyWorkstations($values, $location_ids, $company_id)
+    {
+        $workstation_service = new WorkstationService(new Workstation());
+        if (!empty($location_ids) && isset($values['workstations'])) {
+            foreach ($values['workstations'] as $index => $workstation) {
+                $workstation['locations'] = array_map(function ($value) use ($location_ids) {
+                    return $location_ids[$value];
+                }, $workstation['locations_index']);
+                $workstation['company'] = $company_id;
+                $workstation_service->create($workstation);
+            }
+        }
+    }
+
+    private function updateCompanyLogoData(Company $company, $values)
+    {
+        $request_data = $values;
+
+        if ($request_data['logo']) {
+            $request_data['logo'] = self::addCompanyLogo($request_data, $company->id);
+        } else {
+            unset($request_data['logo']);
+        }
+
+        $company->update($request_data);
+    }
+
+    private function syncSectors(Company $company, $values)
+    {
+        if (isset($values['sectors'])) {
+            $sectors = $values['sectors'];
+        } else {
+            $sectors = [];
+        }
+
+        $company->sectors()->sync($sectors);
     }
 
     public function getCompanyLogo(Company $company)

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class EmployeeTypeCategory extends Model
 {
     use HasFactory, SoftDeletes;
-
     /**
      * The table associated with the model.
      *

@@ -9,6 +9,8 @@ use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
 use App\Http\Controllers\HolidayCodeCountController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\WorkstationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +24,7 @@ use App\Http\Controllers\HolidayCodeCountController;
 */
 
 /*
- Status codes 
+ Status codes
     200 => make ok
     201 => created
     202 => updated
@@ -61,3 +63,13 @@ Route::resource('companies', CompanyController::class);
 Route::resource('holiday-codes', HolidayCodesController::class);
 
 Route::resource('holiday-code-count', HolidayCodeCountController::class);
+
+Route::resource('locations', LocationController::class);
+
+Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', '^(0|1|all)$');
+
+Route::resource('workstations', WorkstationController::class);
+
+Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', '^(0|1|all)$');
+
+Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');

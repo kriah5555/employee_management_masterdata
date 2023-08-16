@@ -22,7 +22,7 @@ class HolidayCodesController extends Controller
     public function index()
     {
         try {
-            $data = $this->holiday_code_service->getAllHolidayCodes();
+            $data = $this->holiday_code_service->getAll();
             return response()->json([
                 'success' => true,
                 'data' => $data,
@@ -41,7 +41,7 @@ class HolidayCodesController extends Controller
     public function store(HolidayCodeRequest $request)
     {
         try {
-            $data = $this->holiday_code_service->createNewHolidayCode($request->validated());
+            $data = $this->holiday_code_service->create($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Holiday code created successfully',
@@ -72,7 +72,7 @@ class HolidayCodesController extends Controller
     public function update(HolidayCodeRequest $request, HolidayCodes $holiday_code)
     {
         try {
-            $this->holiday_code_service->updateHolidayCode($holiday_code, $request->validated());
+            $this->holiday_code_service->update($holiday_code, $request->validated());
             $holiday_code->refresh();
 
             return response()->json([

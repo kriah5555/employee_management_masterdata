@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Sector;
 use App\Models\Files;
+use App\Models\Address;
+use App\Models\Location;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Company extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -30,40 +34,55 @@ class Company extends Model
      * @var array
      */
     
-    protected $fillable = [
-        'company_name',
-        'street',
-        'postal_code',
-        'city',
-        'country',
-        'customer_type',
-        'status',
-        'logo',
+     protected $fillable = [
+        'company_name', 
+        'address', 
+        'employer_id',
+        'sender_number',
+        'joint_commission_number',
+        'rsz_number',
+        'social_secretary_number',
+        'username',
+        // 'logo', 
+        'status', 
+        'created_by', 
+        'updated_by'
     ];
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address');
+    }
 
     protected $dates = [
         'created_at',
         'updated_at'
     ];
 
-    protected $with = ['sectors'];
+    protected $with = ['sectors','address'];
+
     public function sectors()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company');
     }
 
-    // Define the one-to-one relationship for the logo attribute
-    public function logoFile()
+    public function locations()
     {
-        return $this->belongsTo(Files::class, 'logo');
+        return $this->belongsToMany(Location::class, 'company_to_locations');
     }
+
+    // public function logoFile()
+    // {
+    //     return $this->belongsTo(Files::class, 'logo');
+    // }
     
-    // Override toArray method to include the logoFile relationship in the JSON response
     public function toArray()
     {
         $array = parent::toArray();
-        $array['logo'] = $this->logoFile; // Append the logoFile relationship data
+        // $array['logo'] = $this->logoFile; // Append the logoFile relationship data
         return $array;
     }
+
+
 }
     

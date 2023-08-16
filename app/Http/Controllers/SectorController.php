@@ -83,7 +83,7 @@ class SectorController extends Controller
         try {
             return response()->json([
                 'success' => true,
-                'data' => $this->sectorService->getSectorForEdit($id),
+                'data' => $this->sectorService->get($id),
             ]);
         } catch (Exception $e) {
             return response()->json([

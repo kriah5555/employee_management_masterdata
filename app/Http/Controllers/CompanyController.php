@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
-use App\Http\Rules\CompanyRules;
+use App\Http\Rules\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
-
 use App\Models\Files;
+use Illuminate\Support\Facades\Validator;
+
 
 class CompanyController extends Controller
 {
@@ -23,7 +24,7 @@ class CompanyController extends Controller
     public function index()
     {
         try {
-            $data = $this->company_service->getAllCompanies();
+            $data = $this->company_service->getAll();
             return response()->json([
                 'success' => true,
                 'data' => $data,
@@ -39,11 +40,10 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CompanyRules $request)
+    public function store(CompanyRequest $request)
     {
         try {
-            $company = $this->company_service->createNewCompany($request->all());
-
+            $company = $this->company_service->create($request->all());
             return response()->json([
                 'success' => true,
                 'message' => 'Company created successfully',
@@ -62,7 +62,6 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        // echo asset('company_logos/Company_updated_1690985303_Screenshot_from_2023-08-01_15-27-29.png');exit;
         return response()->json([
             'success' => true,
             'data' => $company,
@@ -72,10 +71,10 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CompanyRules $request, Company $company)
+    public function update(CompanyRequest $request, Company $company)
     {
         try {
-            $this->company_service->updateCompany($company, $request->all());
+            $this->company_service->update($company, $request->all());
             $company->refresh();
 
             return response()->json([
