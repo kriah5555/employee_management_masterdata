@@ -9,6 +9,8 @@ use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
 use App\Http\Controllers\HolidayCodeCountController;
+use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,3 +61,15 @@ Route::resource('companies', CompanyController::class);
 Route::resource('holiday-codes', HolidayCodesController::class);
 
 Route::resource('holiday-code-count', HolidayCodeCountController::class);
+
+Route::get('get-minimum-salaries/{id}', [SalaryController::class, 'getMinimumSalaries']);
+
+Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries']);
+
+Route::middleware('validate.api.token')->group(function () {
+    Route::get('/testing', function () {
+        return response()->json([
+            'message' => 'Test API.'
+        ]);
+      });
+});

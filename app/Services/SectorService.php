@@ -11,6 +11,11 @@ use App\Models\SectorAgeSalary;
 
 class SectorService
 {
+    public function getSectorById($id)
+    {
+        return Sector::findOrFail($id);
+    }
+
     public function getSectorDetails($id)
     {
         $sector = Sector::with('employeeTypes')->with('salaryConfig')->with('salaryConfig.salarySteps')->with('sectorAgeSalary')->findOrFail($id);

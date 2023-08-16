@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeType;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Sector;
+use App\Models\MinimumSalary;
 
 class SectorSalarySteps extends Model
 {
@@ -57,5 +58,9 @@ class SectorSalarySteps extends Model
     public function salarySteps()
     {
         return $this->hasMany(SectorSalaryConfig::class);
+    }
+    public function minimumSalary()
+    {
+        return $this->hasOne(MinimumSalary::class);
     }
 }

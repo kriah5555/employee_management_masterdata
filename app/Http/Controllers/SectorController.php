@@ -126,4 +126,20 @@ class SectorController extends Controller
             'message' => 'Sector deleted successfully'
         ]);
     }
+    public function getMinimumSalaries($id)
+    {
+        try {
+            $sector = $this->sectorService->getSectorById($id);
+            // $data = $this->sectorSalaryService->getMinimumSalaries($sector);
+            return response()->json([
+                'success' => true,
+                'data' => $sector,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
