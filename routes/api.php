@@ -11,6 +11,8 @@ use App\Http\Controllers\FunctionCategoryController;
 use App\Http\Controllers\HolidayCodeCountController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\WorkstationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +26,7 @@ use App\Http\Controllers\AuthController;
 */
 
 /*
- Status codes 
+ Status codes
     200 => make ok
     201 => created
     202 => updated
@@ -47,6 +49,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
+
+Route::get('get-type-options', [EmployeeTypeController::class, 'getEmployeeTypeOptions']);
 
 Route::resource('employee-types', EmployeeTypeController::class)->withTrashed(['show']);
 
@@ -73,3 +77,12 @@ Route::middleware('validate.api.token')->group(function () {
         ]);
       });
 });
+Route::resource('locations', LocationController::class);
+
+Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', '^(0|1|all)$');
+
+Route::resource('workstations', WorkstationController::class);
+
+Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', '^(0|1|all)$');
+
+Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');

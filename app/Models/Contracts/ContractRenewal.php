@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Contracts;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\FunctionCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FunctionTitle extends Model
+class ContractRenewal extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -16,7 +15,7 @@ class FunctionTitle extends Model
      *
      * @var string
      */
-    protected $table = 'function_titles';
+    protected $table = 'contract_renewals';
 
     /**
      * The primary key associated with the table.
@@ -32,9 +31,15 @@ class FunctionTitle extends Model
      */
     public $timestamps = true;
 
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'deleted_at'
     ];
 
     /**
@@ -44,25 +49,10 @@ class FunctionTitle extends Model
      */
     protected $fillable = [
         'name',
-        'function_code',
-        'description',
+        'renewal_type',
+        'duration',
         'status',
-        'function_category_id',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
-
-    protected $with = ['functionCategory'];
-
-    public function functionCategory()
-    {
-        return $this->belongsTo(FunctionCategory::class)->withTrashed();
-    }
-
-    protected static function booted()
-    {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
-        });
-    }
-} 
+}

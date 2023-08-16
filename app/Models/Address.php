@@ -4,24 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Files extends Model
+class Address extends Model
 {
     use HasFactory, SoftDeletes;
-
-    protected $table = 'files';
+    protected $table = 'address';
 
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'file_name',
-        'file_path',
+        "street",
+        "house_no",
+        "postal_code",
+        "city",
+        "country",
+        "status"
     ];
 
-    public function getFilePathAttribute($value)
-    {
-        return asset(Storage::url($value));
-    }
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
 }

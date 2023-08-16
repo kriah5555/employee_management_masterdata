@@ -1,22 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\EmployeeType;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\FunctionCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FunctionTitle extends Model
+class EmployeeTypeCategory extends Model
 {
     use HasFactory, SoftDeletes;
-
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'function_titles';
+    protected $table = 'employee_type_categories';
 
     /**
      * The primary key associated with the table.
@@ -32,11 +30,6 @@ class FunctionTitle extends Model
      */
     public $timestamps = true;
 
-    protected $dates = [
-        'created_at',
-        'updated_at'
-    ];
-
     /**
      * The attributes that are mass assignable.
      *
@@ -44,20 +37,17 @@ class FunctionTitle extends Model
      */
     protected $fillable = [
         'name',
-        'function_code',
         'description',
         'status',
-        'function_category_id',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
 
-    protected $with = ['functionCategory'];
-
-    public function functionCategory()
-    {
-        return $this->belongsTo(FunctionCategory::class)->withTrashed();
-    }
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'created_at'
+    ];
 
     protected static function booted()
     {
@@ -65,4 +55,4 @@ class FunctionTitle extends Model
             $query->orderBy('name', 'asc');
         });
     }
-} 
+}
