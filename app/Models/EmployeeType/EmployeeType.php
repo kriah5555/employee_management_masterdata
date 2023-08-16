@@ -53,6 +53,7 @@ class EmployeeType extends Model
         'name',
         'key',
         'description',
+        "employee_type_categories_id",
         'status',
         'created_by',
         'updated_by',

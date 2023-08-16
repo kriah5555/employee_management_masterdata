@@ -6,6 +6,7 @@ use App\Http\Rules\ApiRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\Rule;
 
 class EmployeeTypeRequest extends ApiRequest
 {
@@ -18,9 +19,21 @@ class EmployeeTypeRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'status'      => 'required|boolean'
+            'name'                        => 'required|string|max:255',
+            'description'                 => 'nullable|string|max:255',
+            'status'                      => 'required|boolean',
+            'employee_type_categories_id' => [
+                'required',
+                Rule::exists('employee_type_categories', 'id'),
+            ],
+            'contract_type_id' => [
+                'required',
+                Rule::exists('contract_types', 'id'),
+            ],
+            'contract_renewal_id' => [
+                'required',
+                Rule::exists('contract_renewals', 'id'),
+            ],
         ];
 
     }

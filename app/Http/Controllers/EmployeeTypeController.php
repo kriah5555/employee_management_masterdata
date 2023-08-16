@@ -4,15 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\EmployeeTypeRequest;
+use App\Services\EmployeeTypeService;
 use Illuminate\Http\JsonResponse;
 class EmployeeTypeController extends Controller
 {
+    protected $employee_type_service;
+
+    public function __construct(EmployeeTypeService $employee_type_service)
+    {
+        $this->employee_type_service = $employee_type_service;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = EmployeeType::all();
+        $data = $this->employee_type_service->getAllEmployeeTypes();
         return response()->json([
             'success' => true,
             'data' => $data,
@@ -25,6 +32,7 @@ class EmployeeTypeController extends Controller
     public function store(EmployeeTypeRequest $request)
     {
         try {
+            $employee_type = $this->employee_type_service->create($request->validated());
             $employee_type = EmployeeType::create($request->validated());
             return response()->json([
                 'success' => true,
@@ -56,7 +64,7 @@ class EmployeeTypeController extends Controller
     public function update(EmployeeTypeRequest $request, EmployeeType $employee_type)
     {
         try {
-            $employee_type->update($request->all());
+            $employee_type->update($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type updated successfully',
