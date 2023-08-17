@@ -36,7 +36,7 @@ class SectorService
         ])->findOrFail($id);
         $temp = [];
         foreach($sector->sectorAgeSalary as $data) {
-            $temp[$data->age] = $data->percentage;
+            $temp[] = ['age' => $data->age, 'value' => $data->percentage];
         }
         $sector->age = $temp;
         return $sector;

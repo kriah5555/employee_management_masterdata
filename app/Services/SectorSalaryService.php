@@ -22,6 +22,7 @@ class SectorSalaryService
     {
         $sector = $this->sectorService->getSectorById($id);
         // $sector = $this->sectorService->getSectorDetails($id);
+        print_r($sector);exit;
         $sector->salaryConfig->salarySteps;
         foreach ($sector->salaryConfig->salarySteps as $item) {
             // print_r($item);exit;
