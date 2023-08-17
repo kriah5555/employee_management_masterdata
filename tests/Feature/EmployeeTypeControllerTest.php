@@ -13,6 +13,10 @@ use Database\Factories\ContractRenewalFactory;
 use Database\Factories\ContractTypesFactory;
 use Database\Factories\EmployeetypeFactory;
 use Database\Factories\EmployeeTypeContractFactory;
+use App\Models\EmployeeType\EmployeeTypeCategory;
+use App\Models\Contracts\ContractTypes;
+use App\Models\Contracts\ContractRenewal;
+
 
 class EmployeeTypeControllerTest extends TestCase
 {
@@ -116,4 +120,76 @@ class EmployeeTypeControllerTest extends TestCase
         // Validate that the record has been deleted
         $this->assertNull(EmployeeType::find($employeeType->id));
     }
-}
+
+    public function test_store_required_fields()
+    {
+        $invalidData = [];
+
+        $response = $this->post('/api/employee-types', $invalidData);
+
+        $response->assertStatus(422) // Unprocessable Entity
+            ->assertJsonStructure(['success', 'message'])
+            ->assertJson(['success' => false]);
+
+        // Validate the response message
+        $responseData = $response->json('message');
+        $this->assertIsArray($responseData);
+        $this->assertContains('Employee type name is required.', $responseData);
+        $this->assertContains('The status field is required.', $responseData);
+        $this->assertContains('The employee type categories id field is required.', $responseData);
+        $this->assertContains('The contract type id field is required.', $responseData);
+        $this->assertContains('The contract renewal id field is required.', $responseData);
+    }
+
+    public function test_store_with_invalid_data()
+    {
+        $invalidData = [
+            'name'                        => 'normal employee',
+            'description'                 => $this->faker->sentence,
+            'employee_type_categories_id' => 't',
+            'contract_type_id'            => 't',
+            'contract_renewal_id'         => 't',
+            'status'                      => "t"
+        ];
+
+        $response = $this->post('/api/employee-types', $invalidData);
+
+        $response->assertStatus(422) // Unprocessable Entity
+            ->assertJsonStructure(['success', 'message'])
+            ->assertJson(['success' => false]);
+
+        // Validate the response message
+        $responseData = $response->json('message');
+        $this->assertIsArray($responseData);
+        $this->assertContains('Status must be a boolean value.', $responseData);
+        $this->assertContains('The employee type categories id field must be an integer.', $responseData);
+        $this->assertContains('The contract type id field must be an integer.', $responseData);
+        $this->assertContains('The contract renewal id field must be an integer.', $responseData);
+
+
+
+        $invalidData = [
+            'name'                        => 'normal employee',
+            'description'                 => $this->faker->sentence,
+            'employee_type_categories_id' => EmployeeTypeCategory::latest()->first()->id + 10,
+            'contract_type_id'            => ContractTypes::latest()->first()->id + 10,
+            'contract_renewal_id'         => ContractRenewal::latest()->first()->id + 10,
+            'status'                      => 99
+        ];
+
+        $response = $this->post('/api/employee-types', $invalidData);
+
+        $response->assertStatus(422) // Unprocessable Entity
+            ->assertJsonStructure(['success', 'message'])
+            ->assertJson(['success' => false]);
+
+        // Validate the response message
+        $responseData = $response->json('message');
+        $this->assertIsArray($responseData);
+        $this->assertContains('The selected employee type categories id is invalid.', $responseData);
+        $this->assertContains('The selected contract type id is invalid.', $responseData);
+        $this->assertContains('The selected contract renewal id is invalid.', $responseData);
+        $this->assertContains('Status must be a boolean value.', $responseData);
+
+    }
+}   

@@ -24,14 +24,17 @@ class EmployeeTypeRequest extends ApiRequest
             'status'                      => 'required|boolean',
             'employee_type_categories_id' => [
                 'required',
+                'integer',
                 Rule::exists('employee_type_categories', 'id'),
             ],
             'contract_type_id' => [
                 'required',
+                'integer',
                 Rule::exists('contract_types', 'id'),
             ],
             'contract_renewal_id' => [
                 'required',
+                'integer',
                 Rule::exists('contract_renewals', 'id'),
             ],
         ];
