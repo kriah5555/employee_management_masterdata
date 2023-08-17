@@ -15,14 +15,17 @@ class SectorAgeSalaryRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $age = array_keys($value);
+        foreach($value as $val) {
+            $age_data[$val['age']] = $val['value'];
+        }
+        $age = array_keys($age_data);
 
         
         if (!$this->validateAgeValues($age)) {
             $error = "Incorrect salary percentage.";
             $fail($error);
         } else {
-            foreach($value as $val) {
+            foreach($age_data as $val) {
                 if (!is_int((int)$val) || $val < 0 || $val > 100)
                 {
                     $error = "Incorrect salary percentage.";
