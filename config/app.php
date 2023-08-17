@@ -197,6 +197,7 @@ return [
         App\Providers\SectorServiceProvider::class,
         App\Providers\EmployeeTypeServiceProvider::class,
         App\Providers\FunctionServiceProvider::class,
+        App\Providers\CompanyServiceProvider::class,
 
     ],
 

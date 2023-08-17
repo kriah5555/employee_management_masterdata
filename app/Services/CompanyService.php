@@ -13,12 +13,16 @@ use App\Services\AddressService;
 use App\Services\LocationService;
 use App\Services\WorkstationService;
 use App\Services\BaseService;
+use App\Services\SectorService;
 
 class CompanyService extends BaseService
 {
-    public function __construct(Company $company)
+    protected $sectorService;
+
+    public function __construct(Company $company, SectorService $sectorService)
     {
         parent::__construct($company);
+        $this->sectorService = $sectorService;
     }
 
     public function create($values)
@@ -147,5 +151,11 @@ class CompanyService extends BaseService
             'file_path' => $request_data['logo']->storeAs('public/company_logos', $filename)
         ]);
         return $file->id;
+    }
+
+    public function getCreateCompanyOptions()
+    {
+        $options['sectors'] = $this->sectorService->getSectorOptions();
+        return $options;
     }
 }
