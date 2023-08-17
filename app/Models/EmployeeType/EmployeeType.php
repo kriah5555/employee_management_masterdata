@@ -78,6 +78,7 @@ class EmployeeType extends Model
         ->get()
         ->toArray();
     }
+    
     public function contractTypes()
     {
         return $this->belongsToMany(ContractType::class, 'contract_type_employee_type');

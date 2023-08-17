@@ -11,6 +11,7 @@ use App\Models\Contracts\ContractType;
 class ContractTypesFactory extends Factory
 {
     protected $model = ContractType::class;
+    
     public function definition()
     {
         return [

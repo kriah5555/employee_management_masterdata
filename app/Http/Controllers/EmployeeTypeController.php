@@ -64,7 +64,7 @@ class EmployeeTypeController extends Controller
     public function update(EmployeeTypeRequest $request, EmployeeType $employee_type)
     {
         try {
-            $employee_type->update($request->validated());
+            $this->employee_type_service->update($employee_type, $request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type updated successfully',
