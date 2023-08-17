@@ -20,19 +20,22 @@ class SectorSalaryService
 
     public function getMinimumSalariesBySectorId($id)
     {
-        $sector = $this->sectorService->getSectorById($id);
-        // $sector = $this->sectorService->getSectorDetails($id);
-        print_r($sector);exit;
+        $sector = $this->sectorService->getSectorDetails($id);
         $sector->salaryConfig->salarySteps;
+        $data = [];
+        $return = [];
+        $return['salaries'] = [];
         foreach ($sector->salaryConfig->salarySteps as $item) {
-            // print_r($item);exit;
-            print_r($item->minimumSalary);exit;
+            $return['levels'] = $sector->salaryConfig->steps;
+            $return['categories'] = $sector->salaryConfig->category;
+            $data = [];
+            $data['level'] = $item->level;
+            foreach ($item->minimumSalary as $salary_item) {
+                $data['cat'.$salary_item->category_number] = $salary_item->salary;
+            }
+            $return['salaries'][] = $data;
         }
-        print_r($sector->salaryConfig->salarySteps);exit;
-        $sector->salaryConfig->salarySteps->minimumSalary;
-        // $this->getMinimumSalariesBySector($sector);
-        return $sector;
-        // return MinimumSalary::all();
+        return $return;
     }
 
     public function getMinimumSalariesBySector(Sector $sector)
@@ -50,7 +53,7 @@ class SectorSalaryService
             $sectorSalaryStep = SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
             ->where('level', $value['level'])->firstOrFail();
             foreach ($value['categories'] as $category_value) {
-                $minimumSalary = MinimumSalary::where('sector_salary_step_id', $sectorSalaryStep->id)
+                $minimumSalary = MinimumSalary::where('sector_salary_steps_id', $sectorSalaryStep->id)
                 ->where('category_number', $category_value['category'])->firstOrFail();
                 $minimumSalary->salary = (float) str_replace(',', '.', $category_value['minimum_salary']);
                 $minimumSalary->save();

@@ -40,7 +40,7 @@ class MinimumSalary extends Model
      * @var array
      */
     protected $fillable = [
-        'sector_salary_step_id',
+        'sector_salary_steps_id',
         'category_number',
         'salary',
         'created_by',
@@ -55,8 +55,8 @@ class MinimumSalary extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['sector_salary_step_id', 'category_number', 'salary'])
-        ->logOnlyDirty(['sector_salary_step_id', 'category_number', 'salary'])
+        ->logOnly(['sector_salary_steps_id', 'category_number', 'salary'])
+        ->logOnlyDirty(['sector_salary_steps_id', 'category_number', 'salary'])
         ->dontSubmitEmptyLogs();
     }
 

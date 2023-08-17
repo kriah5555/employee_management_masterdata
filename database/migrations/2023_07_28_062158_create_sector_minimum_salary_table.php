@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sector_minimum_salary', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sector_salary_step_id')->references('id')->on('sector_salary_steps')->onDelete('cascade');
+            $table->foreignId('sector_salary_steps_id')->references('id')->on('sector_salary_steps')->onDelete('cascade');
             $table->integer('category_number');
             $table->float('salary')->nullable(true);
             $table->timestamps();

@@ -143,7 +143,7 @@ class SectorService
             $sector_salary_step->save();
             foreach (range(1, $categories) as $category_number) {
                 $minimum_salary = MinimumSalary::firstOrCreate([
-                    'sector_salary_step_id' => $sector_salary_step->id,
+                    'sector_salary_steps_id' => $sector_salary_step->id,
                     'category_number' => $category_number
                 ]);
                 if ($minimum_salary->wasRecentlyCreated) {

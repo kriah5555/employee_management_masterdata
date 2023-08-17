@@ -61,7 +61,7 @@ class SectorSalarySteps extends Model
     }
     public function minimumSalary()
     {
-        return $this->hasOne(MinimumSalary::class);
+        return $this->hasMany(MinimumSalary::class);
     }
     protected static function booted()
     {
