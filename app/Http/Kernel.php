@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
 	    'service-registry' => App\Http\Middleware\ServiceRegistryMiddleware::class,
         'decrypt-request' => \App\Http\Middleware\DecryptRequest::class,
         'encrypt-response' => \App\Http\Middleware\EncryptResponse::class,
+        'validate.api.token' => \App\Http\Middleware\ValidateApiToken::class,
     ];
 }

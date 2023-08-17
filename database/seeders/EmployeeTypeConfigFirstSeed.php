@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Contracts\{ContractRenewal, ContractTypes};
+use App\Models\Contracts\{ContractRenewal, ContractType};
 use App\Models\{Dimona\DimonaType, EmployeeType\EmployeeTypeCategory};
 
 class EmployeeTypeConfigFirstSeed extends Seeder
@@ -40,7 +40,7 @@ class EmployeeTypeConfigFirstSeed extends Seeder
         ];
 
         ContractRenewal::insert($contractRenewalList);
-        ContractTypes::insert($contractTypeList);
+        ContractType::insert($contractTypeList);
         DimonaType::insert($dimonaType);
         EmployeeTypeCategory::insert($employeeTypeCategory);
 

@@ -4,14 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EmployeeType;
-use App\Models\SectorSalaryConfig;
-use App\Models\SectorAgeSalary;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Models\Sector\SectorSalarySteps;
 
-class Sector extends Model
+class MinimumSalary extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
@@ -20,7 +18,7 @@ class Sector extends Model
      *
      * @var string
      */
-    protected $table = 'sectors';
+    protected $table = 'sector_minimum_salary';
 
     /**
      * The primary key associated with the table.
@@ -42,11 +40,9 @@ class Sector extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'paritair_committee',
-        'description',
-        'category',
-        'status',
+        'sector_salary_step_id',
+        'category_number',
+        'salary',
         'created_by',
         'updated_by',
     ];
@@ -59,40 +55,19 @@ class Sector extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['name', 'paritair_committee', 'description', 'category'])
-        ->logOnlyDirty(['name', 'paritair_committee', 'description', 'category'])
+        ->logOnly(['sector_salary_step_id', 'category_number', 'salary'])
+        ->logOnlyDirty(['sector_salary_step_id', 'category_number', 'salary'])
         ->dontSubmitEmptyLogs();
-    }
-
-    public function employeeTypes()
-    {
-        return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
-    }
-
-    public function salaryConfig()
-    {
-        return $this->hasOne(SectorSalaryConfig::class);
-    }
-
-    public function sectorAgeSalary()
-    {
-        return $this->hasMany(SectorAgeSalary::class);
     }
 
     protected static function booted()
     {
         static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
+            $query->orderBy('category_number', 'asc');
         });
     }
-
-    public function isDeleted(): bool
+    public function sectorSalaryStep()
     {
-        return $this->deleted_at !== null;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->status;
+        return $this->belongsTo(SectorSalarySteps::class);
     }
 }

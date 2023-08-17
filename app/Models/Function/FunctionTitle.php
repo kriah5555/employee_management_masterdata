@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Function;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EmployeeType;
+use App\Models\Function\FunctionCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Sector;
-use App\Models\SectorSalarySteps;
 
-class SectorSalaryConfig extends Model
+class FunctionTitle extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -18,7 +16,7 @@ class SectorSalaryConfig extends Model
      *
      * @var string
      */
-    protected $table = 'sector_salary_config';
+    protected $table = 'function_titles';
 
     /**
      * The primary key associated with the table.
@@ -34,30 +32,37 @@ class SectorSalaryConfig extends Model
      */
     public $timestamps = true;
 
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'sector_id',
-        'category',
-        'steps',
+        'name',
+        'function_code',
+        'description',
+        'status',
+        'function_category_id',
         'created_by',
         'updated_by',
     ];
 
-    protected $dates = [
-        'created_at',
-        'updated_at'
-    ];
+    // protected $with = ['functionCategory'];
 
-    public function sector()
+    public function functionCategory()
     {
-        return $this->belongsTo(Sector::class);
+        return $this->belongsTo(FunctionCategory::class)->withTrashed();
     }
-    public function salarySteps()
+
+    protected static function booted()
     {
-        return $this->hasMany(SectorSalarySteps::class);
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('name', 'asc');
+        });
     }
-}
+} 
