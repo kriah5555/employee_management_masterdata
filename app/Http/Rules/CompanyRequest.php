@@ -28,10 +28,17 @@ class CompanyRequest extends ApiRequest
 
             'employer_id'             => 'nullable|digits_between:1,11',
             'sender_number'           => 'nullable|digits_between:1,11',
-            'joint_commission_number' => 'nullable|digits_between:1,11',
+            // 'joint_commission_number' => 'nullable|digits_between:1,11',
             'rsz_number'              => 'nullable|digits_between:1,11',
             'social_secretary_number' => 'nullable|digits_between:1,11',
             'username'                => 'nullable|string|max:50',
+            'email'                   => 'required|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',
+            'phone'                   => [
+                'required',
+                'string',
+                'max:20',
+                'regex:/^(\+[0-9]{1,4}\s[0-9]{1,3}\s[0-9]{1,3}\s[0-9\s]+)$/',
+            ],
         ];
     }
     
@@ -56,7 +63,7 @@ class CompanyRequest extends ApiRequest
 
             'employer_id.digits_between'             => 'The :attribute must have between :min and :max digits.',
             'sender_number.digits_between'           => 'The :attribute must have between :min and :max digits.',
-            'joint_commission_number.digits_between' => 'The :attribute must have between :min and :max digits.',
+            // 'joint_commission_number.digits_between' => 'The :attribute must have between :min and :max digits.',
             'rsz_number.digits_between'              => 'The :attribute must have between :min and :max digits.',
             'social_secretary_number.digits_between' => 'The :attribute must have between :min and :max digits.',
             'username.max'                           => 'The :attribute must not exceed :max characters.',
