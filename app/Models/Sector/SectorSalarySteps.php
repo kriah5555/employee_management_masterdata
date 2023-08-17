@@ -63,4 +63,10 @@ class SectorSalarySteps extends Model
     {
         return $this->hasOne(MinimumSalary::class);
     }
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            $query->orderBy('level', 'asc');
+        });
+    }
 }

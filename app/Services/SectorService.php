@@ -10,6 +10,7 @@ use App\Models\Sector\SectorSalarySteps;
 use App\Models\Sector\SectorAgeSalary;
 use App\Services\BaseService;
 use App\Services\EmployeeTypeService;
+use App\Models\MinimumSalary;
 
 class SectorService
 {
@@ -129,6 +130,7 @@ class SectorService
 
     public function updateSectorSalarySteps(SectorSalaryConfig $sector_salary_config, $experience)
     {
+        $categories = $sector_salary_config->category;
         SectorSalarySteps::where('sector_salary_config_id', $sector_salary_config->id)
         ->where('level', '>=', $sector_salary_config->steps)->delete();
         foreach($experience as $data) {
@@ -139,6 +141,16 @@ class SectorService
             $sector_salary_step->from = $data['from'];
             $sector_salary_step->to = $data['to'];
             $sector_salary_step->save();
+            foreach (range(1, $categories) as $category_number) {
+                $minimum_salary = MinimumSalary::firstOrCreate([
+                    'sector_salary_step_id' => $sector_salary_step->id,
+                    'category_number' => $category_number
+                ]);
+                if ($minimum_salary->wasRecentlyCreated) {
+                    $minimum_salary->salary = 0;
+                    $minimum_salary->save();
+                }
+            }
         }
     }
 
