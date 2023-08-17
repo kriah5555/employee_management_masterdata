@@ -33,7 +33,6 @@ class EmployeeTypeController extends Controller
     {
         try {
             $employee_type = $this->employee_type_service->create($request->validated());
-            $employee_type = EmployeeType::create($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type created successfully',
@@ -50,11 +49,12 @@ class EmployeeTypeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(EmployeeType $employee_type)
+    public function show($id)
     {
+        $sector = $this->employee_type_service->getEmployeeTypeDetails($id);
         return response()->json([
             'success' => true,
-            'data' => $employee_type,
+            'data' => $sector,
         ]);
     }
 
@@ -94,5 +94,26 @@ class EmployeeTypeController extends Controller
     {
         $data = $employee_type->getEmployeeTypeOptions();
         return api_response(200, 'Employee type options', $data);
+    }
+
+    public function create()
+    {
+        $data = $this->employee_type_service->getCreateEmployeeTypeOptions();
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+    /**
+     * Display the specified resource.
+     */
+    public function edit($id)
+    {
+        $data = $this->employee_type_service->getCreateEmployeeTypeOptions();
+        $data['details'] = $this->employee_type_service->getEmployeeTypeDetails($id);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
     }
 }

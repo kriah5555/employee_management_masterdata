@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\EmployeeType;
+use App\Models\EmployeeType\EmployeeType;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 

@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Sector;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Sector;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FunctionCategory extends Model
+class SectorAgeSalary extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -16,7 +15,7 @@ class FunctionCategory extends Model
      *
      * @var string
      */
-    protected $table = 'function_category';
+    protected $table = 'sector_age_salary';
 
     /**
      * The primary key associated with the table.
@@ -32,37 +31,18 @@ class FunctionCategory extends Model
      */
     public $timestamps = true;
 
-    protected $dates = [
-        'created_at',
-        'updated_at'
-    ];
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
+        'id',
         'sector_id',
-        'name',
-        'description',
-        'category',
+        'age',
+        'percentage',
         'status',
         'created_by',
         'updated_by',
     ];
-
-    // protected $with = ['sector'];
-
-    public function sector()
-    {
-        return $this->belongsTo(Sector::class)->withTrashed();
-    }
-
-    protected static function booted()
-    {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
-        });
-    }
 }

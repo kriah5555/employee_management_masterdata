@@ -42,12 +42,11 @@ class SalaryController extends Controller
      */
     public function updateMinimumSalaries(UpdateMinimumSalariesRequest $request, $id)
     {
-        print_r($request->validated());exit;
         try {
-            $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($id);
+            $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries']);
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'message' => 'Minimum salaries updated'
             ]);
         } catch (Exception $e) {
             return response()->json([

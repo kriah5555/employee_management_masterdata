@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use App\Models\SectorSalarySteps;
+use App\Models\Sector\SectorSalarySteps;
 
 class MinimumSalary extends Model
 {

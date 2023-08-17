@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FunctionCategory;
+use App\Models\Function\FunctionCategory;
 use App\Http\Rules\FunctionCategoryRequest;
 use Illuminate\Http\JsonResponse;
+use App\Services\FunctionService;
+
 class FunctionCategoryController extends Controller
 {
+    protected $functionService;
+
+    public function __construct(FunctionService $functionService)
+    {
+        $this->functionService = $functionService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -42,12 +50,20 @@ class FunctionCategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(FunctionCategory $function_category)
+    public function show($id)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $function_category,
-        ]);
+        try {
+            $function_category = $this->functionService->getFunctionCategoryDetails($id);
+            return response()->json([
+                'success' => true,
+                'data' => $function_category,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -80,5 +96,31 @@ class FunctionCategoryController extends Controller
             'success' => true,
             'message' => 'Function category deleted successfully'
         ]);
+    }
+
+    public function create()
+    {
+        $data = $this->functionService->getCreateFunctionCategoryOptions();
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function edit($id)
+    {
+        try {
+            $data = $this->functionService->getCreateFunctionCategoryOptions();
+            $data['details'] = $this->functionService->getFunctionCategoryDetails($id);
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

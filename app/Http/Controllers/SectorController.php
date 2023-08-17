@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sector;
-use App\Models\SectorSalaryConfig;
-use App\Models\SectorSalarySteps;
-use App\Models\EmployeeType;
+use App\Models\Sector\Sector;
+use App\Models\Sector\SectorSalaryConfig;
+use App\Models\Sector\SectorSalarySteps;
+use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\SectorRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -64,8 +64,8 @@ class SectorController extends Controller
      */
     public function show($id)
     {
-        $sector = $this->sectorService->getSectorDetails($id);
         try {
+            $sector = $this->sectorService->getSectorDetails($id);
             return response()->json([
                 'success' => true,
                 'data' => $sector,
@@ -81,9 +81,11 @@ class SectorController extends Controller
     public function edit($id)
     {
         try {
+            $data = $this->sectorService->getCreateSectorOptions();
+            $data['details'] = $this->sectorService->getSectorDetails($id);
             return response()->json([
                 'success' => true,
-                'data' => $this->sectorService->get($id),
+                'data' => $data,
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -141,5 +143,13 @@ class SectorController extends Controller
                 'message' => $e->getMessage(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+    public function create()
+    {
+        $data = $this->sectorService->getCreateSectorOptions();
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
     }
 }
