@@ -97,7 +97,7 @@ class EmployeeTypeService
 
     public function getCreateEmployeeTypeOptions()
     {
-        $options['employee_categories'] = $this->getEmployeeCategoryOptions();
+        $options['employee_type_categories'] = $this->getEmployeeCategoryOptions();
         $options['contract_types'] = $this->getContractTypesOptions();
         $options['dimona_types'] = $this->getDimonaTypesOptions();
         return $options;
