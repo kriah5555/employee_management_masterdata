@@ -38,14 +38,6 @@ class SectorSalaryService
         return $return;
     }
 
-    public function getMinimumSalariesBySector(Sector $sector)
-    {
-        $salary_config = $sector->salaryConfig;
-        $categories = $salary_config->category;
-        $steps = $salary_config->steps;
-        print_r([$categories, $steps]);exit;
-    }
-
     public function updateMinimumSalaries($sectorId, $values)
     {
         $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();

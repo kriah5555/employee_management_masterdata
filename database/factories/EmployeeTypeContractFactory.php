@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\EmployeeType\EmployeeTypeContract;
-use Database\Factories\EmployeetypeFactory;
+use Database\Factories\EmployeeTypeFactory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>

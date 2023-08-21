@@ -101,4 +101,13 @@ class CompanyController extends Controller
             'message' => 'Company deleted successfully'
         ]);
     }
+
+    public function create()
+    {
+        $data = $this->company_service->getCreateCompanyOptions();
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
 }

@@ -35,12 +35,7 @@ class EmployeeTypeService
         try {
             DB::beginTransaction();
             $employee_type = EmployeeType::create($values);
-            if (array_key_exists('contract_types', $values)) {
-                $contract_types = $values['contract_types'];
-            } else {
-                $contract_types = [];
-            }
-            $employee_type->contractTypes()->sync($contract_types);
+            $this->syncEmployeeTypeContractTypes($employee_type, $values);
             DB::commit();
             return $employee_type ;
         } catch (Exception $e) {
@@ -49,6 +44,7 @@ class EmployeeTypeService
             throw $e;
         }
     }
+
     public function store($values)
     {
         $sector = Sector::create($values);
@@ -65,8 +61,9 @@ class EmployeeTypeService
     {
         try {
             DB::beginTransaction();
-            EmployeeType::update($values);
-            self::craeteOrUpdateEmployeeTypeContract($values, $employee_type->id);
+            $employee_type->update($values);
+            $this->syncEmployeeTypeContractTypes($employee_type, $values);
+            // self::craeteOrUpdateEmployeeTypeContract($values, $employee_type->id);
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -75,25 +72,31 @@ class EmployeeTypeService
         }
     }
 
-    public function craeteOrUpdateEmployeeTypeContract($values, $employee_type_id)
+    protected function syncEmployeeTypeContractTypes(EmployeeType $employee_type, $values)
     {
-        EmployeeTypeContract::where('employee_type_id', $employee_type_id)
-            ->update(['status' => 0]);
-
-        return EmployeeTypeContract::updateOrCreate(
-            [
-                'employee_type_id'    => $employee_type_id,
-                'contract_type_id'    => $values['contract_type_id'],
-                'contract_renewal_id' => $values['contract_renewal_id'],
-            ], # conditions
-            [
-            'employee_type_id'            => $employee_type_id,
-            'contract_type_id'            => $values['contract_type_id'], 
-            'contract_renewal_id'         => $values['contract_renewal_id'],
-            'status'                      => 1
-            ]
-        );
+        $contract_types = $values['contract_types'] ?? [];
+        $employee_type->contractTypes()->sync($contract_types);
     }
+
+    // public function craeteOrUpdateEmployeeTypeContract($values, $employee_type_id)
+    // {
+    //     EmployeeTypeContract::where('employee_type_id', $employee_type_id)
+    //         ->update(['status' => 0]);
+
+    //     return EmployeeTypeContract::updateOrCreate(
+    //         [
+    //             'employee_type_id'    => $employee_type_id,
+    //             'contract_type_id'    => $values['contract_type_id'],
+    //             'contract_renewal_id' => $values['contract_renewal_id'],
+    //         ], # conditions
+    //         [
+    //         'employee_type_id'            => $employee_type_id,
+    //         'contract_type_id'            => $values['contract_type_id'], 
+    //         'contract_renewal_id'         => $values['contract_renewal_id'],
+    //         'status'                      => 1
+    //         ]
+    //     );
+    // }
 
     public function getCreateEmployeeTypeOptions()
     {

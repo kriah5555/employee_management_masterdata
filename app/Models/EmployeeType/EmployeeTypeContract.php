@@ -60,30 +60,8 @@ class EmployeeTypeContract extends Model
     {
         return $this->belongsTo(ContractType::class, 'contract_type_id');
     }
+
     public function getEmployeeTypeContract() {
         $employeeTypeContracts = EmployeeTypeContract::with('employeeType', 'contractType')->get();
-    }
-
-    public static function createOrUpdate($name, $description, $status, $createdBy, $updatedBy)
-    {
-        // Attempt to find an existing record by name
-        $existingRecord = self::where('name', $name)->first();
-
-        // If a record exists, update it; otherwise, create a new one
-        if ($existingRecord) {
-            $existingRecord->update([
-                'description' => $description,
-                'status' => $status,
-                'updated_by' => $updatedBy,
-            ]);
-        } else {
-            self::create([
-                'name' => $name,
-                'description' => $description,
-                'status' => $status,
-                'created_by' => $createdBy,
-                'updated_by' => $updatedBy,
-            ]);
-        }
     }
 }

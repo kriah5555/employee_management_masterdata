@@ -24,6 +24,7 @@ class EmployeeTypeRequest extends ApiRequest
             'status'                      => 'required|boolean',
             'employee_type_category_id' => [
                 'required',
+                'integer',
                 Rule::exists('employee_type_categories', 'id'),
             ],
             // 'contract_type_id' => [
@@ -32,10 +33,12 @@ class EmployeeTypeRequest extends ApiRequest
             // ],
             'contract_types'     => 'nullable|array',
             'contract_types.*'   => [
+                'integer',
                 Rule::exists('contract_types', 'id'),
             ],
             'dimona_type_id' => [
                 'required',
+                'integer',
                 Rule::exists('dimona_types', 'id'),
             ],
         ];
