@@ -65,7 +65,9 @@ Route::resource('holiday-codes', HolidayCodesController::class);
 
 Route::resource('holiday-code-count', HolidayCodeCountController::class);
 
-Route::get('get-minimum-salaries/{id}', [SalaryController::class, 'getMinimumSalaries']);
+Route::get('get-minimum-salaries/{id}/{increment_coefficient?}', [SalaryController::class, 'getMinimumSalaries'])->where(['increment_coefficient' => '[0-9]+(\.[0-9]+)?']);
+
+Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', [SalaryController::class, 'addIncrementToMinimumSalaries'])->where(['increment_coefficient' => '[0-9]+(\.[0-9]+)?']);
 
 Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries']);
 
@@ -76,6 +78,7 @@ Route::middleware('validate.api.token')->group(function () {
         ]);
       });
 });
+
 Route::resource('locations', LocationController::class);
 
 Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', '^(0|1|all)$');

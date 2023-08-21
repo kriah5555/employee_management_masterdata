@@ -7,6 +7,7 @@ use App\Models\MinimumSalary;
 use App\Services\SectorSalaryService;
 use App\Services\SectorService;
 use App\Http\Rules\UpdateMinimumSalariesRequest;
+use Illuminate\Http\JsonResponse;
 
 class SalaryController extends Controller
 {
@@ -22,10 +23,10 @@ class SalaryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function getMinimumSalaries($id)
+    public function getMinimumSalaries($id, $increment_coefficient = '')
     {
         try {
-            $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($id);
+            $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($id, $increment_coefficient);
             return response()->json([
                 'success' => true,
                 'data' => $data,
@@ -44,6 +45,22 @@ class SalaryController extends Controller
     {
         try {
             $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Minimum salaries updated'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function addIncrementToMinimumSalaries($sector_id, $increment_coefficient)
+    {
+        try {
+            $this->sectorSalaryService->incrementMinimumSalaries($sector_id, $increment_coefficient);
             return response()->json([
                 'success' => true,
                 'message' => 'Minimum salaries updated'
