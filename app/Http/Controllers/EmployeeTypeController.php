@@ -96,10 +96,9 @@ class EmployeeTypeController extends Controller
     public function edit($id)
     {
         try {
-            $data = $this->employeeTypService->edit($id);
             return response()->json([
                 'success' => true,
-                'data'    => $data,
+                'data'    => $this->employeeTypService->edit($id),
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -119,7 +118,7 @@ class EmployeeTypeController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type updated successfully',
-                'data'    => $employeeType,
+                'data'    => $this->employeeTypService->update($employeeType, $request->validated()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([

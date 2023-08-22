@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\Contracts\ContractTypeService;
 use App\Models\Contracts\ContractType;
 use App\Http\Rules\Contracts\ContractTypeRequest;
@@ -22,20 +21,32 @@ class ContractTypeController extends Controller
      */
     public function index()
     {
-        $data = $this->contractTypeService->getAllContractTypes();
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->contractTypeService->index()
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function create()
     {
-        $data = $this->contractTypeService->getCreateContractTypeOptions();
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->contractTypeService->create()
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -44,11 +55,10 @@ class ContractTypeController extends Controller
     public function store(ContractTypeRequest $request)
     {
         try {
-            $employee_type = $this->contractTypeService->create($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type created successfully',
-                'data' => $employee_type,
+                'data' => $this->contractTypeService->store($request->validated()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([
@@ -63,24 +73,41 @@ class ContractTypeController extends Controller
      */
     public function show($id)
     {
-        $sector = $this->contractTypeService->getContractTypeDetails($id);
-        return response()->json([
-            'success' => true,
-            'data' => $sector,
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->contractTypeService->show($id)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function edit($id)
+    {
+        $data = $this->contractTypeService->create();
+        $data['details'] = $this->contractTypeService->show($id);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+    /**
      * Update the specified resource in storage.
      */
-    public function update(EmployeeTypeRequest $request, EmployeeType $employee_type)
+    public function update(ContractTypeRequest $request, ContractType $contractType)
     {
         try {
-            $this->employee_type_service->update($employee_type, $request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type updated successfully',
-                'data' => $employee_type,
+                'data' => $this->contractTypeService->update($contractType, $request->validated()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([
@@ -93,31 +120,19 @@ class ContractTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EmployeeType $employee_type)
+    public function destroy(ContractType $contractType)
     {
-        $employee_type->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Employee type deleted successfully'
-        ]);
-    }
-
-    public function getEmployeeTypeOptions(EmployeeType $employee_type)
-    {
-        $data = $employee_type->getEmployeeTypeOptions();
-        return api_response(200, 'Employee type options', $data);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function edit($id)
-    {
-        $data = $this->employee_type_service->create();
-        $data['details'] = $this->employee_type_service->getEmployeeTypeDetails($id);
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
+        try {
+            $contractType->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee type deleted successfully'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('contract_types', function (Blueprint $table) {
-            $table->string('contract_type_key');
+            $table->string('contract_type_key')->nullable(true);
             $table->dropColumn('description');
         });
     }

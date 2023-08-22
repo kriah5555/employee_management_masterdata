@@ -101,6 +101,7 @@ class EmployeeTypeService
             $employee_type->update($values);
             $employee_type->contractTypes()->sync($values['contract_types'] ?? []);
             DB::commit();
+            return $employee_type;
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());

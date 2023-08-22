@@ -2,18 +2,17 @@
 
 namespace App\Services\Contracts;
 
-use App\Models\Address;
 use App\Models\Contracts\ContractType;
 use Illuminate\Support\Facades\DB;
 
 class ContractTypeService
 {
-    public function getAllContractTypes()
+    public function index()
     {
         return ContractType::all();
     }
 
-    public function getCreateContractTypeOptions()
+    public function create()
     {
         $data = [];
         $data['renewal_types'] = $this->getContractRenewalOptions();
@@ -25,7 +24,7 @@ class ContractTypeService
         return config('constants.CONTRACT_TYPE_RENEWAL_OPTIONS');
     }
 
-    public function create($values)
+    public function store($values)
     {
         try {
             DB::beginTransaction();
@@ -39,8 +38,32 @@ class ContractTypeService
         }
     }
 
-    public function getContractTypeDetails($id)
+    public function show($id)
     {
         return ContractType::findOrFail($id);
+    }
+
+    /**
+     * Function to get all the options required to edit contract type
+     */
+    public function edit($id)
+    {
+        $options = $this->create();
+        $options['details'] = $this->show($id);
+        return $options;
+    }
+
+    public function update(ContractType $contractType, $values)
+    {
+        try {
+            DB::beginTransaction();
+            $contractType->update($values);
+            DB::commit();
+            return $contractType;
+        } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }

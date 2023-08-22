@@ -19,8 +19,8 @@ class BaseModel extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly([$this->columnsToLog])
-            ->logOnlyDirty([$this->columnsToLog])
+            ->logOnly($this->columnsToLog)
+            ->logOnlyDirty($this->columnsToLog)
             ->dontSubmitEmptyLogs();
     }
 

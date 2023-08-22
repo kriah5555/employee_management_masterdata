@@ -2,19 +2,11 @@
 
 namespace App\Models\Contracts;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\BaseModel;
-
 
 class ContractType extends BaseModel
 {
-
-    public function __construct()
-    {
-        $this->columnsToLog = ['name', 'description', 'renewal', 'status'];
-    }
-
+    protected $columnsToLog = ['name', 'description', 'renewal', 'status'];
     /**
      * The table associated with the model.
      *
