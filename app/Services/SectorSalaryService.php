@@ -121,41 +121,106 @@ class SectorSalaryService
         }
     }
 
+    // public function undoIncrementedMinimumSalaries($sectorId)
+    // {
+    //     try {
+    //         DB::beginTransaction();
+    //         $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
+
+    //         # get all the backup salary data for validation
+    //         $revert_salary_data = MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
+    //             ->orderBy('revert_count', 'desc')
+    //             ->get();
+
+    //         # apply category filter to get the backup salary data
+    //         $revert_salary_data_with_cat = MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
+    //             ->where('category', $sectorSalaryConfig->category)
+    //             ->orderBy('revert_count', 'desc')
+    //             ->first();
+    //          if ($revert_salary_data_with_cat) {
+    //             foreach ($revert_salary_data_with_cat->salary_data as $sector_salary_steps_id => $salary_data) {
+    //                 foreach ($salary_data as $category => $salary) {
+    //                     $min_sal = MinimumSalary::where('sector_salary_steps_id', $sector_salary_steps_id)
+    //                         ->where('category_number', $category)
+    //                         ->update(['salary' => $salary]); 
+    //                 }
+    //             }
+    //             $revert_salary_data_with_cat->delete();
+    //         } elseif (!$revert_salary_data->isEmpty() && $revert_salary_data_with_cat->isNotEmpty()) {
+    //             $revert_category = $revert_salary_data->first()->category;
+    //             return "There catagory in current sector $sectorSalaryConfig->category is mismatching with the category $revert_category in the revert data";
+    //          } elseif ($revert_salary_data->isEmpty()) {
+    //             return "Nothing to revert";
+    //          } else {
+    //             return 'success';
+    //          }
+    //         DB::commit();
+    //     } catch (Exception $e) {
+    //         DB::rollback();
+    //         error_log($e->getMessage());
+    //         throw $e;
+    //     }
+    // }
+
+
     public function undoIncrementedMinimumSalaries($sectorId)
     {
         try {
             DB::beginTransaction();
-            $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
 
-            # get all the backup salary data for validation
-            $revert_salary_data = MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
-                ->orderBy('revert_count', 'desc')
-                ->get();
-            # apply category filter to get the backup salary data
-            $revert_salary_data_with_cat = MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
-                ->where('category', $sectorSalaryConfig->category)
-                ->orderBy('revert_count', 'desc')
-                ->get();
-             if ($revert_salary_data_with_cat) {
-                foreach ($revert_salary_data_with_cat->salary_data as $sector_salary_steps_id => $salary_data) {
-                    foreach ($salary_data as $category => $salary) {
-                        $min_sal = MinimumSalary::where('sector_salary_steps_id', $sector_salary_steps_id)
-                            ->where('category_number', $category)
-                            ->update(['salary' => $salary]); 
-                    }
-                }
-                $revert_salary_data_with_cat->delete();
-             } elseif (!empty($revert_salary_data) && empty($revert_salary_data_with_cat)) {
-                return "There catagory in current sector is mismatching with the category in the revert data";
-             } else {
+            $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
+            $revertSalaryData = $this->getRevertSalaryData($sectorSalaryConfig);
+            $revertSalaryDataWithCat = $this->getRevertSalaryDataWithCategory($sectorSalaryConfig);
+
+            if ($revertSalaryDataWithCat) {
+                $this->applyRevertData($revertSalaryDataWithCat);
+            } elseif ($revertSalaryData->isNotEmpty()) {
+                $revertCategory = $revertSalaryData->first()->category;
+                return $this->getCategoryMismatchMessage($sectorSalaryConfig, $revertCategory);
+            } elseif ($revertSalaryData->isEmpty()) {
+                return "Nothing to revert";
+            } else {
                 return 'success';
-             }
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    private function getRevertSalaryData($sectorSalaryConfig)
+    {
+        return MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
+            ->orderBy('revert_count', 'desc')
+            ->get();
+    }
+
+    private function getRevertSalaryDataWithCategory($sectorSalaryConfig)
+    {
+        return MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
+            ->where('category', $sectorSalaryConfig->category)
+            ->orderBy('revert_count', 'desc')
+            ->first();
+    }
+
+    private function applyRevertData($revertSalaryDataWithCat)
+    {
+        foreach ($revertSalaryDataWithCat->salary_data as $sectorSalaryStepsId => $salaryData) {
+            foreach ($salaryData as $category => $salary) {
+                MinimumSalary::where('sector_salary_steps_id', $sectorSalaryStepsId)
+                    ->where('category_number', $category)
+                    ->update(['salary' => $salary]);
+            }
+        }
+        $revertSalaryDataWithCat->delete();
+    }
+
+    private function getCategoryMismatchMessage($sectorSalaryConfig, $revertCategory)
+    {
+        return "The category in the current sector ({$sectorSalaryConfig->category}) is mismatching with the category ($revertCategory) in the revert data";
     }
     
 }

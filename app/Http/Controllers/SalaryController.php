@@ -79,8 +79,7 @@ class SalaryController extends Controller
             $status = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id);
 
             $data = [];
-            if ($status == 'success') {
-                $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($sector_id);
+            if ($status == 'success' || empty($status)) {
                 $message = 'Minimum reverted successfully';
             } else {
                 $message = $status;
@@ -88,7 +87,6 @@ class SalaryController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data'    => $data,
                 'message' => $message
             ]);
         } catch (Exception $e) {
