@@ -12,6 +12,7 @@ use App\Http\Controllers\HolidayCodeCountController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
+use App\Http\Controllers\ContractTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,8 +50,6 @@ Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
 
-Route::get('get-type-options', [EmployeeTypeController::class, 'getEmployeeTypeOptions']);
-
 Route::resource('employee-types', EmployeeTypeController::class)->withTrashed(['show']);
 
 Route::resource('sectors', SectorController::class)->withTrashed(['show']);
@@ -69,13 +68,6 @@ Route::get('get-minimum-salaries/{id}', [SalaryController::class, 'getMinimumSal
 
 Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries']);
 
-Route::middleware('validate.api.token')->group(function () {
-    Route::get('/testing', function () {
-        return response()->json([
-            'message' => 'Test API.'
-        ]);
-      });
-});
 Route::resource('locations', LocationController::class);
 
 Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', '^(0|1|all)$');
@@ -85,3 +77,5 @@ Route::resource('workstations', WorkstationController::class);
 Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', '^(0|1|all)$');
 
 Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');
+
+Route::resource('contract-types', ContractTypeController::class);

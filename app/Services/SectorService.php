@@ -57,12 +57,7 @@ class SectorService
         try {
             DB::beginTransaction();
             $sector = Sector::create($values);
-            if (array_key_exists('employee_types', $values)) {
-                $employee_types = $values['employee_types'];
-            } else {
-                $employee_types = [];
-            }
-            $sector->employeeTypes()->sync($employee_types);
+            $sector->employeeTypes()->sync($values['employee_types'] ?? []);
             $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
@@ -102,12 +97,7 @@ class SectorService
         try {
             DB::beginTransaction();
             $sector->update($values);
-            if (array_key_exists('employee_types', $values)) {
-                $employee_types = $values['employee_types'];
-            } else {
-                $employee_types = [];
-            }
-            $sector->employeeTypes()->sync($employee_types);
+            $sector->employeeTypes()->sync($values['employee_types'] ?? []);
             $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);

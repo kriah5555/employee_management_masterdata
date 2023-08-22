@@ -6,37 +6,62 @@ use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\EmployeeTypeRequest;
 use App\Services\EmployeeTypeService;
 use Illuminate\Http\JsonResponse;
+
 class EmployeeTypeController extends Controller
 {
-    protected $employee_type_service;
+    protected $employeeTypService;
 
-    public function __construct(EmployeeTypeService $employee_type_service)
+    public function __construct(EmployeeTypeService $employeeTypService)
     {
-        $this->employee_type_service = $employee_type_service;
+        $this->employeeTypService = $employeeTypService;
     }
+
     /**
-     * Display a listing of the resource.
+     * API to get list of all employee types.
      */
     public function index()
     {
-        $data = $this->employee_type_service->getAllEmployeeTypes();
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->employeeTypService->index()
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
-     * Store a newly created resource in storage.
+     * API to get the details required for creating an employee type.
+     */
+    public function create()
+    {
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->employeeTypService->create()
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * API to create a new employee type.
      */
     public function store(EmployeeTypeRequest $request)
     {
         try {
-            $employee_type = $this->employee_type_service->create($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type created successfully',
-                'data' => $employee_type,
+                'data'    => $this->employeeTypService->store($request->validated())
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([
@@ -47,28 +72,54 @@ class EmployeeTypeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * API to get the employee type details.
      */
     public function show($id)
     {
-        $sector = $this->employee_type_service->getEmployeeTypeDetails($id);
-        return response()->json([
-            'success' => true,
-            'data' => $sector,
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->employeeTypService->show($id),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * API to get all the details required for editing an employee type.
+     */
+    public function edit($id)
+    {
+        try {
+            $data = $this->employeeTypService->edit($id);
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the existing employeee type.
      */
-    public function update(EmployeeTypeRequest $request, EmployeeType $employee_type)
+    public function update(EmployeeTypeRequest $request, EmployeeType $employeeType)
     {
         try {
-            $this->employee_type_service->update($employee_type, $request->validated());
+            $this->employeeTypService->update($employeeType, $request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Employee type updated successfully',
-                'data' => $employee_type,
+                'data'    => $employeeType,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([
@@ -79,41 +130,15 @@ class EmployeeTypeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete employee type.
      */
-    public function destroy(EmployeeType $employee_type)
+    public function destroy(EmployeeType $employeeType)
     {
-        $employee_type->delete();
+        $employeeType->delete();
         return response()->json([
             'success' => true,
             'message' => 'Employee type deleted successfully'
         ]);
     }
 
-    public function getEmployeeTypeOptions(EmployeeType $employee_type)
-    {
-        $data = $employee_type->getEmployeeTypeOptions();
-        return api_response(200, 'Employee type options', $data);
-    }
-
-    public function create()
-    {
-        $data = $this->employee_type_service->getCreateEmployeeTypeOptions();
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function edit($id)
-    {
-        $data = $this->employee_type_service->getCreateEmployeeTypeOptions();
-        $data['details'] = $this->employee_type_service->getEmployeeTypeDetails($id);
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
-    }
 }

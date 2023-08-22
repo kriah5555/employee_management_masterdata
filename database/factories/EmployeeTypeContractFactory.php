@@ -18,7 +18,6 @@ class EmployeeTypeContractFactory extends Factory
         return [
             'employee_type_id'    => EmployeeTypeFactory::new()->create()->id,
             'contract_type_id'    => ContractTypesFactory::new()->create()->id,
-            'contract_renewal_id' => ContractRenewalFactory::new()->create()->id,
         ];
     }
 }

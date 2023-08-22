@@ -4,12 +4,16 @@ namespace App\Models\Contracts;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\BaseModel;
 
 
-class ContractType extends Model
+class ContractType extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+
+    public function __construct()
+    {
+        $this->columnsToLog = ['name', 'description', 'renewal', 'status'];
+    }
 
     /**
      * The table associated with the model.
@@ -50,7 +54,8 @@ class ContractType extends Model
      */
     protected $fillable = [
         'name',
-        'contract_type_key',
+        'description',
+        'renewal',
         'status',
         'created_by',
         'updated_by'

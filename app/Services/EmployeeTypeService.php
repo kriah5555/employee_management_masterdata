@@ -7,12 +7,51 @@ use App\Models\EmployeeType\EmployeeType;
 use App\Models\EmployeeType\EmployeeTypeContract;
 use App\Models\EmployeeType\EmployeeTypeCategory;
 use App\Models\Contracts\ContractType;
-use App\Models\Contracts\ContractRenewal;
 use App\Models\Dimona\DimonaType;
 
 class EmployeeTypeService
 {
-    public function getEmployeeTypeDetails($id)
+    /**
+     * Function to get all the employee types
+     */
+    public function index()
+    {
+        return $this->getAllEmployeeTypes();
+    }
+
+    /**
+     * Function to get all the options required to create employee type
+     */
+    public function create()
+    {
+        $options = [];
+        $options['employee_categories'] = $this->getEmployeeCategoryOptions();
+        $options['contract_types'] = $this->getContractTypesOptions();
+        $options['dimona_types'] = $this->getDimonaTypesOptions();
+        return $options;
+    }
+
+    /**
+     * Function to save a new employee type
+     */
+    public function store($values)
+    {
+        try {
+            return DB::transaction(function () use ($values) {
+                $employee_type = EmployeeType::create($values);
+                $employee_type->contractTypes()->sync($values['contract_types'] ?? []);
+                return $employee_type;
+            });
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Function to get employee type details for API
+     */
+    public function show($id)
     {
         return EmployeeType::with([
             'employeeTypeCategory',
@@ -20,41 +59,39 @@ class EmployeeTypeService
         ])->findOrFail($id);
     }
 
+
+    /**
+     * Function to get all the options required to edit employee type
+     */
+    public function edit($id)
+    {
+        $options = $this->create();
+        $options['details'] = $this->show($id);
+        return $options;
+    }
+
+    /**
+     * Function to get the employee type details by id
+     */
+    public function getEmployeeTypeDetails($id)
+    {
+        return EmployeeType::findOrFail($id);
+    }
+
+    /**
+     * Function to get retrieve all the employee types from the database
+     */
     public function getAllEmployeeTypes()
     {
         return EmployeeType::all();
     }
 
+    /**
+     * Function to get retrieve only active employee types from the database
+     */
     public function getActiveEmployeeTypes()
     {
         return EmployeeType::where('status', '=', true)->get();
-    }
-
-    public function create($values)
-    {
-        try {
-            DB::beginTransaction();
-            $employee_type = EmployeeType::create($values);
-            $this->syncEmployeeTypeContractTypes($employee_type, $values);
-            DB::commit();
-            return $employee_type ;
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function store($values)
-    {
-        $sector = Sector::create($values);
-        if (array_key_exists('employee_types', $values)) {
-            $employee_types = $values['employee_types'];
-        } else {
-            $employee_types = [];
-        }
-        $sector->employeeTypes()->sync($employee_types);
-        return $sector;
     }
 
     public function update(EmployeeType $employee_type, $values)
@@ -62,48 +99,13 @@ class EmployeeTypeService
         try {
             DB::beginTransaction();
             $employee_type->update($values);
-            $this->syncEmployeeTypeContractTypes($employee_type, $values);
-            // self::craeteOrUpdateEmployeeTypeContract($values, $employee_type->id);
+            $employee_type->contractTypes()->sync($values['contract_types'] ?? []);
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
-    }
-
-    protected function syncEmployeeTypeContractTypes(EmployeeType $employee_type, $values)
-    {
-        $contract_types = $values['contract_types'] ?? [];
-        $employee_type->contractTypes()->sync($contract_types);
-    }
-
-    // public function craeteOrUpdateEmployeeTypeContract($values, $employee_type_id)
-    // {
-    //     EmployeeTypeContract::where('employee_type_id', $employee_type_id)
-    //         ->update(['status' => 0]);
-
-    //     return EmployeeTypeContract::updateOrCreate(
-    //         [
-    //             'employee_type_id'    => $employee_type_id,
-    //             'contract_type_id'    => $values['contract_type_id'],
-    //             'contract_renewal_id' => $values['contract_renewal_id'],
-    //         ], # conditions
-    //         [
-    //         'employee_type_id'            => $employee_type_id,
-    //         'contract_type_id'            => $values['contract_type_id'], 
-    //         'contract_renewal_id'         => $values['contract_renewal_id'],
-    //         'status'                      => 1
-    //         ]
-    //     );
-    // }
-
-    public function getCreateEmployeeTypeOptions()
-    {
-        $options['employee_categories'] = $this->getEmployeeCategoryOptions();
-        $options['contract_types'] = $this->getContractTypesOptions();
-        $options['dimona_types'] = $this->getDimonaTypesOptions();
-        return $options;
     }
 
     public function getEmployeeCategoryOptions()

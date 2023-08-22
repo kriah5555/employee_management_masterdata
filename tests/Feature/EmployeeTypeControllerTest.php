@@ -9,14 +9,12 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Database\Factories\EmployeeTypeCategoryFactory;
-use Database\Factories\ContractRenewalFactory;
 use Database\Factories\ContractTypesFactory;
 use Database\Factories\EmployeeTypeFactory;
 use Database\Factories\EmployeeTypeContractFactory;
 use Database\Factories\DimonaTypeFactory;
 use App\Models\EmployeeType\EmployeeTypeCategory;
 use App\Models\Contracts\ContractTypes;
-use App\Models\Contracts\ContractRenewal;
 
 
 class EmployeeTypeControllerTest extends TestCase
@@ -46,7 +44,6 @@ class EmployeeTypeControllerTest extends TestCase
             'description'               => $this->faker->sentence,
             'employee_type_category_id' => EmployeeTypeCategoryFactory::new()->create()->id,
             'contract_types'            => [ContractTypesFactory::new()->create()->id, ContractTypesFactory::new()->create()->id],
-            'contract_renewal_id'       => ContractRenewalFactory::new()->create()->id,
             'dimona_type_id'            => DimonaTypeFactory::new()->create()->id,
             'status'                    => 1
         ];
@@ -94,7 +91,6 @@ class EmployeeTypeControllerTest extends TestCase
             'description'               => $this->faker->sentence,
             'employee_type_category_id' => EmployeeTypeCategoryFactory::new()->create()->id,
             'contract_types'            => [ContractTypesFactory::new()->create()->id, ContractTypesFactory::new()->create()->id],
-            'contract_renewal_id'       => ContractRenewalFactory::new()->create()->id,
             'dimona_type_id'            => DimonaTypeFactory::new()->create()->id,
             'status'                    => 1
         ];
@@ -155,7 +151,6 @@ class EmployeeTypeControllerTest extends TestCase
             'description'               => $this->faker->sentence,
             'employee_type_category_id' => 't',
             'contract_types'            => 't',
-            'contract_renewal_id'       => 't',
             'dimona_type_id'            => 't',
             'status'                    => "t"
         ];

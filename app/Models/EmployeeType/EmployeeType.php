@@ -6,12 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\EmployeeType\EmployeeTypeContract;
-use App\Models\EmployeeType\EmployeeTypeDimona;
-use App\Models\Contracts\ContractRenewal;
-// use App\Models\Contracts\ContractTypeList;
 use App\Models\Contracts\ContractType;
-use App\Models\Dimona\DimonaType;
 
 class EmployeeType extends Model
 {
@@ -62,14 +57,6 @@ class EmployeeType extends Model
     public function employeeTypeCategory()
     {
         return $this->belongsTo(EmployeeTypeCategory::class);
-    }
-
-    public function getEmployeeTypeOptions()
-    {
-        $options['contract_types'] = $this->getDataFromQuery(ContractType::select(['id', 'name as value', 'contract_type_key']));
-        $options['contract_renewal'] = $this->getDataFromQuery(ContractRenewal::select(['id', 'name as value', 'duration']));
-        $options['dimona_type'] = $this->getDataFromQuery(DimonaType::select(['id', 'name as value', 'dimona_type_key']));
-        return $options;
     }
 
     public function getDataFromQuery($query)
