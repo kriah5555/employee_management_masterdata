@@ -29,7 +29,7 @@ class SalaryController extends Controller
             $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($id, $increment_coefficient);
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -64,6 +64,32 @@ class SalaryController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Minimum salaries updated'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function undoIncrementedMinimumSalaries($sector_id)
+    {
+        try {
+            $status = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id);
+
+            $data = [];
+            if ($status == 'success') {
+                $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($sector_id);
+                $message = 'Minimum reverted successfully';
+            } else {
+                $message = $status;
+            }   
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+                'message' => $message
             ]);
         } catch (Exception $e) {
             return response()->json([

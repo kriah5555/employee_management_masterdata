@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Sector\Sector;
 use Illuminate\Support\Facades\DB;
 use App\Models\MinimumSalary;
+use App\Models\MinimumSalaryBackup;
 use App\Services\SectorService;
 use App\Models\Sector\SectorSalaryConfig;
 use App\Models\Sector\SectorSalarySteps;
@@ -57,15 +58,23 @@ class SectorSalaryService
 
     public function updateMinimumSalaries($sectorId, $values)
     {
-        $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
+        try {
+            DB::beginTransaction();
+            $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
 
-        foreach ($values as $value) {
-            $sectorSalaryStep = SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
-                                ->where('level', $value['level'])->firstOrFail();
+            foreach ($values as $value) {
+                $sectorSalaryStep = SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
+                                    ->where('level', $value['level'])->firstOrFail();
 
-            foreach ($value['categories'] as $category_value) {
-                $this->updateMinimumSalary($sectorSalaryStep->id, $category_value['category'], $category_value['minimum_salary']);
+                foreach ($value['categories'] as $category_value) {
+                    $this->updateMinimumSalary($sectorSalaryStep->id, $category_value['category'], $category_value['minimum_salary']);
+                }
             }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
         }
     }
 
@@ -80,15 +89,73 @@ class SectorSalaryService
 
     public function incrementMinimumSalaries($sectorId, $increment_coefficient)
     {
-        $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
+        try {
+            DB::beginTransaction();
+            $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
 
-        $sectorSalarySteps = SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
-            ->whereIn('level', range(1, $sectorSalaryConfig->steps))
-            ->get()->pluck('id');
+            $sectorSalarySteps = SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
+                ->whereIn('level', range(1, $sectorSalaryConfig->steps))
+                ->get()->pluck('id');
 
-        # update all the minimum salaries by $increment_coefficient %
-        MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps)
-        ->update(['salary' => DB::raw("salary + (salary * $increment_coefficient / 100)")]);
+            $old_salary_data = MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps)->get();
+            $save_old_data = [];
+            foreach ($old_salary_data as $salary_data) {
+                $save_old_data[$salary_data->sector_salary_steps_id][$salary_data->category_number] = $salary_data->salary;
+            }
+
+            # add to backup table
+            MinimumSalaryBackup::create([
+                'sector_salary_config_id' => $sectorSalaryConfig->id,
+                'category'                => $sectorSalaryConfig->category,
+                'salary_data'             => $save_old_data
+            ]);
+
+            # update all the minimum salaries by $increment_coefficient %
+            MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps)
+                ->update(['salary' => DB::raw("salary + (salary * $increment_coefficient / 100)")]);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
+    public function undoIncrementedMinimumSalaries($sectorId)
+    {
+        try {
+            DB::beginTransaction();
+            $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
+
+            # get all the backup salary data for validation
+            $revert_salary_data = MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
+                ->orderBy('revert_count', 'desc')
+                ->get();
+            # apply category filter to get the backup salary data
+            $revert_salary_data_with_cat = MinimumSalaryBackup::where('sector_salary_config_id', $sectorSalaryConfig->id)
+                ->where('category', $sectorSalaryConfig->category)
+                ->orderBy('revert_count', 'desc')
+                ->get();
+             if ($revert_salary_data_with_cat) {
+                foreach ($revert_salary_data_with_cat->salary_data as $sector_salary_steps_id => $salary_data) {
+                    foreach ($salary_data as $category => $salary) {
+                        $min_sal = MinimumSalary::where('sector_salary_steps_id', $sector_salary_steps_id)
+                            ->where('category_number', $category)
+                            ->update(['salary' => $salary]); 
+                    }
+                }
+                $revert_salary_data_with_cat->delete();
+             } elseif (!empty($revert_salary_data) && empty($revert_salary_data_with_cat)) {
+                return "There catagory in current sector is mismatching with the category in the revert data";
+             } else {
+                return 'success';
+             }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+    
 }
