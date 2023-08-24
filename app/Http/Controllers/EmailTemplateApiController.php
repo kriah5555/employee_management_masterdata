@@ -44,7 +44,7 @@ class EmailTemplateApiController extends Controller
         $data = $request->all();
 
         $emailTemplate->update([
-            'template_type' => $data['template_type'],
+            // 'template_type' => $data['template_type'],
             'status' => $data['status'],
         ]);
 
