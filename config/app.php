@@ -97,6 +97,9 @@ return [
 
     'fallback_locale' => 'en',
 
+    // Add the list of available locales you want to support
+    'available_locales' => ['en', 'nl', 'fr'], // Add more locales if needed
+    
     /*
     |--------------------------------------------------------------------------
     | Faker Locale

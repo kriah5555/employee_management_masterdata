@@ -12,6 +12,7 @@ use App\Http\Controllers\HolidayCodeCountController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
+use App\Http\Controllers\EmailTemplateApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,3 +86,5 @@ Route::resource('workstations', WorkstationController::class);
 Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', '^(0|1|all)$');
 
 Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');
+
+Route::resource('email-templates', EmailTemplateApiController::class);
