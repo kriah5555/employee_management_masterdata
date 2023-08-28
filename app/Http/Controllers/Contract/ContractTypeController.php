@@ -24,8 +24,8 @@ class ContractTypeController extends Controller
     {
         return returnResponse(
             [
-                'status' => true,
-                'data'   => $this->contractTypeService->index(),
+                'success' => true,
+                'data'    => $this->contractTypeService->index(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -35,8 +35,8 @@ class ContractTypeController extends Controller
     {
         return returnResponse(
             [
-                'status' => true,
-                'data'   => $this->contractTypeService->create(),
+                'success' => true,
+                'data'    => $this->contractTypeService->create(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -49,7 +49,7 @@ class ContractTypeController extends Controller
     {
         return returnResponse(
             [
-                'status'  => true,
+                'success' => true,
                 'message' => 'Contract type created successfully',
                 'data'    => $this->contractTypeService->store($request->validated()),
             ],

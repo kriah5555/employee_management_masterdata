@@ -34,7 +34,7 @@ class SalaryController extends Controller
         } catch (Exception $e) {
             return returnResponse(
                 [
-                    'status'  => false,
+                    'success' => false,
                     'message' => $e->getMessage(),
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
@@ -55,7 +55,7 @@ class SalaryController extends Controller
         } catch (Exception $e) {
             return returnResponse(
                 [
-                    'status'  => false,
+                    'success' => false,
                     'message' => $e->getMessage(),
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,

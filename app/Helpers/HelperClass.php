@@ -109,16 +109,18 @@ function return_lat_lng($address)
     //$address = preg_replace("/\s+/", "%20", $street . '+' . $housenumber . '+' . $bus . '+' . $city);
     $api_key = 'AIzaSyAMSD-__Ie0dy1gQMGksKTqzOAWlhNc2Ms';
     $curl = curl_init();
-    curl_setopt_array($curl, array(
-        CURLOPT_URL            => 'https://maps.googleapis.com/maps/api/geocode/json?address=' . $address . '&key=' . $api_key,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING       => '',
-        CURLOPT_MAXREDIRS      => 10,
-        CURLOPT_TIMEOUT        => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST  => 'GET',
-    )
+    curl_setopt_array(
+        $curl,
+        array(
+            CURLOPT_URL            => 'https://maps.googleapis.com/maps/api/geocode/json?address=' . $address . '&key=' . $api_key,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'GET',
+        )
     );
 
     $response = curl_exec($curl);
