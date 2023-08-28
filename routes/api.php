@@ -41,6 +41,9 @@ use App\Http\Controllers\Contract\ContractTypeController;
 
     500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
+$integerRule                    = '[0-9]+'; # allow only integer values
+$statusRule                     = '^(0|1|all)$'; # allow only 0 1 0r all values
+$numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -64,18 +67,22 @@ Route::resource('holiday-codes', HolidayCodesController::class);
 
 Route::resource('holiday-code-count', HolidayCodeCountController::class);
 
-Route::get('get-minimum-salaries/{id}', [SalaryController::class, 'getMinimumSalaries']);
+Route::get('get-minimum-salaries/{id}/{increment_coefficient?}', [SalaryController::class, 'getMinimumSalaries'])->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
 
-Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries']);
+Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', [SalaryController::class, 'addIncrementToMinimumSalaries'])->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
+
+Route::post('undo-coefficient-minimum-salaries/{sector_id}', [SalaryController::class, 'undoIncrementedMinimumSalaries'])->where(['sector_id' => $integerRule]);
+
+Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries'])->where(['id' => $integerRule]);
 
 Route::resource('locations', LocationController::class);
 
-Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', '^(0|1|all)$');
+Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', $statusRule);
 
 Route::resource('workstations', WorkstationController::class);
 
-Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', '^(0|1|all)$');
-
-Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');
+Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', $statusRule);
 
 Route::resource('contract-types', ContractTypeController::class);
+
+Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', $statusRule);

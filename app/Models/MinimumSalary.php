@@ -66,6 +66,7 @@ class MinimumSalary extends Model
             $query->orderBy('category_number', 'asc');
         });
     }
+    
     public function sectorSalaryStep()
     {
         return $this->belongsTo(SectorSalarySteps::class);
