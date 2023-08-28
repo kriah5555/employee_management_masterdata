@@ -28,13 +28,16 @@ class SalaryController extends Controller
             $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($id);
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'status'  => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
     /**
@@ -49,10 +52,13 @@ class SalaryController extends Controller
                 'message' => 'Minimum salaries updated'
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'status'  => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }

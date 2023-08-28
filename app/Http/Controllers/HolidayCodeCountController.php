@@ -16,8 +16,8 @@ class HolidayCodeCountController extends Controller
         $holiday_code_count = HolidayCodeCount::with('holidayCodes')->get();
         return response()->json([
             'success' => true,
-            'data' => $holiday_code_count,
-        ]);        
+            'data'    => $holiday_code_count,
+        ]);
     }
 
     /**
@@ -31,13 +31,16 @@ class HolidayCodeCountController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Holiday count created successfully',
-                'data' => $holiday_code_count,
+                'data'    => $holiday_code_count,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'status'  => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
 
 
@@ -52,7 +55,7 @@ class HolidayCodeCountController extends Controller
         $holiday_code_count->holidayCodes;
         return response()->json([
             'success' => true,
-            'data' => $holiday_code_count,
+            'data'    => $holiday_code_count,
         ]);
     }
 
@@ -66,13 +69,16 @@ class HolidayCodeCountController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Holiday count updated successfully',
-                'data' => $holiday_code_count,
+                'data'    => $holiday_code_count,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'status'  => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 

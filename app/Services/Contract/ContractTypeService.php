@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Services\Contracts;
+namespace App\Services\Contract;
 
-use App\Models\Contracts\ContractType;
+use App\Models\Contract\ContractType;
 use Illuminate\Support\Facades\DB;
+use App\Models\Contract\ContractRenewalType;
+use Exception;
 
 class ContractTypeService
 {
@@ -21,7 +23,7 @@ class ContractTypeService
 
     public function getContractRenewalOptions()
     {
-        return config('constants.CONTRACT_TYPE_RENEWAL_OPTIONS');
+        return ContractRenewalType::where('status', '=', true)->select(['id as value', 'name as label'])->get();
     }
 
     public function store($values)
@@ -30,7 +32,7 @@ class ContractTypeService
             DB::beginTransaction();
             $employee_type = ContractType::create($values);
             DB::commit();
-            return $employee_type ;
+            return $employee_type;
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
@@ -40,7 +42,7 @@ class ContractTypeService
 
     public function show($id)
     {
-        return ContractType::findOrFail($id);
+        return ContractType::with(['contractRenewalType'])->findOrFail($id);
     }
 
     /**
@@ -49,7 +51,9 @@ class ContractTypeService
     public function edit($id)
     {
         $options = $this->create();
-        $options['details'] = $this->show($id);
+        $contractType = ContractType::findOrFail($id);
+        $contractType->contractRenewalTypeValue;
+        $options['details'] = $contractType;
         return $options;
     }
 
@@ -65,5 +69,11 @@ class ContractTypeService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+    public function getContractTypesOptions()
+    {
+        return ContractType::where('status', '=', true)
+        ->select('id as value', 'name as label')
+        ->get();
     }
 }

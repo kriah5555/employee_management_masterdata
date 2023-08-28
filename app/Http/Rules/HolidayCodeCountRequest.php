@@ -2,7 +2,6 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Validation\Rule;
 use App\Http\Rules\ApiRequest;
 
 class HolidayCodeCountRequest extends ApiRequest
@@ -33,7 +32,7 @@ class HolidayCodeCountRequest extends ApiRequest
         return [
             'count.required' => 'The Holiday count field is required',
             'count.integer'  => 'The Holiday count code must be an integer.',
-            
+
             'holiday_code_id.required' => 'The Holiday code field is required',
             'holiday_code_id.exists'   => 'Invalid Holiday code',
         ];

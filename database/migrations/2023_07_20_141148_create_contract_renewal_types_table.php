@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contract_types', function (Blueprint $table) {
+        Schema::create('contract_renewal_types', function (Blueprint $table) {
             $table->id();
+            $table->string('key');
             $table->string('name');
-            $table->longText('description')->nullable(true);
-            $table->foreignId('contract_renewal_type_id')->references('id')->on('contract_renewal_types')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('contract_types');
+        Schema::dropIfExists('contract_renewal_types');
     }
 };

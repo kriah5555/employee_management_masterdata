@@ -11,7 +11,7 @@ use App\Models\Sector\SectorSalarySteps;
 
 class SectorSalaryService
 {
-    protected $sector_service;
+    protected $sectorService;
 
     public function __construct(SectorService $sectorService)
     {

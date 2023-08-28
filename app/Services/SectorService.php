@@ -9,7 +9,7 @@ use App\Models\Sector\SectorSalaryConfig;
 use App\Models\Sector\SectorSalarySteps;
 use App\Models\Sector\SectorAgeSalary;
 use App\Services\BaseService;
-use App\Services\EmployeeTypeService;
+use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\MinimumSalary;
 
 class SectorService
@@ -35,14 +35,32 @@ class SectorService
             'sectorAgeSalary',
         ])->findOrFail($id);
         $temp = [];
-        foreach($sector->sectorAgeSalary as $data) {
+        foreach ($sector->sectorAgeSalary as $data) {
             $temp[] = ['age' => $data->age, 'value' => $data->percentage];
         }
         $sector->age = $temp;
         return $sector;
     }
 
-    public function getAllSectors()
+    public function show($id)
+    {
+        return $this->getSectorDetails($id);
+    }
+
+
+    public function edit($id)
+    {
+        $options = $this->create();
+        $sector = Sector::findOrFail($id);
+        $sector->employeeTypesValue;
+        $sector->salaryConfig;
+        $sector->salaryConfig->salarySteps;
+        $sector->sectorAgeSalary;
+        $options['details'] = $sector;
+        return $options;
+    }
+
+    public function index()
     {
         return Sector::all();
     }
@@ -52,7 +70,7 @@ class SectorService
         return Sector::where('status', true)->get();
     }
 
-    public function createNewSector($values)
+    public function store($values)
     {
         try {
             DB::beginTransaction();
@@ -81,10 +99,10 @@ class SectorService
 
     public function createSectorAgeSalary(Sector $sector, $age_values)
     {
-        foreach($age_values as $data) {
+        foreach ($age_values as $data) {
             $sector_salary_step = SectorSalarySteps::firstOrCreate([
                 'sector_id' => $sector->id,
-                'age' => $data['level']
+                'age'       => $data['level']
             ]);
             $sector_salary_step->from = $data['from'];
             $sector_salary_step->to = $data['to'];
@@ -92,7 +110,7 @@ class SectorService
         }
     }
 
-    public function updateSector(Sector $sector, $values)
+    public function update(Sector $sector, $values)
     {
         try {
             DB::beginTransaction();
@@ -122,11 +140,11 @@ class SectorService
     {
         $categories = $sector_salary_config->category;
         SectorSalarySteps::where('sector_salary_config_id', $sector_salary_config->id)
-        ->where('level', '>=', $sector_salary_config->steps)->delete();
-        foreach($experience as $data) {
+            ->where('level', '>=', $sector_salary_config->steps)->delete();
+        foreach ($experience as $data) {
             $sector_salary_step = SectorSalarySteps::firstOrCreate([
                 'sector_salary_config_id' => $sector_salary_config->id,
-                'level' => $data['level']
+                'level'                   => $data['level']
             ]);
             $sector_salary_step->from = $data['from'];
             $sector_salary_step->to = $data['to'];
@@ -134,7 +152,7 @@ class SectorService
             foreach (range(1, $categories) as $category_number) {
                 $minimum_salary = MinimumSalary::firstOrCreate([
                     'sector_salary_steps_id' => $sector_salary_step->id,
-                    'category_number' => $category_number
+                    'category_number'        => $category_number
                 ]);
                 if ($minimum_salary->wasRecentlyCreated) {
                     $minimum_salary->salary = 0;
@@ -146,17 +164,17 @@ class SectorService
 
     public function updateSectorAgeSalary(Sector $sector, $value)
     {
-        foreach($value as $val) {
+        foreach ($value as $val) {
             $age_values[$val['age']] = $val['value'];
         }
         $age = array_keys($age_values);
         SectorAgeSalary::where('sector_id', $sector->id)
-        ->whereNotIn('age', $age)->delete();
-        foreach($age_values as $age => $percentage) {
+            ->whereNotIn('age', $age)->delete();
+        foreach ($age_values as $age => $percentage) {
             $sector_age_salary = SectorAgeSalary::firstOrCreate([
                 'sector_id' => $sector->id,
-                'age' => $age
-            ],[
+                'age'       => $age
+            ], [
                 'percentage' => $percentage
             ]);
             $sector_age_salary->percentage = $percentage;
@@ -164,38 +182,11 @@ class SectorService
         }
     }
 
-    public function getEmployeeTypesBySector(Sector $sector)
-    {
-        return $sector->employeeTypes;
-    }
-
-    public function getSectorSalaryConfig(Sector $sector)
-    {
-        return $sector->salaryConfig;
-    }
-
-    public function getSectorSalarySteps(SectorSalaryConfig $salary_config)
-    {
-        return $salary_config->salarySteps;
-    }
-
-    public function getCreateSectorOptions()
-    {
-        $options['employee_types'] = $this->employeeTypeService->getEmployeeTypeOptions();
-        return $options;
-    }
-
     public function getSectorOptions()
     {
-        $options = [];
-        $employee_types = Sector::where('status', '=', true)->get();
-        foreach ($employee_types as $value) {
-            $options[] = [
-                'value' => $value['id'],
-                'label' => $value['name'],
-            ];
-        }
-        return $options;
+        return Sector::where('status', '=', true)
+        ->select('id as value', 'name as label')
+        ->get();
     }
 
     public function getCategoriesForSector()
@@ -206,6 +197,13 @@ class SectorService
             $data[$item->id] = $item->salaryConfig->category;
         }
         return $data;
+    }
+
+    public function create()
+    {
+        $options = [];
+        $options['employee_types'] = $this->employeeTypeService->getEmployeeTypeOptions();
+        return $options;
     }
 
 }

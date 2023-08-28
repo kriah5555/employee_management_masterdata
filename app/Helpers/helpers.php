@@ -1,23 +1,18 @@
 <?php
 
-if (!function_exists('api_response')) {
-    function api_response($status, $message, $data = '', $server_error_status = '')
+if (!function_exists('returnResponse')) {
+    function returnResponse($data, $status_code)
     {
-        $return_data = [
-            'success'  => $status,
-            'message' => $message,
-        ];
-
-        if ($data) {
-            $return_data['data'] = $data;
+        if (array_key_exists('message', $data)) {
+            $data['message'] = is_array($data['message']) ? $data['message'] : [$data['message']];
         }
-
-        return $server_error_status ? response()->json($return_data, $server_error_status) : response()->json($return_data);
+        return response()->json($data, $status_code);
     }
 }
 
 if (!function_exists('hasDuplicates')) {
-    function hasDuplicates(array $array): bool {
+    function hasDuplicates(array $array): bool
+    {
         $seen = [];
         foreach ($array as $number) {
             if (isset($seen[$number])) {

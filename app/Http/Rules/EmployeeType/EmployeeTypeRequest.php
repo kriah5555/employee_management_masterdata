@@ -1,11 +1,8 @@
 <?php
 
-namespace App\Http\Rules;
+namespace App\Http\Rules\EmployeeType;
 
 use App\Http\Rules\ApiRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
 class EmployeeTypeRequest extends ApiRequest
@@ -19,25 +16,20 @@ class EmployeeTypeRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'name'                        => 'required|string|max:255',
-            'description'                 => 'nullable|string|max:255',
-            'status'                      => 'required|boolean',
+            'name'                      => 'required|string|max:255',
+            'description'               => 'nullable|string|max:255',
+            'status'                    => 'required|boolean',
             'employee_type_category_id' => [
                 'required',
                 'integer',
                 Rule::exists('employee_type_categories', 'id'),
             ],
-            // 'contract_type_id' => [
-            //     'required',
-            //     Rule::exists('contract_types', 'id'),
-            // ],
-            'contract_types'     => 'nullable|array',
-            'contract_types.*'   => [
+            'contract_types'            => 'nullable|array',
+            'contract_types.*'          => [
                 'integer',
                 Rule::exists('contract_types', 'id'),
             ],
-            'dimona_type_id' => [
-                'required',
+            'dimona_type_id'            => [
                 'integer',
                 Rule::exists('dimona_types', 'id'),
             ],
@@ -52,7 +44,8 @@ class EmployeeTypeRequest extends ApiRequest
             'name.max'           => 'Employee type cannot be greater than 255 characters.',
             'description.string' => 'Description must be a string.',
             'description.max'    => 'Description cannot be greater than 255 characters.',
-            'status.boolean'     => 'Status must be a boolean value.'
+            'status.boolean'     => 'Status must be a boolean value.',
+            'contract_types.*'   => 'Invalid contract type'
         ];
     }
 }

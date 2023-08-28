@@ -1,16 +1,21 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\EmployeeType;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeType\EmployeeType;
-use App\Models\EmployeeType\EmployeeTypeContract;
 use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\Contracts\ContractType;
 use App\Models\Dimona\DimonaType;
+use App\Services\Contract\ContractTypeService;
 
 class EmployeeTypeService
 {
+    protected $contractTypeService;
+
+    public function __construct(ContractTypeService $contractTypeService)
+    {
+        $this->contractTypeService = $contractTypeService;
+    }
     /**
      * Function to get all the employee types
      */
@@ -26,7 +31,7 @@ class EmployeeTypeService
     {
         $options = [];
         $options['employee_categories'] = $this->getEmployeeCategoryOptions();
-        $options['contract_types'] = $this->getContractTypesOptions();
+        $options['contract_types'] = $this->contractTypeService->getContractTypesOptions();
         $options['dimona_types'] = $this->getDimonaTypesOptions();
         return $options;
     }
@@ -66,7 +71,10 @@ class EmployeeTypeService
     public function edit($id)
     {
         $options = $this->create();
-        $options['details'] = $this->show($id);
+        $employeeType = EmployeeType::findOrFail($id);
+        $employeeType->employeeTypeCategoryValue;
+        $employeeType->contractTypesValue;
+        $options['details'] = $employeeType;
         return $options;
     }
 
@@ -121,41 +129,17 @@ class EmployeeTypeService
         }
         return $options;
     }
-    public function getContractTypesOptions()
-    {
-        $options = [];
-        $contract_types = ContractType::where('status', '=', true)->get();
-        foreach ($contract_types as $value) {
-            $options[] = [
-                'value' => $value['id'],
-                'label' => $value['name'],
-            ];
-        }
-        return $options;
-    }
     public function getDimonaTypesOptions()
     {
-        $options = [];
-        $contract_types = DimonaType::where('status', '=', true)->get();
-        foreach ($contract_types as $value) {
-            $options[] = [
-                'value' => $value['id'],
-                'label' => $value['name'],
-            ];
-        }
-        return $options;
+        return DimonaType::where('status', '=', true)
+        ->select('id as value', 'name as label')
+        ->get();
     }
 
     public function getEmployeeTypeOptions()
     {
-        $options = [];
-        $employee_types = EmployeeType::where('status', '=', true)->get();
-        foreach ($employee_types as $value) {
-            $options[] = [
-                'value' => $value['id'],
-                'label' => $value['name'],
-            ];
-        }
-        return $options;
+        return EmployeeType::where('status', '=', true)
+        ->select('id as value', 'name as label')
+        ->get();
     }
 }

@@ -30,20 +30,20 @@ class CompanyService extends BaseService
         try {
 
             return DB::transaction(function () use ($values) {
-                $request_data    = $values;
+                $request_data = $values;
                 $address_service = new AddressService();
-                
-                $company_address         = $address_service->createNewAddress($values['address']);
+
+                $company_address = $address_service->createNewAddress($values['address']);
                 $request_data['address'] = $company_address->id;
                 // $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
-                $company                 = Company::create($request_data);
-                $sectors                 = $values['sectors'];
-                $location_ids            = $this->createCompanyLocations($company, $values); # add company locations
+                $company = Company::create($request_data);
+                $sectors = $values['sectors'];
+                $location_ids = $this->createCompanyLocations($company, $values); # add company locations
                 $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
-                
+
                 $this->syncSectors($company, $values);
                 $company->refresh();
-                return $company ;
+                return $company;
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -70,7 +70,7 @@ class CompanyService extends BaseService
             throw $e;
         }
     }
-    
+
     private function createCompanyLocations(Company $company, $values)
     {
         $location_ids = [];
@@ -146,7 +146,7 @@ class CompanyService extends BaseService
             }
         }
         $filename = str_replace(' ', '_', $request_data['company_name'] . '_' . time() . '_' . $request_data['logo']->getClientOriginalName());
-        $file     = Files::create([
+        $file = Files::create([
             'file_name' => $filename,
             'file_path' => $request_data['logo']->storeAs('public/company_logos', $filename)
         ]);

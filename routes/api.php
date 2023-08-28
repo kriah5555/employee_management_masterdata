@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SectorController;
+use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\EmployeeType\EmployeeTypeController;
 use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
@@ -12,7 +12,7 @@ use App\Http\Controllers\HolidayCodeCountController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
-use App\Http\Controllers\ContractTypeController;
+use App\Http\Controllers\Contract\ContractTypeController;
 
 /*
 |--------------------------------------------------------------------------

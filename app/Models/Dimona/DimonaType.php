@@ -2,13 +2,14 @@
 
 namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\BaseModel;
 
-class DimonaType extends Model
+class DimonaType extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+
+    protected static $sort = ['name'];
+
+    protected $columnsToLog = ['name', 'dimona_type_key', 'status'];
 
     /**
      * The table associated with the model.

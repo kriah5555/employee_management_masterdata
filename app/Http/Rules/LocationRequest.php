@@ -2,19 +2,17 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Services\LocationService;
 
 class LocationRequest extends ApiRequest
-{   
+{
     public function rules() :array
     {
         $location_rules = LocationService::getLocationRules(false);
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             unset($location_rules['company']);
         }
-        return $location_rules;    
+        return $location_rules;
     }
 
     public function messages()

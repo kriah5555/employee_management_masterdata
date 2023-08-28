@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\Contracts\ContractTypeService;
+use App\Services\Contract\ContractTypeService;
 
 class ContractServiceProvider extends ServiceProvider
 {

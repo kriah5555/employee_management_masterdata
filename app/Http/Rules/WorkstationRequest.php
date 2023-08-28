@@ -2,19 +2,17 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Services\WorkstationService;
 
 class WorkstationRequest extends ApiRequest
-{   
+{
     public function rules() :array
     {
         $workstation_rules = WorkstationService::getWorkstationRules(false);
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             unset($workstation_rules['company']);
         }
-        return $workstation_rules;    
+        return $workstation_rules;
     }
 
     public function messages()

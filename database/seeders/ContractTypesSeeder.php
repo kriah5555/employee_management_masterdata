@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Contracts\ContractType;
+use App\Models\Contract\ContractType;
 
 class ContractTypesSeeder extends Seeder
 {

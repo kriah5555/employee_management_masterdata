@@ -13,8 +13,11 @@ class BaseModel extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
+    protected static $sort = [];
+
     protected $columnsToLog = [];
 
+    protected $hidden = ['pivot'];
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -32,5 +35,14 @@ class BaseModel extends Model
     public function isActive(): bool
     {
         return $this->status;
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('sort', function ($query) {
+            foreach (static::$sort as $name) {
+                $query->orderBy($name, 'asc');
+            }
+        });
     }
 }

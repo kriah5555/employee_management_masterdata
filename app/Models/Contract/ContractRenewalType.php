@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Models\Contracts;
+namespace App\Models\Contract;
 
 use App\Models\BaseModel;
+use App\Models\ContractType;
 
-class ContractType extends BaseModel
+class ContractRenewalType extends BaseModel
 {
-    protected $columnsToLog = ['name', 'description', 'renewal', 'status'];
+    protected static $sort = ['name'];
+    protected $columnsToLog = ['key', 'name', 'status'];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'contract_types';
+    protected $table = 'contract_renewal_types';
 
     /**
      * The primary key associated with the table.
@@ -45,11 +47,16 @@ class ContractType extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'key',
         'name',
-        'description',
-        'renewal',
         'status',
         'created_by',
         'updated_by'
     ];
+
+    public function contractType()
+    {
+        return $this->hasMany(ContractType::class)
+        ->where('status', true);
+    }
 }

@@ -28,7 +28,7 @@ class WorkstationService extends BaseService
         //     ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
         //     ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
         //     ->when(isset($args['with']), fn($q) => $q->with($args['with']))
-        //     ->get();  
+        //     ->get();
 
         return $this->model
             ->when(isset($args['status']) && $args['status'] !== 'all', function (Builder $q) use ($args) {
@@ -48,7 +48,7 @@ class WorkstationService extends BaseService
             ->get();
     }
 
-    public static function getWorkstationRules($for_company_creation = true) 
+    public static function getWorkstationRules($for_company_creation = true)
     {
         $rules = [
             'workstation_name'  => 'required|string|max:255',
@@ -60,7 +60,7 @@ class WorkstationService extends BaseService
             ],
         ];
 
-        if ($for_company_creation) {    
+        if ($for_company_creation) {
             $rules = self::addCompanyCreationRules($rules);
         } else {
             $rules = self::addWorkstationRules($rules);
@@ -71,7 +71,7 @@ class WorkstationService extends BaseService
 
     private static function addCompanyCreationRules($rules)
     {
-        $rules['locations_index']   = 'required|array';
+        $rules['locations_index'] = 'required|array';
         $rules['locations_index.*'] = 'integer';
         $rules['function_titles.*'][] = new FunctionTitlesLinkedToSectorRule(request()->input('sectors')); # to validate if the selected function title is linked to the sector selected
         return $rules;
@@ -79,15 +79,15 @@ class WorkstationService extends BaseService
 
     private static function addWorkstationRules($rules)
     {
-        $rules['locations']   = 'nullable|array';
+        $rules['locations'] = 'nullable|array';
         $rules['locations.*'] = [
             Rule::exists('locations', 'id'),
             new LocationLinkedToCompanyRule(request()->input('company'))
         ];
-        
-        $rules['company']     = [
-            'required', 
-            'integer', 
+
+        $rules['company'] = [
+            'required',
+            'integer',
             Rule::exists('companies', 'id')
         ];
         $rules['function_titles.*'][] = new FunctionTitlesLinkedToCompany(request()->input('company')); # to validate if the selected function title is linked to the sector selected
@@ -96,26 +96,26 @@ class WorkstationService extends BaseService
 
     public function create($values)
     {
-        try {   
+        try {
             DB::beginTransaction();
-            
+
             $locations = $values['locations'] ?? [];
             $function_titles = $values['function_titles'] ?? [];
-            
+
             unset($values['locations']);
             unset($values['locations_index']);
-            
+
             $workstation = parent::create($values);
-    
+
             // Attach locations and function titles
             $workstation->locations()->sync($locations);
             $workstation->functionTitles()->sync($function_titles);
-    
+
             // Save the workstation
             $workstation->save();
-    
+
             DB::commit();
-    
+
             return $workstation;
         } catch (Exception $e) {
             DB::rollback();
@@ -124,11 +124,11 @@ class WorkstationService extends BaseService
         }
     }
 
-    public function updateWorkstation(Workstation $workstation, $values) 
+    public function updateWorkstation(Workstation $workstation, $values)
     {
         try {
             DB::beginTransaction();
-            $locations       = $values['locations'] ?? [];
+            $locations = $values['locations'] ?? [];
             $function_titles = $values['function_titles'] ?? [];
             $workstation->locations()->sync($locations);
             $workstation->functionTitles()->sync($function_titles);

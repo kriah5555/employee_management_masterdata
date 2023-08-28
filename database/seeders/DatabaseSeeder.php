@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Database\Seeders\EmployeeTypeCategorySeeder;
 use Database\Seeders\DimonaTypesSeeder;
+use Database\Seeders\ContractRenewalTypesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(EmployeeTypeCategorySeeder::class);
         $this->call(DimonaTypesSeeder::class);
+        $this->call(ContractRenewalTypesSeeder::class);
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
