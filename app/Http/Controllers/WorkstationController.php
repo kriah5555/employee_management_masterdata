@@ -27,7 +27,7 @@ class WorkstationController extends Controller
     //     } catch (Exception $e) {
     //         return response()->json([
     //             'success' => false,
-    //             'message' => $e->getMessage(),
+    //             'message' => [$e->getMessage()],
     //         ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     //     }
     // }
@@ -38,13 +38,16 @@ class WorkstationController extends Controller
             $data = $this->workstation_service->getAll(['company_id' => $company_id, 'status' => $status]);
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -54,13 +57,16 @@ class WorkstationController extends Controller
             $data = $this->workstation_service->getAll(['location_id' => $location_id, 'status' => $status]);
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -71,13 +77,16 @@ class WorkstationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Workstation created successfully',
-                'data' => $location,
+                'data'    => $location,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -85,7 +94,7 @@ class WorkstationController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $workstation,
+            'data'    => $workstation,
         ]);
     }
 
@@ -98,13 +107,16 @@ class WorkstationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Workstation updated successfully',
-                'data' => $workstation,
+                'data'    => $workstation,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 

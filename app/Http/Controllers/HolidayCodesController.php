@@ -25,14 +25,17 @@ class HolidayCodesController extends Controller
             $data = $this->holiday_code_service->getAll();
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }   
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -48,11 +51,14 @@ class HolidayCodesController extends Controller
                 'data'    => $data,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }    
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -62,7 +68,7 @@ class HolidayCodesController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $holiday_code,
+            'data'    => $holiday_code,
         ]);
     }
 
@@ -78,13 +84,16 @@ class HolidayCodesController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Holiday code updated successfully',
-                'data' => $holiday_code,
+                'data'    => $holiday_code,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 

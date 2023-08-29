@@ -2,7 +2,6 @@
 
 namespace App\Http\Rules;
 
-use Illuminate\Validation\Rule;
 use App\Http\Rules\ApiRequest;
 
 class HolidayCodeRequest extends ApiRequest

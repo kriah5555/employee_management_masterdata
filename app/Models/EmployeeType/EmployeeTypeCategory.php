@@ -2,13 +2,13 @@
 
 namespace App\Models\EmployeeType;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\BaseModel;
 
-class EmployeeTypeCategory extends Model
+class EmployeeTypeCategory extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    protected static $sort = ['name'];
+
+    protected $columnsToLog = ['name', 'description', 'status'];
     /**
      * The table associated with the model.
      *
@@ -48,11 +48,4 @@ class EmployeeTypeCategory extends Model
         'updated_at',
         'created_at'
     ];
-
-    protected static function booted()
-    {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
-        });
-    }
 }
