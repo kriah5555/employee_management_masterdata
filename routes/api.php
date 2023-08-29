@@ -13,6 +13,7 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
 use App\Http\Controllers\EmailTemplateApiController;
+use App\Http\Controllers\TranslationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,3 +89,7 @@ Route::get('company/workstations/{company_id}/{status}', [WorkstationController:
 Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');
 
 Route::resource('email-templates', EmailTemplateApiController::class);
+
+Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
+
+Route::resource('/translations', TranslationController::class);

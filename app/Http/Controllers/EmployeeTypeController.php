@@ -35,7 +35,7 @@ class EmployeeTypeController extends Controller
             $employee_type = $this->employee_type_service->create($request->validated());
             return response()->json([
                 'success' => true,
-                'message' => 'Employee type created successfully',
+                'message' => __('Employee type created successfully'),
                 'data' => $employee_type,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
@@ -67,7 +67,7 @@ class EmployeeTypeController extends Controller
             $this->employee_type_service->update($employee_type, $request->validated());
             return response()->json([
                 'success' => true,
-                'message' => 'Employee type updated successfully',
+                'message' => __('Employee type updated successfully'),
                 'data' => $employee_type,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
