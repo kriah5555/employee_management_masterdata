@@ -2,67 +2,99 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\EmailTemplate;
+use Illuminate\Http\JsonResponse;
+use App\Services\EmailTemplateService;
+use App\Http\Rules\EmailTemplateRequest;
 
 class EmailTemplateApiController extends Controller
 {
-    public function index()
+    protected $emailTemplateService;
+
+    public function __construct(EmailTemplateService $emailTemplateService)
     {
-        $emailTemplates = EmailTemplate::all();
-        return response()->json($emailTemplates);
+        $this->emailTemplateService = $emailTemplateService;
     }
 
-    public function store(Request $request)
+    public function index()
     {
-        $data = $request->all();
+        try {
+            $data = $this->emailTemplateService->getAll();
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+            ]);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 
-        $emailTemplate = EmailTemplate::create([
-            'template_type' => $data['template_type'],
-        ]);
-
-        foreach (config('app.available_locales') as $locale) {
-            $emailTemplate->setTranslation('body', $locale, $data['body'][$locale]);
-            $emailTemplate->setTranslation('subject', $locale, $data['subject'][$locale]);
+    public function store(EmailTemplateRequest $request)
+    {
+        try {
+            $email_template = $this->emailTemplateService->create($request->all());
+            return response()->json([
+                'success' => true,
+                'message' => 'Email template created successfully',
+                'data'    => $email_template,
+            ], JsonResponse::HTTP_CREATED);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
 
-        $emailTemplate->save();
 
         return response()->json($emailTemplate, 201);
     }
 
     public function show($id)
     {
-        $emailTemplate = EmailTemplate::findOrFail($id);
+        $emailTemplate = $this->emailTemplateService->get($id);
 
         return response()->json($emailTemplate);
     }
 
-    public function update(Request $request, $id)
+    public function update(EmailTemplateRequest $request, EmailTemplate $emailTemplate)
     {
-        $emailTemplate = EmailTemplate::findOrFail($id);
-        $data = $request->all();
+        try {
+            $email_template = $this->emailTemplateService->update($emailTemplate, $request->all());
+            $email_template->refresh();
 
-        $emailTemplate->update([
-            // 'template_type' => $data['template_type'],
-            'status' => $data['status'],
-        ]);
-
-        foreach (config('app.available_locales') as $locale) {
-            $emailTemplate->setTranslation('body', $locale, $data['body'][$locale]);
-            $emailTemplate->setTranslation('subject', $locale, $data['subject'][$locale]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Email template updated successfully',
+                'data'    => $email_template,
+            ], JsonResponse::HTTP_CREATED);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
 
-        $emailTemplate->save();
 
-        return response()->json($emailTemplate);
     }
 
-    public function destroy($id)
+    public function destroy(EmailTemplate $emailTemplate)
     {
-        $emailTemplate = EmailTemplate::findOrFail($id);
         $emailTemplate->delete();
-
-        return response()->json(['message' => 'Email template deleted']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Email template deleted successfully'
+        ]);
     }
 }
