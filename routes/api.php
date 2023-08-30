@@ -87,11 +87,11 @@ Route::get('company/workstations/{company_id}/{status}', [WorkstationController:
 
 Route::resource('email-templates', EmailTemplateApiController::class);
 
-Route::resource('email-templates', EmailTemplateApiController::class);
+Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
 
-// Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
+Route::get('/translations/{key?}', [TranslationController::class, 'index']);
 
-Route::resource('/translations', TranslationController::class);
+Route::post('/translations', [TranslationController::class, 'store']);
 
 Route::resource('contract-types', ContractTypeController::class);
 

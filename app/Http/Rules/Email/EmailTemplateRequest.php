@@ -13,7 +13,7 @@ class EmailTemplateRequest extends ApiRequest
             'status'        => 'nullable|boolean',
             'body'          => 'required|array',
             'subject'       => 'nullable|array',
-            'body.*'        => 'required|string',
+            'body.*'        => 'nullable|string',
             'subject.*'     => 'nullable|string',
             'template_type' => [
                 'required',

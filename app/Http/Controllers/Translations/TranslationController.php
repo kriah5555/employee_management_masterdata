@@ -2,83 +2,66 @@
 
 namespace App\Http\Controllers\Translations;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Str;
 use Spatie\TranslationLoader\LanguageLine;
 use App\Http\Controllers\Controller;
-
+use Illuminate\Http\JsonResponse;
+use App\Services\Translations\TranslationsService;
+use App\Http\Rules\Translations\TranslationRequest;
 class TranslationController extends Controller
 {
+    protected $translation_service;
+
+    public function __construct(TranslationsService $translation_service)
+    {
+        $this->translation_service = $translation_service;
+    }
+
     public function extractTranslatableStrings()
     {
-        app()->setLocale('nl');
-
-        $pattern = '/__\((["\'])(.*?)\1/';
-
-        $files = File::allFiles(app_path());
+        $this->translation_service->extractTranslatableStrings();
         
-        foreach ($files as $file) {
-            $contents = file_get_contents($file);
-            preg_match_all($pattern, $contents, $matches);
-
-            if (!empty($matches[2])) {
-                foreach ($matches[2] as $stringKey) {
-                    $text = [];
-
-                    foreach (config('app.available_locales') as $locale) {
-                        $text[$locale] = $stringKey;
-                    }
-
-                    $translation = LanguageLine::firstOrNew([
-                        'key' => $stringKey,
-                    ]);
-
-                    $translation->text = $text;
-                    $translation->group = 'messages';
-                    $translation->save();
-                }
-            }
-        }
-        return response()->json(['message' => 'Translations saved successfully', 'data' => $createdTranslations]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => '',
+                'message' => t('Translations saved successfully')
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
-    public function index()
+    public function index($key = '')
     {
-        $translations = LanguageLine::all();
-        return response()->json(['data' => $translations]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->translation_service->getAll(['key' => $key])
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
-    public function store(Request $request)
+    public function store(TranslationRequest $request)
     {
-        $translations = $request->input('translations');
-
-        $createdTranslations = [];
-        foreach ($translations as $translationData) {
-            
-            $group = $translationData['group'];
-            $key   = $translationData['key'];
-            $text  = $translationData['text'];
-
-            $translation = LanguageLine::firstOrNew([
-                'key' => $key,
-            ]);
-            $translation->text  = $text;
-            $translation->group = $group;
-            $translation->save();
-
-            $createdTranslations[] = $translation;
-        }
-
-        return response()->json(['message' => 'Translations saved successfully', 'data' => $createdTranslations]);
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Translations saved successfully'),
+                'data'    => $this->translation_service->create($request->all())
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
     
-    public function destroy($id)
+    public function destroy(LanguageLine $languageLine)
     {
-        $translation = LanguageLine::findOrFail($id);
-        $translation->delete();
-
-        return response()->json(['message' => 'Translation deleted successfully']);
+        $languageLine->delete();
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Translation deleted successfully')
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 }

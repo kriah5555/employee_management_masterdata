@@ -33,8 +33,7 @@ if (!function_exists('t')) {
         $translation = LanguageLine::where('key', $stringKey)->first();
 
         if ($translation && isset($translation->text[$locale])) {
-            // dd($translation->toArray(), $translation->text[$locale]);
-            return $translation->text[$locale];
+            return $translation->text[$locale] ?? $stringKey;
         } else {
             // If translation doesn't exist create new entry
             $text = [];
@@ -53,5 +52,4 @@ if (!function_exists('t')) {
             return $stringKey; // Return the original string if no translation exists
         }
     }
-
 }
