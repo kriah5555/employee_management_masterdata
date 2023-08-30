@@ -47,7 +47,7 @@ class EmployeeTypeRequest extends ApiRequest
     public function messages()
     {
         return [
-            'name.required'      => 'Employee type name is required.',
+            'name.required'      => t('Employee type name is required.'),
             'name.string'        => 'Employee type must be a string.',
             'name.max'           => 'Employee type cannot be greater than 255 characters.',
             'description.string' => 'Description must be a string.',

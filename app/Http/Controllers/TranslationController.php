@@ -14,7 +14,6 @@ class TranslationController extends Controller
     {
         app()->setLocale('nl');
 
-        dd(trans('common.Welcome'));
         $pattern = '/__\((["\'])(.*?)\1/';
 
         $files = File::allFiles(app_path());
