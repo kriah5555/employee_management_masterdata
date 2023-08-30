@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\EmployeeFunction;
 
-use App\Models\Function\FunctionTitle;
+use App\Models\EmployeeFunction\FunctionTitle;
 use App\Http\Rules\FunctionTitleRequest;
 use Illuminate\Http\JsonResponse;
 use App\Services\FunctionService;
+use App\Http\Controllers\Controller;
 
 class FunctionTitleController extends Controller
 {

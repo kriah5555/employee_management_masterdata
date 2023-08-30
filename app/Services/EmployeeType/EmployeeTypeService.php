@@ -30,7 +30,7 @@ class EmployeeTypeService
     public function create()
     {
         $options = [];
-        $options['employee_categories'] = $this->getEmployeeCategoryOptions();
+        $options['employee_type_categories'] = $this->getEmployeeCategoryOptions();
         $options['contract_types'] = $this->contractTypeService->getContractTypesOptions();
         $options['dimona_types'] = $this->getDimonaTypesOptions();
         return $options;
@@ -61,6 +61,7 @@ class EmployeeTypeService
         return EmployeeType::with([
             'employeeTypeCategory',
             'contractTypes',
+            'dimonaType',
         ])->findOrFail($id);
     }
 
@@ -74,6 +75,7 @@ class EmployeeTypeService
         $employeeType = EmployeeType::findOrFail($id);
         $employeeType->employeeTypeCategoryValue;
         $employeeType->contractTypesValue;
+        $employeeType->dimonaTypeValue;
         $options['details'] = $employeeType;
         return $options;
     }
@@ -132,14 +134,14 @@ class EmployeeTypeService
     public function getDimonaTypesOptions()
     {
         return DimonaType::where('status', '=', true)
-        ->select('id as value', 'name as label')
-        ->get();
+            ->select('id as value', 'name as label')
+            ->get();
     }
 
     public function getEmployeeTypeOptions()
     {
         return EmployeeType::where('status', '=', true)
-        ->select('id as value', 'name as label')
-        ->get();
+            ->select('id as value', 'name as label')
+            ->get();
     }
 }

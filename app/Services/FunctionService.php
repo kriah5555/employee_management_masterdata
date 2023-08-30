@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Models\Sector\Sector;
 use Illuminate\Support\Facades\DB;
 use App\Services\SectorService;
-use App\Models\Function\FunctionCategory;
-use App\Models\Function\FunctionTitle;
+use App\Models\EmployeeFunction\FunctionCategory;
+use App\Models\EmployeeFunction\FunctionTitle;
 
 class FunctionService
 {

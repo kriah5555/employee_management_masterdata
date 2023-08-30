@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Function\FunctionTitle;
+use App\Models\EmployeeFunction\FunctionTitle;
 
 class FunctionTitlesLinkedToSectorRule implements Rule
 {

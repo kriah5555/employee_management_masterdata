@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\EmployeeFunction;
 
-use App\Models\Function\FunctionCategory;
+use App\Models\EmployeeFunction\FunctionCategory;
 use App\Http\Rules\FunctionCategoryRequest;
 use Illuminate\Http\JsonResponse;
 use App\Services\FunctionService;
+use App\Http\Controllers\Controller;
 
 class FunctionCategoryController extends Controller
 {
