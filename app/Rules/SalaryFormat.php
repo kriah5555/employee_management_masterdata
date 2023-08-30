@@ -14,8 +14,7 @@ class SalaryFormat implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!(preg_match('/^\d+(\.\d{1,2})?$/', $value) || preg_match('/^\d+(,\d{1,2})?$/', $value)))
-        {
+        if (!(preg_match('/^\d+(\.\d{1,4})?$/', $value) || preg_match('/^\d+(\,\d{1,4})?$/', $value))) {
             $fail('Incorrect salary format.');
         }
     }
