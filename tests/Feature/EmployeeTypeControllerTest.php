@@ -9,20 +9,15 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Database\Factories\EmployeeTypeCategoryFactory;
-use Database\Factories\ContractRenewalFactory;
 use Database\Factories\ContractTypesFactory;
 use Database\Factories\EmployeeTypeFactory;
-use Database\Factories\EmployeeTypeContractFactory;
 use Database\Factories\DimonaTypeFactory;
-use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\Contracts\ContractTypes;
-use App\Models\Contracts\ContractRenewal;
 
 
 class EmployeeTypeControllerTest extends TestCase
 {
     use DatabaseTransactions, WithFaker;
-    
+
     /**
      * Test the index method.
      */
@@ -46,7 +41,6 @@ class EmployeeTypeControllerTest extends TestCase
             'description'               => $this->faker->sentence,
             'employee_type_category_id' => EmployeeTypeCategoryFactory::new()->create()->id,
             'contract_types'            => [ContractTypesFactory::new()->create()->id, ContractTypesFactory::new()->create()->id],
-            'contract_renewal_id'       => ContractRenewalFactory::new()->create()->id,
             'dimona_type_id'            => DimonaTypeFactory::new()->create()->id,
             'status'                    => 1
         ];
@@ -94,7 +88,6 @@ class EmployeeTypeControllerTest extends TestCase
             'description'               => $this->faker->sentence,
             'employee_type_category_id' => EmployeeTypeCategoryFactory::new()->create()->id,
             'contract_types'            => [ContractTypesFactory::new()->create()->id, ContractTypesFactory::new()->create()->id],
-            'contract_renewal_id'       => ContractRenewalFactory::new()->create()->id,
             'dimona_type_id'            => DimonaTypeFactory::new()->create()->id,
             'status'                    => 1
         ];
@@ -116,7 +109,6 @@ class EmployeeTypeControllerTest extends TestCase
      */
     public function test_employee_type_destroy()
     {
-        EmployeeTypeContractFactory::new()->create();
         $employeeType = EmployeeType::latest()->first();
 
         $response = $this->delete("/api/employee-types/{$employeeType->id}");
@@ -155,17 +147,16 @@ class EmployeeTypeControllerTest extends TestCase
             'description'               => $this->faker->sentence,
             'employee_type_category_id' => 't',
             'contract_types'            => 't',
-            'contract_renewal_id'       => 't',
             'dimona_type_id'            => 't',
             'status'                    => "t"
         ];
-    
+
         $response = $this->post('/api/employee-types', $invalidData);
-    
+
         $response->assertStatus(422) // Unprocessable Entity
             ->assertJsonStructure(['success', 'message'])
             ->assertJson(['success' => false]);
-    
+
         // Validate the response message
         $responseData = $response->json('message');
         $this->assertIsArray($responseData);
@@ -173,20 +164,20 @@ class EmployeeTypeControllerTest extends TestCase
         $this->assertContains('The employee type category id field must be an integer.', $responseData);
         $this->assertContains('The contract types field must be an array.', $responseData);
         $this->assertContains('The dimona type id field must be an integer.', $responseData);
-    
+
         // Test contract_types validations
         $invalidData['contract_types'] = ["t", "t"];
-    
+
         $response = $this->post('/api/employee-types', $invalidData);
-    
+
         $response->assertStatus(422) // Unprocessable Entity
             ->assertJsonStructure(['success', 'message'])
             ->assertJson(['success' => false]);
-    
+
         // Validate the response message
         $responseData = $response->json('message');
         $this->assertIsArray($responseData);
         $this->assertContains('The contract_types.0 field must be an integer.', $responseData);
         $this->assertContains('The contract_types.1 field must be an integer.', $responseData);
     }
-}   
+}

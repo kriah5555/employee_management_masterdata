@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Services\LocationService;
 use App\Http\Rules\LocationRequest;
 use App\Models\Location;
@@ -26,7 +27,7 @@ class LocationController extends Controller
     //     } catch (Exception $e) {
     //         return response()->json([
     //             'success' => false,
-    //             'message' => $e->getMessage(),
+    //             'message' => [$e->getMessage()],
     //         ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     //     }
     // }
@@ -37,13 +38,16 @@ class LocationController extends Controller
             $data = $this->location_service->getAll(['company_id' => $company_id, 'status' => $status]);
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -57,13 +61,16 @@ class LocationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Location created successfully',
-                'data' => $location,
+                'data'    => $location,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -74,7 +81,7 @@ class LocationController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $location,
+            'data'    => $location,
         ]);
     }
 
@@ -90,13 +97,16 @@ class LocationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Location updated successfully',
-                'data' => $location,
+                'data'    => $location,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
     public function destroy(Location $location)

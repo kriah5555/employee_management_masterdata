@@ -202,6 +202,7 @@ return [
         App\Providers\EmployeeTypeServiceProvider::class,
         App\Providers\FunctionServiceProvider::class,
         App\Providers\CompanyServiceProvider::class,
+        App\Providers\ContractServiceProvider::class,
 
     ],
 

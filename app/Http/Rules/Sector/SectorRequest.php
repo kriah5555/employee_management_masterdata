@@ -1,11 +1,8 @@
 <?php
 
-namespace App\Http\Rules;
+namespace App\Http\Rules\Sector;
 
 use App\Http\Rules\ApiRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 use App\Rules\SectorExperienceRule;
 use App\Rules\SectorAgeSalaryRule;

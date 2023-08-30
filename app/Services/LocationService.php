@@ -22,10 +22,10 @@ class LocationService extends BaseService
             ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
             ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
             ->when(isset($args['with']), fn($q) => $q->with($args['with']))
-            ->get();    
+            ->get();
     }
 
-    public static function getLocationRules($for_company_creation = true) 
+    public static function getLocationRules($for_company_creation = true)
     {
         $location_rules = [
             'location_name' => 'required|string|max:255',
@@ -46,12 +46,12 @@ class LocationService extends BaseService
     {
         try {
             DB::beginTransaction();
-            $address           = new AddressService();
-            $address           = $address->createNewAddress($values['address']);
+            $address = new AddressService();
+            $address = $address->createNewAddress($values['address']);
             $values['address'] = $address->id;
-            $location          = $this->model->create($values);
+            $location = $this->model->create($values);
             DB::commit();
-            return $location ;
+            return $location;
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
@@ -59,7 +59,7 @@ class LocationService extends BaseService
         }
     }
 
-    public function update($location, $values) 
+    public function update($location, $values)
     {
         try {
             DB::beginTransaction();

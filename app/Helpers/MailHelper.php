@@ -18,17 +18,17 @@ use GuzzleHttp\Psr7\Request;
  */
 function sendMail($viewName = '', $toAddress = [], $ccAddress = [], $subject = [], $attachements = [], $tokensArray = [])
 {
-  $siteEnvironment = env('SITE_ENVIRONMENT') ?? 'LOCAL'; //NOSONAR
+    $siteEnvironment = env('SITE_ENVIRONMENT') ?? 'LOCAL'; //NOSONAR
 
-  try{
-    Mail::to($finalTodoAddress)
-    ->cc($finalCcAddress)
-    // ->bcc(ABSOLUTE_YOU_SYSTEM_MAIL)
-    ->send(new MailService( $subject, $viewName, $attachements, $tokensArray ));
-    return ['status' => 200, 'message' => 'mail sent successfully.!'];
-  } catch(Exception $e) {
-    return ['status' => 500, 'message' => $e->getMessage()];
-  }
+    try {
+        Mail::to($finalTodoAddress)
+            ->cc($finalCcAddress)
+            // ->bcc(ABSOLUTE_YOU_SYSTEM_MAIL)
+            ->send(new MailService($subject, $viewName, $attachements, $tokensArray));
+        return ['status' => 200, 'message' => 'mail sent successfully.!'];
+    } catch (Exception $e) {
+        return ['status' => 500, 'message' => [$e->getMessage()]];
+    }
 }
 
 /**
@@ -43,7 +43,6 @@ function sendMail($viewName = '', $toAddress = [], $ccAddress = [], $subject = [
  */
 function sendNotification($notifyData)
 {
-  $notify = new NotificationController();
-  return $notify->createNotifications($notifyData);
+    $notify = new NotificationController();
+    return $notify->createNotifications($notifyData);
 }
-

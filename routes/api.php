@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SectorController;
+use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\EmployeeType\EmployeeTypeController;
 use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\FunctionTitleController;
 use App\Http\Controllers\FunctionCategoryController;
@@ -14,6 +14,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
 use App\Http\Controllers\EmailTemplateApiController;
 use App\Http\Controllers\TranslationController;
+use App\Http\Controllers\Contract\ContractTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,9 @@ use App\Http\Controllers\TranslationController;
 
     500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
+$integerRule                    = '[0-9]+'; # allow only integer values
+$statusRule                     = '^(0|1|all)$'; # allow only 0 1 0r all values
+$numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -50,8 +54,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
-
-Route::get('get-type-options', [EmployeeTypeController::class, 'getEmployeeTypeOptions']);
 
 Route::resource('employee-types', EmployeeTypeController::class)->withTrashed(['show']);
 
@@ -67,29 +69,28 @@ Route::resource('holiday-codes', HolidayCodesController::class);
 
 Route::resource('holiday-code-count', HolidayCodeCountController::class);
 
-Route::get('get-minimum-salaries/{id}', [SalaryController::class, 'getMinimumSalaries']);
+Route::get('get-minimum-salaries/{id}/{increment_coefficient?}', [SalaryController::class, 'getMinimumSalaries'])->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
 
-Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries']);
+Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', [SalaryController::class, 'addIncrementToMinimumSalaries'])->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
 
-Route::middleware('validate.api.token')->group(function () {
-    Route::get('/testing', function () {
-        return response()->json([
-            'message' => 'Test API.'
-        ]);
-      });
-});
+Route::post('undo-coefficient-minimum-salaries/{sector_id}', [SalaryController::class, 'undoIncrementedMinimumSalaries'])->where(['sector_id' => $integerRule]);
+
+Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries'])->where(['id' => $integerRule]);
+
 Route::resource('locations', LocationController::class);
 
-Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', '^(0|1|all)$');
+Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', $statusRule);
 
 Route::resource('workstations', WorkstationController::class);
 
-Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', '^(0|1|all)$');
-
-Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');
+Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', $statusRule);
 
 Route::resource('email-templates', EmailTemplateApiController::class);
 
 Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
 
 Route::resource('/translations', TranslationController::class);
+
+Route::resource('contract-types', ContractTypeController::class);
+
+Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', $statusRule);

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Contracts\ContractType;
+use App\Models\Contract\ContractType;
 
 class ContractTypesSeeder extends Seeder
 {
@@ -14,9 +14,9 @@ class ContractTypesSeeder extends Seeder
     public function run(): void
     {
         $contractTypeList = [
-            ['name' => 'Daily contract', 'contract_type_key' => 'day', 'created_by' => 0, 'updated_by' => 0],
-            ['name' => 'Flexible','contract_type_key' => 'flexible', 'created_by' => 0, 'updated_by' => 0],
-            ['name' => 'Overtime','contract_type_key' => 'overtime', 'created_by' => 0, 'updated_by' => 0],
+            ['name' => 'Daily contract', 'created_by' => 0, 'updated_by' => 0],
+            ['name' => 'Flexible', 'created_by' => 0, 'updated_by' => 0],
+            ['name' => 'Overtime', 'created_by' => 0, 'updated_by' => 0],
         ];
         ContractType::insert($contractTypeList);
     }

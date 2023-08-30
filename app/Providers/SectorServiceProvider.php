@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Services\SectorService;
 use App\Services\SectorSalaryService;
-use App\Services\EmployeeTypeService;
+use App\Services\EmployeeType\EmployeeTypeService;
 
 class SectorServiceProvider extends ServiceProvider
 {

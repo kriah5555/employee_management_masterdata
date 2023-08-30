@@ -3,18 +3,17 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\Contract\ContractTypeService;
 
-class EmployeeTypeServiceProvider extends ServiceProvider
+class ContractServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
      */
     public function register(): void
     {
-        $this->app->bind(EmployeeTypeService::class, function ($app) {
-            return new EmployeeTypeService($app->make(ContractTypeService::class));
+        $this->app->bind(ContractTypeService::class, function () {
+            return new ContractTypeService();
         });
     }
 

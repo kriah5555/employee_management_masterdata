@@ -27,13 +27,16 @@ class CompanyController extends Controller
             $data = $this->company_service->getAll();
             return response()->json([
                 'success' => true,
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -47,13 +50,16 @@ class CompanyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Company created successfully',
-                'data' => $company,
+                'data'    => $company,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -64,7 +70,7 @@ class CompanyController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $company,
+            'data'    => $company,
         ]);
     }
 
@@ -80,13 +86,16 @@ class CompanyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Company updated successfully',
-                'data' => $company,
+                'data'    => $company,
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -107,7 +116,7 @@ class CompanyController extends Controller
         $data = $this->company_service->getCreateCompanyOptions();
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data'    => $data
         ]);
     }
 }

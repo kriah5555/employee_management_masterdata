@@ -3,9 +3,6 @@
 namespace App\Http\Rules;
 
 use App\Http\Rules\ApiRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
 class FunctionTitleRequest extends ApiRequest
