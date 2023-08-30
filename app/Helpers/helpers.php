@@ -26,9 +26,11 @@ if (!function_exists('hasDuplicates')) {
 }
 
 if (!function_exists('t')) {
-    function t($stringKey)
+    function t($stringKey, $locale = '')
     {
-        $locale = app()->getLocale();
+        // app()->setLocale('nl');
+
+        $locale = $locale ?? app()->getLocale();
 
         $translation = LanguageLine::where('key', $stringKey)->first();
 

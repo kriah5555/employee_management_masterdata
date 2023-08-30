@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Services\Translations\TranslationsService;
 use App\Http\Rules\Translations\TranslationRequest;
+use Illuminate\Http\Request;
+
 class TranslationController extends Controller
 {
     protected $translation_service;
@@ -60,6 +62,17 @@ class TranslationController extends Controller
             [
                 'success' => true,
                 'message' => t('Translation deleted successfully')
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function getStringTranslation(Request $request)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->translation_service->getTranslation($request->input('key'))
             ],
             JsonResponse::HTTP_OK,
         );

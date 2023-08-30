@@ -93,6 +93,8 @@ Route::get('/translations/{key?}', [TranslationController::class, 'index']);
 
 Route::post('/translations', [TranslationController::class, 'store']);
 
+Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
+
 Route::resource('contract-types', ContractTypeController::class);
 
 Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', $statusRule);

@@ -79,4 +79,17 @@ class TranslationsService extends BaseService
 
         return $query->get();
     }
+
+    public function getTranslation($string) 
+    {
+        if ($string) {
+            $availableLanguages = config('app.available_locales');
+
+            $translations = [];
+            foreach ($availableLanguages as $language) {
+                $translations[$language] = t($string, $language);
+            }
+            return $translations;
+        }
+    }   
 }
