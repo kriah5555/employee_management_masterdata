@@ -21,11 +21,13 @@ class FunctionCategoryController extends Controller
      */
     public function index()
     {
-        $data = FunctionCategory::all();
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->functionService->indexFunctionCategories(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -33,22 +35,14 @@ class FunctionCategoryController extends Controller
      */
     public function store(FunctionCategoryRequest $request)
     {
-        try {
-            $function_category = FunctionCategory::create($request->validated());
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
                 'message' => 'Function category created successfully',
-                'data' => $function_category,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->storeFunctionCategories($request->validated()),
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 
     /**
@@ -56,44 +50,28 @@ class FunctionCategoryController extends Controller
      */
     public function show($id)
     {
-        try {
-            $function_category = $this->functionService->getFunctionCategoryDetails($id);
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
-                'data' => $function_category,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->showFunctionCategory($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(FunctionCategoryRequest $request, FunctionCategory $function_category)
+    public function update(FunctionCategoryRequest $request, FunctionCategory $functionCategory)
     {
-        try {
-            $function_category->update($request->validated());
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
                 'message' => 'Function category updated successfully',
-                'data' => $function_category,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->updateFunctionCategories($functionCategory, $request->validated()),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -102,38 +80,34 @@ class FunctionCategoryController extends Controller
     public function destroy(FunctionCategory $function_category)
     {
         $function_category->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Function category deleted successfully'
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Function category deleted successfully'
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     public function create()
     {
-        $data = $this->functionService->getCreateFunctionCategoryOptions();
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->functionService->createFunctionCategory(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     public function edit($id)
     {
-        try {
-            $data = $this->functionService->getCreateFunctionCategoryOptions();
-            $data['details'] = $this->functionService->getFunctionCategoryDetails($id);
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
-                'data' => $data,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->editFunctionCategory($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 }

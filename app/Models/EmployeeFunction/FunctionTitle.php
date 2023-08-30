@@ -2,14 +2,13 @@
 
 namespace App\Models\EmployeeFunction;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeFunction\FunctionCategory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\BaseModel;
 
-class FunctionTitle extends Model
+class FunctionTitle extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    protected static $sort = ['name'];
+    protected $columnsToLog = ['name', 'description', 'function_code', 'function_category_id', 'status'];
 
     /**
      * The table associated with the model.
@@ -52,17 +51,15 @@ class FunctionTitle extends Model
         'updated_by',
     ];
 
-    // protected $with = ['functionCategory'];
-
     public function functionCategory()
     {
         return $this->belongsTo(FunctionCategory::class)->withTrashed();
     }
 
-    protected static function booted()
+    public function functionCategoryValue()
     {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
-        });
+        return $this->belongsTo(FunctionCategory::class, 'function_category_id')
+            ->select('id as value', 'name as label')
+            ->where('status', true);
     }
 }

@@ -22,11 +22,13 @@ class FunctionTitleController extends Controller
      */
     public function index()
     {
-        $data = FunctionTitle::all();
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->functionService->indexFunctionTitles(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -34,22 +36,14 @@ class FunctionTitleController extends Controller
      */
     public function store(FunctionTitleRequest $request)
     {
-        try {
-            $function = FunctionTitle::create($request->validated());
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
                 'message' => 'Function created successfully',
-                'data' => $function,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->storeFunctionTitle($request->validated()),
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 
     /**
@@ -57,44 +51,28 @@ class FunctionTitleController extends Controller
      */
     public function show($id)
     {
-        try {
-            $function_title = $this->functionService->getFunctionTitleDetails($id);
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
-                'data' => $function_title,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->showFunctionTitle($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(FunctionTitleRequest $request, FunctionTitle $function_title)
+    public function update(FunctionTitleRequest $request, FunctionTitle $functionTitle)
     {
-        try {
-            $function_title->update($request->validated());
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
                 'message' => 'Function updated successfully',
-                'data' => $function_title,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->updateFunctionTitle($functionTitle, $request->validated()),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -103,39 +81,35 @@ class FunctionTitleController extends Controller
     public function destroy(FunctionTitle $function_title)
     {
         $function_title->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Function deleted successfully'
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Function deleted successfully'
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     public function create()
     {
-        $data = $this->functionService->getCreateFunctionTitleOptions();
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->functionService->createFunctionTitle(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     public function edit($id)
     {
-        try {
-            $data = $this->functionService->getCreateFunctionTitleOptions();
-            $data['details'] = $this->functionService->getFunctionTitleDetails($id);
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
-                'data' => $data,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success'  => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->functionService->editFunctionTitle($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
 }

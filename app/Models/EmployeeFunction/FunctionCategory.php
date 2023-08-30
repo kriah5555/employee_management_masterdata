@@ -2,15 +2,13 @@
 
 namespace App\Models\EmployeeFunction;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Sector\Sector;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\BaseModel;
 
-class FunctionCategory extends Model
+class FunctionCategory extends BaseModel
 {
-    use HasFactory, SoftDeletes;
-
+    protected static $sort = ['name'];
+    protected $columnsToLog = ['name', 'description', 'category', 'sector_id', 'status'];
     /**
      * The table associated with the model.
      *
@@ -56,11 +54,10 @@ class FunctionCategory extends Model
     {
         return $this->belongsTo(Sector::class)->withTrashed();
     }
-
-    protected static function booted()
+    public function sectorValue()
     {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
-        });
+        return $this->belongsTo(Sector::class, 'sector_id')
+            ->select('id as value', 'name as label')
+            ->where('status', true);
     }
 }

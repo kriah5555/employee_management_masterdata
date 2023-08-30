@@ -121,15 +121,9 @@ class EmployeeTypeService
 
     public function getEmployeeCategoryOptions()
     {
-        $options = [];
-        $contract_types = EmployeeTypeCategory::where('status', '=', true)->get();
-        foreach ($contract_types as $value) {
-            $options[] = [
-                'value' => $value['id'],
-                'label' => $value['name'],
-            ];
-        }
-        return $options;
+        return EmployeeTypeCategory::where('status', '=', true)
+            ->select('id as value', 'name as label')
+            ->get();
     }
     public function getDimonaTypesOptions()
     {
