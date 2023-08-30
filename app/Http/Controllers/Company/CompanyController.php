@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Company;
 
 use App\Models\Company;
 use App\Http\Rules\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
-use App\Models\Files;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
 
 
 class CompanyController extends Controller
@@ -23,21 +22,13 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        try {
-            $data = $this->company_service->getAll();
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
-                'data'    => $data,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->company_service->getAll(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -45,22 +36,14 @@ class CompanyController extends Controller
      */
     public function store(CompanyRequest $request)
     {
-        try {
-            $company = $this->company_service->create($request->all());
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
                 'message' => 'Company created successfully',
-                'data'    => $company,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->company_service->create($request->validated()),
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 
     /**

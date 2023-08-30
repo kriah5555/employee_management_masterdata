@@ -19,7 +19,9 @@ class Address extends Model
         "postal_code",
         "city",
         "country",
-        "status"
+        "status",
+        "latitude",
+        "longitude"
     ];
 
     protected $dates = [
