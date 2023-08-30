@@ -48,7 +48,7 @@ if (!function_exists('t')) {
             ]);
 
             $translation->text = $text;
-            $translation->group = 'custoom';
+            $translation->group = 'custom';
             $translation->save();
 
             return $stringKey; // Return the original string if no translation exists

@@ -92,7 +92,7 @@ class ContractTypeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'message' => 'Contract type updated successfully',
+                'message' => t('Contract type updated successfully'),
                 'data'    => $this->contractTypeService->update($contractType, $request->validated()),
             ],
             JsonResponse::HTTP_OK,

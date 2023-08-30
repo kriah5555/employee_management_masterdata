@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(EmployeeTypeCategorySeeder::class);
         $this->call(DimonaTypesSeeder::class);
         $this->call(ContractRenewalTypesSeeder::class);
-        $this->call(ContractTypesSeeder::class);
+        // $this->call(ContractTypesSeeder::class);
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
