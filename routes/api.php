@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sector\SectorController;
-use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\EmployeeType\EmployeeTypeController;
 use App\Http\Controllers\HolidayCodesController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;

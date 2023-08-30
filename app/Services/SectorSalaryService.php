@@ -31,7 +31,7 @@ class SectorSalaryService
             $data = [];
             $data['level'] = $item->level;
             foreach ($item->minimumSalary as $salary_item) {
-                $data['cat' . $salary_item->category_number] = $salary_item->salary;
+                $data['cat' . $salary_item->category_number] = !$salary_item->salary ? $salary_item->salary : number_format($salary_item->salary, 4);
             }
             $return['salaries'][] = $data;
         }
