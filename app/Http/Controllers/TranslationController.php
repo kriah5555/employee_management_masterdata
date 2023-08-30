@@ -40,9 +40,7 @@ class TranslationController extends Controller
                 }
             }
         }
-
         return response()->json(['message' => 'Translations saved successfully', 'data' => $createdTranslations]);
-
     }
 
     public function index()
@@ -59,13 +57,13 @@ class TranslationController extends Controller
         foreach ($translations as $translationData) {
             
             $group = $translationData['group'];
-            $key = $translationData['key'];
-            $text = $translationData['text'];
+            $key   = $translationData['key'];
+            $text  = $translationData['text'];
 
             $translation = LanguageLine::firstOrNew([
                 'key' => $key,
             ]);
-            $translation->text = $text;
+            $translation->text  = $text;
             $translation->group = $group;
             $translation->save();
 

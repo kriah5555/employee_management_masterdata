@@ -87,7 +87,7 @@ Route::get('company/workstations/{company_id}/{status}', [WorkstationController:
 
 Route::resource('email-templates', EmailTemplateApiController::class);
 
-Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
+// Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
 
 Route::resource('/translations', TranslationController::class);
 
