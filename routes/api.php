@@ -12,7 +12,8 @@ use App\Http\Controllers\HolidayCodeCountController;
 use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
-use App\Http\Controllers\EmailTemplateApiController;
+use App\Http\Controllers\Email\EmailTemplateApiController;
+use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
 
 /*
@@ -84,9 +85,13 @@ Route::resource('workstations', WorkstationController::class);
 
 Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', $statusRule);
 
-Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', '^(0|1|all)$');
+Route::resource('email-templates', EmailTemplateApiController::class);
 
 Route::resource('email-templates', EmailTemplateApiController::class);
+
+// Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
+
+Route::resource('/translations', TranslationController::class);
 
 Route::resource('contract-types', ContractTypeController::class);
 

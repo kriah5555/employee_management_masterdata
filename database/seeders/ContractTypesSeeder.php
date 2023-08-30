@@ -14,9 +14,9 @@ class ContractTypesSeeder extends Seeder
     public function run(): void
     {
         $contractTypeList = [
-            ['name' => 'Daily contract', 'created_by' => 0, 'updated_by' => 0],
-            ['name' => 'Flexible', 'created_by' => 0, 'updated_by' => 0],
-            ['name' => 'Overtime', 'created_by' => 0, 'updated_by' => 0],
+            ['name' => 'Daily contract', 'contract_renewal_type_id' => 1, 'created_by' => 0, 'updated_by' => 0],
+            ['name' => 'Flexible', 'contract_renewal_type_id' => 1, 'created_by' => 0, 'updated_by' => 0],
+            ['name' => 'Overtime', 'contract_renewal_type_id' => 1, 'created_by' => 0, 'updated_by' => 0],
         ];
         ContractType::insert($contractTypeList);
     }

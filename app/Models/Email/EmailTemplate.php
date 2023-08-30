@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Email;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,6 +10,8 @@ class EmailTemplate extends Model
 {
     use HasTranslations, SoftDeletes;
 
+    protected $tabel = 'email_templates';
+    
     public $translatable = ['body', 'subject'];
 
     protected $fillable = [

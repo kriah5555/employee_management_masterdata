@@ -1,10 +1,11 @@
 <?php
-// app/Http/Controllers/EmailTemplateController.php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Email;
 
 use Illuminate\Http\Request;
-use App\Models\EmailTemplate;
+use App\Models\BaseModel;
+use App\Models\Email\EmailTemplate;
+use App\Http\Controllers\Controller;
 
 class EmailTemplateController extends Controller
 {

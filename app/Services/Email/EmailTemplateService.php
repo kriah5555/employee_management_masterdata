@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Email;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\EmailTemplate;
-
+use App\Models\Email\EmailTemplate;
+use App\Services\BaseService;
 class EmailTemplateService extends BaseService
 {
     protected $sectorService;
