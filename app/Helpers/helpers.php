@@ -1,14 +1,7 @@
 <?php
 
-<<<<<<< HEAD
-use Spatie\TranslationLoader\LanguageLine;
-
-if (!function_exists('api_response')) {
-    function api_response($status, $message, $data = '', $server_error_status = '')
-=======
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
->>>>>>> dev
     {
         if (array_key_exists('message', $data)) {
             $data['message'] = is_array($data['message']) ? $data['message'] : [$data['message']];
