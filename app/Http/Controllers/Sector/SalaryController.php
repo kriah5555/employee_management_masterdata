@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sector;
 
-use Illuminate\Http\Request;
-use App\Models\MinimumSalary;
 use App\Services\SectorSalaryService;
 use App\Services\SectorService;
 use App\Http\Rules\UpdateMinimumSalariesRequest;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class SalaryController extends Controller
 {
@@ -23,44 +22,29 @@ class SalaryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function getMinimumSalaries($id, $increment_coefficient = '')
+    public function getMinimumSalaries($id)
     {
-        try {
-            $data = $this->sectorSalaryService->getMinimumSalariesBySectorId($id, $increment_coefficient);
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
-                'data'    => $data,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->sectorSalaryService->getMinimumSalariesBySectorId($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
     /**
      * Display a listing of the resource.
      */
     public function updateMinimumSalaries(UpdateMinimumSalariesRequest $request, $id)
     {
-        try {
-            $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries']);
-            return response()->json([
+        $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries']);
+        return returnResponse(
+            [
                 'success' => true,
                 'message' => 'Minimum salaries updated'
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     public function addIncrementToMinimumSalaries($sector_id, $increment_coefficient)

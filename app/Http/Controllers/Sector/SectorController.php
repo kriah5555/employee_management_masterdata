@@ -6,6 +6,7 @@ use App\Models\Sector\Sector;
 use App\Http\Rules\Sector\SectorRequest;
 use App\Services\SectorService;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class SectorController extends Controller
 {

@@ -6,10 +6,10 @@ use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeType\EmployeeTypeController;
 use App\Http\Controllers\HolidayCodesController;
-use App\Http\Controllers\FunctionTitleController;
-use App\Http\Controllers\FunctionCategoryController;
+use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
+use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
 use App\Http\Controllers\HolidayCodeCountController;
-use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
 use App\Http\Controllers\EmailTemplateApiController;
@@ -42,8 +42,8 @@ use App\Http\Controllers\Contract\ContractTypeController;
 
     500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
-$integerRule                    = '[0-9]+'; # allow only integer values
-$statusRule                     = '^(0|1|all)$'; # allow only 0 1 0r all values
+$integerRule = '[0-9]+'; # allow only integer values
+$statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -68,7 +68,7 @@ Route::resource('holiday-codes', HolidayCodesController::class);
 
 Route::resource('holiday-code-count', HolidayCodeCountController::class);
 
-Route::get('get-minimum-salaries/{id}/{increment_coefficient?}', [SalaryController::class, 'getMinimumSalaries'])->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
+Route::get('get-minimum-salaries/{id}', [SalaryController::class, 'getMinimumSalaries']);
 
 Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', [SalaryController::class, 'addIncrementToMinimumSalaries'])->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
 

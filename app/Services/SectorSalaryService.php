@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Sector\Sector;
 use Illuminate\Support\Facades\DB;
 use App\Models\MinimumSalary;
 use App\Models\MinimumSalaryBackup;
@@ -19,7 +18,7 @@ class SectorSalaryService
         $this->sectorService = $sectorService;
     }
 
-    public function getMinimumSalariesBySectorId($id, $increment_coefficient = '')
+    public function getMinimumSalariesBySectorId($id)
     {
         $sector = $this->sectorService->getSectorDetails($id);
         $sector->salaryConfig->salarySteps;
@@ -32,9 +31,7 @@ class SectorSalaryService
             $data = [];
             $data['level'] = $item->level;
             foreach ($item->minimumSalary as $salary_item) {
-                $data['cat'.$salary_item->category_number] = ($increment_coefficient) 
-                ? str(($salary_item->salary + ($salary_item->salary * ($increment_coefficient / 100))) )
-                : $salary_item->salary;
+                $data['cat' . $salary_item->category_number] = $salary_item->salary;
             }
             $return['salaries'][] = $data;
         }
@@ -64,7 +61,7 @@ class SectorSalaryService
 
             foreach ($values as $value) {
                 $sectorSalaryStep = SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
-                                    ->where('level', $value['level'])->firstOrFail();
+                    ->where('level', $value['level'])->firstOrFail();
 
                 foreach ($value['categories'] as $category_value) {
                     $this->updateMinimumSalary($sectorSalaryStep->id, $category_value['category'], $category_value['minimum_salary']);
@@ -142,7 +139,7 @@ class SectorSalaryService
     //                 foreach ($salary_data as $category => $salary) {
     //                     $min_sal = MinimumSalary::where('sector_salary_steps_id', $sector_salary_steps_id)
     //                         ->where('category_number', $category)
-    //                         ->update(['salary' => $salary]); 
+    //                         ->update(['salary' => $salary]);
     //                 }
     //             }
     //             $revert_salary_data_with_cat->delete();
@@ -222,5 +219,5 @@ class SectorSalaryService
     {
         return "The category in the current sector ({$sectorSalaryConfig->category}) is mismatching with the category ($revertCategory) in the revert data";
     }
-    
+
 }

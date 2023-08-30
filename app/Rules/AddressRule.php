@@ -4,7 +4,6 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Rules\AddressRule;
 
 class AddressRule implements ValidationRule
 {
