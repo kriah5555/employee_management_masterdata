@@ -30,8 +30,7 @@ if (!function_exists('t')) {
     {
         // app()->setLocale('nl');
 
-        $locale = $locale ?? app()->getLocale();
-
+        $locale = !empty($locale) ? $locale : app()->getLocale();
         $translation = LanguageLine::where('key', $stringKey)->first();
 
         if ($translation && isset($translation->text[$locale])) {

@@ -25,7 +25,6 @@ class TranslationController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => '',
                 'message' => t('Translations saved successfully')
             ],
             JsonResponse::HTTP_OK,
