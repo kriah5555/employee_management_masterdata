@@ -47,27 +47,6 @@ class CompanyRequest extends ApiRequest
     {
 
         return [
-            'company_name.required'                  => 'Company name is required.',
-            'company_name.string'                    => 'Company name must be a string.',
-            'company_name.max'                       => 'Company name cannot be greater than 255 characters.',
-
-            'status.required'                        => 'Status is required.',
-            'status.boolean'                         => 'Status must be a boolean value.',
-
-            // 'logo.required' => 'Logo is required.',
-            // 'logo.string'   => 'Logo must be a string.',
-            // 'logo.max'      => 'Logo cannot be greater than 255 characters.',
-
-            'sector_id.required'                     => 'Sector ID is required.',
-            'sector_id.array'                        => 'Sector ID must be an array.',
-            'sector_id.*.exists'                     => 'One or more selected sector IDs are invalid.',
-
-            'employer_id.digits_between'             => 'The :attribute must have between :min and :max digits.',
-            'sender_number.digits_between'           => 'The :attribute must have between :min and :max digits.',
-            // 'joint_commission_number.digits_between' => 'The :attribute must have between :min and :max digits.',
-            'rsz_number.digits_between'              => 'The :attribute must have between :min and :max digits.',
-            'social_secretary_number.digits_between' => 'The :attribute must have between :min and :max digits.',
-            'username.max'                           => 'The :attribute must not exceed :max characters.',
         ];
     }
 }
