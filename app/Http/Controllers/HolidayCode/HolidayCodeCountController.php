@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\HolidayCode;
 
 use App\Models\HolidayCodeCount;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\HolidayCodeCountRequest;
+use App\Http\Controllers\Controller;
 
 class HolidayCodeCountController extends Controller
 {
