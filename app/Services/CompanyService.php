@@ -13,7 +13,7 @@ use App\Services\AddressService;
 use App\Services\LocationService;
 use App\Services\WorkstationService;
 use App\Services\BaseService;
-use App\Services\SectorService;
+use App\Services\Sector\SectorService;
 
 class CompanyService extends BaseService
 {

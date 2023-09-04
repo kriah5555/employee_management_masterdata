@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Sector;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\MinimumSalary;
 use App\Models\MinimumSalaryBackup;
-use App\Services\SectorService;
+use App\Services\Sector\SectorService;
 use App\Models\Sector\SectorSalaryConfig;
 use App\Models\Sector\SectorSalarySteps;
 

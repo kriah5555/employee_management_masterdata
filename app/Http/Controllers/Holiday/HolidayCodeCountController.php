@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Holiday;
 
 use App\Models\HolidayCodeCount;
 use Illuminate\Http\JsonResponse;

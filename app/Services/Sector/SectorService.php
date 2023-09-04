@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Sector;
 
 use App\Models\Sector\Sector;
 use Illuminate\Support\Facades\DB;
-use App\Models\EmployeeType\EmployeeType;
 use App\Models\Sector\SectorSalaryConfig;
 use App\Models\Sector\SectorSalarySteps;
 use App\Models\Sector\SectorAgeSalary;
-use App\Services\BaseService;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\MinimumSalary;
 
@@ -185,8 +183,8 @@ class SectorService
     public function getSectorOptions()
     {
         return Sector::where('status', '=', true)
-        ->select('id as value', 'name as label')
-        ->get();
+            ->select('id as value', 'name as label')
+            ->get();
     }
 
     public function getCategoriesForSector()

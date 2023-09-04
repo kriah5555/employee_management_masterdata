@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\EmployeeFunction;
 
-use App\Models\Sector\Sector;
 use Illuminate\Support\Facades\DB;
-use App\Services\SectorService;
+use App\Services\Sector\SectorService;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
 use Exception;

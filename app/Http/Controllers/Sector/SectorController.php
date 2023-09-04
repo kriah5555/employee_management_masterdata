@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Sector;
 
 use App\Models\Sector\Sector;
 use App\Http\Rules\Sector\SectorRequest;
-use App\Services\SectorService;
+use App\Services\Sector\SectorService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
