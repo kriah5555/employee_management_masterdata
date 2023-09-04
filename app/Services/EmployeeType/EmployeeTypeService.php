@@ -5,8 +5,11 @@ namespace App\Services\EmployeeType;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\EmployeeType\EmployeeTypeCategory;
+use App\Models\EmployeeType\EmployeeTypeConfig;
+use App\Models\EmployeeType\EmployeeTypeDimonaConfig;
 use App\Models\Dimona\DimonaType;
 use App\Services\Contract\ContractTypeService;
+use Exception;
 
 class EmployeeTypeService
 {
@@ -45,6 +48,9 @@ class EmployeeTypeService
             return DB::transaction(function () use ($values) {
                 $employee_type = EmployeeType::create($values);
                 $employee_type->contractTypes()->sync($values['contract_types'] ?? []);
+                $values['employee_type_id'] = $employee_type->id;
+                EmployeeTypeConfig::create($values);
+                EmployeeTypeDimonaConfig::create($values);
                 return $employee_type;
             });
         } catch (Exception $e) {
@@ -61,7 +67,8 @@ class EmployeeTypeService
         return EmployeeType::with([
             'employeeTypeCategory',
             'contractTypes',
-            'dimonaType',
+            'dimonaTypeConfig',
+            'dimonaTypeConfig.dimonaType',
         ])->findOrFail($id);
     }
 
@@ -75,7 +82,8 @@ class EmployeeTypeService
         $employeeType = EmployeeType::findOrFail($id);
         $employeeType->employeeTypeCategoryValue;
         $employeeType->contractTypesValue;
-        $employeeType->dimonaTypeValue;
+        $employeeType->employeeTypeConfig;
+        // $employeeType->dimonaTypeConfig->dimonaTypeValue;
         $options['details'] = $employeeType;
         return $options;
     }

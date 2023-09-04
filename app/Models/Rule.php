@@ -1,21 +1,27 @@
 <?php
 
-namespace App\Models\Contract;
+namespace App\Models;
 
 use App\Models\BaseModel;
-use App\Models\Contract\ContractRenewalType;
 
-class ContractType extends BaseModel
+class Rule extends BaseModel
 {
+
+    const EMPLOYEE_TYPE_RULE = 1;
+    const SECTOR_RULE = 2;
+    const EMPLOYEE_TYPE_SECTOR_RULE = 3;
+    const COMPANY_RULE = 4;
+    const LOCATION_RULE = 5;
+
     protected static $sort = ['name'];
 
-    protected $columnsToLog = ['name', 'description', 'contract_renewal_type_id', 'status'];
+    protected $columnsToLog = ['name', 'description', 'type', 'default_value', 'status'];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'contract_types';
+    protected $table = 'rules';
 
     /**
      * The primary key associated with the table.
@@ -50,22 +56,25 @@ class ContractType extends BaseModel
     protected $fillable = [
         'name',
         'description',
-        'contract_renewal_type_id',
+        'type',
+        'default_value',
         'status',
         'created_by',
         'updated_by'
     ];
 
-    public function contractRenewalType()
+    public function setType($value)
     {
-        return $this->belongsTo(ContractRenewalType::class)
-            ->where('status', true);
-    }
+        $validStatuses = [
+            self::EMPLOYEE_TYPE_RULE,
+            self::SECTOR_RULE,
+            self::EMPLOYEE_TYPE_SECTOR_RULE,
+            self::COMPANY_RULE,
+            self::LOCATION_RULE,
+        ];
 
-    public function contractRenewalTypeValue()
-    {
-        return $this->belongsTo(ContractRenewalType::class, 'contract_renewal_type_id')
-            ->select('id as value', 'name as label')
-            ->where('status', true);
+        if (in_array($value, $validStatuses)) {
+            $this->attributes['status'] = $value;
+        }
     }
 }

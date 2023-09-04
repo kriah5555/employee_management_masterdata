@@ -6,6 +6,8 @@ use App\Models\EmployeeType\EmployeeTypeCategory;
 use App\Models\Contract\ContractType;
 use App\Models\BaseModel;
 use App\Models\Dimona\DimonaType;
+use App\Models\EmployeeType\EmployeeTypeConfig;
+use App\Models\EmployeeType\EmployeeTypeDimonaConfig;
 
 class EmployeeType extends BaseModel
 {
@@ -48,7 +50,6 @@ class EmployeeType extends BaseModel
         'name',
         'description',
         "employee_type_category_id",
-        "dimona_type_id",
         'status',
         'created_by',
         'updated_by',
@@ -74,14 +75,13 @@ class EmployeeType extends BaseModel
     {
         return $this->belongsToMany(ContractType::class, 'contract_type_employee_type')->select(['contract_type_id as value', 'name as label']);
     }
-    public function dimonaType()
+    public function dimonaTypeConfig()
     {
-        return $this->belongsTo(DimonaType::class);
+        return $this->hasOne(EmployeeTypeDimonaConfig::class);
     }
-    public function dimonaTypeValue()
+
+    public function employeeTypeConfig()
     {
-        return $this->belongsTo(DimonaType::class, 'dimona_type_id')
-            ->select('id as value', 'name as label')
-            ->where('status', true);
+        return $this->hasOne(EmployeeTypeConfig::class);
     }
 }

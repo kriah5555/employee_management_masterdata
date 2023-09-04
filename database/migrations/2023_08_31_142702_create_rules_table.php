@@ -10,15 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('coefficients', function (Blueprint $table) {
+        Schema::create('rules', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('default_value')->nullable(true);
+            $table->longText('description')->nullable(true);
+            $table->smallInteger('type');
+            $table->string('default_value');
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('coefficients');
+        Schema::dropIfExists('rules');
     }
 };

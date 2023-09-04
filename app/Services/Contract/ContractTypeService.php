@@ -73,7 +73,7 @@ class ContractTypeService
     public function getContractTypesOptions()
     {
         return ContractType::where('status', '=', true)
-        ->select('id as value', 'name as label')
-        ->get();
+            ->select('id as value', 'name as label')
+            ->get();
     }
 }

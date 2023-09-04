@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,7 +14,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('location_id')->references('id')->on('locations')->onDelete('cascade');
             $table->foreignId('workstation_id')->references('id')->on('workstations')->onDelete('cascade');
+            $table->integer('created_by')->nullable(true);
+            $table->integer('updated_by')->nullable(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
