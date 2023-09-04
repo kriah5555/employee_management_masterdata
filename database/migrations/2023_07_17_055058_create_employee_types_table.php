@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->integer('created_by')->nullable(true);
             $table->integer('updated_by')->nullable(true);
             $table->foreignId('employee_type_category_id')->references('id')->on('employee_type_categories')->onDelete('cascade');
-            $table->foreignId('dimona_type_id')->references('id')->on('dimona_types')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

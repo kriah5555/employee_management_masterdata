@@ -4,9 +4,11 @@ namespace App\Models\Contract;
 
 use App\Models\BaseModel;
 use App\Models\Contract\ContractRenewalType;
+use App\Traits\UserAudit;
 
 class ContractType extends BaseModel
 {
+    use UserAudit;
     protected static $sort = ['name'];
 
     protected $columnsToLog = ['name', 'description', 'contract_renewal_type_id', 'status'];

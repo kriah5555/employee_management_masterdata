@@ -5,13 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes, LogsActivity;
+    use HasFactory, Notifiable;
 
     protected $table = 'users';
     protected $connection = 'userdb';
@@ -24,8 +21,6 @@ class User extends Authenticatable
         'username',
         'password',
         'status',
-        'created_by',
-        'updated_by'
     ];
 
     /**
@@ -43,14 +38,6 @@ class User extends Authenticatable
         static::addGlobalScope('sort', function ($query) {
             $query->orderBy('username', 'asc');
         });
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logOnly(['username', 'password', 'status'])
-            ->logOnlyDirty(['username', 'password', 'status'])
-            ->dontSubmitEmptyLogs();
     }
 
     public function isActive(): bool

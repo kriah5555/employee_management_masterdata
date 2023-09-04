@@ -83,7 +83,8 @@ class EmployeeTypeService
         $employeeType->employeeTypeCategoryValue;
         $employeeType->contractTypesValue;
         $employeeType->employeeTypeConfig;
-        // $employeeType->dimonaTypeConfig->dimonaTypeValue;
+        $employeeType->dimonaConfig;
+        $employeeType->dimonaConfig->dimonaTypeValue;
         $options['details'] = $employeeType;
         return $options;
     }
