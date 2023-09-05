@@ -10,9 +10,7 @@ use App\Http\Controllers\Controller;
 
 class EmailTemplateApiController extends Controller
 {
-    protected $emailTemplateService;
-
-    public function __construct(EmailTemplateService $emailTemplateService)
+    public function __construct(protected EmailTemplateService $emailTemplateService)
     {
         $this->emailTemplateService = $emailTemplateService;
     }

@@ -28,7 +28,6 @@ class CompanyService extends BaseService
     public function create($values)
     {
         try {
-
             return DB::transaction(function () use ($values) {
                 $request_data = $values;
                 $address_service = new AddressService();

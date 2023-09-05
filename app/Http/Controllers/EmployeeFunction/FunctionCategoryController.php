@@ -10,9 +10,7 @@ use App\Http\Controllers\Controller;
 
 class FunctionCategoryController extends Controller
 {
-    protected $functionService;
-
-    public function __construct(FunctionService $functionService)
+    public function __construct(protected FunctionService $functionService)
     {
         $this->functionService = $functionService;
     }

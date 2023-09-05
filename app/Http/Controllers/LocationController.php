@@ -9,9 +9,7 @@ use Illuminate\Http\JsonResponse;
 
 class LocationController extends Controller
 {
-    protected $location_service;
-
-    public function __construct(LocationService $location_service)
+    public function __construct(protected LocationService $location_service)
     {
         $this->location_service = $location_service;
     }

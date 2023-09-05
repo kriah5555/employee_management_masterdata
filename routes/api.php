@@ -55,21 +55,35 @@ Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
 
-Route::resource('employee-types', EmployeeTypeController::class);
+Route::resources([
+    'employee-types'      => EmployeeTypeController::class,
+    'sectors'             => SectorController::class,
+    'function-titles'     => FunctionTitleController::class,
+    'function-categories' => FunctionCategoryController::class,
+    'companies'           => CompanyController::class,
+    'holiday-codes'       => HolidayCodesController::class,
+    'holiday-code-count'  => HolidayCodeCountController::class,
+    'email-templates'     => EmailTemplateApiController::class,
+    'contract-types'      => ContractTypeController::class,
+    'workstations'        => WorkstationController::class,
+    'locations'           => LocationController::class,
+]);
 
-Route::resource('sectors', SectorController::class);
+// Route::resource('employee-types', EmployeeTypeController::class);
 
-Route::resource('function-titles', FunctionTitleController::class);
+// Route::resource('sectors', SectorController::class);
 
-Route::resource('function-categories', FunctionCategoryController::class);
+// Route::resource('function-titles', FunctionTitleController::class);
 
-Route::resource('companies', CompanyController::class);
+// Route::resource('function-categories', FunctionCategoryController::class);
 
-Route::resource('holiday-codes', HolidayCodesController::class);
+// Route::resource('companies', CompanyController::class);
 
-Route::resource('holiday-code-count', HolidayCodeCountController::class);
+// Route::resource('holiday-codes', HolidayCodesController::class);
 
-Route::controller(SalaryController::class)->group(function () {
+// Route::resource('holiday-code-count', HolidayCodeCountController::class);
+
+Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
 
     Route::get('get-minimum-salaries/{id}', 'getMinimumSalaries');
 
@@ -81,15 +95,15 @@ Route::controller(SalaryController::class)->group(function () {
     
 });
 
-Route::resource('locations', LocationController::class);
+// Route::resource('locations', LocationController::class);
 
 Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', $statusRule);
 
-Route::resource('workstations', WorkstationController::class);
+// Route::resource('workstations', WorkstationController::class);
 
 Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', $statusRule);
 
-Route::resource('email-templates', EmailTemplateApiController::class);
+// Route::resource('email-templates', EmailTemplateApiController::class);
 
 Route::controller(TranslationController::class)->group(function () {
 
@@ -103,6 +117,6 @@ Route::controller(TranslationController::class)->group(function () {
     
 });
 
-Route::resource('contract-types', ContractTypeController::class);
+// Route::resource('contract-types', ContractTypeController::class);
 
-Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where('status', $statusRule);
+Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where(['status' => $statusRule, 'location_id' => $integerRule]);
