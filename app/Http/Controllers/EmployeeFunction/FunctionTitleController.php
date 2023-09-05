@@ -5,7 +5,7 @@ namespace App\Http\Controllers\EmployeeFunction;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Http\Rules\FunctionTitleRequest;
 use Illuminate\Http\JsonResponse;
-use App\Services\FunctionService;
+use App\Services\EmployeeFunction\FunctionService;
 use App\Http\Controllers\Controller;
 
 class FunctionTitleController extends Controller

@@ -4,6 +4,7 @@ namespace App\Http\Rules\EmployeeType;
 
 use App\Http\Rules\ApiRequest;
 use Illuminate\Validation\Rule;
+use App\Rules\HexColor;
 
 class EmployeeTypeRequest extends ApiRequest
 {
@@ -33,6 +34,16 @@ class EmployeeTypeRequest extends ApiRequest
                 'integer',
                 Rule::exists('dimona_types', 'id'),
             ],
+            'icon_color'                => [
+                'required',
+                new HexColor
+            ],
+            'start_in_past'             => 'required|boolean',
+            'counters'                  => 'required|boolean',
+            'contract_hours_split'      => 'required|boolean',
+            'leave_access'              => 'required|boolean',
+            'holiday_access'            => 'required|boolean',
+            'consecutive_days_limit'    => 'required|integer|min:1|max:7',
         ];
 
     }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\HolidayCode;
 
 use App\Models\HolidayCodes;
-use App\Services\HolidayCodeService;
+use App\Services\Holiday\HolidayCodeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\HolidayCodeRequest;
 use App\Http\Controllers\Controller;

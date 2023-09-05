@@ -5,10 +5,13 @@ namespace App\Models\EmployeeType;
 use App\Models\EmployeeType\EmployeeTypeCategory;
 use App\Models\Contract\ContractType;
 use App\Models\BaseModel;
-use App\Models\Dimona\DimonaType;
+use App\Models\EmployeeType\EmployeeTypeConfig;
+use App\Models\EmployeeType\EmployeeTypeDimonaConfig;
+use App\Traits\UserAudit;
 
 class EmployeeType extends BaseModel
 {
+    use UserAudit;
     protected static $sort = ['name'];
     protected $columnsToLog = ['name', 'description', 'employee_type_category_id', 'status'];
     /**
@@ -47,8 +50,7 @@ class EmployeeType extends BaseModel
     protected $fillable = [
         'name',
         'description',
-        "employee_type_category_id",
-        "dimona_type_id",
+        'employee_type_category_id',
         'status',
         'created_by',
         'updated_by',
@@ -74,14 +76,14 @@ class EmployeeType extends BaseModel
     {
         return $this->belongsToMany(ContractType::class, 'contract_type_employee_type')->select(['contract_type_id as value', 'name as label']);
     }
-    public function dimonaType()
+
+    public function employeeTypeConfig()
     {
-        return $this->belongsTo(DimonaType::class);
+        return $this->hasOne(EmployeeTypeConfig::class);
     }
-    public function dimonaTypeValue()
+
+    public function dimonaConfig()
     {
-        return $this->belongsTo(DimonaType::class, 'dimona_type_id')
-            ->select('id as value', 'name as label')
-            ->where('status', true);
+        return $this->hasOne(EmployeeTypeDimonaConfig::class);
     }
 }

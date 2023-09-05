@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\FunctionService;
-use App\Services\SectorService;
+use App\Services\EmployeeFunction\FunctionService;
+use App\Services\Sector\SectorService;
 
 class FunctionServiceProvider extends ServiceProvider
 {

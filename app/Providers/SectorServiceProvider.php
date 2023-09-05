@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\SectorService;
-use App\Services\SectorSalaryService;
+use App\Services\Sector\SectorService;
+use App\Services\Sector\SectorSalaryService;
 use App\Services\EmployeeType\EmployeeTypeService;
 
 class SectorServiceProvider extends ServiceProvider

@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Models\Sector\Sector;
-use App\Services\SectorService;
+use App\Services\Sector\SectorService;
 
 class MinimumSalariesLevelsRule implements ValidationRule
 {
@@ -21,8 +21,7 @@ class MinimumSalariesLevelsRule implements ValidationRule
         $sector_id = request()->route('id');
         $sector = Sector::findOrFail($sector_id);
         $steps = $sector->salaryConfig->steps;
-        if (count($value) != $steps)
-        {
+        if (count($value) != $steps) {
             $fail('Salaries do not match number of experience level.');
         }
     }

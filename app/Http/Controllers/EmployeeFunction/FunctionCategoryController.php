@@ -5,7 +5,7 @@ namespace App\Http\Controllers\EmployeeFunction;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Http\Rules\FunctionCategoryRequest;
 use Illuminate\Http\JsonResponse;
-use App\Services\FunctionService;
+use App\Services\EmployeeFunction\FunctionService;
 use App\Http\Controllers\Controller;
 
 class FunctionCategoryController extends Controller
