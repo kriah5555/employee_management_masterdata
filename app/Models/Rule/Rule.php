@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Rule;
 
 use App\Models\BaseModel;
 

@@ -15,6 +15,7 @@ use App\Http\Controllers\WorkstationController;
 use App\Http\Controllers\Email\EmailTemplateApiController;
 use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
+use App\Http\Controllers\Rule\RuleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,4 +104,9 @@ Route::group(['middleware' => ['service-registry', 'setactiveuser']], function (
     Route::post('/translations', [TranslationController::class, 'store']);
 
     Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
+
+    // Route::resource('rules', RuleController::class)->only(['index']);
+
+    Route::get('rules/{category}', [RuleController::class, 'index'])->name('rules.index');
+
 });
