@@ -10,10 +10,7 @@ use App\Http\Controllers\Controller;
 
 class SalaryController extends Controller
 {
-    protected $sectorSalaryService;
-    protected $sectorService;
-
-    public function __construct(SectorSalaryService $sectorSalaryService, SectorService $sectorService)
+    public function __construct(protected SectorSalaryService $sectorSalaryService, protected SectorService $sectorService)
     {
         $this->sectorSalaryService = $sectorSalaryService;
         $this->sectorService = $sectorService;

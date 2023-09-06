@@ -11,9 +11,7 @@ use Illuminate\Http\Request;
 
 class TranslationController extends Controller
 {
-    protected $translation_service;
-
-    public function __construct(TranslationsService $translation_service)
+    public function __construct(protected TranslationsService $translation_service)
     {
         $this->translation_service = $translation_service;
     }

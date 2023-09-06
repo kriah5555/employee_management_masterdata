@@ -11,9 +11,7 @@ use App\Models\User;
 
 class EmployeeTypeController extends Controller
 {
-    protected $employeeTypService;
-
-    public function __construct(EmployeeTypeService $employeeTypService)
+    public function __construct(protected EmployeeTypeService $employeeTypService)
     {
         $this->employeeTypService = $employeeTypService;
     }

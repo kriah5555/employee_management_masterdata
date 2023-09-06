@@ -3,16 +3,14 @@
 namespace App\Http\Controllers\HolidayCode;
 
 use App\Models\HolidayCodes;
-use App\Services\Holiday\HolidayCodeService;
+use App\Services\HolidayCode\HolidayCodeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\HolidayCodeRequest;
 use App\Http\Controllers\Controller;
 
 class HolidayCodesController extends Controller
 {
-    protected $holiday_code_service;
-
-    public function __construct(HolidayCodeService $holiday_code_service)
+    public function __construct(protected HolidayCodeService $holiday_code_service)
     {
         $this->holiday_code_service = $holiday_code_service;
     }
@@ -21,21 +19,13 @@ class HolidayCodesController extends Controller
      */
     public function index()
     {
-        try {
-            $data = $this->holiday_code_service->getAll();
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
-                'data'    => $data,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+                'data'    => $this->holiday_code_service->getAll()
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -43,22 +33,14 @@ class HolidayCodesController extends Controller
      */
     public function store(HolidayCodeRequest $request)
     {
-        try {
-            $data = $this->holiday_code_service->create($request->validated());
-            return response()->json([
+        return returnResponse(
+            [
                 'success' => true,
+                'data'    => $this->holiday_code_service->create($request->validated()),
                 'message' => 'Holiday code created successfully',
-                'data'    => $data,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -66,10 +48,24 @@ class HolidayCodesController extends Controller
      */
     public function show(HolidayCodes $holiday_code)
     {
-        return response()->json([
-            'success' => true,
-            'data'    => $holiday_code,
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $holiday_code,
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->holiday_code_service->edit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -77,24 +73,16 @@ class HolidayCodesController extends Controller
      */
     public function update(HolidayCodeRequest $request, HolidayCodes $holiday_code)
     {
-        try {
-            $this->holiday_code_service->update($holiday_code, $request->validated());
-            $holiday_code->refresh();
-
-            return response()->json([
+        $this->holiday_code_service->update($holiday_code, $request->validated());
+        $holiday_code->refresh();
+        return returnResponse(
+            [
                 'success' => true,
                 'message' => 'Holiday code updated successfully',
                 'data'    => $holiday_code,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -103,9 +91,12 @@ class HolidayCodesController extends Controller
     public function destroy(HolidayCodes $holiday_code)
     {
         $holiday_code->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Holiday code deleted successfully'
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Holiday code deleted successfully'
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 }

@@ -9,9 +9,7 @@ use App\Models\Workstation;
 
 class WorkstationController extends Controller
 {
-    protected $workstation_service;
-
-    public function __construct(WorkstationService $workstation_service)
+    public function __construct(protected WorkstationService $workstation_service)
     {
         $this->workstation_service = $workstation_service;
     }

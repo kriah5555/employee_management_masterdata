@@ -10,9 +10,7 @@ use App\Http\Controllers\Controller;
 
 class ContractTypeController extends Controller
 {
-    protected $contractTypeService;
-
-    public function __construct(ContractTypeService $contractTypeService)
+    public function __construct(protected ContractTypeService $contractTypeService)
     {
         $this->contractTypeService = $contractTypeService;
     }

@@ -61,7 +61,7 @@ class Company extends Model
         'updated_at'
     ];
 
-    protected $with = ['sectors','address'];
+    protected $with = ['sectors', 'address'];
 
     public function sectors()
     {
