@@ -57,12 +57,22 @@ class HolidayCodesController extends Controller
         );
     }
 
+    public function edit($id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->holiday_code_service->edit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
     /**
      * Update the specified resource in storage.
      */
     public function update(HolidayCodeRequest $request, HolidayCodes $holiday_code)
     {
-        dd(url()->current());
         $this->holiday_code_service->update($holiday_code, $request->validated());
         $holiday_code->refresh();
         return returnResponse(

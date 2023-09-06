@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contract_type_config', function (Blueprint $table) {
+        Schema::create('reasons', function (Blueprint $table) {
             $table->id();
-            $table->boolean('is_active')->default(true);
+            $table->string('name');
+            $table->string('category');
             $table->boolean('status')->default(true);
-            $table->foreign('contract_type_id')->references('id')->on('contract_types')->onDelete('cascade');
-            $table->foreign('contract_type_employee_type_id')->references('id')->on('contract_type_employee_type')->onDelete('cascade');
             $table->integer('created_by')->nullable(true);
             $table->integer('updated_by')->nullable(true);  
             $table->timestamps();
             $table->softDeletes();
-    
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('contract_type_configs');
+        Schema::dropIfExists('reasons');
     }
 };

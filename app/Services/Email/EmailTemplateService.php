@@ -7,9 +7,7 @@ use App\Models\Email\EmailTemplate;
 use App\Services\BaseService;
 class EmailTemplateService extends BaseService
 {
-    protected $sectorService;
-
-    public function __construct(EmailTemplate $emailTemapet)
+    public function __construct(protected EmailTemplate $emailTemapet)
     {
         parent::__construct($emailTemapet);
     }

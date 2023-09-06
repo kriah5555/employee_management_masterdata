@@ -15,6 +15,7 @@ use App\Http\Controllers\WorkstationController;
 use App\Http\Controllers\Email\EmailTemplateApiController;
 use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
+use App\Http\Controllers\ReasonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +68,7 @@ Route::resources([
     'contract-types'      => ContractTypeController::class,
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
+    'reasons'            => ReasonController::class,
 ]);
 
 // Route::resource('employee-types', EmployeeTypeController::class);
