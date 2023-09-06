@@ -163,7 +163,7 @@ class SectorService
     public function updateSectorAgeSalary(Sector $sector, $value)
     {
         foreach ($value as $val) {
-            $age_values[$val['age']] = $val['value'];
+            $age_values[$val['age']] = $val['percentage'];
         }
         $age = array_keys($age_values);
         SectorAgeSalary::where('sector_id', $sector->id)
