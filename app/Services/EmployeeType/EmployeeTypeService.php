@@ -67,8 +67,8 @@ class EmployeeTypeService
         return EmployeeType::with([
             'employeeTypeCategory',
             'contractTypes',
-            'dimonaTypeConfig',
-            'dimonaTypeConfig.dimonaType',
+            'dimonaConfig',
+            'dimonaConfig.dimonaType',
         ])->findOrFail($id);
     }
 
@@ -113,14 +113,18 @@ class EmployeeTypeService
         return EmployeeType::where('status', '=', true)->get();
     }
 
-    public function update(EmployeeType $employee_type, $values)
+    public function update(EmployeeType $employeeType, $values)
     {
         try {
             DB::beginTransaction();
-            $employee_type->update($values);
-            $employee_type->contractTypes()->sync($values['contract_types'] ?? []);
+            $employeeType->update($values);
+            $employeeType->contractTypes()->sync($values['contract_types'] ?? []);
+            $employeeTypeConfig = $employeeType->employeeTypeConfig;
+            $employeeTypeConfig->update($values);
+            $dimonaConfig = $employeeType->dimonaConfig;
+            $dimonaConfig->update($values);
             DB::commit();
-            return $employee_type;
+            return $employeeType;
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
