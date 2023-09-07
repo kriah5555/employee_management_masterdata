@@ -105,4 +105,6 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
     Route::get('company-workstations/{company_id}/{status}', 'companyWorkstations')->where('status', $statusRule);
 
     Route::get('location-workstations/{location_id}/{status}', 'locationWorkstations')->where(['status' => $statusRule, 'location_id' => $integerRule]);
+
+    Route::get('workstations/create/{company_id}', 'create');
 });

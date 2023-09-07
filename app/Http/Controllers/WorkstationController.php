@@ -79,6 +79,28 @@ class WorkstationController extends Controller
         ]);
     }
 
+    public function create($company_id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->workstation_service->getOptionsToCreate($company_id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->workstation_service->getOptionsToEdit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
     public function update(WorkstationRequest $request, Workstation $workstation)
     {
         try {

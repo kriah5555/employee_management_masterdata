@@ -11,13 +11,13 @@ use App\Rules\FunctionTitlesLinkedToSectorRule;
 use App\Rules\FunctionTitlesLinkedToCompany;
 use App\Rules\LocationLinkedToCompanyRule;
 use App\Services\BaseService;
+use App\Services\LocationService;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\EmployeeFunction\FunctionService;
 
 class WorkstationService extends BaseService
 {
-    protected $workstation;
-
-    public function __construct(Workstation $workstation)
+    public function __construct(Workstation $workstation, protected LocationService $locationService, protected FunctionService $functionService)
     {
         parent::__construct($workstation);
     }
@@ -100,16 +100,16 @@ class WorkstationService extends BaseService
             $locations       = $values['locations'] ?? [];
             $function_titles = $values['function_titles'] ?? [];
 
-            $add_locations = isset($values['locations']);
+            // $add_locations = isset($values['locations']);
             unset($values['locations']);
             unset($values['locations_index']);
 
             $workstation = parent::create($values);
 
             // Attach locations and function titles
-            if ($add_locations) { # in company creation flow we are linking locations in workstations but not workstation creation
-                $workstation->locations()->sync($locations);
-            }
+            // if ($add_locations) { # in company creation flow we are linking locations in workstations but not workstation creation
+            $workstation->locations()->sync($locations);
+            // }
             $workstation->functionTitles()->sync($function_titles);
 
             // Save the workstation
@@ -143,5 +143,31 @@ class WorkstationService extends BaseService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function getOptionsToCreate($company_id)
+    {
+        $function_titles = $this->functionService->getComapnyFunctionTitlesOptions($company_id);
+
+        $locations = $this->locationService->getALL(['company_id' => $company_id]);
+        $modifiedLocations = $locations->map(function ($location) {
+            return [
+                'value' => $location->id,
+                'label' => $location->location_name,
+            ];
+        });
+
+        return [
+            'locations'       => $modifiedLocations,
+            'function_titles' => $function_titles,
+        ];
+    }
+
+    public function getOptionsToEdit($workstation_id)
+    {
+        $workstation_details = $this->get($workstation_id, ['locationsValue', 'functionTitlesValue']);
+        $options             = $this->getOptionsToCreate($workstation_details->company);
+        $options['datails']  = $workstation_details;
+        return $options;
     }
 }

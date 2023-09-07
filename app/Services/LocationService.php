@@ -48,13 +48,13 @@ class LocationService extends BaseService
     public static function addLocationCreationRules($rules)
     {
         $rules['status']           = 'required|boolean';
-        $rules['workstations']     = 'nullable|array';
-        $rules['workstations.*'] = [
-            'bail',
-            'integer',
-            Rule::exists('workstations', 'id'),
-            new WorkstationLinkedToCompanyRule(request()->input('company')),
-        ];
+        // $rules['workstations']     = 'nullable|array';
+        // $rules['workstations.*'] = [
+        //     'bail',
+        //     'integer',
+        //     Rule::exists('workstations', 'id'),
+        //     new WorkstationLinkedToCompanyRule(request()->input('company')),
+        // ];
         return $rules;
     }
 
@@ -66,8 +66,8 @@ class LocationService extends BaseService
             $address           = $address->createNewAddress($values['address']);
             $values['address'] = $address->id;
             $location          = $this->model->create($values);
-            $workstations      = $values['workstations'] ?? [];
-            $location->workstations()->sync($workstations);
+            // $workstations      = $values['workstations'] ?? [];
+            // $location->workstations()->sync($workstations);
             DB::commit();
             return $location;
         } catch (Exception $e) {
@@ -83,8 +83,8 @@ class LocationService extends BaseService
             DB::beginTransaction();
             $address = new AddressService();
             $address->updateAddress($location->address, $values['address']);
-            $workstations      = $values['workstations'] ?? [];
-            $location->workstations()->sync($workstations);
+            // $workstations      = $values['workstations'] ?? [];
+            // $location->workstations()->sync($workstations);
             unset($values['address']);
             unset($values['company']);
             $location->update($values);

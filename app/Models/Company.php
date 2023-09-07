@@ -67,6 +67,12 @@ class Company extends Model
         return $this->belongsToMany(Sector::class, 'sector_to_company');
     }
 
+    public function sectorsValue()
+    {
+        return $this->belongsToMany(Sector::class, 'sector_to_company', 'company_id', 'sector_id')
+            ->select('sectors.id as value', 'sectors.name as label');
+    }
+
     public function locations()
     {
         return $this->belongsToMany(Location::class, 'company_to_locations');

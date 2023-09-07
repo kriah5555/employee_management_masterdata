@@ -93,10 +93,23 @@ class CompanyController extends Controller
 
     public function create()
     {
-        $data = $this->company_service->getCreateCompanyOptions();
-        return response()->json([
-            'success' => true,
-            'data'    => $data
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->company_service->getOptionsToCreate(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->company_service->getOptionsToEdit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 }

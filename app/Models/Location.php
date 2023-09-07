@@ -13,17 +13,15 @@ class Location extends Model
 
     protected $table = "locations";
 
-    protected $primanrkey = 'id';
+    protected $primaryKey = 'id'; // Corrected property name
 
     protected $fillable = [
-        'location_name', 
+        'location_name',
         'status',
         'company',
         'address'
     ];
 
-    protected $with = ['address', 'workstations'];
-    
     public function workstations()
     {
         return $this->belongsToMany(Workstation::class, 'locations_to_workstations');
@@ -32,8 +30,8 @@ class Location extends Model
     public function workstationsValues()
     {
         return $this->belongsToMany(Workstation::class, 'locations_to_workstations')
-        ->select('workstations.id as value', 'workstations.workstation_name as label')
-        ->where('workstations.status', true);
+            ->select('workstations.id as value', 'workstations.workstation_name as label')
+            ->where('workstations.status', true);
     }
 
     public function address()

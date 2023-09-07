@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\Sector\SectorSalaryConfig;
 use App\Models\Sector\SectorAgeSalary;
+use App\Models\EmployeeFunction\FunctionCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
@@ -99,5 +100,9 @@ class Sector extends Model
     public function isActive(): bool
     {
         return $this->status;
+    }
+    public function functionCategories()
+    {
+        return $this->hasMany(FunctionCategory::class)->where('status', true);
     }
 }

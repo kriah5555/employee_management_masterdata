@@ -152,9 +152,18 @@ class CompanyService extends BaseService
         return $file->id;
     }
 
-    public function getCreateCompanyOptions()
+    public function getOptionsToCreate()
     {
-        $options['sectors'] = $this->sectorService->getSectorOptions();
+        return [
+            'sectors' => $this->sectorService->getSectorOptions(),
+        ];
+    }
+
+    public function getOptionsToEdit($company_id)
+    {
+        $company_details    = $this->get($company_id, ['sectorsValue']);
+        $options            = $this->getOptionsToCreate();
+        $options['datails'] = $company_details;
         return $options;
     }
 }
