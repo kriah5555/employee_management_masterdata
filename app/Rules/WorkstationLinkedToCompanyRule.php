@@ -3,9 +3,9 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Location;
+use App\Models\Workstation;
 
-class LocationLinkedToCompanyRule implements Rule
+class WorkstationLinkedToCompanyRule implements Rule
 {
     protected $company_id;
 
@@ -16,12 +16,12 @@ class LocationLinkedToCompanyRule implements Rule
 
     public function passes($attribute, $value)
     {
-        $location = Location::find($value);
-        return $location && $location->company == $this->company_id;
+        $workstation = Workstation::find($value);
+        return $workstation && $workstation->company == $this->company_id;
     }
 
     public function message()
     {
-        return t("The provided location is not linked to the specified company.");
+        return t("The :attribute is not linked to the specified company.");
     }
 }

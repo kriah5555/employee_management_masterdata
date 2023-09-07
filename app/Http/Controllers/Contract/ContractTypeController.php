@@ -12,7 +12,6 @@ class ContractTypeController extends Controller
 {
     public function __construct(protected ContractTypeService $contractTypeService)
     {
-        $this->contractTypeService = $contractTypeService;
     }
 
     /**

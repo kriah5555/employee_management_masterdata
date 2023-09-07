@@ -13,7 +13,6 @@ class EmployeeTypeController extends Controller
 {
     public function __construct(protected EmployeeTypeService $employeeTypService)
     {
-        $this->employeeTypService = $employeeTypService;
     }
 
     /**

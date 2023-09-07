@@ -68,44 +68,12 @@ Route::resources([
     'contract-types'      => ContractTypeController::class,
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
-    'reasons'            => ReasonController::class,
+    'reasons'             => ReasonController::class,
 ]);
-
-// Route::resource('employee-types', EmployeeTypeController::class);
-
-// Route::resource('sectors', SectorController::class);
-
-// Route::resource('function-titles', FunctionTitleController::class);
-
-// Route::resource('function-categories', FunctionCategoryController::class);
-
-// Route::resource('companies', CompanyController::class);
-
-// Route::resource('holiday-codes', HolidayCodesController::class);
-
-// Route::resource('holiday-code-count', HolidayCodeCountController::class);
-
-Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
-
-    Route::get('get-minimum-salaries/{id}', 'getMinimumSalaries');
-
-    Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
-
-    Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
-
-    Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
-    
-});
-
-// Route::resource('locations', LocationController::class);
-
-Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', $statusRule);
-
-// Route::resource('workstations', WorkstationController::class);
 
 Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', $statusRule);
 
-// Route::resource('email-templates', EmailTemplateApiController::class);
+Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where(['status' => $statusRule, 'location_id' => $integerRule]);
 
 Route::controller(TranslationController::class)->group(function () {
 
@@ -116,9 +84,22 @@ Route::controller(TranslationController::class)->group(function () {
     Route::post('/translations', 'store');
     
     Route::post('/translate', 'getStringTranslation');
-    
 });
 
-// Route::resource('contract-types', ContractTypeController::class);
+Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
 
-Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where(['status' => $statusRule, 'location_id' => $integerRule]);
+    Route::get('get-minimum-salaries/{id}', 'getMinimumSalaries');
+
+    Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
+
+    Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+
+    Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+});
+
+Route::controller(LocationController::class)->group(function () use ($statusRule) {
+
+    Route::get('company/locations/{company_id}/{status}', 'locations')->where('status', $statusRule);
+
+    Route::get('/locations/create/{company_id}', 'create');
+});

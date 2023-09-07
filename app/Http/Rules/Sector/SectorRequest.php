@@ -25,6 +25,8 @@ class SectorRequest extends ApiRequest
             'status'             => 'required|boolean',
             'employee_types'     => 'nullable|array',
             'employee_types.*'   => [
+                'bail',
+                'integer',
                 Rule::exists('employee_types', 'id'),
             ],
             'experience' => ['required', 'array', new SectorExperienceRule],

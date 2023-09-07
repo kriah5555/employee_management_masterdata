@@ -12,7 +12,6 @@ class HolidayCodesController extends Controller
 {
     public function __construct(protected HolidayCodeService $holiday_code_service)
     {
-        $this->holiday_code_service = $holiday_code_service;
     }
     /**
      * Display a listing of the resource.
@@ -57,12 +56,23 @@ class HolidayCodesController extends Controller
         );
     }
 
-    public function edit($id)
+    public function create()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holiday_code_service->edit($id),
+                'data'    => $this->holiday_code_service->getOptionsToCreate(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($holiday_code_id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->holiday_code_service->getOptionsToEdit($holiday_code_id),
             ],
             JsonResponse::HTTP_OK,
         );

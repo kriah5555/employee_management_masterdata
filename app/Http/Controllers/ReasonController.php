@@ -11,7 +11,6 @@ class ReasonController extends Controller
 {
     public function __construct(protected ReasonService $reasonService)
     {
-        $this->reasonService = $reasonService;
     }
 
     public function index()

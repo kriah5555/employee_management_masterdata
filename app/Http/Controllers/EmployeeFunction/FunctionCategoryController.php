@@ -12,7 +12,6 @@ class FunctionCategoryController extends Controller
 {
     public function __construct(protected FunctionService $functionService)
     {
-        $this->functionService = $functionService;
     }
     /**
      * Display a listing of the resource.

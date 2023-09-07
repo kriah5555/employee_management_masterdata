@@ -11,7 +11,6 @@ class WorkstationController extends Controller
 {
     public function __construct(protected WorkstationService $workstation_service)
     {
-        $this->workstation_service = $workstation_service;
     }
 
     // public function index()

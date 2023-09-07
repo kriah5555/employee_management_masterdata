@@ -12,7 +12,6 @@ class FunctionTitleController extends Controller
 {
     public function __construct(protected FunctionService $functionService)
     {
-        $this->functionService = $functionService;
     }
 
     /**

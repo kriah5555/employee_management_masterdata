@@ -12,7 +12,6 @@ class EmailTemplateApiController extends Controller
 {
     public function __construct(protected EmailTemplateService $emailTemplateService)
     {
-        $this->emailTemplateService = $emailTemplateService;
     }
 
     public function index()

@@ -13,7 +13,6 @@ class TranslationController extends Controller
 {
     public function __construct(protected TranslationsService $translation_service)
     {
-        $this->translation_service = $translation_service;
     }
 
     public function extractTranslatableStrings()

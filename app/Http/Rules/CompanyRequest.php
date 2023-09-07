@@ -24,6 +24,8 @@ class CompanyRequest extends ApiRequest
             'locations'               => ['nullable', 'array', new LocationRule()],
             'workstations'            => ['nullable', 'array', new WorkstationRule()],
             'sectors.*'               => [
+                'bail',
+                'integer',
                 Rule::exists('sectors', 'id'),
             ],
 

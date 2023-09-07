@@ -13,7 +13,6 @@ class CompanyController extends Controller
 {
     public function __construct(protected CompanyService $company_service)
     {
-        $this->company_service = $company_service;
     }
     /**
      * Display a listing of the resource.
