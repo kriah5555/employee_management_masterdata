@@ -39,7 +39,6 @@ class Company extends Model
         'address', 
         'employer_id',
         'sender_number',
-        // 'joint_commission_number',
         'rsz_number',
         'social_secretary_number',
         'username',
@@ -61,7 +60,7 @@ class Company extends Model
         'updated_at'
     ];
 
-    protected $with = ['sectors','address'];
+    protected $with = ['sectors', 'address'];
 
     public function sectors()
     {

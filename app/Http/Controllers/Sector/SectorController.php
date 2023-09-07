@@ -10,11 +10,8 @@ use Illuminate\Http\JsonResponse;
 
 class SectorController extends Controller
 {
-    protected $sectorService;
-
-    public function __construct(SectorService $sectorService)
+    public function __construct(protected SectorService $sectorService)
     {
-        $this->sectorService = $sectorService;
     }
     /**
      * Display a listing of the resource.

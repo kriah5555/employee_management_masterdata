@@ -27,6 +27,7 @@ class EmployeeTypeRequest extends ApiRequest
             ],
             'contract_types'            => 'nullable|array',
             'contract_types.*'          => [
+                'bail',
                 'integer',
                 Rule::exists('contract_types', 'id'),
             ],

@@ -24,12 +24,6 @@ class WorkstationService extends BaseService
 
     public function getAll(array $args = [])
     {
-        // return $this->model
-        //     ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
-        //     ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
-        //     ->when(isset($args['with']), fn($q) => $q->with($args['with']))
-        //     ->get();
-
         return $this->model
             ->when(isset($args['status']) && $args['status'] !== 'all', function (Builder $q) use ($args) {
                 $q->where('status', $args['status']);
@@ -56,14 +50,16 @@ class WorkstationService extends BaseService
             'status'            => 'required|boolean',
             'function_titles'   => 'nullable|array',
             'function_titles.*' => [
+                'bail',
+                'integer',
                 Rule::exists('function_titles', 'id'),
             ],
         ];
 
-        if ($for_company_creation) {
+        if ($for_company_creation) { # company creation has multi step form with location and workstation inclued so this condition
             $rules = self::addCompanyCreationRules($rules);
         } else {
-            $rules = self::addWorkstationRules($rules);
+            $rules = self::addWorkstationCreationRules($rules);
         }
 
         return $rules;
@@ -71,21 +67,23 @@ class WorkstationService extends BaseService
 
     private static function addCompanyCreationRules($rules)
     {
-        $rules['locations_index'] = 'required|array';
-        $rules['locations_index.*'] = 'integer';
+        $rules['locations_index']     = 'required|array';
+        $rules['locations_index.*']   = 'integer';
         $rules['function_titles.*'][] = new FunctionTitlesLinkedToSectorRule(request()->input('sectors')); # to validate if the selected function title is linked to the sector selected
         return $rules;
     }
 
-    private static function addWorkstationRules($rules)
+    private static function addWorkstationCreationRules($rules)
     {
-        $rules['locations'] = 'nullable|array';
+        $rules['locations']   = 'nullable|array';
         $rules['locations.*'] = [
+            'integer',
             Rule::exists('locations', 'id'),
             new LocationLinkedToCompanyRule(request()->input('company'))
         ];
 
         $rules['company'] = [
+            'bail',
             'required',
             'integer',
             Rule::exists('companies', 'id')
@@ -99,16 +97,19 @@ class WorkstationService extends BaseService
         try {
             DB::beginTransaction();
 
-            $locations = $values['locations'] ?? [];
+            $locations       = $values['locations'] ?? [];
             $function_titles = $values['function_titles'] ?? [];
 
+            $add_locations = isset($values['locations']);
             unset($values['locations']);
             unset($values['locations_index']);
 
             $workstation = parent::create($values);
 
             // Attach locations and function titles
-            $workstation->locations()->sync($locations);
+            if ($add_locations) { # in company creation flow we are linking locations in workstations but not workstation creation
+                $workstation->locations()->sync($locations);
+            }
             $workstation->functionTitles()->sync($function_titles);
 
             // Save the workstation
@@ -128,14 +129,13 @@ class WorkstationService extends BaseService
     {
         try {
             DB::beginTransaction();
-            $locations = $values['locations'] ?? [];
+
             $function_titles = $values['function_titles'] ?? [];
-            $workstation->locations()->sync($locations);
             $workstation->functionTitles()->sync($function_titles);
-            unset($values['locations']);
+
             unset($values['function_titles']);
-            unset($locations['company']);
             $workstation->update($values);
+            
             DB::commit();
             return $workstation;
         } catch (Exception $e) {

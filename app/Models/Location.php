@@ -22,7 +22,7 @@ class Location extends Model
         'address'
     ];
 
-    // protected $with = ['workstations', 'address'];
+    protected $with = ['address', 'workstations'];
     
     public function workstations()
     {

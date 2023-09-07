@@ -24,6 +24,8 @@ class CompanyRequest extends ApiRequest
             'locations'               => ['nullable', 'array', new LocationRule()],
             'workstations'            => ['nullable', 'array', new WorkstationRule()],
             'sectors.*'               => [
+                'bail',
+                'integer',
                 Rule::exists('sectors', 'id'),
             ],
 
@@ -47,6 +49,14 @@ class CompanyRequest extends ApiRequest
     {
 
         return [
+            'email.required' => t('The email field is required.'),
+            'email.max'      => t('The email field may not be greater than 255 characters.'),
+            'email.regex'    => t('The email field must be a valid email address.'),
+            
+            'phone.required' => t('The phone field is required.'),
+            'phone.string'   => t('The phone field must be a string.'),
+            'phone.max'      => t('The phone field may not be greater than 20 characters.'),
+            'phone.regex'    => t('The phone field must be a valid phone number in the format: +XX X XXX XXXX'),
         ];
     }
 }
