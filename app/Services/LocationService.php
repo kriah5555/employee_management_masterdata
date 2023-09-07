@@ -24,6 +24,7 @@ class LocationService extends BaseService
             ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
             ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
             ->when(isset($args['with']), fn($q) => $q->with($args['with']))
+            ->with('workstationsValues')
             ->get();
     }
 
@@ -41,7 +42,6 @@ class LocationService extends BaseService
         if (!$for_company_creation) { # in company creation flow multi step form the workstation and locations are newly created and added so this ocndition will not be required
             $location_rules = self::addLocationCreationRules($location_rules);
         }
-        // dd($location_rules);
         return $location_rules;
     }
 

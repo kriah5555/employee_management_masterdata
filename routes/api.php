@@ -71,10 +71,6 @@ Route::resources([
     'reasons'             => ReasonController::class,
 ]);
 
-Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', $statusRule);
-
-Route::get('location/workstations/{location_id}/{status}', [WorkstationController::class, 'locationWorkstations'])->where(['status' => $statusRule, 'location_id' => $integerRule]);
-
 Route::controller(TranslationController::class)->group(function () {
 
     Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
@@ -99,7 +95,14 @@ Route::controller(SalaryController::class)->group(function () use ($integerRule,
 
 Route::controller(LocationController::class)->group(function () use ($statusRule) {
 
-    Route::get('company/locations/{company_id}/{status}', 'locations')->where('status', $statusRule);
+    Route::get('locations/{company_id}/{status}', 'index')->where('status', $statusRule);
 
     Route::get('/locations/create/{company_id}', 'create');
+});
+
+Route::controller(WorkstationController::class)->group(function () use ($statusRule, $integerRule) {
+
+    Route::get('company-workstations/{company_id}/{status}', 'companyWorkstations')->where('status', $statusRule);
+
+    Route::get('location-workstations/{location_id}/{status}', 'locationWorkstations')->where(['status' => $statusRule, 'location_id' => $integerRule]);
 });

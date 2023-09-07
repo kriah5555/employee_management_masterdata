@@ -13,23 +13,7 @@ class LocationController extends Controller
     {
     }
 
-    // public function index()
-    // {
-    //     try {
-    //         $data = $this->location_service->getAll();
-    //         return response()->json([
-    //             'success' => true,
-    //             'data' => $data,
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => [$e->getMessage()],
-    //         ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
-    public function locations($company_id, $status = 1)
+    public function index($company_id, $status = 1)
     {
         return returnResponse(
             [

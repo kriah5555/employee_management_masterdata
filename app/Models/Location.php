@@ -29,6 +29,13 @@ class Location extends Model
         return $this->belongsToMany(Workstation::class, 'locations_to_workstations');
     }
 
+    public function workstationsValues()
+    {
+        return $this->belongsToMany(Workstation::class, 'locations_to_workstations')
+        ->select('workstations.id as value', 'workstations.workstation_name as label')
+        ->where('workstations.status', true);
+    }
+
     public function address()
     {
         return $this->belongsTo(Address::class, 'address');

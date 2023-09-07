@@ -13,22 +13,6 @@ class WorkstationController extends Controller
     {
     }
 
-    // public function index()
-    // {
-    //     try {
-    //         $data = $this->workstation_service->getAll();
-    //         return response()->json([
-    //             'success' => true,
-    //             'data' => $data,
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => [$e->getMessage()],
-    //         ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
     public function companyWorkstations($company_id, $status)
     {
         try {
