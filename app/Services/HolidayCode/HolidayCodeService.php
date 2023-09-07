@@ -17,12 +17,12 @@ class HolidayCodeService extends BaseService
     {
         return [
             'holiday_type'                      => config('constants.HOLIDAY_TYPE_OPRIONS'),
-            'count_type'                        => config('constants.HOLIDAY_TYPE_OPRIONS'),
-            'icon_type'                         => config('constants.HOLIDAY_TYPE_OPRIONS'),
-            'consider_plan_hours_in_week_hours' => config('constants.HOLIDAY_TYPE_OPRIONS'),
-            'employee_category'                 => config('constants.HOLIDAY_TYPE_OPRIONS'),
-            'contract_type'                     => config('constants.HOLIDAY_TYPE_OPRIONS'),
-            'carry_forword'                     => config('constants.HOLIDAY_TYPE_OPRIONS'),
+            'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPRIONS'),
+            'icon_type'                         => config('constants.HOLIDAY_ICON_TYPE_OPRIONS'),
+            'consider_plan_hours_in_week_hours' => config('constants.YES_OR_NO_OPTIONs'),
+            'employee_category'                 => config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPRIONS'),
+            'contract_type'                     => config('constants.HOLIDAY_CONTRACT_TYPE_OPRIONS'),
+            'carry_forword'                     => config('constants.YES_OR_NO_OPTIONs'),
         ];
     }
 
