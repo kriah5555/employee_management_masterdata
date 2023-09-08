@@ -17,10 +17,16 @@ use App\Services\EmployeeFunction\FunctionService;
 
 class WorkstationService extends BaseService
 {
-    public function __construct(Workstation $workstation, protected LocationService $locationService, protected FunctionService $functionService)
+    protected $locationService;
+    protected $functionService;
+
+    public function __construct(protected Workstation $workstation)
     {
         parent::__construct($workstation);
+        $this->locationService = app(LocationService::class);
+        $this->functionService = app(FunctionService::class);    
     }
+
 
     public function getAll(array $args = [])
     {
@@ -167,7 +173,7 @@ class WorkstationService extends BaseService
     {
         $workstation_details = $this->get($workstation_id, ['locationsValue', 'functionTitlesValue']);
         $options             = $this->getOptionsToCreate($workstation_details->company);
-        $options['datails']  = $workstation_details;
+        $options['details']  = $workstation_details;
         return $options;
     }
 }

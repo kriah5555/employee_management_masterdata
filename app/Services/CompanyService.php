@@ -163,7 +163,7 @@ class CompanyService extends BaseService
     {
         $company_details    = $this->get($company_id, ['sectorsValue']);
         $options            = $this->getOptionsToCreate();
-        $options['datails'] = $company_details;
+        $options['details'] = $company_details;
         return $options;
     }
 }

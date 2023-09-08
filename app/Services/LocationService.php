@@ -104,7 +104,7 @@ class LocationService extends BaseService
 
     public function getOptionsToEdit($location_id) 
     {
-        $location_details = $this->get($location_id);
+        $location_details = $this->get($location_id, ['address']);
         $options = $this->getOptionsToCreate($location_details->company);
         $options['details'] = $location_details;
         return $options;
