@@ -17,10 +17,16 @@ use App\Services\EmployeeFunction\FunctionService;
 
 class WorkstationService extends BaseService
 {
-    public function __construct(Workstation $workstation, protected LocationService $locationService, protected FunctionService $functionService)
+    protected $locationService;
+    protected $functionService;
+
+    public function __construct(protected Workstation $workstation)
     {
         parent::__construct($workstation);
+        $this->locationService = app(LocationService::class);
+        $this->functionService = app(FunctionService::class);    
     }
+
 
     public function getAll(array $args = [])
     {
@@ -131,7 +137,10 @@ class WorkstationService extends BaseService
             DB::beginTransaction();
 
             $function_titles = $values['function_titles'] ?? [];
+            $locations       = $values['locations'] ?? [];
+
             $workstation->functionTitles()->sync($function_titles);
+            $workstation->locations()->sync($locations);
 
             unset($values['function_titles']);
             $workstation->update($values);

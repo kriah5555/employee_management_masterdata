@@ -34,9 +34,33 @@ class HolidayCodeService extends BaseService
     }
 
     public function getOptionsToEdit($holiday_code_id)
-    {
-        $options = $this->getOptionsToCreate();
-        $options['details'] = $this->get($holiday_code_id);
-        return $options;
+{
+    $options = $this->getOptionsToCreate();
+    $details = $this->get($holiday_code_id);
+    
+    // Transform specific keys in the "details" array
+    $keysToTransform = [
+        'holiday_type',
+        'count_type',
+        'icon_type',
+        'consider_plan_hours_in_week_hours',
+        'employee_category',
+        'contract_type',
+        'carry_forword',
+    ];
+    
+    foreach ($keysToTransform as $key) {
+        if (isset($details[$key])) {
+            $details[$key] = [
+                'value' => $details[$key],
+                'label' => $options[$key][$details[$key] - 1]['label'] ?? null,
+            ];
+        }
     }
+    
+    // Add the modified "details" back to the response
+    $options['details'] = $details;
+    
+    return $options;
+}
 }
