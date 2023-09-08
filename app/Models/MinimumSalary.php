@@ -20,6 +20,8 @@ class MinimumSalary extends Model
      */
     protected $table = 'sector_minimum_salary';
 
+    protected static $sort = ['category_number'];
+
     /**
      * The primary key associated with the table.
      *
@@ -60,12 +62,12 @@ class MinimumSalary extends Model
         ->dontSubmitEmptyLogs();
     }
 
-    protected static function booted()
-    {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('category_number', 'asc');
-        });
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope('sort', function ($query) {
+    //         $query->orderBy('category_number', 'asc');
+    //     });
+    // }
     
     public function sectorSalaryStep()
     {

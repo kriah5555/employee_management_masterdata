@@ -21,6 +21,8 @@ class Company extends Model
      */
     protected $table = 'companies';
 
+    protected $hidden = ['pivot'];
+
     /**
      * The primary key associated with the table.
      *

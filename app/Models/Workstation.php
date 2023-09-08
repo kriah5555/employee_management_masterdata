@@ -14,6 +14,8 @@ class Workstation extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $hidden = ['pivot'];
+    
     protected $table = 'workstations';
 
     protected $primaryKey = 'id';

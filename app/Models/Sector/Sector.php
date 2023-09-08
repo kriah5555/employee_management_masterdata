@@ -23,6 +23,10 @@ class Sector extends Model
      */
     protected $table = 'sectors';
 
+    protected $hidden = ['pivot'];
+
+    protected static $sort = ['name'];
+
     /**
      * The primary key associated with the table.
      *
@@ -85,12 +89,12 @@ class Sector extends Model
         return $this->hasMany(SectorAgeSalary::class);
     }
 
-    protected static function booted()
-    {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('name', 'asc');
-        });
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope('sort', function ($query) {
+    //         $query->orderBy('name', 'asc');
+    //     });
+    // }
 
     public function isDeleted(): bool
     {

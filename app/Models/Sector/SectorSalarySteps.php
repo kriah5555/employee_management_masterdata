@@ -27,6 +27,8 @@ class SectorSalarySteps extends Model
      */
     protected $primaryKey = 'id';
 
+    protected static $sort = ['level'];
+
     /**
      * Indicates if the model should be timestamped.
      *
@@ -63,10 +65,11 @@ class SectorSalarySteps extends Model
     {
         return $this->hasMany(MinimumSalary::class);
     }
-    protected static function booted()
-    {
-        static::addGlobalScope('sort', function ($query) {
-            $query->orderBy('level', 'asc');
-        });
-    }
+
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope('sort', function ($query) {
+    //         $query->orderBy('level', 'asc');
+    //     });
+    // }
 }

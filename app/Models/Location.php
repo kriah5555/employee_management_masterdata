@@ -13,6 +13,8 @@ class Location extends Model
 
     protected $table = "locations";
 
+    protected $hidden = ['pivot'];
+
     protected $primaryKey = 'id'; // Corrected property name
 
     protected $fillable = [
