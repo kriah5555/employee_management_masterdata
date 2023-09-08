@@ -137,7 +137,10 @@ class WorkstationService extends BaseService
             DB::beginTransaction();
 
             $function_titles = $values['function_titles'] ?? [];
+            $locations       = $values['locations'] ?? [];
+
             $workstation->functionTitles()->sync($function_titles);
+            $workstation->locations()->sync($locations);
 
             unset($values['function_titles']);
             $workstation->update($values);
