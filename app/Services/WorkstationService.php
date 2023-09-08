@@ -167,7 +167,7 @@ class WorkstationService extends BaseService
     {
         $workstation_details = $this->get($workstation_id, ['locationsValue', 'functionTitlesValue']);
         $options             = $this->getOptionsToCreate($workstation_details->company);
-        $options['datails']  = $workstation_details;
+        $options['details']  = $workstation_details;
         return $options;
     }
 }

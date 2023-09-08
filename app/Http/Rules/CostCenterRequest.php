@@ -4,6 +4,7 @@ namespace App\Http\Rules;
 
 use Illuminate\Validation\Rule;
 use App\Rules\LocationLinkedToCompanyRule;
+use App\Rules\WorkstationLinkedToCompanyRule;
 
 class CostCenterRequest extends ApiRequest
 {
@@ -32,6 +33,8 @@ class CostCenterRequest extends ApiRequest
                 'regex:/^[0-9]{6}$/',
             ],
             'location_id' => [
+                'bail',
+                'integer',
                 'required',
                 Rule::exists('locations', 'id'),
                 new LocationLinkedToCompanyRule(request()->input('company_id')),

@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\CostCenter;
 use Illuminate\Http\Request;
 use App\Services\CostCenterService;
+use App\Http\Rules\CostCenterRequest;
 
 class CostCenterController extends Controller
 {    
-    public function __construct(protected CostCenterService $CostCenterService)
+    public function __construct(protected CostCenterService $costCenterService)
     {
     }
 
@@ -17,7 +18,13 @@ class CostCenterController extends Controller
      */
     public function index()
     {
-        //
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->costCenterService->getAll(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -25,15 +32,30 @@ class CostCenterController extends Controller
      */
     public function create()
     {
-        //
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->costCenterService->getOptionsToCreate($company_id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CostCenterRequest $request)
     {
-        //
+        dd($request->validated());
+        $location = $this->costCenterService->create($request->validated());
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Location created successfully'),
+                'data'    => $location
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 
     /**
@@ -41,7 +63,13 @@ class CostCenterController extends Controller
      */
     public function show(CostCenter $costCenter)
     {
-        //
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $location
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 
     /**
@@ -49,15 +77,29 @@ class CostCenterController extends Controller
      */
     public function edit(CostCenter $costCenter)
     {
-        //
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->workstation_service->getOptionsToEdit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CostCenter $costCenter)
+    public function update(CostCenterRequest $request, CostCenter $costCenter)
     {
-        //
+        $location = $this->location_service->create($request->validated());
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Location created successfully'),
+                'data'    => $location
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 
     /**
@@ -65,6 +107,13 @@ class CostCenterController extends Controller
      */
     public function destroy(CostCenter $costCenter)
     {
-        //
+        $workstation->delete();
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Location created successfully'),
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 }
