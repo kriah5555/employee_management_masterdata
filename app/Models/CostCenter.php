@@ -43,5 +43,15 @@ class CostCenter extends BaseModel
         return $this->belongsToMany(Workstation::class, 'cost_center_workstations');
     }
 
-    
+    public function workstationsValue()
+    {
+        return $this->belongsToMany(Workstation::class, 'cost_center_workstations')
+        ->select('workstations.id as value', 'workstations.workstation_name as label');
+    } 
+
+    public function locationValue()
+    {
+        return $this->belongsTo(Location::class)
+        ->select('locations.id as value', 'locations.location_name as label');
+    }
 }

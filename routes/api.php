@@ -16,6 +16,7 @@ use App\Http\Controllers\Email\EmailTemplateApiController;
 use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
 use App\Http\Controllers\ReasonController;
+use App\Http\Controllers\CostCenterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,7 @@ Route::resources([
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
     'reasons'             => ReasonController::class,
+    'cost-center'         => CostCenterController::class,
 ]);
 
 Route::controller(TranslationController::class)->group(function () {
@@ -102,9 +104,16 @@ Route::controller(LocationController::class)->group(function () use ($statusRule
 
 Route::controller(WorkstationController::class)->group(function () use ($statusRule, $integerRule) {
 
-    Route::get('company-workstations/{company_id}/{status}', 'companyWorkstations')->where('status', $statusRule);
+    Route::get('company-workstations/{company_id}/{status}', 'companyWorkstations')->where(['status' => $statusRule, 'company_id' => $integerRule]);
 
     Route::get('location-workstations/{location_id}/{status}', 'locationWorkstations')->where(['status' => $statusRule, 'location_id' => $integerRule]);
 
     Route::get('workstations/create/{company_id}', 'create');
+});
+
+Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
+
+    // Route::get('cost-center/{company_id}/{status}', 'companyWorkstations')->where(['status' => $statusRule, 'company_id' => $integerRule]);
+
+    Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
 });

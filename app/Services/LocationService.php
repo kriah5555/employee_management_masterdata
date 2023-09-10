@@ -24,7 +24,7 @@ class LocationService extends BaseService
             ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
             ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
             ->when(isset($args['with']), fn($q) => $q->with($args['with']))
-            ->with('workstationsValues')
+            ->with(['workstationsValues', 'address'])
             ->get();
     }
 
@@ -33,10 +33,6 @@ class LocationService extends BaseService
         $location_rules = [
             'location_name' => 'required|string|max:255',
             'address'       => ['required', new AddressRule()],
-            'company'       => [
-                $for_company_creation ? 'nullable' : 'required',
-                Rule::exists('companies', 'id')
-            ],
         ];
 
         if (!$for_company_creation) { # in company creation flow multi step form the workstation and locations are newly created and added so this ocndition will not be required
@@ -48,6 +44,13 @@ class LocationService extends BaseService
     public static function addLocationCreationRules($rules)
     {
         $rules['status']           = 'required|boolean';
+        $rules['company']          = [
+            'bail',
+            'required',
+            'integer',
+            Rule::exists('companies', 'id')
+        ];
+
         // $rules['workstations']     = 'nullable|array';
         // $rules['workstations.*'] = [
         //     'bail',

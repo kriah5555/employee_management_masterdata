@@ -6,6 +6,7 @@ use App\Models\CostCenter;
 use Illuminate\Http\Request;
 use App\Services\CostCenterService;
 use App\Http\Rules\CostCenterRequest;
+use Illuminate\Http\JsonResponse;
 
 class CostCenterController extends Controller
 {    
@@ -30,7 +31,7 @@ class CostCenterController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($company_id)
     {
         return returnResponse(
             [
@@ -46,12 +47,11 @@ class CostCenterController extends Controller
      */
     public function store(CostCenterRequest $request)
     {
-        dd($request->validated());
         $location = $this->costCenterService->create($request->validated());
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Location created successfully'),
+                'message' => t('Cost center created successfully'),
                 'data'    => $location
             ],
             JsonResponse::HTTP_CREATED,
@@ -91,11 +91,11 @@ class CostCenterController extends Controller
      */
     public function update(CostCenterRequest $request, CostCenter $costCenter)
     {
-        $location = $this->location_service->create($request->validated());
+        $location = $this->costCenterService->create($request->validated());
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Location created successfully'),
+                'message' => t('Cost center created successfully'),
                 'data'    => $location
             ],
             JsonResponse::HTTP_CREATED,
@@ -111,7 +111,7 @@ class CostCenterController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Location created successfully'),
+                'message' => t('Cost center created successfully'),
             ],
             JsonResponse::HTTP_CREATED,
         );
