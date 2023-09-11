@@ -17,7 +17,7 @@ use App\Services\EmployeeFunction\FunctionService;
 
 class WorkstationService extends BaseService
 {
-    protected $locationService;
+    public $locationService;
     protected $functionService;
 
     public function __construct(protected Workstation $workstation)

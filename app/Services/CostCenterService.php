@@ -14,7 +14,7 @@ class CostCenterService extends BaseService
     {
         parent::__construct($costCenter);
         $this->workstationService = app(WorkstationService::class);
-        $this->locationService    = app(LocationService::class);
+        // $this->locationService    = app(LocationService::class);
     }
 
     public function create($values)
@@ -22,9 +22,9 @@ class CostCenterService extends BaseService
         try {
             DB::beginTransaction();
                 unset($values['company_id']);
-                $costCenter   = $this->create($values);
+                $costCenter   = $this->model->create($values);
                 $workstations = $values['workstations'] ?? [];
-                $costCenter->sync($workstations);
+                $costCenter->workstations()->sync($workstations);
             DB::commit();
             return $costCenter;
         } catch (Exception $e) {
@@ -39,9 +39,9 @@ class CostCenterService extends BaseService
         try {
             DB::beginTransaction();
                 unset($values['company_id']);
-                $costCenter   = $this->update($costCenter, $values);
+                $costCenter   = $this->model->update($costCenter, $values);
                 $workstations = $values['workstations'] ?? [];
-                $costCenter->sync($workstations);
+                $costCenter->workstations()->sync($workstations);
             DB::commit();
             return $costCenter;
         } catch (Exception $e) {
@@ -57,7 +57,7 @@ class CostCenterService extends BaseService
         $options['workstations'] = [];
         unset($options['function_titles']);
         foreach ($options['locations'] as $option) {
-            $workstations = $this->locationService->get($option['value'], ['workstationsValues'])->toArray()['workstations_values'];
+            $workstations = $this->workstationService->locationService->get($option['value'], ['workstationsValues'])->toArray()['workstations_values'];
             $options['workstations'][$option['value']] = $workstations; // Use square brackets for assignment
         }
         return $options;
