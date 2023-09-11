@@ -3,6 +3,7 @@
 namespace App\Http\Rules;
 
 use App\Services\WorkstationService;
+use Illuminate\Validation\Rule;
 
 class WorkstationRequest extends ApiRequest
 {

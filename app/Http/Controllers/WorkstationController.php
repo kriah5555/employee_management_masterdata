@@ -9,28 +9,9 @@ use App\Models\Workstation;
 
 class WorkstationController extends Controller
 {
-    protected $workstation_service;
-
-    public function __construct(WorkstationService $workstation_service)
+    public function __construct(protected WorkstationService $workstation_service)
     {
-        $this->workstation_service = $workstation_service;
     }
-
-    // public function index()
-    // {
-    //     try {
-    //         $data = $this->workstation_service->getAll();
-    //         return response()->json([
-    //             'success' => true,
-    //             'data' => $data,
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => [$e->getMessage()],
-    //         ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-    //     }
-    // }
 
     public function companyWorkstations($company_id, $status)
     {
@@ -96,6 +77,28 @@ class WorkstationController extends Controller
             'success' => true,
             'data'    => $workstation,
         ]);
+    }
+
+    public function create($company_id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->workstation_service->getOptionsToCreate($company_id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->workstation_service->getOptionsToEdit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     public function update(WorkstationRequest $request, Workstation $workstation)

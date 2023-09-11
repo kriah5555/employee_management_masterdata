@@ -3,7 +3,7 @@
 namespace App\Rules;
 
 use Closure;
-use Illuminate\Contract\Validation\Rule;
+use Illuminate\Contracts\Validation\Rule;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Company;
 

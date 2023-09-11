@@ -21,6 +21,8 @@ class Company extends Model
      */
     protected $table = 'companies';
 
+    protected $hidden = ['pivot'];
+
     /**
      * The primary key associated with the table.
      *
@@ -39,7 +41,6 @@ class Company extends Model
         'address', 
         'employer_id',
         'sender_number',
-        // 'joint_commission_number',
         'rsz_number',
         'social_secretary_number',
         'username',
@@ -61,11 +62,17 @@ class Company extends Model
         'updated_at'
     ];
 
-    protected $with = ['sectors','address'];
+    protected $with = ['sectors', 'address'];
 
     public function sectors()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company');
+    }
+
+    public function sectorsValue()
+    {
+        return $this->belongsToMany(Sector::class, 'sector_to_company', 'company_id', 'sector_id')
+            ->select('sectors.id as value', 'sectors.name as label');
     }
 
     public function locations()

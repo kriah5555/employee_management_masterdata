@@ -11,11 +11,8 @@ use App\Http\Controllers\Controller;
 
 class CompanyController extends Controller
 {
-    protected $company_service;
-
-    public function __construct(CompanyService $company_service)
+    public function __construct(protected CompanyService $company_service)
     {
-        $this->company_service = $company_service;
     }
     /**
      * Display a listing of the resource.
@@ -96,10 +93,23 @@ class CompanyController extends Controller
 
     public function create()
     {
-        $data = $this->company_service->getCreateCompanyOptions();
-        return response()->json([
-            'success' => true,
-            'data'    => $data
-        ]);
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->company_service->getOptionsToCreate(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->company_service->getOptionsToEdit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 }

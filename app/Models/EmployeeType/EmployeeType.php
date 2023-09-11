@@ -21,6 +21,8 @@ class EmployeeType extends BaseModel
      */
     protected $table = 'employee_types';
 
+    protected $hidden = ['pivot'];
+
     /**
      * The primary key associated with the table.
      *
