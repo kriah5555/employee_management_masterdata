@@ -22,7 +22,8 @@ class HolidayCodes extends Model
         'consider_plan_hours_in_week_hours',
         'employee_category',
         'contract_type',
-        'carry_forword'
+	'carry_forword',
+	'status'
     ];
 
     protected $dates = [

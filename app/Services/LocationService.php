@@ -24,7 +24,7 @@ class LocationService extends BaseService
             ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
             ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
             ->when(isset($args['with']), fn($q) => $q->with($args['with']))
-            ->with('workstationsValues')
+            ->with(['workstationsValues', 'address'])
             ->get();
     }
 
