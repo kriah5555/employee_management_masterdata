@@ -33,10 +33,6 @@ class LocationService extends BaseService
         $location_rules = [
             'location_name' => 'required|string|max:255',
             'address'       => ['required', new AddressRule()],
-            'company'       => [
-                $for_company_creation ? 'nullable' : 'required',
-                Rule::exists('companies', 'id')
-            ],
         ];
 
         if (!$for_company_creation) { # in company creation flow multi step form the workstation and locations are newly created and added so this ocndition will not be required
@@ -47,7 +43,13 @@ class LocationService extends BaseService
 
     public static function addLocationCreationRules($rules)
     {
-        $rules['status']           = 'required|boolean';
+        $rules['status']  = 'required|boolean';
+        $rules['company'] = [
+            'bail',
+            'integere',
+            'required',
+            Rule::exists('companies', 'id')
+        ];
         // $rules['workstations']     = 'nullable|array';
         // $rules['workstations.*'] = [
         //     'bail',
