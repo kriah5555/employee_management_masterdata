@@ -17,6 +17,20 @@ class CostCenterService extends BaseService
         // $this->locationService    = app(LocationService::class);
     }
 
+    public function getAll(array $args = [])
+    {
+        return $this->model
+            ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
+            ->when(isset($args['company_id']), function ($q) use ($args) {
+                $q->whereHas('location', function ($locationSubQuery) use ($args) {
+                    $locationSubQuery->where('company', $args['company_id']);
+                });
+            })
+            ->when(isset($args['with']), fn($q) => $q->with($args['with']))
+            ->get();
+    }
+
+
     public function create($values)
     {
         try {
@@ -39,9 +53,9 @@ class CostCenterService extends BaseService
         try {
             DB::beginTransaction();
                 unset($values['company_id']);
-                $costCenter   = $this->model->update($costCenter, $values);
                 $workstations = $values['workstations'] ?? [];
                 $costCenter->workstations()->sync($workstations);
+                $costCenter   = $costCenter->update($values);
             DB::commit();
             return $costCenter;
         } catch (Exception $e) {
@@ -65,8 +79,9 @@ class CostCenterService extends BaseService
 
     public function getOptionsToEdit($costCenterId)
     {
-        $costCenter_details    = $this->get($costCenterId, ['workstationsValue', 'locationValue']);
-        $options            = $this->getOptionsToCreate();
+        $costCenter_details = $this->get($costCenterId, ['workstationsValue','location']);
+        $costCenter_details->locationValue;
+        $options            = $this->getOptionsToCreate($costCenter_details->location->company);
         $options['details'] = $costCenter_details;
         return $options;
     }

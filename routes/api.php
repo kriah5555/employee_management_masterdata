@@ -113,7 +113,7 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
 
 Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
 
-    // Route::get('cost-center/{company_id}/{status}', 'companyWorkstations')->where(['status' => $statusRule, 'company_id' => $integerRule]);
+    Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
 
     Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
 });

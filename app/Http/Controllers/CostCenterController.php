@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\CostCenter;
-use Illuminate\Http\Request;
 use App\Services\CostCenterService;
 use App\Http\Rules\CostCenterRequest;
 use Illuminate\Http\JsonResponse;
@@ -17,12 +16,12 @@ class CostCenterController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($company_id, $status = '')
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getAll(),
+                'data'    => $this->costCenterService->getAll(['company_id' => $company_id, 'status' => $status, 'with' => ['workstationsValue', 'locationValue', 'location']]),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -66,7 +65,7 @@ class CostCenterController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $location
+                'data'    => $costCenter
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -75,12 +74,12 @@ class CostCenterController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(CostCenter $costCenter)
+    public function edit($costCenter_id)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->workstation_service->getOptionsToEdit($id),
+                'data'    => $this->costCenterService->getOptionsToEdit($costCenter_id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -91,12 +90,11 @@ class CostCenterController extends Controller
      */
     public function update(CostCenterRequest $request, CostCenter $costCenter)
     {
-        $location = $this->costCenterService->create($request->validated());
+        $this->costCenterService->update($costCenter, $request->validated());
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Cost center created successfully'),
-                'data'    => $location
+                'message' => t('Cost center updated successfully'),
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -105,13 +103,13 @@ class CostCenterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CostCenter $costCenter)
+    public function destroy(CostCenter $CostCenters)
     {
-        $workstation->delete();
+        $CostCenters->delete();
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Cost center created successfully'),
+                'message' => t('Cost center Deleted successfully'),
             ],
             JsonResponse::HTTP_CREATED,
         );
