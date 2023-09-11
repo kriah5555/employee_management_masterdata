@@ -5,6 +5,7 @@ namespace App\Http\Rules;
 use Illuminate\Validation\Rule;
 use App\Rules\LocationLinkedToCompanyRule;
 use App\Rules\WorkstationLinkedToCompanyRule;
+use App\Rules\WorkstationLinkedToLocationRule;
 
 class CostCenterRequest extends ApiRequest
 {
@@ -45,7 +46,8 @@ class CostCenterRequest extends ApiRequest
                 'bail',
                 'integer',
                 Rule::exists('workstations', 'id'),
-                new WorkstationLinkedToCompanyRule(request()->input('company_id'))
+                new WorkstationLinkedToCompanyRule(request()->input('company_id')),
+                new WorkstationLinkedToLocationRule(request()->input('location_id')),
             ],
         ];
     }
