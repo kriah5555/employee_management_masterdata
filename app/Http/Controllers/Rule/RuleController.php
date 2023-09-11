@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Rule;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Rule;
+use App\Models\Rule\Rule;
 use App\Services\Rule\RuleService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Rules\Rule\RuleRequest;
 
 class RuleController extends Controller
 {
@@ -20,31 +20,15 @@ class RuleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($category = null)
+    public function index()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->ruleService->index($category),
+                'data'    => $this->ruleService->index(),
             ],
             JsonResponse::HTTP_OK,
         );
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -52,7 +36,13 @@ class RuleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->ruleService->show($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -60,22 +50,27 @@ class RuleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->ruleService->edit($id),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(RuleRequest $request, Rule $rule)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $this->ruleService->update($rule, $request->validated());
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Rule value updated successfully'),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 }

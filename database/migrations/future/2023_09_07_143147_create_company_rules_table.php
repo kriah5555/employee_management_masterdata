@@ -10,17 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-
-        Schema::create('rules', function (Blueprint $table) {
+        Schema::create('company_rules', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->longText('description')->nullable(true);
-            $table->smallInteger('type');
-            $table->smallInteger('value_type');
+            $table->foreignId('rule_id')->references('id')->on('rules')->onDelete('cascade');
+            $table->foreignId('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->string('value');
-            $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
+            $table->integer('created_by')->nullable(true);
+            $table->integer('updated_by')->nullable(true);
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('rules');
+        Schema::dropIfExists('company_rules');
     }
 };

@@ -105,8 +105,6 @@ Route::group(['middleware' => ['service-registry', 'setactiveuser']], function (
 
     Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
 
-    // Route::resource('rules', RuleController::class)->only(['index']);
-
-    Route::get('rules/{category}', [RuleController::class, 'index'])->name('rules.index');
+    Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
 });

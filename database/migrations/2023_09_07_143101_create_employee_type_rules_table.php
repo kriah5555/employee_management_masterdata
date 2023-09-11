@@ -10,15 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-
-        Schema::create('rules', function (Blueprint $table) {
+        Schema::create('employee_type_rules', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->longText('description')->nullable(true);
-            $table->smallInteger('type');
-            $table->smallInteger('value_type');
+            $table->foreignId('rule_id')->references('id')->on('rules')->onDelete('cascade');
             $table->string('value');
-            $table->boolean('status')->default(true);
+            $table->integer('created_by')->nullable(true);
+            $table->integer('updated_by')->nullable(true);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('rules');
+        Schema::dropIfExists('employee_type_rules');
     }
 };
