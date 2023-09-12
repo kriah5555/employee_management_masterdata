@@ -161,7 +161,7 @@ class CompanyService extends BaseService
 
     public function getOptionsToEdit($company_id)
     {
-        $company_details    = $this->get($company_id, ['sectorsValue']);
+        $company_details    = $this->get($company_id, ['sectorsValue', 'logoFile']);
         $options            = $this->getOptionsToCreate();
         $options['details'] = $company_details;
         return $options;
