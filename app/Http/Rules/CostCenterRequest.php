@@ -37,7 +37,7 @@ class CostCenterRequest extends ApiRequest
                 new LocationLinkedToCompanyRule(request()->input('company_id')),
             ],
             'status'         => 'required|boolean',
-            'workstations'   => 'raquired|array',
+            'workstations'   => 'required|array',
             'workstations.*' =>  [
                 'bail',
                 'integer',
