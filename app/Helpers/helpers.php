@@ -1,5 +1,7 @@
 <?php
 use Spatie\TranslationLoader\LanguageLine;
+use App\Models\User;
+use Exception;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -52,5 +54,72 @@ if (!function_exists('t')) {
 
             return $stringKey; // Return the original string if no translation exists
         }
+    }
+}
+if (!function_exists('generateUniqueUsername')) {
+    function generateUniqueUsername($username)
+    {
+        $newUsername = $username;
+        $counter = 1;
+
+        while (User::where('username', $newUsername)->exists()) {
+            $newUsername = $username . $counter;
+            $counter++;
+        }
+
+        return $newUsername;
+    }
+}
+
+if (!function_exists('generateRandomPassword')) {
+    function generateRandomPassword($length = 12)
+    {
+        // Define the characters that can be used in the password
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
+
+        // Get the total number of characters available
+        $charCount = strlen($characters);
+
+        // Initialize the password variable
+        $password = '';
+
+        // Generate the random password
+        for ($i = 0; $i < $length; $i++) {
+            // Get a random index within the range of available characters
+            $randomIndex = mt_rand(0, $charCount - 1);
+
+            // Append the randomly selected character to the password
+            $password .= $characters[$randomIndex];
+        }
+
+        return $password;
+    }
+}
+
+if (!function_exists('makeApiRequest')) {
+    function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
+    {
+        $client = new \GuzzleHttp\Client();
+
+        $options = [
+            'json'    => $data,
+            'headers' => $headers,
+        ];
+
+        $response = $client->request($method, $url, $options);
+        if ($response->getStatusCode() == 200 || $response->getStatusCode() == 201) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new Exception("API error");
+        }
+    }
+}
+
+if (!function_exists('microserviceRequest')) {
+    function microserviceRequest($route, $method = 'GET', $data = [], $headers = [])
+    {
+        $apiGatewayUrl = config('app.service_gateway_url');
+        $url = $apiGatewayUrl . $route;
+        return makeApiRequest($url, $method, $data, $headers);
     }
 }

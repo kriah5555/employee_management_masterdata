@@ -1,17 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\EmployeeType;
+namespace App\Http\Controllers\Employee;
 
 use App\Models\EmployeeType\EmployeeType;
-use App\Http\Rules\EmployeeType\EmployeeTypeRequest;
-use App\Services\EmployeeType\EmployeeTypeService;
+use App\Http\Rules\Employee\EmployeeProfileRequest;
+use App\Services\Employee\EmployeeProfileService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 
-class EmployeeTypeController extends Controller
+class EmployeeProfileController extends Controller
 {
-    public function __construct(protected EmployeeTypeService $employeeTypService)
+    protected $employeeProfileService;
+
+    public function __construct(EmployeeProfileService $employeeProfileService)
     {
+        $this->employeeProfileService = $employeeProfileService;
     }
 
     /**
@@ -22,7 +26,7 @@ class EmployeeTypeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeTypService->index()
+                'data'    => $this->employeeProfileService->index()
             ],
             JsonResponse::HTTP_OK,
         );
@@ -31,12 +35,13 @@ class EmployeeTypeController extends Controller
     /**
      * API to get the details required for creating an employee type.
      */
-    public function create()
+    public function createEmployee(EmployeeProfileRequest $request, Company $company)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeTypService->create()
+                'message' => 'Employee created successfully',
+                'data'    => $this->employeeProfileService->createNewEmployeeProfile($request->validated())
             ],
             JsonResponse::HTTP_OK,
         );

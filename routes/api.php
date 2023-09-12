@@ -17,6 +17,7 @@ use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
+use App\Http\Controllers\Employee\EmployeeProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -132,4 +133,11 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
     Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
     Route::get('workstations/create/{company_id}', 'create');
+});
+
+Route::group(['middleware' => 'setactiveuser'], function () {
+
+    Route::resource('employee-profiles', EmployeeProfileController::class)->only(['index', 'show', 'edit']);
+
+    Route::post('/employee-profiles/create-employee/{company_id}', [EmployeeProfileController::class, 'createEmployee']);
 });
