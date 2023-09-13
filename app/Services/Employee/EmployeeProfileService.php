@@ -73,7 +73,7 @@ class EmployeeProfileService
             }
             $user = User::find($uid);
             $values['uid'] = $uid;
-            $address = $this->addressRepository->createAddress($values['address']);
+            $address = $this->addressRepository->createAddress($values);
             $values['address_id'] = $address->id;
             if (array_key_exists('bank_account_number', $values)) {
                 $bankAccount = $this->bankAccountRepository->createBankAccount($values);

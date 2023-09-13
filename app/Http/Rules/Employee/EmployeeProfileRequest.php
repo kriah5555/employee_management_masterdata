@@ -3,7 +3,6 @@
 namespace App\Http\Rules\Employee;
 
 use App\Http\Rules\ApiRequest;
-use App\Rules\AddressRule;
 use App\Rules\SocialSecurityNumberRule;
 use App\Repositories\EmployeeProfileRepository;
 use Illuminate\Validation\Rule;
@@ -49,8 +48,13 @@ class EmployeeProfileRequest extends ApiRequest
                 Rule::exists('marital_statuses', 'id'),
             ],
             'dependent_spouse'       => 'string|max:255',
-            'bank_account_number'    => 'string|max:255',
-            'address'                => ['required', new AddressRule()],
+            'bank_account_number'    => 'nullable|string|max:255',
+            'street_house_no'        => 'required|string|max:255',
+            'postal_code'            => 'required|string|max:50',
+            'city'                   => 'required|string|max:50',
+            'country'                => 'required|string|max:50',
+            'latitude'               => 'nullable|numeric',
+            'longitude'              => 'nullable|numeric',
         ];
 
     }
