@@ -82,7 +82,7 @@ class Company extends Model
 
     public function logoFile()
     {
-        return $this->belongsTo(Files::class, 'logo');
+        return $this->belongsTo(Files::class, 'logo'); #php artisan storage:link  -> need to create symbolic link between storage and public folder
     }
     
     // public function toArray()

@@ -8,7 +8,7 @@ use App\Http\Controllers\EmployeeType\EmployeeTypeController;
 use App\Http\Controllers\HolidayCode\HolidayCodesController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
-use App\Http\Controllers\HolidayCode\HolidayCodeCountController;
+// use App\Http\Controllers\HolidayCode\HolidayCodeCountController;
 use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
@@ -63,7 +63,7 @@ Route::resources([
     'function-categories' => FunctionCategoryController::class,
     'companies'           => CompanyController::class,
     'holiday-codes'       => HolidayCodesController::class,
-    'holiday-code-count'  => HolidayCodeCountController::class,
+    // 'holiday-code-count'  => HolidayCodeCountController::class,
     'email-templates'     => EmailTemplateApiController::class,
     'contract-types'      => ContractTypeController::class,
     'workstations'        => WorkstationController::class,
