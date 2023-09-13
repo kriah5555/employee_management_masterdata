@@ -1,7 +1,6 @@
 <?php
 use Spatie\TranslationLoader\LanguageLine;
 use App\Models\User;
-use Exception;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)

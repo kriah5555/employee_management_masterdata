@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->string('first_name');
             $table->string('last_name');
             $table->date('date_of_birth');
-            $table->string('gender');
             $table->string('email');
             $table->string('phone_number');
             $table->string('social_security_number');
@@ -24,8 +23,9 @@ return new class extends Migration {
             $table->date('date_of_joining');
             $table->date('date_of_leaving')->nullable();
             $table->string('language')->default('en');
-            $table->string('marital_status')->nullable();
             $table->string('dependent_spouse')->nullable();
+            $table->foreignId('gender_id')->nullable()->references('id')->on('genders')->onDelete('cascade');
+            $table->foreignId('marital_status_id')->nullable()->references('id')->on('marital_statuses')->onDelete('cascade');
             $table->foreignId('bank_account_id')->nullable()->references('id')->on('bank_accounts')->onDelete('cascade');
             $table->foreignId('address_id')->nullable()->references('id')->on('address')->onDelete('cascade');
             $table->foreignId('company_id')->nullable()->references('id')->on('companies')->onDelete('cascade');

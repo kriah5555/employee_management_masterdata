@@ -34,7 +34,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 
     public function getAllEmployeeProfilesByCompany(string $companyId)
     {
-        return EmployeeProfile::where('company_id', '=', $companyId);
+        return EmployeeProfile::where('company_id', '=', $companyId)->get();
     }
 
     public function getEmployeeProfileInCompanyBySsn(string $companyId, string $socialSecurityNumber)

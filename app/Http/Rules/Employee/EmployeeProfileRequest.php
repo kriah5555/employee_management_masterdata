@@ -6,6 +6,7 @@ use App\Http\Rules\ApiRequest;
 use App\Rules\AddressRule;
 use App\Rules\SocialSecurityNumberRule;
 use App\Repositories\EmployeeProfileRepository;
+use Illuminate\Validation\Rule;
 
 class EmployeeProfileRequest extends ApiRequest
 {
@@ -17,12 +18,17 @@ class EmployeeProfileRequest extends ApiRequest
      */
     public function rules(): array
     {
-        $allowedLanguageValues = config('app.available_locales');
+        $allowedLanguageValues = array_keys(config('constants.LANGUAGE_OPTIONS'));
         return [
             'first_name'             => 'required|string|max:255',
             'last_name'              => 'required|string|max:255',
             'date_of_birth'          => 'required|date',
-            'gender'                 => 'string|max:255',
+            'gender_id'              => [
+                'bail',
+                'required',
+                'integer',
+                Rule::exists('genders', 'id'),
+            ],
             'email'                  => 'required|email',
             'phone_number'           => 'required|string|max:20',
             'social_security_number' => [
@@ -36,7 +42,12 @@ class EmployeeProfileRequest extends ApiRequest
             'date_of_joining'        => 'required|date',
             'date_of_leaving'        => 'date',
             'language'               => ['required', 'string', 'in:' . implode(',', $allowedLanguageValues)],
-            'marital_status'         => 'string|max:255',
+            'marital_status_id'      => [
+                'bail',
+                'required',
+                'integer',
+                Rule::exists('marital_statuses', 'id'),
+            ],
             'dependent_spouse'       => 'string|max:255',
             'bank_account_number'    => 'string|max:255',
             'address'                => ['required', new AddressRule()],

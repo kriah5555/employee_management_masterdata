@@ -137,7 +137,9 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
 
 Route::group(['middleware' => 'setactiveuser'], function () {
 
-    Route::resource('employee-profiles', EmployeeProfileController::class)->only(['index', 'show', 'edit']);
+    Route::resource('employee-profiles', EmployeeProfileController::class)->only(['create', 'show', 'edit']);
 
-    Route::post('/employee-profiles/create-employee/{company_id}', [EmployeeProfileController::class, 'createEmployee']);
+    Route::post('/employee-profiles/store-employee/{company_id}', [EmployeeProfileController::class, 'store']);
+
+    Route::get('/employee-profiles/get-company-employees/{company_id}', [EmployeeProfileController::class, 'index']);
 });

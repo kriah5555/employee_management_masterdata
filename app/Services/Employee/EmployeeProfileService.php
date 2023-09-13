@@ -8,6 +8,8 @@ use App\Repositories\EmployeeProfileRepository;
 use App\Repositories\AddressRepository;
 use App\Repositories\BankAccountRepository;
 use App\Models\User;
+use App\Models\Employee\Gender;
+use App\Models\Employee\MaritalStatus;
 
 class EmployeeProfileService
 {
@@ -28,9 +30,9 @@ class EmployeeProfileService
     /**
      * Function to get all the employee types
      */
-    public function index()
+    public function index(string $companyId)
     {
-        return $this->employeeProfileRepository->getAllEmployeeProfiles();
+        return $this->employeeProfileRepository->getAllEmployeeProfilesByCompany($companyId);
     }
 
     public function createNewEmployeeProfile($values)
@@ -90,4 +92,35 @@ class EmployeeProfileService
             throw new Exception("Error in creating user");
         }
     }
+
+    public function create()
+    {
+        $data = [];
+        $data['genders'] = $this->getGenderOptions();
+        $data['marital_status'] = $this->getMaritalStatusOptions();
+        $data['languages'] = $this->getLanguageOptions();
+        return $data;
+    }
+
+    public function getGenderOptions()
+    {
+        return Gender::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+    }
+
+    public function getMaritalStatusOptions()
+    {
+        return MaritalStatus::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+    }
+
+    public function getLanguageOptions()
+    {
+        $languages = config('constants.LANGUAGE_OPTIONS');
+        return array_map(function ($value, $label) {
+            return [
+                'value' => $value,
+                'label' => $label,
+            ];
+        }, array_keys($languages), $languages);
+    }
+
 }
