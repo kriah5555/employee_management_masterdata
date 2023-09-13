@@ -1,21 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Rule;
 
 use App\Models\BaseModel;
+use App\Traits\UserAudit;
 
-class Rule extends BaseModel
+class EmployeeTypeRule extends BaseModel
 {
+    use UserAudit;
+    protected static $sort = ['type', 'name'];
 
-    const EMPLOYEE_TYPE_RULE = 1;
-    const SECTOR_RULE = 2;
-    const EMPLOYEE_TYPE_SECTOR_RULE = 3;
-    const COMPANY_RULE = 4;
-    const LOCATION_RULE = 5;
-
-    protected static $sort = ['name'];
-
-    protected $columnsToLog = ['name', 'description', 'type', 'default_value', 'status'];
+    protected $columnsToLog = ['description', 'default_value', 'status'];
     /**
      * The table associated with the model.
      *
@@ -57,24 +52,10 @@ class Rule extends BaseModel
         'name',
         'description',
         'type',
+        'value_type',
         'default_value',
         'status',
         'created_by',
         'updated_by'
     ];
-
-    public function setType($value)
-    {
-        $validStatuses = [
-            self::EMPLOYEE_TYPE_RULE,
-            self::SECTOR_RULE,
-            self::EMPLOYEE_TYPE_SECTOR_RULE,
-            self::COMPANY_RULE,
-            self::LOCATION_RULE,
-        ];
-
-        if (in_array($value, $validStatuses)) {
-            $this->attributes['status'] = $value;
-        }
-    }
 }

@@ -22,6 +22,6 @@ class LocationLinkedToCompanyRule implements Rule
 
     public function message()
     {
-        return t("The provided location is not linked to the specified company.");
+        return t("The :attribute is not linked to the specified company.");
     }
 }

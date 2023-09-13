@@ -186,6 +186,7 @@ return [
         Spatie\TranslationLoader\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
 
             /*
              * Package Service Providers...
@@ -222,5 +223,5 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
-    'service_gateway_url' => env('SERVICE_GATEWAY_URL'),
+    'service_gateway_url' => env('SERVICE_GATEWAY_URL', 'http://api-gateway.indii2.local'),
 ];

@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Location;
 use App\Traits\UserAudit;
+use App\Models\BaseModel;
 
-class CostCenter extends Model
+class CostCenter extends BaseModel
 {
     use HasFactory, SoftDeletes, UserAudit;
 
     protected $table = 'cost_centers';
+
+    protected static $sort = ['cost_center_number'];
 
     protected $primaryKey = 'id';
 
@@ -20,7 +23,9 @@ class CostCenter extends Model
         'name',
         'cost_center_number',
         'location_id',
-        'status'
+        'status',
+        'created_by', 
+        'updated_by'
     ];
 
     protected $dates = [
@@ -38,5 +43,17 @@ class CostCenter extends Model
         return $this->belongsToMany(Workstation::class, 'cost_center_workstations');
     }
 
-    
+    public function workstationsValue()
+    {
+        return $this->belongsToMany(Workstation::class, 'cost_center_workstations')
+        ->where('workstations.status', true)
+        ->select('workstations.id as value', 'workstations.workstation_name as label');
+    } 
+
+    public function locationValue()
+    {
+        return $this->belongsTo(Location::class, 'location_id')
+        ->where('status', true)
+        ->select('id as value', 'location_name as label');
+    }
 }

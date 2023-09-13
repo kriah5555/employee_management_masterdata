@@ -4,6 +4,8 @@ namespace App\Http\Rules;
 
 use Illuminate\Validation\Rule;
 use App\Rules\LocationLinkedToCompanyRule;
+use App\Rules\WorkstationLinkedToCompanyRule;
+use App\Rules\WorkstationLinkedToLocationRule;
 
 class CostCenterRequest extends ApiRequest
 {
@@ -15,42 +17,39 @@ class CostCenterRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'name' => [
+            'name'               => [
                 'required',
                 'string',
                 'max:255',
-                'rejex:/^[a-zA-Z0-9 ]+$/',
+                'regex:/^[a-zA-Z0-9 ]+$/',
             ],
-            'company_id' => [
+            'company_id'         => [
                 'required',
                 Rule::exists('companies', 'id'),
             ],
             'cost_center_number' => [
                 'nullable',
                 'string',
-                'ma x:255',
+                'max:255',
                 'regex:/^[0-9]{6}$/',
             ],
-            'location_id' => [
+            'location_id'        => [
+                'bail',
+                'integer',
                 'required',
                 Rule::exists('locations', 'id'),
                 new LocationLinkedToCompanyRule(request()->input('company_id')),
             ],
-            'status'         => 'required|boolean',
-            'workstations'   => 'required|array',
-            'workstations.*' =>  [
+            'status'             => 'required|boolean',
+            'workstations'       => 'required|array',
+            'workstations.*'     => [
                 'bail',
                 'integer',
                 Rule::exists('workstations', 'id'),
-                new WorkstationLinkedToCompanyRule(request()->input('company'))
-        ],
+                new WorkstationLinkedToCompanyRule(request()->input('company_id')),
+                new WorkstationLinkedToLocationRule(request()->input('location_id')),
+            ],
         ];
-    }
-
-    protected function passedValidation()
-    {
-        // Remove 'company_id' from the validated data
-        $this->request->remove('company_id');
     }
 
     public function messages()

@@ -10,14 +10,17 @@ use App\Models\EmployeeType\EmployeeTypeDimonaConfig;
 use App\Models\Dimona\DimonaType;
 use App\Services\Contract\ContractTypeService;
 use Exception;
+use App\Services\Rule\RuleService;
 
 class EmployeeTypeService
 {
     protected $contractTypeService;
+    protected $ruleService;
 
-    public function __construct(ContractTypeService $contractTypeService)
+    public function __construct(ContractTypeService $contractTypeService, RuleService $ruleService)
     {
         $this->contractTypeService = $contractTypeService;
+        $this->ruleService = $ruleService;
     }
     /**
      * Function to get all the employee types

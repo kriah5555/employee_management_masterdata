@@ -17,7 +17,7 @@ use App\Services\EmployeeFunction\FunctionService;
 
 class WorkstationService extends BaseService
 {
-    protected $locationService;
+    public $locationService;
     protected $functionService;
 
     public function __construct(protected Workstation $workstation)
@@ -156,7 +156,7 @@ class WorkstationService extends BaseService
 
     public function getOptionsToCreate($company_id)
     {
-        $function_titles = $this->functionService->getComapnyFunctionTitlesOptions($company_id);
+        $function_titles = $this->functionService->getCompanyFunctionTitlesOptions($company_id);
 
         $locations = $this->locationService->getALL(['company_id' => $company_id]);
         $modifiedLocations = $locations->map(function ($location) {

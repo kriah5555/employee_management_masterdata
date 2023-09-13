@@ -10,12 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
+
         Schema::create('rules', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->longText('description')->nullable(true);
             $table->smallInteger('type');
-            $table->string('default_value');
+            $table->smallInteger('value_type');
+            $table->string('value');
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();

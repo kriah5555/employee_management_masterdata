@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'CONTRACT_TYPE_RENEWAL_OPTIONS' => [
+    'CONTRACT_TYPE_RENEWAL_OPTIONS'     => [
         'daily'        => 'Daily',
         'weekly'       => 'Weekly',
         'monthly'      => 'Monthly',
@@ -16,4 +16,9 @@ return [
     'YES_OR_NO_OPTIONs'                 => [0 => 'No', 1 => 'Yes'],
     'HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS' => [1 => 'HQ servant', 2 => 'Servant'],
     'HOLIDAY_CONTRACT_TYPE_OPTIONS'     => [1 => 'Both', 2 => 'Full time', 3 => 'Part time'],
-];  
+    'LANGUAGE_OPTIONS'                  => [
+        'en' => 'English',
+        'nl' => 'Dutch',
+        'fr' => 'French'
+    ],
+];

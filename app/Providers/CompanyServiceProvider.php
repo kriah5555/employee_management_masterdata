@@ -17,9 +17,7 @@ class CompanyServiceProvider extends ServiceProvider
         $this->app->bind(CompanyService::class, function ($app) {
             return new CompanyService(
                 $app->make(Company::class),
-                $app->make(
-                    SectorService::class
-                )
+                $app->make(SectorService::class)
             );
         });
     }

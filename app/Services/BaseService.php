@@ -55,12 +55,4 @@ class BaseService implements CrudServiceInterface
     {
         return $this->model::where('status', '=', true)->get();
     }
-
-    /**
-     * to get location options we need topass few args like status, company ets exe : ['status' => 1, 'company_id' => 1]
-     */
-    public function getOptions(array $args = [])
-    {
-        return;
-    }
 }

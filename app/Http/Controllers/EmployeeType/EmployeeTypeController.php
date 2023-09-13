@@ -7,7 +7,6 @@ use App\Http\Rules\EmployeeType\EmployeeTypeRequest;
 use App\Services\EmployeeType\EmployeeTypeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 
 class EmployeeTypeController extends Controller
 {

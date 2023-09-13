@@ -43,13 +43,14 @@ class LocationService extends BaseService
 
     public static function addLocationCreationRules($rules)
     {
-        $rules['status']  = 'required|boolean';
+        $rules['status'] = 'required|boolean';
         $rules['company'] = [
             'bail',
-            'integere',
             'required',
+            'integer',
             Rule::exists('companies', 'id')
         ];
+
         // $rules['workstations']     = 'nullable|array';
         // $rules['workstations.*'] = [
         //     'bail',
@@ -64,10 +65,10 @@ class LocationService extends BaseService
     {
         try {
             DB::beginTransaction();
-            $address           = new AddressService();
-            $address           = $address->createNewAddress($values['address']);
+            $address = new AddressService();
+            $address = $address->createNewAddress($values['address']);
             $values['address'] = $address->id;
-            $location          = $this->model->create($values);
+            $location = $this->model->create($values);
             // $workstations      = $values['workstations'] ?? [];
             // $location->workstations()->sync($workstations);
             DB::commit();
@@ -99,12 +100,12 @@ class LocationService extends BaseService
         }
     }
 
-    public function getOptionsToCreate($company_id) 
+    public function getOptionsToCreate($company_id)
     {
-        return ['workstations' => Workstation::where('status', true)->where('company', $company_id)->get(['id as value', 'workstation_name as label'])];   
+        return ['workstations' => Workstation::where('status', true)->where('company', $company_id)->get(['id as value', 'workstation_name as label'])];
     }
 
-    public function getOptionsToEdit($location_id) 
+    public function getOptionsToEdit($location_id)
     {
         $location_details = $this->get($location_id, ['address']);
         $options = $this->getOptionsToCreate($location_details->company);

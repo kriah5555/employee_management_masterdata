@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Email;
 
 use Illuminate\Http\Request;
-use App\Models\BaseModel;
 use App\Models\Email\EmailTemplate;
 use App\Http\Controllers\Controller;
 
