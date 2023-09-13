@@ -29,7 +29,8 @@ class HolidayCodeRequest extends ApiRequest
             'count_type'                        => 'required|in:1,2,3',
             'icon_type'                         => 'required|in:1,2,3,4',
             'consider_plan_hours_in_week_hours' => 'required|in:0,1',
-            'employee_category'                 => 'required|in:1,2,3',
+            'employee_category'                 => 'required|array', // Updated to support an array
+            'employee_category.*'               => 'in:1,2', // Individual category values must be valid
             'contract_type'                     => 'required|in:1,2,3',
             'carry_forword'                     => 'required|in:0,1',
             'status'                            => 'required|boolean',

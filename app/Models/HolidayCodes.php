@@ -23,7 +23,7 @@ class HolidayCodes extends Model
         'employee_category',
         'contract_type',
         'carry_forword',
-        'status',
+        'status'
     ];
 
     protected $dates = [

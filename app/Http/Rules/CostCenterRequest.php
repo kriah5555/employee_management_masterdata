@@ -17,13 +17,13 @@ class CostCenterRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'name' => [
+            'name'               => [
                 'required',
                 'string',
                 'max:255',
                 'regex:/^[a-zA-Z0-9 ]+$/',
             ],
-            'company_id' => [
+            'company_id'         => [
                 'required',
                 Rule::exists('companies', 'id'),
             ],
@@ -33,16 +33,16 @@ class CostCenterRequest extends ApiRequest
                 'max:255',
                 'regex:/^[0-9]{6}$/',
             ],
-            'location_id' => [
+            'location_id'        => [
                 'bail',
                 'integer',
                 'required',
                 Rule::exists('locations', 'id'),
                 new LocationLinkedToCompanyRule(request()->input('company_id')),
             ],
-            'status' => 'required|boolean',
-            'workstations' => 'required|array',
-            'workstations.*' => [
+            'status'             => 'required|boolean',
+            'workstations'       => 'required|array',
+            'workstations.*'     => [
                 'bail',
                 'integer',
                 Rule::exists('workstations', 'id'),

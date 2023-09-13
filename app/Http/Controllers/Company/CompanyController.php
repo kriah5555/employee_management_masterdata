@@ -22,7 +22,7 @@ class CompanyController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->company_service->getAll(),
+                'data'    => $this->company_service->getAll(['with' => 'logoFile']),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -37,7 +37,7 @@ class CompanyController extends Controller
             [
                 'success' => true,
                 'message' => 'Company created successfully',
-                'data'    => $this->company_service->create($request->validated()),
+                'data'    => $this->company_service->create($request->all()),
             ],
             JsonResponse::HTTP_CREATED,
         );

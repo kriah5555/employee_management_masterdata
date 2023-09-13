@@ -46,7 +46,7 @@ class Company extends Model
         'username',
         'email',
         'phone',
-        // 'logo', 
+        'logo', 
         'status', 
         'created_by', 
         'updated_by'
@@ -80,17 +80,17 @@ class Company extends Model
         return $this->belongsToMany(Location::class, 'company_to_locations');
     }
 
-    // public function logoFile()
-    // {
-    //     return $this->belongsTo(Files::class, 'logo');
-    // }
-    
-    public function toArray()
+    public function logoFile()
     {
-        $array = parent::toArray();
-        // $array['logo'] = $this->logoFile; // Append the logoFile relationship data
-        return $array;
+        return $this->belongsTo(Files::class, 'logo');
     }
+    
+    // public function toArray()
+    // {
+    //     $array = parent::toArray();
+    //     // $array['logo'] = $this->logoFile; // Append the logoFile relationship data
+    //     return $array;
+    // }
 
 
 }

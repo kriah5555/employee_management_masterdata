@@ -34,7 +34,7 @@ class CompanyService extends BaseService
 
                 $company_address = $address_service->createNewAddress($values['address']);
                 $request_data['address'] = $company_address->id;
-                // $request_data['logo'] = $request_data['logo'] ? self::addCompanyLogo($request_data) : '';
+                $request_data['logo']    = isset($request_data['logo']) ? self::addCompanyLogo($request_data) : '';
                 $company = Company::create($request_data);
                 $sectors = $values['sectors'];
                 $location_ids = $this->createCompanyLocations($company, $values); # add company locations
@@ -54,7 +54,7 @@ class CompanyService extends BaseService
     {
         try {
             DB::beginTransaction();
-            // $this->updateCompanyLogoData($company, $values);
+            $this->updateCompanyLogoData($company, $values);
             $address_service = new AddressService();
             $company_address = $address_service->updateAddress($company->address, $values['address']);
             unset($values['address']);
@@ -161,9 +161,18 @@ class CompanyService extends BaseService
 
     public function getOptionsToEdit($company_id)
     {
-        $company_details    = $this->get($company_id, ['sectorsValue']);
+        $company_details    = $this->get($company_id, ['sectorsValue', 'logoFile']);
         $options            = $this->getOptionsToCreate();
         $options['details'] = $company_details;
         return $options;
+    }
+
+    public function getAll(array $args = [])
+    {
+        if (isset($args['with'])) {
+            return $this->model::with($args['with'])->get();
+        } else {
+            return $this->model::all();
+        }
     }
 }
