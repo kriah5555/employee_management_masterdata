@@ -170,7 +170,7 @@ class FunctionService
         return $functionTitles;
     }
 
-    public function getComapnyFunctionTitlesOptions($company_id)
+    public function getCompanyFunctionTitlesOptions($company_id)
     {
         $functionTitles = self::getCompanyFunctionTitles($company_id);
         

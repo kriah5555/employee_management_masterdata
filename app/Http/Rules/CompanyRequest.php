@@ -40,7 +40,7 @@ class CompanyRequest extends ApiRequest
                 'required',
                 'string',
                 'max:20',
-                //'regex:/^(\+[0-9]{1,4}\s[0-9]{1,3}\s[0-9]{1,3}\s[0-9\s]+)$/',
+                //'regex:/^(\+[0-9]{1,4}\s[0-9]{1,3}\s[0-9]{1,3}\s[0-9\s]+)$/', # need to be added back 
             ],
         ];
     }

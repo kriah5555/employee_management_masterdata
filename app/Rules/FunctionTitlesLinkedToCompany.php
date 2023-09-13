@@ -11,15 +11,15 @@ class FunctionTitlesLinkedToCompany implements Rule
 {
     protected $sectorIds;
 
-    public function __construct($compnay_id)
+    public function __construct($company_id)
     {
-        $this->compnay_id = $compnay_id;
+        $this->company_id = $company_id;
     }
 
     public function passes($attribute, $value)
     {
         // Get the sectors associated with the company
-        $sectorIds = Company::find($this->compnay_id)
+        $sectorIds = Company::find($this->company_id)
             ->sectors()
             ->pluck('sectors.id')
             ->toArray();
