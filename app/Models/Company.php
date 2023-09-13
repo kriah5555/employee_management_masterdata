@@ -35,10 +35,10 @@ class Company extends Model
      *
      * @var array
      */
-    
-     protected $fillable = [
-        'company_name', 
-        'address', 
+
+    protected $fillable = [
+        'company_name',
+        'address',
         'employer_id',
         'sender_number',
         'rsz_number',
@@ -46,9 +46,9 @@ class Company extends Model
         'username',
         'email',
         'phone',
-        'logo', 
-        'status', 
-        'created_by', 
+        'logo',
+        'status',
+        'created_by',
         'updated_by'
     ];
 
@@ -62,7 +62,7 @@ class Company extends Model
         'updated_at'
     ];
 
-    protected $with = ['sectors', 'address'];
+    // protected $with = ['sectors', 'address'];
 
     public function sectors()
     {
@@ -84,7 +84,7 @@ class Company extends Model
     {
         return $this->belongsTo(Files::class, 'logo');
     }
-    
+
     // public function toArray()
     // {
     //     $array = parent::toArray();
@@ -94,4 +94,3 @@ class Company extends Model
 
 
 }
-    

@@ -34,7 +34,7 @@ class CompanyService extends BaseService
 
                 $company_address = $address_service->createNewAddress($values['address']);
                 $request_data['address'] = $company_address->id;
-                $request_data['logo']    = isset($request_data['logo']) ? self::addCompanyLogo($request_data) : '';
+                $request_data['logo'] = isset($request_data['logo']) ? self::addCompanyLogo($request_data) : '';
                 $company = Company::create($request_data);
                 $sectors = $values['sectors'];
                 $location_ids = $this->createCompanyLocations($company, $values); # add company locations
@@ -161,8 +161,8 @@ class CompanyService extends BaseService
 
     public function getOptionsToEdit($company_id)
     {
-        $company_details    = $this->get($company_id, ['sectorsValue', 'logoFile']);
-        $options            = $this->getOptionsToCreate();
+        $company_details = $this->get($company_id, ['address', 'sectors', 'sectorsValue', 'logoFile']);
+        $options = $this->getOptionsToCreate();
         $options['details'] = $company_details;
         return $options;
     }
@@ -174,5 +174,43 @@ class CompanyService extends BaseService
         } else {
             return $this->model::all();
         }
+    }
+
+    public function getEmployeeContractOptionsForCreation(string $companyId)
+    {
+        $company = Company::with('sectors.employeeTypes.employeeTypeCategory')
+            ->findOrFail($companyId);
+
+        $employeeTypeCategories = $company->sectors
+            ->flatMap(function ($sector) {
+                return $sector->employeeTypes->map(function ($employeeType) {
+                    return [
+                        'employee_type_category_id'   => $employeeType->employeeTypeCategory->id,
+                        'employee_type_category_name' => $employeeType->employeeTypeCategory->name,
+                        'employee_types'              => []
+                    ];
+                });
+            });
+        $employeeTypeCategories = $employeeTypeCategories->unique('employee_type_category_id')->values();
+
+        $employeeTypesWithCategory = $company->sectors
+            ->flatMap(function ($sector) {
+                return $sector->employeeTypes->map(function ($employeeType) {
+                    return [
+                        'employee_type_id'          => $employeeType->id,
+                        'employee_type'             => $employeeType->name,
+                        'employee_type_category_id' => $employeeType->employeeTypeCategory->id,
+                    ];
+                });
+            });
+        $employeeTypesWithCategory = $employeeTypesWithCategory->groupBy('employee_type_category_id');
+        $employeeTypesWithCategory = json_decode($employeeTypesWithCategory, true);
+        $result = [];
+        foreach ($employeeTypeCategories as $employeeTypeCategory) {
+            $employeeTypeCategory['employee_types'] = $employeeTypesWithCategory[$employeeTypeCategory['employee_type_category_id']];
+            $result[] = $employeeTypeCategory;
+        }
+
+        return $result;
     }
 }

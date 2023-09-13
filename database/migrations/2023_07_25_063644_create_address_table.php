@@ -20,8 +20,8 @@ return new class extends Migration {
             $table->boolean('status')->default(true);
             $table->decimal('latitude', 10, 7)->nullable()->after('country');
             $table->decimal('longitude', 10, 7)->nullable()->after('latitude');
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

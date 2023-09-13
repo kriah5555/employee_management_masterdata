@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,11 +13,11 @@ return new class extends Migration
         Schema::create('contract_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('description')->nullable(true);
+            $table->longText('description')->nullable();
             $table->foreignId('contract_renewal_type_id')->references('id')->on('contract_renewal_types')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

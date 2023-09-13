@@ -14,10 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->string('bank_account_number');
             $table->boolean('verified')->default(false);
-            $table->foreignId('verfication')->nullable()->references('id')->on('files')->onDelete('cascade');
+            $table->foreignId('verification_file_id')->nullable()->references('id')->on('files')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -13,9 +13,9 @@ return new class extends Migration {
         Schema::create('sector_salary_steps', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sector_salary_config_id')->references('id')->on('sector_salary_config')->onDelete('cascade');
-            $table->integer('level')->nullable(true);
-            $table->integer('from')->nullable(true);
-            $table->integer('to')->nullable(true);
+            $table->integer('level')->nullable();
+            $table->integer('from')->nullable();
+            $table->integer('to')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -13,10 +13,10 @@ return new class extends Migration {
         Schema::create('employee_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('description')->nullable(true);
+            $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->foreignId('employee_type_category_id')->references('id')->on('employee_type_categories')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();

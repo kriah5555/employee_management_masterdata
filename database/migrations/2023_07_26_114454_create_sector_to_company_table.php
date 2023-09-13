@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
             $table->foreignId('company_id')->references('id')->on('companies')->onDelete('cascade');
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

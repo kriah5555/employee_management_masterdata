@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,11 +13,11 @@ return new class extends Migration
         Schema::create('cost_centers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('cost_center_number')->nullable(true);
+            $table->string('cost_center_number')->nullable();
             $table->foreignId('location_id')->references('id')->on('locations')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);  
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,8 +26,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cost_center_id')->references('id')->on('cost_centers')->onDelete('cascade');
             $table->foreignId('workstation_id')->references('id')->on('workstations')->onDelete('cascade');
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);  
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

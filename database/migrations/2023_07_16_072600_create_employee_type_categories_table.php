@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,12 +13,12 @@ return new class extends Migration
         Schema::create('employee_type_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('description')->nullable(true);
+            $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
         });
     }
 

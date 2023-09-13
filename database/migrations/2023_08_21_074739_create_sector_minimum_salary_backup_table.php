@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->integer('category');
             $table->integer('revert_count');
             $table->json('salary_data');
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->boolean('status')->default(true);
             $table->softDeletes();
             $table->timestamps();

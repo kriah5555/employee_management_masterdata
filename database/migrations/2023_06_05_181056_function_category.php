@@ -14,11 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
             $table->string('name');
-            $table->longText('description')->nullable(true);
+            $table->longText('description')->nullable();
             $table->integer('category');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

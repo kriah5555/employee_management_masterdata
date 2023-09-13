@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sector_salary_steps_id')->references('id')->on('sector_salary_steps')->onDelete('cascade');
             $table->integer('category_number');
-            $table->float('salary')->nullable(true);
+            $table->float('salary')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
