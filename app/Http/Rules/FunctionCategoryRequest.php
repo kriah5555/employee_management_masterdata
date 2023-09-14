@@ -16,11 +16,11 @@ class FunctionCategoryRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'category' => 'required|integer',
-            'description' => 'nullable|string|max:255',
-            'status' => 'required|boolean',
-            'sector_id' => [
+            'name'        => 'required|string|max:255',
+            'category'    => 'required|integer',
+            'description' => 'nullable|string',
+            'status'      => 'required|boolean',
+            'sector_id'   => [
                 'required',
                 Rule::exists('sectors', 'id'),
             ],
@@ -30,12 +30,12 @@ class FunctionCategoryRequest extends ApiRequest
     public function messages()
     {
         return [
-            'name.required' => 'Name is required.',
-            'name.string' => 'Name must be a string.',
-            'name.max' => 'Name cannot be greater than 255 characters.',
+            'name.required'      => 'Name is required.',
+            'name.string'        => 'Name must be a string.',
+            'name.max'           => 'Name cannot be greater than 255 characters.',
             'description.string' => 'Description must be a string.',
-            'description.max' => 'Description cannot be greater than 255 characters.',
-            'status.boolean' => 'Status must be a boolean value.'
+            'description.max'    => 'Description cannot be greater than 255 characters.',
+            'status.boolean'     => 'Status must be a boolean value.'
         ];
     }
 }
