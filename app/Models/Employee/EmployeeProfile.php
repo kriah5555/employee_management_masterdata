@@ -27,7 +27,8 @@ class EmployeeProfile extends BaseModel
         'bank_account_id',
         'address_id',
         'company_id',
-        'status'
+        'status',
+        'extra_info'
     ];
     /**
      * The table associated with the model.
@@ -83,6 +84,7 @@ class EmployeeProfile extends BaseModel
         'bank_account_id',
         'address_id',
         'company_id',
-        'status'
+        'status',
+        'extra_info'
     ];
 }

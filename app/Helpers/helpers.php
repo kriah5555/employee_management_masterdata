@@ -1,6 +1,7 @@
 <?php
 use Spatie\TranslationLoader\LanguageLine;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -96,19 +97,50 @@ if (!function_exists('generateRandomPassword')) {
 }
 
 if (!function_exists('makeApiRequest')) {
+    // function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
+    // {
+    //     $client = new \GuzzleHttp\Client();
+
+    //     $options = [
+    //         'json'    => $data,
+    //         'headers' => $headers,
+    //     ];
+
+    //     $response = $client->request($method, $url, $options);
+    //     if ($response->getStatusCode() == 200 || $response->getStatusCode() == 201) {
+    //         return json_decode($response->getBody(), true);
+    //     } else {
+    //         throw new Exception("API error");
+    //     }
+    // }
+
     function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
     {
-        $client = new \GuzzleHttp\Client();
+        try {
+            // Build the HTTP request
+            $request = Http::withHeaders($headers);
 
-        $options = [
-            'json'    => $data,
-            'headers' => $headers,
-        ];
+            if ($method === 'GET') {
+                $response = $request->get($url);
+            } elseif ($method === 'POST') {
+                $response = $request->post($url, $data);
+            } elseif ($method === 'PUT') {
+                $response = $request->put($url, $data);
+            } elseif ($method === 'DELETE') {
+                $response = $request->delete($url);
+            } else {
+                // Handle other HTTP methods as needed
+                return null;
+            }
 
-        $response = $client->request($method, $url, $options);
-        if ($response->getStatusCode() == 200 || $response->getStatusCode() == 201) {
-            return json_decode($response->getBody(), true);
-        } else {
+            // Check if the request was successful (status code 200)
+            if ($response->successful()) {
+                // Get the JSON response data
+                return $response->json();
+            } else {
+                throw new Exception("API error");
+            }
+        } catch (\Exception $e) {
             throw new Exception("API error");
         }
     }
