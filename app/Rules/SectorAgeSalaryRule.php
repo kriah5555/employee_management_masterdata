@@ -25,9 +25,17 @@ class SectorAgeSalaryRule implements ValidationRule
             $error = "Incorrect salary percentage.";
             $fail($error);
         } else {
-            foreach ($age_data as $val) {
-                if (!is_int((int) $val) || $val < 0 || $val > 100) {
-                    $error = "Incorrect salary percentage.";
+            foreach ($value as $index => $val) {
+                $percentage       = $val['percentage'];
+                $max_time_to_work = isset($val['max_time_to_work']) ? $val['max_time_to_work'] : ''; // Access the max_time_to_work field
+        
+                if (!is_int((int) $percentage) || $percentage < 0 || $percentage > 100) {
+                    $error = t("Incorrect :attribute.$index salary percentage.");
+                    $fail($error);
+                }
+        
+                if (empty($max_time_to_work) || !preg_match('/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/', $max_time_to_work)) {
+                    $error = t("Incorrect :attribute.$index time format. It should be in 24-hour time format (HH:MM).");
                     $fail($error);
                 }
             }

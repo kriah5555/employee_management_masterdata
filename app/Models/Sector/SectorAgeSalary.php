@@ -41,6 +41,7 @@ class SectorAgeSalary extends Model
         'sector_id',
         'age',
         'percentage',
+        'max_time_to_work',
         'status',
         'created_by',
         'updated_by',

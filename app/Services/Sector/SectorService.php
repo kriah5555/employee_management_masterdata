@@ -163,19 +163,21 @@ class SectorService
     public function updateSectorAgeSalary(Sector $sector, $value)
     {
         foreach ($value as $val) {
-            $age_values[$val['age']] = $val['percentage'];
+            $age_values[$val['age']] =[
+                "percentage"       => $val['percentage'],
+                "max_time_to_work" => $val['max_time_to_work']
+            ];
         }
         $age = array_keys($age_values);
         SectorAgeSalary::where('sector_id', $sector->id)
             ->whereNotIn('age', $age)->delete();
-        foreach ($age_values as $age => $percentage) {
+        foreach ($age_values as $age => $data) {
             $sector_age_salary = SectorAgeSalary::firstOrCreate([
                 'sector_id' => $sector->id,
                 'age'       => $age
-            ], [
-                'percentage' => $percentage
-            ]);
-            $sector_age_salary->percentage = $percentage;
+            ], $data);
+            $sector_age_salary->percentage = $data['percentage'];
+            $sector_age_salary->max_time_to_work = $data['max_time_to_work'];
             $sector_age_salary->save();
         }
     }
