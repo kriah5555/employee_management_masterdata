@@ -14,10 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
             $table->integer('age');
-            $table->float('percentage')->nullable(true);
+            $table->float('percentage')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

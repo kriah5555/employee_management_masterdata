@@ -14,11 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('function_code');
-            $table->longText('description')->nullable(true);
+            $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
             $table->foreignId('function_category_id')->nullable()->references('id')->on('function_category')->onDelete('cascade');
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

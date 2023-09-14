@@ -2,6 +2,8 @@
 
 namespace App\Services\Employee;
 
+use App\Models\Company;
+use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Repositories\EmployeeProfileRepository;
@@ -10,22 +12,33 @@ use App\Repositories\BankAccountRepository;
 use App\Models\User;
 use App\Models\Employee\Gender;
 use App\Models\Employee\MaritalStatus;
+use App\Services\EmployeeType\EmployeeTypeService;
+use App\Models\EmployeeType\EmployeeTypeCategory;
 
 class EmployeeProfileService
 {
     protected $employeeProfileRepository;
 
     protected $addressRepository;
+
     protected $bankAccountRepository;
+
+    protected $employeeTypeService;
+
+    protected $companyService;
 
     public function __construct(
         EmployeeProfileRepository $employeeProfileRepository,
         AddressRepository $addressRepository,
-        BankAccountRepository $bankAccountRepository
+        BankAccountRepository $bankAccountRepository,
+        EmployeeTypeService $employeeTypeService,
+        CompanyService $companyService
     ) {
         $this->employeeProfileRepository = $employeeProfileRepository;
         $this->addressRepository = $addressRepository;
         $this->bankAccountRepository = $bankAccountRepository;
+        $this->employeeTypeService = $employeeTypeService;
+        $this->companyService = $companyService;
     }
     /**
      * Function to get all the employee types
@@ -33,6 +46,19 @@ class EmployeeProfileService
     public function index(string $companyId)
     {
         return $this->employeeProfileRepository->getAllEmployeeProfilesByCompany($companyId);
+    }
+
+    public function show(string $employeeProfileId)
+    {
+        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
+    }
+
+    public function edit(string $employeeProfileId)
+    {
+        $options = $this->create();
+        $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
+        $options['details'] = $employeeProfile;
+        return $options;
     }
 
     public function createNewEmployeeProfile($values)
@@ -47,7 +73,7 @@ class EmployeeProfileService
             }
             $user = User::find($uid);
             $values['uid'] = $uid;
-            $address = $this->addressRepository->createAddress($values['address']);
+            $address = $this->addressRepository->createAddress($values);
             $values['address_id'] = $address->id;
             if (array_key_exists('bank_account_number', $values)) {
                 $bankAccount = $this->bankAccountRepository->createBankAccount($values);
@@ -93,13 +119,14 @@ class EmployeeProfileService
         }
     }
 
-    public function create()
+    public function create($companyId)
     {
-        $data = [];
-        $data['genders'] = $this->getGenderOptions();
-        $data['marital_status'] = $this->getMaritalStatusOptions();
-        $data['languages'] = $this->getLanguageOptions();
-        return $data;
+        $options = [];
+        $options['genders'] = $this->getGenderOptions();
+        $options['marital_status'] = $this->getMaritalStatusOptions();
+        $options['languages'] = $this->getLanguageOptions();
+        $options['employee_type_categories'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
+        return $options;
     }
 
     public function getGenderOptions()
@@ -121,6 +148,14 @@ class EmployeeProfileService
                 'label' => $label,
             ];
         }, array_keys($languages), $languages);
+    }
+
+    public function getEmployeeCreationContractOptions(string $companyId)
+    {
+        $company = Company::findOrFail($companyId);
+        // $employeeTypeCategories = EmployeeTypeCategory::where('status', '=', true)->get();
+        print_r($company);
+        exit;
     }
 
 }

@@ -13,12 +13,12 @@ return new class extends Migration {
         Schema::create('sectors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('paritair_committee', 9, 6)->nullable(true);
+            $table->float('paritair_committee', 9, 6)->nullable();
             $table->integer('category');
-            $table->longText('description')->nullable(true);
+            $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

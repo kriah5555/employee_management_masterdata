@@ -7,8 +7,8 @@ use App\Models\ContractType;
 
 class ContractRenewalType extends BaseModel
 {
-    protected static $sort = ['name'];
-    protected $columnsToLog = ['key', 'name', 'status'];
+    protected static $sort = ['sort_order', 'name'];
+    protected $columnsToLog = ['key', 'name', 'sort_order', 'status'];
     /**
      * The table associated with the model.
      *
@@ -48,6 +48,7 @@ class ContractRenewalType extends BaseModel
      */
     protected $fillable = [
         'key',
+        'sort_order',
         'name',
         'status',
         'created_by',
@@ -57,6 +58,6 @@ class ContractRenewalType extends BaseModel
     public function contractType()
     {
         return $this->hasMany(ContractType::class)
-        ->where('status', true);
+            ->where('status', true);
     }
 }

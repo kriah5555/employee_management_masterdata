@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->string('workstation_name');
             $table->integer('sequence_number');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->foreignId('company')->nullable()->references('id')->on('companies')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();

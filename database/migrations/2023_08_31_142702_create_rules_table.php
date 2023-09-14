@@ -14,7 +14,7 @@ return new class extends Migration {
         Schema::create('rules', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('description')->nullable(true);
+            $table->longText('description')->nullable();
             $table->smallInteger('type');
             $table->smallInteger('value_type');
             $table->string('value');

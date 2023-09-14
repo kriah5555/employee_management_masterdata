@@ -6,9 +6,9 @@ use App\Models\BaseModel;
 
 class EmployeeTypeCategory extends BaseModel
 {
-    protected static $sort = ['name'];
+    protected static $sort = ['sort_order', 'name'];
 
-    protected $columnsToLog = ['name', 'description', 'status'];
+    protected $columnsToLog = ['sort_order', 'name', 'description', 'status'];
     /**
      * The table associated with the model.
      *
@@ -39,6 +39,7 @@ class EmployeeTypeCategory extends BaseModel
         'name',
         'description',
         'status',
+        'sort_order',
         'created_by',
         'updated_by'
     ];
@@ -48,4 +49,10 @@ class EmployeeTypeCategory extends BaseModel
         'updated_at',
         'created_at'
     ];
+
+    public function employeeTypes()
+    {
+        return $this->hasMany(EmployeeType::class)
+            ->where('status', true);
+    }
 }

@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->string('value');
             $table->timestamps();
             $table->softDeletes();
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
         });
     }
 

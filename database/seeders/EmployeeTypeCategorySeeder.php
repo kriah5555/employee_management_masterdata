@@ -14,9 +14,9 @@ class EmployeeTypeCategorySeeder extends Seeder
     public function run(): void
     {
         $employeeTypeCategory = [
-            ['name' => 'Long term Contract', 'created_by' => 0, 'updated_by' => 0],
-            ['name' => 'Day contract', 'created_by' => 0, 'updated_by' => 0],
-            ['name' => 'External', 'created_by' => 0, 'updated_by' => 0],
+            ['name' => 'Long term Contract', 'created_by' => 0, 'updated_by' => 0, 'sort_order' => 1],
+            ['name' => 'Day contract', 'created_by' => 0, 'updated_by' => 0, 'sort_order' => 2],
+            ['name' => 'External', 'created_by' => 0, 'updated_by' => 0, 'sort_order' => 3],
         ];
         EmployeeTypeCategory::insert($employeeTypeCategory);
     }

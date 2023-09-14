@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('location_id')->references('id')->on('locations')->onDelete('cascade');
             $table->foreignId('workstation_id')->references('id')->on('workstations')->onDelete('cascade');
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

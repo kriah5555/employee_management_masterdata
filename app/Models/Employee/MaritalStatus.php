@@ -8,8 +8,9 @@ use App\Traits\UserAudit;
 class MaritalStatus extends BaseModel
 {
     use UserAudit;
-    protected static $sort = ['order', 'name'];
+    protected static $sort = ['sort_order', 'name'];
     protected $columnsToLog = [
+        'sort_order',
         'name',
         'status'
     ];
@@ -47,6 +48,7 @@ class MaritalStatus extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'sort_order',
         'name',
         'status'
     ];

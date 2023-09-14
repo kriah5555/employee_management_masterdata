@@ -32,12 +32,12 @@ class EmployeeProfileController extends Controller
         );
     }
 
-    public function create()
+    public function create(string $companyId)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeProfileService->create()
+                'data'    => $this->employeeProfileService->create($companyId)
             ],
             JsonResponse::HTTP_OK,
         );
@@ -66,7 +66,7 @@ class EmployeeProfileController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeTypService->show($id),
+                'data'    => $this->employeeProfileService->show($id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -81,7 +81,7 @@ class EmployeeProfileController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeTypService->edit($id),
+                'data'    => $this->employeeProfileService->edit($id),
             ],
             JsonResponse::HTTP_OK,
         );

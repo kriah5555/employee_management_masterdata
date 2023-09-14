@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->time('start_at');
             $table->time('end_at');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('rule_id')->references('id')->on('rules')->onDelete('cascade');
             $table->string('value');
-            $table->integer('created_by')->nullable(true);
-            $table->integer('updated_by')->nullable(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
