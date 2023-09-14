@@ -6,6 +6,7 @@ use App\Http\Rules\ApiRequest;
 use App\Rules\SocialSecurityNumberRule;
 use App\Repositories\EmployeeProfileRepository;
 use Illuminate\Validation\Rule;
+use App\Rules\CurrencyFormatRule;
 
 class EmployeeProfileRequest extends ApiRequest
 {
@@ -55,6 +56,16 @@ class EmployeeProfileRequest extends ApiRequest
             'country'                => 'required|string|max:50',
             'latitude'               => 'nullable|numeric',
             'longitude'              => 'nullable|numeric',
+            'transport_id'           => [
+                'bail',
+                'required',
+                'integer',
+                Rule::exists('transports', 'id'),
+            ],
+            'fuel_card'              => 'required|boolean',
+            'company_car'            => 'required|boolean',
+            'extra_info'             => 'nullable|string|max:2000',
+            'clothing_compensation'  => ['required', new CurrencyFormatRule],
         ];
 
     }
