@@ -6,6 +6,7 @@ use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\EmployeeType\EmployeeTypeController;
 use App\Http\Controllers\HolidayCode\HolidayCodesController;
+use App\Http\Controllers\HolidayCode\HolidayCodeConfigController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
 // use App\Http\Controllers\HolidayCode\HolidayCodeCountController;
@@ -75,6 +76,10 @@ Route::resources([
     'cost-center'         => CostCenterController::class,
 ]);
 
+Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
+
+Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update']);
+
 Route::controller(TranslationController::class)->group(function () {
 
     Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
@@ -84,6 +89,7 @@ Route::controller(TranslationController::class)->group(function () {
     Route::post('/translations', 'store');
 
     Route::post('/translate', 'getStringTranslation');
+    
 });
 
 Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
@@ -95,6 +101,11 @@ Route::controller(SalaryController::class)->group(function () use ($integerRule,
     Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
 
     Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+
+    Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+
+    Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+
 });
 
 Route::controller(LocationController::class)->group(function () use ($statusRule) {
@@ -102,6 +113,10 @@ Route::controller(LocationController::class)->group(function () use ($statusRule
     Route::get('locations/{company_id}/{status}', 'index')->where('status', $statusRule);
 
     Route::get('/locations/create/{company_id}', 'create');
+
+    Route::resource('locations', LocationController::class);
+
+    Route::get('company/locations/{company_id}/{status}', 'locations')->where('status', $statusRule);
 });
 
 Route::controller(WorkstationController::class)->group(function () use ($statusRule, $integerRule) {
@@ -110,29 +125,7 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
 
     Route::get('location-workstations/{location_id}/{status}', 'locationWorkstations')->where(['status' => $statusRule, 'location_id' => $integerRule]);
 
-    Route::post('undo-coefficient-minimum-salaries/{sector_id}', [SalaryController::class, 'undoIncrementedMinimumSalaries'])->where(['sector_id' => $integerRule]);
-
-    Route::post('update-minimum-salaries/{id}', [SalaryController::class, 'updateMinimumSalaries'])->where(['id' => $integerRule]);
-
-    Route::resource('locations', LocationController::class);
-
-    Route::get('company/locations/{company_id}/{status}', [LocationController::class, 'locations'])->where('status', $statusRule);
-
-    Route::resource('workstations', WorkstationController::class);
-
-    Route::get('company/workstations/{company_id}/{status}', [WorkstationController::class, 'companyWorkstations'])->where('status', $statusRule);
-
-    Route::resource('email-templates', EmailTemplateApiController::class);
-
-    Route::post('/extract-translatable-strings', [TranslationController::class, 'extractTranslatableStrings']);
-
-    Route::get('/translations/{key?}', [TranslationController::class, 'index']);
-
-    Route::post('/translations', [TranslationController::class, 'store']);
-
-    Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
-
-    Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
+    Route::get('company/workstations/{company_id}/{status}', 'companyWorkstations')->where('status', $statusRule);
 
     Route::get('workstations/create/{company_id}', 'create');
 });
@@ -145,6 +138,7 @@ Route::group(['middleware' => 'setactiveuser'], function () {
 
     Route::get('/employee-profiles/get-company-employees/{company_id}', [EmployeeProfileController::class, 'index']);
 });
+
 Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
 
     Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);

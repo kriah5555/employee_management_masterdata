@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Rules;
+namespace App\Http\Rules\HolidayCode;
 
 use App\Http\Rules\ApiRequest;
 
@@ -23,6 +23,7 @@ class HolidayCodeRequest extends ApiRequest
     {
         return [
             'holiday_code_name'                 => 'required|string|max:255',
+            'count'                             => 'required|integer',
             'internal_code'                     => 'required|integer',
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => 'required|in:1,2,3',
@@ -32,7 +33,7 @@ class HolidayCodeRequest extends ApiRequest
             'employee_category'                 => 'required|array', // Updated to support an array
             'employee_category.*'               => 'in:1,2', // Individual category values must be valid
             'contract_type'                     => 'required|in:1,2,3',
-            'carry_forword'                     => 'required|in:0,1',
+            // 'carry_forword'                     => 'required|in:0,1',
             'status'                            => 'required|boolean',
             'created_by'                        => 'nullable|integer',
             'updated_by'                        => 'nullable|integer',
@@ -69,10 +70,7 @@ class HolidayCodeRequest extends ApiRequest
 
             'contract_type.required'                     => 'The contract type field is required.',
             'contract_type.in'                           => 'Invalid contract type selected.',
-
-            'carry_forword.required'                     => 'The carry forward field is required.',
-            'carry_forword.in'                           => 'Invalid value for carry forward.',
-
+            
             'created_by.integer'                         => 'The created by field must be an integer.',
             'updated_by.integer'                         => 'The updated by field must be an integer.',
 

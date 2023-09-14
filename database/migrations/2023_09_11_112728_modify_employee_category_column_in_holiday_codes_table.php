@@ -17,7 +17,7 @@ return new class extends Migration
         });
 
         Schema::table('holiday_codes', function (Blueprint $table) {
-           $table->json('employee_category')->nullable()->after('carry_forword');
+           $table->json('employee_category')->nullable();
        });
     }
 
@@ -27,7 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('holiday_codes', function (Blueprint $table) {
-            $table->json('employee_category')->after('carry_forword');
+            $table->json('employee_category');
         });
         
         Schema::table('holiday_codes', function (Blueprint $table) {

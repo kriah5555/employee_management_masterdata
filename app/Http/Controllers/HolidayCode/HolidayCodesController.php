@@ -5,7 +5,7 @@ namespace App\Http\Controllers\HolidayCode;
 use App\Models\HolidayCodes;
 use App\Services\HolidayCode\HolidayCodeService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\HolidayCodeRequest;
+use App\Http\Rules\HolidayCode\HolidayCodeRequest;
 use App\Http\Controllers\Controller;
 
 class HolidayCodesController extends Controller

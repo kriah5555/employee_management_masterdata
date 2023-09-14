@@ -12,7 +12,7 @@ class BankAccount extends BaseModel
     protected $columnsToLog = [
         'bank_account_number',
         'verified',
-        'verfication',
+        'verification',
         'status'
     ];
     /**
@@ -51,7 +51,7 @@ class BankAccount extends BaseModel
     protected $fillable = [
         'bank_account_number',
         'verified',
-        'verfication',
+        'verification',
         'status'
     ];
 }

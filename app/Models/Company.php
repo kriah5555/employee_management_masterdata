@@ -8,6 +8,7 @@ use App\Models\Sector\Sector;
 use App\Models\Files;
 use App\Models\Address;
 use App\Models\Location;
+use App\Models\HolidayCodes;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
@@ -80,9 +81,38 @@ class Company extends Model
         return $this->belongsToMany(Location::class, 'company_to_locations');
     }
 
+    public function holidayCodes()
+    {
+        return $this->belongsToMany(HolidayCodes::class, 'company_holiday_codes', 'company_id', 'holiday_code_id')
+                    ->where('holiday_codes.status', true);
+    }
+
     public function logoFile()
     {
-        return $this->belongsTo(Files::class, 'logo'); #php artisan storage:link  -> need to create symbolic link between storage and public folder
+        return $this->belongsTo(Files::class, 'logo'); # php artisan storage:link  -> need to create symbolic link between storage and public folder
+    }
+
+    # to link all the holiday codes to company when any new company are created
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($company) {
+            // Find all active holiday codes (status = 1)
+            // $activeHolidayCodes = HolidayCodes::where('status', 1)->pluck('id');
+
+            $holiday_codes = HolidayCodes::all()->pluck('id');
+            
+            // Sync the active holiday codes with the company
+            $company->holidayCodes()->sync($holiday_codes);
+        });
+    }
+
+    # can call this externally and link the holiday codes
+    public function linkHolidayCodes()
+    {
+        $holiday_codes = HolidayCodes::all()->pluck('id');
+        $this->holidayCodes()->sync($holiday_codes);
     }
     
     // public function toArray()

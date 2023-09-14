@@ -72,11 +72,11 @@ class SectorService
     {
         try {
             DB::beginTransaction();
-            $sector = Sector::create($values);
-            $sector->employeeTypes()->sync($values['employee_types'] ?? []);
-            $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
-            $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
-            $this->updateSectorAgeSalary($sector, $values['age']);
+                $sector = Sector::create($values);
+                $sector->employeeTypes()->sync($values['employee_types'] ?? []);
+                $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
+                $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
+                $this->updateSectorAgeSalary($sector, $values['age']);
             DB::commit();
             return $sector;
         } catch (Exception $e) {
