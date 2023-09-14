@@ -23,7 +23,7 @@ class HolidayCodeRequest extends ApiRequest
     {
         return [
             'holiday_code_name'                 => 'required|string|max:255',
-            'count'                             => 'required|integer',
+            'count'                             => 'bail|required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'internal_code'                     => 'required|integer',
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => 'required|in:1,2,3',
@@ -43,16 +43,6 @@ class HolidayCodeRequest extends ApiRequest
     public function messages()
     {
         return [
-            'holiday_code_name.required'                 => 'The holiday code name field is required.',
-            'holiday_code_name.string'                   => 'The holiday code name must be a string.',
-            'holiday_code_name.max'                      => 'The holiday code name must not exceed 255 characters.',
-
-            'internal_code.required'                     => 'The internal code field is required.',
-            'internal_code.integer'                      => 'The internal code must be an integer.',
-
-            'description.string'                         => 'The description must be a string.',
-            'description.max'                            => 'The description must not exceed 255 characters.',
-
             'holiday_type.required'                      => 'The holiday type field is required.',
             'holiday_type.in'                            => 'Invalid holiday type selected.',
 
@@ -75,6 +65,10 @@ class HolidayCodeRequest extends ApiRequest
             'updated_by.integer'                         => 'The updated by field must be an integer.',
 
             'status.boolean'                             => 'Status must be a boolean value.',
+
+            'count.required'                             => 'The count field is required.',
+            'count.numeric'                              => 'The count field must be a numeric value.',
+            'count.regex'                                => 'The count field must be a numeric value with up to two decimal places.',
         ];
     }
 }
