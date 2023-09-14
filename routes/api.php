@@ -89,7 +89,7 @@ Route::controller(TranslationController::class)->group(function () {
     Route::post('/translations', 'store');
 
     Route::post('/translate', 'getStringTranslation');
-    
+
 });
 
 Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
@@ -136,9 +136,11 @@ Route::group(['middleware' => 'setactiveuser'], function () {
 
     Route::controller(EmployeeProfileController::class)->group(function () {
 
-        Route::get('/company-employees/{companyId}', 'index');
+        Route::get('/employees/get-company-employees/{company_id}', 'index');
 
-        Route::get('/employee-profiles/create/{companyId}', 'create');
+        Route::get('/employees/create/{company_id}', 'create');
+
+        Route::post('/employees/store/{company_id}', 'store');
     });
 
 });

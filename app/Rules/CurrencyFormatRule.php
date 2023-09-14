@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class SalaryFormat implements ValidationRule
+class CurrencyFormatRule implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -15,7 +15,7 @@ class SalaryFormat implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (!(preg_match('/^\d+(\.\d{1,4})?$/', $value) || preg_match('/^\d+(\,\d{1,4})?$/', $value))) {
-            $fail('Incorrect salary format.');
+            $fail('Incorrect currency format.');
         }
     }
 }

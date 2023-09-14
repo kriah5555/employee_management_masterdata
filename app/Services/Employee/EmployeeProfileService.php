@@ -14,6 +14,8 @@ use App\Models\Employee\Gender;
 use App\Models\Employee\MaritalStatus;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\EmployeeType\EmployeeTypeCategory;
+use App\Models\Employee\Transport;
+use App\Repositories\ExtraBenefitsRepository;
 
 class EmployeeProfileService
 {
@@ -27,18 +29,22 @@ class EmployeeProfileService
 
     protected $companyService;
 
+    protected $extraBenefitsRepository;
+
     public function __construct(
         EmployeeProfileRepository $employeeProfileRepository,
         AddressRepository $addressRepository,
         BankAccountRepository $bankAccountRepository,
         EmployeeTypeService $employeeTypeService,
-        CompanyService $companyService
+        CompanyService $companyService,
+        ExtraBenefitsRepository $extraBenefitsRepository
     ) {
         $this->employeeProfileRepository = $employeeProfileRepository;
         $this->addressRepository = $addressRepository;
         $this->bankAccountRepository = $bankAccountRepository;
         $this->employeeTypeService = $employeeTypeService;
         $this->companyService = $companyService;
+        $this->extraBenefitsRepository = $extraBenefitsRepository;
     }
     /**
      * Function to get all the employee types
@@ -75,6 +81,8 @@ class EmployeeProfileService
             $values['uid'] = $uid;
             $address = $this->addressRepository->createAddress($values);
             $values['address_id'] = $address->id;
+            $extraBenefits = $this->extraBenefitsRepository->createExtraBenefits($values);
+            $values['extra_benefits_id'] = $extraBenefits->id;
             if (array_key_exists('bank_account_number', $values)) {
                 $bankAccount = $this->bankAccountRepository->createBankAccount($values);
                 $values['bank_accountid'] = $bankAccount->id;
@@ -125,6 +133,7 @@ class EmployeeProfileService
         $options['genders'] = $this->getGenderOptions();
         $options['marital_status'] = $this->getMaritalStatusOptions();
         $options['languages'] = $this->getLanguageOptions();
+        $options['transport'] = $this->getTransportOptions();
         $options['employee_type_categories'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
         return $options;
     }
@@ -150,12 +159,8 @@ class EmployeeProfileService
         }, array_keys($languages), $languages);
     }
 
-    public function getEmployeeCreationContractOptions(string $companyId)
+    public function getTransportOptions()
     {
-        $company = Company::findOrFail($companyId);
-        // $employeeTypeCategories = EmployeeTypeCategory::where('status', '=', true)->get();
-        print_r($company);
-        exit;
+        return Transport::where('status', '=', true)->select(['id as value', 'name as label'])->get();
     }
-
 }
