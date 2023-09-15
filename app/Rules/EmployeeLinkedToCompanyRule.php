@@ -2,10 +2,11 @@
 
 namespace App\Rules;
 
+use Closure;
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Workstation;
+use App\Models\Employee\EmployeeProfile;
 
-class WorkstationLinkedToCompanyRule implements Rule
+class EmployeeLinkedToCompanyRule implements Rule
 {
     protected $company_id;
 
@@ -16,12 +17,13 @@ class WorkstationLinkedToCompanyRule implements Rule
 
     public function passes($attribute, $value)
     {
-        $workstation = Workstation::findOrFail($value);
-        return $workstation && $workstation->company == $this->company_id;
+        $employee = EmployeeProfile::findOrFail($value);
+
+        return $employee->company_id == $this->company_id;
     }
 
     public function message()
     {
-        return t("The :attribute is not linked to the specified company.");
+        return 'The :attribute is not linked to specified company';
     }
 }
