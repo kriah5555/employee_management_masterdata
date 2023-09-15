@@ -47,12 +47,23 @@ class ReasonController extends Controller
         );
     }
 
-    public function edit(Reason $reason)
+    public function create()
     {
         return returnResponse(
             [
                 'success' => true,
-                // 'data'    => $this->contractTypeService->edit($id),
+                'data'    => $this->reasonService->getOptionsToCreate(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->reasonService->getOptionsToEdit($id),
             ],
             JsonResponse::HTTP_OK,
         );

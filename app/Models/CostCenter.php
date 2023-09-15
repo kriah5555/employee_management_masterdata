@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Location;
 use App\Traits\UserAudit;
 use App\Models\BaseModel;
+use App\Models\Employee\EmployeeProfile;
 
 class CostCenter extends BaseModel
 {
@@ -55,5 +56,10 @@ class CostCenter extends BaseModel
         return $this->belongsTo(Location::class, 'location_id')
         ->where('status', true)
         ->select('id as value', 'location_name as label');
+    }
+
+    public function employees()
+    {
+        return $this->belongsToMany(EmployeeProfile::class, 'const_center_employees');
     }
 }
