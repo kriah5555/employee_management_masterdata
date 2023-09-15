@@ -9,7 +9,7 @@ use App\Models\Company;
 
 class FunctionTitlesLinkedToCompany implements Rule
 {
-    protected $sectorIds;
+    protected $company_id;
 
     public function __construct($company_id)
     {
