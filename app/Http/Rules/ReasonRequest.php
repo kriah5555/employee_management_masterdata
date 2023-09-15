@@ -9,14 +9,14 @@ class ReasonRequest extends ApiRequest
 {
     public function rules() :array
     {
+        $category = array_keys(config('constants.REASON_OPTIONS'));
         $reason_rules = [
             'name'     => 'required|string|max:255',
             'status'   => 'required|boolean',
             'category' => [
                 'required',
                 'string',
-                'regex:/^[a-zA-Z0-9_\-]+$/',
-                Rule::unique('reasons', 'category')
+                Rule::in(array_keys(config('constants.REASON_OPTIONS')))
             ],
             'created_by' => 'nullable|integer',
             'updated_by' => 'nullable|integer',
