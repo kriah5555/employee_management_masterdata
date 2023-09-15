@@ -38,7 +38,9 @@ class CostCenterService extends BaseService
                 unset($values['company_id']);
                 $costCenter   = $this->model->create($values);
                 $workstations = $values['workstations'] ?? [];
-                $costCenter->workstations()->sync($workstations);
+                $employees    = $values['employees'] ?? [];
+                $costCenter->workstations()->sync($employees);
+                $costCenter->employees()->sync($workstations);
             DB::commit();
             return $costCenter;
         } catch (Exception $e) {
@@ -54,7 +56,9 @@ class CostCenterService extends BaseService
             DB::beginTransaction();
                 unset($values['company_id']);
                 $workstations = $values['workstations'] ?? [];
+                $employees    = $values['employees'] ?? [];
                 $costCenter->workstations()->sync($workstations);
+                $costCenter->employees()->sync($employees);
                 $costCenter   = $costCenter->update($values);
             DB::commit();
             return $costCenter;

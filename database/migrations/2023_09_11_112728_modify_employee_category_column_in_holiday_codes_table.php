@@ -27,11 +27,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('holiday_codes', function (Blueprint $table) {
-            $table->json('employee_category');
+            $table->dropColumn('employee_category');
         });
         
         Schema::table('holiday_codes', function (Blueprint $table) {
-            $table->dropColumn('employee_category');
-      });
+            $table->tinyInteger('employee_category');
+        });
+        
     }
 };

@@ -60,6 +60,6 @@ class CostCenter extends BaseModel
 
     public function employees()
     {
-        return $this->belongsToMany(EmployeeProfile::class, 'const_center_employees');
+        return $this->belongsToMany(EmployeeProfile::class, 'const_center_employees', 'cost_centers_id', 'employee_profile_id');
     }
 }

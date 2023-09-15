@@ -21,4 +21,5 @@ return [
         'nl' => 'Dutch',
         'fr' => 'French'
     ],
+    'REASON_OPTIONS' => ['stop_planning' => 'Stop plan', 'start_planning' => 'Start plan', 'block_employee' => 'employee_Planning']
 ];
