@@ -75,11 +75,10 @@ class EmployeeProfileService
                 // $uid = $this->createUser($values['first_name'], $values['first_name']);
             } else {
                 $uid = $existingEmpProfile->last()->uid;
-	    }
-	    DB::beginTransaction();
+	        }
+            DB::beginTransaction();
             $user = User::find($uid);
             $values['uid'] = $uid;
-            }
             // $user = User::find($uid);
             // $values['uid'] = $uid;
             $address = $this->addressRepository->createAddress($values);
