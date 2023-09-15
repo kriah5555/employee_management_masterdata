@@ -70,13 +70,13 @@ class EmployeeProfileService
     public function createNewEmployeeProfile($values)
     {
         try {
-            DB::beginTransaction();
             $existingEmpProfile = $this->employeeProfileRepository->getEmployeeProfileBySsn($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
                 $uid = $this->createUser($values['first_name'], $values['first_name']);
             } else {
                 $uid = $existingEmpProfile->last()->uid;
-            }
+	    }
+	    DB::beginTransaction();
             $user = User::find($uid);
             $values['uid'] = $uid;
             $address = $this->addressRepository->createAddress($values);

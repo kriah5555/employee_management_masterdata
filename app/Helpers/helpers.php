@@ -116,6 +116,8 @@ if (!function_exists('makeApiRequest')) {
 
     function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
     {
+	    //print_r([$url,$method,$data, $headers]);exit;
+	$url = 'https://dev.indii-2.0.i-manager.infanion.com/api/create-user';
         try {
             // Build the HTTP request
             $request = Http::withHeaders($headers);
