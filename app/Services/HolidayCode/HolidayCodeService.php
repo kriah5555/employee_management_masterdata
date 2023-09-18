@@ -14,6 +14,33 @@ class HolidayCodeService extends BaseService
         parent::__construct($holidayCodes);
     }
 
+    # if the $args['with'] is passed then the count will be returned according to days or hours default in db the count will be stored as hours only
+    public function getAll(array $args = [])
+    {
+        $objects = $this->model::all();
+        if (isset($args['with'])) {
+            // Create a new collection to store modified objects
+            $modifiedObjects = collect([]);
+
+            // Loop through each object and modify its count attribute
+            $objects->each(function ($object) use (&$modifiedObjects) {
+                $modifiedObject = clone $object; // Create a clone to avoid modifying the original
+                if ($modifiedObject->count_type == 2) {
+                    // If count_type is 2, modify the count value
+                    $modifiedObject->count = $modifiedObject->count / config('constants.DAY_HOURS');
+                }
+                // You can add more modifications or conditions here if needed
+
+                // Add the modified object to the new collection
+                $modifiedObjects->push($modifiedObject);
+            });
+
+            return $modifiedObjects;
+        } else {
+            return $objects;
+        } 
+    }
+
     public function getOptionsToCreate()
     {
         return [
@@ -41,15 +68,16 @@ class HolidayCodeService extends BaseService
 
         // Get holiday details
         $details = $this->get($holiday_code_id);
-
+        $details['count'] = $details['count_type'] == 2 ? $details['count'] / config('constants.DAY_HOURS') : $details['count'];
+        
         // Define a mapping of keys to transform
         $keysToTransform = [
             'holiday_type'                      => config('constants.HOLIDAY_TYPE_OPTIONS'),
-            'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS'),
             'icon_type'                         => config('constants.HOLIDAY_ICON_TYPE_OPTIONS'),
             'consider_plan_hours_in_week_hours' => config('constants.YES_OR_NO_OPTIONs'),
             'employee_category'                 => config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS'),
             'contract_type'                     => config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS'),
+            'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS'),
             // 'carry_forword',
         ];
 

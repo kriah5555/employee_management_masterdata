@@ -94,7 +94,7 @@ class CostCenterService extends BaseService
 
     public function getOptionsToEdit($costCenterId)
     {
-        $costCenter_details = $this->get($costCenterId, ['workstationsValue','location', 'employeesValue', 'employees']);
+        $costCenter_details = $this->get($costCenterId, ['workstationsValue','location', 'employeesValue']);
         $costCenter_details->locationValue;
         $options            = $this->getOptionsToCreate($costCenter_details->location->company);
         $options['details'] = $costCenter_details;

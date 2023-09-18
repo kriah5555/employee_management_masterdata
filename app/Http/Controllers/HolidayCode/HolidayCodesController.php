@@ -21,7 +21,7 @@ class HolidayCodesController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holiday_code_service->getAll()
+                'data'    => $this->holiday_code_service->getAll(['with' => ['processCountAttribute']])
             ],
             JsonResponse::HTTP_OK,
         );

@@ -13,6 +13,10 @@ class HolidayCodes extends Model
 
     protected $table = 'holiday_codes';
 
+    protected $casts = [
+        'count' => 'float', // Cast the 'count' attribute to a float
+    ];
+    
     protected $fillable = [
         'holiday_code_name',
         'count',
@@ -36,16 +40,32 @@ class HolidayCodes extends Model
     {
         parent::boot();
 
-        static::created(function ($holidayCode) {
-        $companies = Company::all();
+        self::creating(function ($holidayCode) {
+            $holidayCode->processCountAttribute();
+        });
 
-        // Attach the newly created holiday code to all companies
-        $companies->each(function ($company) use ($holidayCode) {
-                $company->holidayCodes()->attach($holidayCode);
-            });
+        self::updating(function ($holidayCode) {
+            $holidayCode->processCountAttribute();
+        });
+
+        static::created(function ($holidayCode) {
+            $companies = Company::all();
+
+            // Attach the newly created holiday code to all companies
+            $companies->each(function ($company) use ($holidayCode) {
+                    $company->holidayCodes()->attach($holidayCode);
+                });
         });
     }
 
+    private function processCountAttribute()
+    {
+        if ($this->count_type == 2) {
+            // If count_type is 2 => Days, multiply count by 8
+            $this->count = $this->count * config('constants.DAY_HOURS');
+        }
+    }
+    
     # Link holiday codes to companies by externally calling this function
     public function linkToCompanies()
     {

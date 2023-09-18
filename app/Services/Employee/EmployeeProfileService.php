@@ -77,21 +77,21 @@ class EmployeeProfileService
                 $uid = $existingEmpProfile->last()->uid;
 	        }
             DB::beginTransaction();
-            $user = User::find($uid);
-            $values['uid'] = $uid;
-            // $user = User::find($uid);
-            // $values['uid'] = $uid;
-            $address = $this->addressRepository->createAddress($values);
-            $values['address_id'] = $address->id;
-            $extraBenefits = $this->extraBenefitsRepository->createExtraBenefits($values);
-            $values['extra_benefits_id'] = $extraBenefits->id;
-            if (array_key_exists('bank_account_number', $values)) {
-                // $bankAccount = $this->bankAccountRepository->createBankAccount($values);
-                // $values['bank_accountid'] = $bankAccount->id;
-            }
-            $values['company_id'] = $company_id;
-            $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
-            $user->assignRole('employee');
+                $user = User::find($uid);
+                $values['uid'] = $uid;
+                // $user = User::find($uid);
+                // $values['uid'] = $uid;
+                $address = $this->addressRepository->createAddress($values);
+                $values['address_id'] = $address->id;
+                $extraBenefits = $this->extraBenefitsRepository->createExtraBenefits($values);
+                $values['extra_benefits_id'] = $extraBenefits->id;
+                if (array_key_exists('bank_account_number', $values)) {
+                    // $bankAccount = $this->bankAccountRepository->createBankAccount($values);
+                    // $values['bank_accountid'] = $bankAccount->id;
+                }
+                $values['company_id'] = $company_id;
+                $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
+                $user->assignRole('employee');
             DB::commit();
             return $empProfile;
         } catch (Exception $e) {

@@ -7,6 +7,7 @@ use App\Http\Rules\Employee\EmployeeProfileRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Services\Employee\EmployeeProfileService;
 
 class EmployeeProfileController extends Controller
 {
