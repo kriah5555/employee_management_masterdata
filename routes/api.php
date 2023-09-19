@@ -20,6 +20,7 @@ use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\GenderController;
+use App\Http\Controllers\Employee\MaritalStatusController;
 use App\Http\Controllers\CostCenterController;
 
 /*
@@ -145,6 +146,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
     });
 
     Route::resource('genders', GenderController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+
+    Route::resource('marital-statuses', MaritalStatusController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
 });
 

@@ -21,12 +21,12 @@ class MaritalStatusRequest extends ApiRequest
             ];
             if ($this->isMethod('post')) {
                 $rules = array_merge($rules, [
-                    'name' => 'required|string|unique:genders,name|max:255',
+                    'name' => 'required|string|unique:marital_statuses,name|max:255',
                 ]);
             } else {
-                $gender = $this->route('gender');
+                $maritalStatus = $this->route('marital_status');
                 $rules = array_merge($rules, [
-                    'name' => 'required|string|max:255|unique:genders,name,' . $gender->id,
+                    'name' => 'required|string|max:255|unique:marital_statuses,name,' . $maritalStatus->id,
                 ]);
             }
         }
