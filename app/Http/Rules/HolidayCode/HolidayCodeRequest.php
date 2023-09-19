@@ -23,7 +23,7 @@ class HolidayCodeRequest extends ApiRequest
     {
         return [
             'holiday_code_name'                 => 'required|string|max:255',
-            'count'                             => 'bail|required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+            // 'count'                             => 'bail|required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'internal_code'                     => 'required|integer',
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => 'required|in:1,2,3',
@@ -33,10 +33,11 @@ class HolidayCodeRequest extends ApiRequest
             'employee_category'                 => 'required|array', // Updated to support an array
             'employee_category.*'               => 'in:1,2', // Individual category values must be valid
             'contract_type'                     => 'required|in:1,2,3',
-            // 'carry_forword'                     => 'required|in:0,1',
             'status'                            => 'required|boolean',
-            'created_by'                        => 'nullable|integer',
-            'updated_by'                        => 'nullable|integer',
+            'count'                             => [
+                'bail',
+                new HolidayCountFieldRule()
+            ],
         ];
     }
 

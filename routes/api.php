@@ -10,6 +10,7 @@ use App\Http\Controllers\HolidayCode\HolidayCodeConfigController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
 // use App\Http\Controllers\HolidayCode\HolidayCodeCountController;
+use App\Http\Controllers\HolidayCode\EmployeeHolidayCountController;
 use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
@@ -150,4 +151,9 @@ Route::controller(CostCenterController::class)->group(function () use ($statusRu
     Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
 
     Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
+});
+
+Route::controller(EmployeeHolidayCountController::class)->group(function () use ($statusRule, $integerRule) {
+
+    Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->where(['employee_id' => $integerRule])->only(['edit', 'store', 'show']);
 });

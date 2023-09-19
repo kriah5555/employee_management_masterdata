@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HolidayCode;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -75,5 +75,10 @@ class HolidayCodes extends Model
         $companies->each(function ($company) {
             $company->holidayCodes()->attach($this->id);
         });
+    }
+
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'company_holiday_codes', 'holiday_code_id', 'company_id');
     }
 }

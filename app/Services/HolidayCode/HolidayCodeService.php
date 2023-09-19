@@ -3,7 +3,7 @@
 namespace App\Services\HolidayCode;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\HolidayCodes;
+use App\Models\HolidayCode\HolidayCodes;
 use App\Models\Company;
 use App\Services\BaseService;
 
@@ -124,8 +124,7 @@ class HolidayCodeService extends BaseService
             $allHolidayCodes = $this->model::where('status', true)->get();
 
             // Get the IDs of holiday codes linked to the company
-            $company = Company::findOrFail($company_id);
-            $linkedHolidayCodesIds = $company->holidayCodes()->pluck('holiday_codes.id')->toArray();
+            $linkedHolidayCodesIds = $this->getAllHolidayCodesLinkedToCompany($company_id);
 
             // Format the holiday codes with their status
             $formattedHolidayCodes = $allHolidayCodes->map(function ($holidayCode) use ($linkedHolidayCodesIds) {
@@ -143,25 +142,31 @@ class HolidayCodeService extends BaseService
         }
     }
 
-    function updateHolidayCodesToCompany($company_id, $values) 
+    public function getAllHolidayCodesLinkedToCompany($company_id)
+    {
+        $company = Company::findOrFail($company_id);
+        return $company->holidayCodes()->pluck('holiday_codes.id')->toArray();
+    }
+
+    public function updateHolidayCodesToCompany($company_id, $values) 
     {
         try {
             DB::beginTransaction();
 
             $company = Company::findOrFail($company_id);
-        $holiday_code_ids = $values['holiday_code_ids'] ?? [];
+            $holiday_code_ids = $values['holiday_code_ids'] ?? [];
 
-        // Sync the holiday codes to the company
-        $company->holidayCodes()->sync($holiday_code_ids);
+            // Sync the holiday codes to the company
+            $company->holidayCodes()->sync($holiday_code_ids);
 
-        // Refresh the company model to ensure it reflects the updated holiday codes
-        $company->refresh();
+            // Refresh the company model to ensure it reflects the updated holiday codes
+            $company->refresh();
 
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollback();
+                error_log($e->getMessage());
+                throw $e;
+            }
     }   
 }

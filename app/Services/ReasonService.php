@@ -37,4 +37,16 @@ class ReasonService extends BaseService
         $options['details'] = $reason_details;
         return $options;
     }
+
+    public function getAll(array $args = [])
+    {
+        $data = parent::getAll($args);
+
+        // Use the each function to format the "category" field
+        $data->each(function (&$item) {
+            $item['category'] = config('constants.REASON_OPTIONS')[$item['category']];
+        });
+    
+        return $data;    
+    }
 }
