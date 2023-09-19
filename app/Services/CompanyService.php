@@ -213,4 +213,9 @@ class CompanyService extends BaseService
 
         return $result;
     }
+
+    public function getFunctionsForCompany()
+    {
+        
+    }
 }

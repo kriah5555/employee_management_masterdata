@@ -20,8 +20,7 @@ return new class extends Migration {
             $table->string('phone_number');
             $table->string('social_security_number');
             $table->string('place_of_birth')->nullable();
-            $table->date('date_of_joining');
-            $table->date('date_of_leaving')->nullable();
+            $table->date('license_expiry_date')->nullable();
             $table->string('language')->default('en');
             $table->string('dependent_spouse')->nullable();
             $table->foreignId('gender_id')->nullable()->references('id')->on('genders')->onDelete('cascade');

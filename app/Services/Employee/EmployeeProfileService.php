@@ -16,6 +16,7 @@ use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\EmployeeType\EmployeeTypeCategory;
 use App\Models\Employee\Transport;
 use App\Repositories\ExtraBenefitsRepository;
+use App\Repositories\LocationRepository;
 
 class EmployeeProfileService
 {
@@ -31,13 +32,16 @@ class EmployeeProfileService
 
     protected $extraBenefitsRepository;
 
+    protected $locationRepository;
+
     public function __construct(
         EmployeeProfileRepository $employeeProfileRepository,
         AddressRepository $addressRepository,
         BankAccountRepository $bankAccountRepository,
         EmployeeTypeService $employeeTypeService,
         CompanyService $companyService,
-        ExtraBenefitsRepository $extraBenefitsRepository
+        ExtraBenefitsRepository $extraBenefitsRepository,
+        LocationRepository $locationRepository
     ) {
         $this->employeeProfileRepository = $employeeProfileRepository;
         $this->addressRepository = $addressRepository;
@@ -45,6 +49,7 @@ class EmployeeProfileService
         $this->employeeTypeService = $employeeTypeService;
         $this->companyService = $companyService;
         $this->extraBenefitsRepository = $extraBenefitsRepository;
+        $this->locationRepository = $locationRepository;
     }
     /**
      * Function to get all the employee types
@@ -135,6 +140,9 @@ class EmployeeProfileService
         $options['languages'] = $this->getLanguageOptions();
         $options['transport'] = $this->getTransportOptions();
         $options['employee_type_categories'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
+        $options['dependent_spouse'] = $this->getDependentSpouseOptions();
+        $companyLocations = $this->locationRepository->getCompanyLocations($companyId);
+        $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
         return $options;
     }
 
@@ -162,5 +170,16 @@ class EmployeeProfileService
     public function getTransportOptions()
     {
         return Transport::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+    }
+
+    public function getDependentSpouseOptions()
+    {
+        $languages = config('constants.DEPENDENT_SPOUSE_OPTIONS');
+        return array_map(function ($value, $label) {
+            return [
+                'value' => $value,
+                'label' => $label,
+            ];
+        }, array_keys($languages), $languages);
     }
 }

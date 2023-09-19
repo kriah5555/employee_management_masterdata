@@ -18,7 +18,8 @@ use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
-use App\Http\Controllers\Employee\EmployeeProfileController;
+use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Employee\GenderController;
 use App\Http\Controllers\CostCenterController;
 
 /*
@@ -132,9 +133,9 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
 
 Route::group(['middleware' => 'setactiveuser'], function () {
 
-    Route::resource('employee-profiles', EmployeeProfileController::class)->only(['show', 'edit']);
+    Route::resource('employees', EmployeeController::class)->only(['show', 'edit']);
 
-    Route::controller(EmployeeProfileController::class)->group(function () {
+    Route::controller(EmployeeController::class)->group(function () {
 
         Route::get('/employees/get-company-employees/{company_id}', 'index');
 
@@ -142,6 +143,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
 
         Route::post('/employees/store/{company_id}', 'store');
     });
+
+    Route::resource('genders', GenderController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
 });
 

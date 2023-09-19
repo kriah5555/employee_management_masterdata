@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 
-class EmployeeProfileController extends Controller
+class EmployeeController extends Controller
 {
     protected $employeeProfileService;
 
@@ -48,6 +48,8 @@ class EmployeeProfileController extends Controller
      */
     public function store(EmployeeProfileRequest $request, Company $company)
     {
+        print_r($request->validated());
+        exit;
         return returnResponse(
             [
                 'success' => true,

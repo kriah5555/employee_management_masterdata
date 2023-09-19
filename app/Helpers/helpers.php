@@ -97,23 +97,6 @@ if (!function_exists('generateRandomPassword')) {
 }
 
 if (!function_exists('makeApiRequest')) {
-    // function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
-    // {
-    //     $client = new \GuzzleHttp\Client();
-
-    //     $options = [
-    //         'json'    => $data,
-    //         'headers' => $headers,
-    //     ];
-
-    //     $response = $client->request($method, $url, $options);
-    //     if ($response->getStatusCode() == 200 || $response->getStatusCode() == 201) {
-    //         return json_decode($response->getBody(), true);
-    //     } else {
-    //         throw new Exception("API error");
-    //     }
-    // }
-
     function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
     {
         try {
@@ -152,5 +135,25 @@ if (!function_exists('microserviceRequest')) {
         $apiGatewayUrl = config('app.service_gateway_url');
         $url = $apiGatewayUrl . $route;
         return makeApiRequest($url, $method, $data, $headers);
+    }
+}
+
+if (!function_exists('collectionToValueLabelFormat')) {
+    function collectionToValueLabelFormat($collection, $valueKey = 'id', $labelKey = 'name')
+    {
+        return generateValueLabelArray($collection->toArray(), $valueKey, $labelKey);
+    }
+}
+
+
+if (!function_exists('generateValueLabelArray')) {
+    function generateValueLabelArray($array, $valueKey = 'id', $labelKey = 'name')
+    {
+        return array_map(function ($item) use ($valueKey, $labelKey) {
+            return [
+                'value' => $item[$valueKey],
+                'label' => $item[$labelKey],
+            ];
+        }, $array);
     }
 }
