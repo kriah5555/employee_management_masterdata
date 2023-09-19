@@ -72,27 +72,29 @@ class EmployeeProfileService
         return $options;
     }
 
-    public function createNewEmployeeProfile($values)
+    public function createNewEmployeeProfile($values, $company_id)
     {
         try {
-            DB::beginTransaction();
             $existingEmpProfile = $this->employeeProfileRepository->getEmployeeProfileBySsn($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
-                $uid = $this->createUser($values['first_name'], $values['first_name']);
+                // $uid = $this->createUser($values['first_name'], $values['first_name']);
             } else {
                 $uid = $existingEmpProfile->last()->uid;
             }
+            DB::beginTransaction();
             $user = User::find($uid);
             $values['uid'] = $uid;
+            // $user = User::find($uid);
+            // $values['uid'] = $uid;
             $address = $this->addressRepository->createAddress($values);
             $values['address_id'] = $address->id;
             $extraBenefits = $this->extraBenefitsRepository->createExtraBenefits($values);
             $values['extra_benefits_id'] = $extraBenefits->id;
             if (array_key_exists('bank_account_number', $values)) {
-                $bankAccount = $this->bankAccountRepository->createBankAccount($values);
-                $values['bank_accountid'] = $bankAccount->id;
+                // $bankAccount = $this->bankAccountRepository->createBankAccount($values);
+                // $values['bank_accountid'] = $bankAccount->id;
             }
-            $values['company_id'] = request()->route('company_id');
+            $values['company_id'] = $company_id;
             $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
             $user->assignRole('employee');
             DB::commit();
@@ -144,6 +146,11 @@ class EmployeeProfileService
         $companyLocations = $this->locationRepository->getCompanyLocations($companyId);
         $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
         return $options;
+    }
+
+    public function getEmployeesOptionsForCompany($company_id)
+    {
+
     }
 
     public function getGenderOptions()

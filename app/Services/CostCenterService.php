@@ -6,14 +6,17 @@ use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
 use App\Models\CostCenter;
 use App\Services\WorkstationService;
+use App\Models\Employee\EmployeeProfile;
 class CostCenterService extends BaseService
 {
     protected $workstationService;
+    protected $employeeProfile;
 
     public function __construct(CostCenter $costCenter)
     {
         parent::__construct($costCenter);
         $this->workstationService = app(WorkstationService::class);
+        $this->employeeProfile    = app(EmployeeProfile::Class);
         // $this->locationService    = app(LocationService::class);
     }
 
@@ -38,7 +41,9 @@ class CostCenterService extends BaseService
                 unset($values['company_id']);
                 $costCenter   = $this->model->create($values);
                 $workstations = $values['workstations'] ?? [];
+                $employees    = $values['employees'] ?? [];
                 $costCenter->workstations()->sync($workstations);
+                $costCenter->employees()->sync($employees);
             DB::commit();
             return $costCenter;
         } catch (Exception $e) {
@@ -54,7 +59,9 @@ class CostCenterService extends BaseService
             DB::beginTransaction();
                 unset($values['company_id']);
                 $workstations = $values['workstations'] ?? [];
+                $employees    = $values['employees'] ?? [];
                 $costCenter->workstations()->sync($workstations);
+                $costCenter->employees()->sync($employees);
                 $costCenter   = $costCenter->update($values);
             DB::commit();
             return $costCenter;
@@ -63,6 +70,13 @@ class CostCenterService extends BaseService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    function getEmployeeOptions($company_id) 
+    {
+        return $this->employeeProfile::where('status', true)
+        ->where('company_id', $company_id)->select('id as value', DB::raw("CONCAT(first_name, ' ', last_name) as label"))
+        ->get();
     }
 
     public function getOptionsToCreate($company_id)
@@ -74,12 +88,13 @@ class CostCenterService extends BaseService
             $workstations = $this->workstationService->locationService->get($option['value'], ['workstationsValues'])->toArray()['workstations_values'];
             $options['workstations'][$option['value']] = $workstations; // Use square brackets for assignment
         }
+        $options['employees'] = $this->getEmployeeOptions($company_id);
         return $options;
     }
 
     public function getOptionsToEdit($costCenterId)
     {
-        $costCenter_details = $this->get($costCenterId, ['workstationsValue','location']);
+        $costCenter_details = $this->get($costCenterId, ['workstationsValue','location', 'employeesValue', 'employees']);
         $costCenter_details->locationValue;
         $options            = $this->getOptionsToCreate($costCenter_details->location->company);
         $options['details'] = $costCenter_details;
