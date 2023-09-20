@@ -60,12 +60,12 @@ class CostCenter extends BaseModel
 
     public function employees()
     {
-        return $this->belongsToMany(EmployeeProfile::class, 'const_center_employees', 'cost_centers_id', 'employee_profile_id');
+        return $this->belongsToMany(EmployeeProfile::class, 'cost_center_employees', 'cost_centers_id', 'employee_profile_id');
     }
 
     public function employeesValue()
     {
-        return $this->belongsToMany(EmployeeProfile::class, 'const_center_employees', 'cost_centers_id', 'employee_profile_id')
+        return $this->belongsToMany(EmployeeProfile::class, 'cost_center_employees', 'cost_centers_id', 'employee_profile_id')
                     ->select('employee_profiles.id as value')
                     ->selectRaw("CONCAT(employee_profiles.first_name, ' ', employee_profiles.last_name) as label");
     }

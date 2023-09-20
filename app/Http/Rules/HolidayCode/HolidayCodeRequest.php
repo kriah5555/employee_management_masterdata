@@ -3,6 +3,7 @@
 namespace App\Http\Rules\HolidayCode;
 
 use App\Http\Rules\ApiRequest;
+use App\Rules\HolidayCountFieldRule;
 
 class HolidayCodeRequest extends ApiRequest
 {

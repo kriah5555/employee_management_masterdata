@@ -90,6 +90,7 @@ class CostCenterController extends Controller
      */
     public function update(CostCenterRequest $request, CostCenter $costCenter)
     {
+        // dd($request->validated());
         $this->costCenterService->update($costCenter, $request->validated());
         return returnResponse(
             [
