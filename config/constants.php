@@ -14,7 +14,7 @@ return [
 
     'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Paid', 2 => 'Unpaid', 3 => 'Sick Leave'],
 
-    'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days', 3 => 'Sick Leave'],
+    'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
 
     'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
 
@@ -24,6 +24,8 @@ return [
 
     'HOLIDAY_CONTRACT_TYPE_OPTIONS'     => [1 => 'Both', 2 => 'Full time', 3 => 'Part time'],
 
+    'DAY_HOURS'                         => 8,
+
     'LANGUAGE_OPTIONS'                  => [
         'en' => 'English',
         'nl' => 'Dutch',
@@ -32,5 +34,5 @@ return [
 
     'DEPENDENT_SPOUSE_OPTIONS'          => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
 
-    'REASON_OPTIONS'                    => ['stop_planning' => 'Stop plan', 'start_planning' => 'Start plan', 'block_employee' => 'employee_Planning']
+    'REASON_OPTIONS'                    => ['stop_planning' => 'Stop plan', 'start_planning' => 'Start plan', 'block_employee' => 'Block employee']
 ];

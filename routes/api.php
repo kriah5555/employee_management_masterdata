@@ -10,6 +10,7 @@ use App\Http\Controllers\HolidayCode\HolidayCodeConfigController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
 // use App\Http\Controllers\HolidayCode\HolidayCodeCountController;
+use App\Http\Controllers\HolidayCode\EmployeeHolidayCountController;
 use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
@@ -74,13 +75,15 @@ Route::resources([
     'contract-types'      => ContractTypeController::class,
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
-    'reasons'             => ReasonController::class,
+    // 'reasons'             => ReasonController::class,
     'cost-center'         => CostCenterController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update']);
+
+Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->where(['employee_id' => $integerRule])->only(['edit', 'store', 'show']);
 
 Route::controller(TranslationController::class)->group(function () {
 
@@ -156,4 +159,12 @@ Route::controller(CostCenterController::class)->group(function () use ($statusRu
     Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
 
     Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
+});
+
+Route::controller(ReasonController::class)->group(function () use ($statusRule, $integerRule) {
+
+    Route::resource('reasons', ReasonController::class)->except(['index']);
+
+    Route::get('reasons-list/{status}/{category?}', 'index')->where('status', $statusRule);
+
 });

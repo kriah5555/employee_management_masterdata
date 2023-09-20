@@ -3,7 +3,7 @@
 namespace App\Services\HolidayCode;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\HolidayCodes;
+use App\Models\HolidayCode\HolidayCodes;
 use App\Models\Company;
 use App\Services\BaseService;
 
@@ -12,6 +12,33 @@ class HolidayCodeService extends BaseService
     public function __construct(HolidayCodes $holidayCodes)
     {
         parent::__construct($holidayCodes);
+    }
+
+    # if the $args['with'] is passed then the count will be returned according to days or hours default in db the count will be stored as hours only
+    public function getAll(array $args = [])
+    {
+        $objects = $this->model::all();
+        if (isset($args['with'])) {
+            // Create a new collection to store modified objects
+            $modifiedObjects = collect([]);
+
+            // Loop through each object and modify its count attribute
+            $objects->each(function ($object) use (&$modifiedObjects) {
+                $modifiedObject = clone $object; // Create a clone to avoid modifying the original
+                if ($modifiedObject->count_type == 2) {
+                    // If count_type is 2, modify the count value
+                    $modifiedObject->count = $modifiedObject->count / config('constants.DAY_HOURS');
+                }
+                // You can add more modifications or conditions here if needed
+
+                // Add the modified object to the new collection
+                $modifiedObjects->push($modifiedObject);
+            });
+
+            return $modifiedObjects;
+        } else {
+            return $objects;
+        } 
     }
 
     public function getOptionsToCreate()
@@ -41,15 +68,16 @@ class HolidayCodeService extends BaseService
 
         // Get holiday details
         $details = $this->get($holiday_code_id);
-
+        $details['count'] = $details['count_type'] == 2 ? $details['count'] / config('constants.DAY_HOURS') : $details['count'];
+        
         // Define a mapping of keys to transform
         $keysToTransform = [
             'holiday_type'                      => config('constants.HOLIDAY_TYPE_OPTIONS'),
-            'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS'),
             'icon_type'                         => config('constants.HOLIDAY_ICON_TYPE_OPTIONS'),
             'consider_plan_hours_in_week_hours' => config('constants.YES_OR_NO_OPTIONs'),
             'employee_category'                 => config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS'),
             'contract_type'                     => config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS'),
+            'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS'),
             // 'carry_forword',
         ];
 
@@ -96,8 +124,7 @@ class HolidayCodeService extends BaseService
             $allHolidayCodes = $this->model::where('status', true)->get();
 
             // Get the IDs of holiday codes linked to the company
-            $company = Company::findOrFail($company_id);
-            $linkedHolidayCodesIds = $company->holidayCodes()->pluck('holiday_codes.id')->toArray();
+            $linkedHolidayCodesIds = $this->getAllHolidayCodesLinkedToCompany($company_id);
 
             // Format the holiday codes with their status
             $formattedHolidayCodes = $allHolidayCodes->map(function ($holidayCode) use ($linkedHolidayCodesIds) {
@@ -115,25 +142,31 @@ class HolidayCodeService extends BaseService
         }
     }
 
-    function updateHolidayCodesToCompany($company_id, $values) 
+    public function getAllHolidayCodesLinkedToCompany($company_id)
+    {
+        $company = Company::findOrFail($company_id);
+        return $company->holidayCodes()->pluck('holiday_codes.id')->toArray();
+    }
+
+    public function updateHolidayCodesToCompany($company_id, $values) 
     {
         try {
             DB::beginTransaction();
 
             $company = Company::findOrFail($company_id);
-        $holiday_code_ids = $values['holiday_code_ids'] ?? [];
+            $holiday_code_ids = $values['holiday_code_ids'] ?? [];
 
-        // Sync the holiday codes to the company
-        $company->holidayCodes()->sync($holiday_code_ids);
+            // Sync the holiday codes to the company
+            $company->holidayCodes()->sync($holiday_code_ids);
 
-        // Refresh the company model to ensure it reflects the updated holiday codes
-        $company->refresh();
+            // Refresh the company model to ensure it reflects the updated holiday codes
+            $company->refresh();
 
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollback();
+                error_log($e->getMessage());
+                throw $e;
+            }
     }   
 }

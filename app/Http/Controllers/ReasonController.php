@@ -13,12 +13,12 @@ class ReasonController extends Controller
     {
     }
 
-    public function index()
+    public function index($status, $category = '')
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->reasonService->getAll(),
+                'data'    => $this->reasonService->getAll(['status' => $status, 'category' => $category]),
             ],
             JsonResponse::HTTP_OK,
         );

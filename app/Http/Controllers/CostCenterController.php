@@ -21,7 +21,7 @@ class CostCenterController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getAll(['company_id' => $company_id, 'status' => $status, 'with' => ['workstationsValue', 'locationValue', 'location']]),
+                'data'    => $this->costCenterService->getAll(['company_id' => $company_id, 'status' => $status, 'with' => ['workstationsValue', 'location']]),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -90,6 +90,7 @@ class CostCenterController extends Controller
      */
     public function update(CostCenterRequest $request, CostCenter $costCenter)
     {
+        // dd($request->validated());
         $this->costCenterService->update($costCenter, $request->validated());
         return returnResponse(
             [

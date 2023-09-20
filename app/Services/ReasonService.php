@@ -37,4 +37,19 @@ class ReasonService extends BaseService
         $options['details'] = $reason_details;
         return $options;
     }
+
+    public function getAll(array $args = [])
+    {
+        $data = $this->model
+            ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
+            ->when(isset($args['category']) && $args['category'] !== '', fn($q) => $q->where('category', $args['category']))
+            ->get(); ;
+
+        // Use the each function to change the "category" field data
+        $data->each(function (&$item) {
+            $item['category'] = config('constants.REASON_OPTIONS')[$item['category']];
+        });
+    
+        return $data;    
+    }
 }

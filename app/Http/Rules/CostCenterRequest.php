@@ -7,6 +7,7 @@ use App\Rules\LocationLinkedToCompanyRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\WorkstationLinkedToCompanyRule;
 use App\Rules\WorkstationLinkedToLocationRule;
+use App\Models\CostCenter;
 
 class CostCenterRequest extends ApiRequest
 {
@@ -58,6 +59,21 @@ class CostCenterRequest extends ApiRequest
                 new EmployeeLinkedToCompanyRule(request()->input('company_id')),
             ],
         ];
+    }
+
+    public function prepareForValidation()
+    {
+        // Check if the request method is "PUT" or "PATCH" (update request)
+        if ($this->isMethod('put') || $this->isMethod('patch')) {
+            // Access the cost_center_id from the request data
+            $costCenterId = $this->input('cost_center_id');
+
+            // Retrieve the associated CostCenter model
+            $costCenter = CostCenter::findOrFail($costCenterId);
+
+            // Set the company_id in the request data based on the cost_center's company_id
+            $this->merge(['company_id' => $costCenter->location->company]);
+        }
     }
 
     public function messages()
