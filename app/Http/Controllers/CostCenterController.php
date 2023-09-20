@@ -21,7 +21,7 @@ class CostCenterController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getAll(['company_id' => $company_id, 'status' => $status, 'with' => ['workstationsValue', 'locationValue', 'location']]),
+                'data'    => $this->costCenterService->getAll(['company_id' => $company_id, 'status' => $status, 'with' => ['workstationsValue', 'location']]),
             ],
             JsonResponse::HTTP_OK,
         );

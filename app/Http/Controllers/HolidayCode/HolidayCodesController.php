@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\HolidayCode;
 
-use App\Models\HolidayCodes;
+use App\Models\HolidayCode\HolidayCodes;
 use App\Services\HolidayCode\HolidayCodeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\HolidayCode\HolidayCodeRequest;
@@ -21,7 +21,7 @@ class HolidayCodesController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holiday_code_service->getAll()
+                'data'    => $this->holiday_code_service->getAll(['with' => ['processCountAttribute']])
             ],
             JsonResponse::HTTP_OK,
         );

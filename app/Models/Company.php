@@ -8,7 +8,7 @@ use App\Models\Sector\Sector;
 use App\Models\Files;
 use App\Models\Address;
 use App\Models\Location;
-use App\Models\HolidayCodes;
+use App\Models\HolidayCode\HolidayCodes;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model

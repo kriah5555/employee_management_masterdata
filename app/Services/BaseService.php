@@ -27,7 +27,10 @@ class BaseService implements CrudServiceInterface
      */
     public function getAll(array $args = [])
     {
-        return $this->model::all();
+        return $this->model
+        ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
+        ->when(isset($args['with']), fn($q) => $q->with($args['with']))
+        ->get();    
     }
 
     public function create($data)
