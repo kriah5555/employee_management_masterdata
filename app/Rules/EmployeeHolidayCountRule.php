@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Rules\HolidayCountFieldRule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
+use Illuminate\Validation\Rule;
 
 class EmployeeHolidayCountRule implements ValidationRule
 {
