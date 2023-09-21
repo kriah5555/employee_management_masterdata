@@ -64,7 +64,7 @@ class HolidayCodesOfSocialSecretaryService extends BaseService
 
                 $social_secretary_id    = $values['social_secretary_id'];
                 $social_secretary_codes = $values['social_secretary_codes'];
-
+            
                 foreach ($social_secretary_codes as $social_secretary_code) {
                     $holidayCodeId       = $social_secretary_code['holiday_code_id'];
                     $socialSecretaryCode = $social_secretary_code['social_secretary_code'];
