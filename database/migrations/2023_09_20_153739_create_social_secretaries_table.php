@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('social_secretaries', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->boolean('status')->default(true);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

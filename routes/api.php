@@ -21,6 +21,7 @@ use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeProfileController;
 use App\Http\Controllers\CostCenterController;
+use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,13 +69,11 @@ Route::resources([
     'function-categories' => FunctionCategoryController::class,
     'companies'           => CompanyController::class,
     'holiday-codes'       => HolidayCodesController::class,
-    // 'holiday-code-count'  => HolidayCodeCountController::class,
     'email-templates'     => EmailTemplateApiController::class,
     'contract-types'      => ContractTypeController::class,
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
-    // 'reasons'             => ReasonController::class,
-    // 'cost-center'         => CostCenterController::class,
+    'social-secretary'    => SocialSecretaryController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);

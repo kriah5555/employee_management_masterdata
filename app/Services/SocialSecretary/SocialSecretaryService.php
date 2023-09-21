@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Services\Translations;
+namespace App\Services\SocialSecretary;
 
 use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
+use App\Models\SocialSecretary\SocialSecretary;
 
-class SocialSecretary extends BaseService
+class SocialSecretaryService extends BaseService
 {
-    protected $languageLine;
+    protected $socialSecretary;
 
-    public function __construct(LanguageLine $languageLine)
+    public function __construct(SocialSecretary $socialSecretary)
     {
-        parent::__construct($languageLine);
+        parent::__construct($socialSecretary);
     }  
 }
