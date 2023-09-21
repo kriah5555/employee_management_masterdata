@@ -67,7 +67,6 @@ class CostCenterRequest extends ApiRequest
         if ($this->isMethod('put') || $this->isMethod('patch')) {
             // Access the cost_center_id from the request data
             $costCenterId = $this->input('cost_center_id');
-
             // Retrieve the associated CostCenter model
             $costCenter = CostCenter::findOrFail($costCenterId);
 
