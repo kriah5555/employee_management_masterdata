@@ -103,9 +103,9 @@ class CostCenterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CostCenter $CostCenters)
+    public function destroy(CostCenter $costCenter)
     {
-        $CostCenters->delete();
+        $costCenter->delete();
         return returnResponse(
             [
                 'success' => true,
