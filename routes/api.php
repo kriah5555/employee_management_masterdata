@@ -74,7 +74,7 @@ Route::resources([
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
     // 'reasons'             => ReasonController::class,
-    'cost-center'         => CostCenterController::class,
+    // 'cost-center'         => CostCenterController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
@@ -149,6 +149,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
 });
 
 Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
+
+    Route::resource('cost-center', CostCenterController::class)->where(['status' => $statusRule, 'company_id' => $integerRule])->except(['index', 'create']);
 
     Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
 
