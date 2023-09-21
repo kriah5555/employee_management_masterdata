@@ -119,7 +119,6 @@ class HolidayCodeService extends BaseService
     public function getHolidayCodesWithStatusForCompany($company_id)
     {
         try {
-
             // Get all holiday codes
             $allHolidayCodes = $this->model::where('status', true)->get();
 
@@ -153,16 +152,16 @@ class HolidayCodeService extends BaseService
         try {
             DB::beginTransaction();
 
-            $company = Company::findOrFail($company_id);
-            $holiday_code_ids = $values['holiday_code_ids'] ?? [];
+                $company = Company::findOrFail($company_id);
+                $holiday_code_ids = $values['holiday_code_ids'] ?? [];
 
-            // Sync the holiday codes to the company
-            $company->holidayCodes()->sync($holiday_code_ids);
+                // Sync the holiday codes to the company
+                $company->holidayCodes()->sync($holiday_code_ids);
 
-            // Refresh the company model to ensure it reflects the updated holiday codes
-            $company->refresh();
+                // Refresh the company model to ensure it reflects the updated holiday codes
+                $company->refresh();
 
-                DB::commit();
+            DB::commit();
             } catch (Exception $e) {
                 DB::rollback();
                 error_log($e->getMessage());

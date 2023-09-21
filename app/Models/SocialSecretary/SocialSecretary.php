@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BaseModel;
+use App\Models\HolidayCode\HolidayCodesOfSocialSecretary;
 
 class SocialSecretary extends BaseModel
 {
@@ -27,4 +28,9 @@ class SocialSecretary extends BaseModel
         'updated_at',
         'deleted_at'
     ];
+
+    public function SocialSecretaryHolidayCodes() // Rename the function
+    {
+        return $this->hasMany(HolidayCodesOfSocialSecretary::class, 'social_secretary_id');
+    }
 }

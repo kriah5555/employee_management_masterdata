@@ -22,6 +22,7 @@ use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeProfileController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
+use App\Http\Controllers\HolidayCode\HolidayCodesOfSocialSecretaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,7 +81,9 @@ Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update']);
 
-Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->where(['employee_id' => $integerRule])->only(['edit', 'store', 'show']);
+Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
+
+Route::resource('social-secretary-holiday-codes', HolidayCodesOfSocialSecretaryController::class)->only(['edit', 'store']);
 
 Route::controller(TranslationController::class)->group(function () {
 

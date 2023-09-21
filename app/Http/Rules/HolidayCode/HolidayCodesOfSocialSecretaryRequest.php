@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Rules\SocialSecretary;
+namespace App\Http\Rules\HolidayCode;
 
 use App\Http\Rules\ApiRequest;
 
-class SocialSecretaryRequest extends ApiRequest
+class HolidayCodesOfSocialSecretaryRequest extends ApiRequest
 {
     public function authorize(): bool
     {

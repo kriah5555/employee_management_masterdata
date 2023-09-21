@@ -30,7 +30,7 @@ class CostCenterRequest extends ApiRequest
                 Rule::exists('companies', 'id'),
             ],
             'cost_center_number' => [
-                'nullable',
+                'required',
                 'string',
                 'max:255',
                 'regex:/^[0-9]{6}$/',
