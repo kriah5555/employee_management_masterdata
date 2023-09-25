@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\SocialSecretary;
 
-use App\Models\CostCenter;
-use App\Services\CostCenterService;
-use App\Http\Rules\CostCenterRequest;
+use App\Http\Rules\SocialSecretary\SocialSecretaryRequest;
+use App\Services\SocialSecretary\SocialSecretaryService;
+use App\Models\SocialSecretary\SocialSecretary;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
-class CostCenterController extends Controller
-{    
-    public function __construct(protected CostCenterService $costCenterService)
+class SocialSecretaryController extends Controller
+{
+    public function __construct(protected SocialSecretaryService $socialSecretaryService)
     {
     }
-
     /**
      * Display a listing of the resource.
      */
-    public function index($company_id, $status = '')
+    public function index()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getAll(['company_id' => $company_id, 'status' => $status, 'with' => ['workstationsValue', 'location']]),
+                'data'    => $this->socialSecretaryService->getAll(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -30,28 +30,27 @@ class CostCenterController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create($company_id)
+    public function create()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getOptionsToCreate($company_id),
+                'data'    => []
             ],
-            JsonResponse::HTTP_OK,
+            JsonResponse::HTTP_CREATED,
         );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CostCenterRequest $request)
+    public function store(SocialSecretaryRequest $request)
     {
-        $location = $this->costCenterService->create($request->validated());
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Cost center created successfully'),
-                'data'    => $location
+                'message' => t('Social Secretary created successfully'),
+                'data'    => $this->socialSecretaryService->create($request->validated())
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -60,12 +59,12 @@ class CostCenterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CostCenter $costCenter)
+    public function show(SocialSecretary $socialSecretary)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $costCenter
+                'data'    => $socialSecretary
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -74,27 +73,27 @@ class CostCenterController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($costCenter_id)
+    public function edit(SocialSecretary $socialSecretary)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getOptionsToEdit($costCenter_id),
+                'data'    => ['details' => $socialSecretary]
             ],
-            JsonResponse::HTTP_OK,
+            JsonResponse::HTTP_CREATED,
         );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(CostCenterRequest $request, CostCenter $costCenter)
+    public function update(SocialSecretaryRequest $request, SocialSecretary $socialSecretary)
     {
-        $this->costCenterService->update($costCenter, $request->validated());
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Cost center updated successfully'),
+                'message' => t('Social Secretary updated successfully'),
+                'data'    => $this->socialSecretaryService->update($socialSecretary, $request->validated())
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -103,13 +102,13 @@ class CostCenterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CostCenter $costCenter)
+    public function destroy(SocialSecretary $socialSecretary)
     {
-        $costCenter->delete();
+        $socialSecretary->delete();
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Cost center Deleted successfully'),
+                'message' => t('Social Secretary deleted successfully'),
             ],
             JsonResponse::HTTP_CREATED,
         );

@@ -23,6 +23,8 @@ use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\GenderController;
 use App\Http\Controllers\Employee\MaritalStatusController;
 use App\Http\Controllers\CostCenterController;
+use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
+use App\Http\Controllers\HolidayCode\HolidayCodesOfSocialSecretaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,20 +72,20 @@ Route::resources([
     'function-categories' => FunctionCategoryController::class,
     'companies'           => CompanyController::class,
     'holiday-codes'       => HolidayCodesController::class,
-    // 'holiday-code-count'  => HolidayCodeCountController::class,
     'email-templates'     => EmailTemplateApiController::class,
     'contract-types'      => ContractTypeController::class,
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
-    // 'reasons'             => ReasonController::class,
-    'cost-center'         => CostCenterController::class,
+    'social-secretary'    => SocialSecretaryController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update']);
 
-Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->where(['employee_id' => $integerRule])->only(['edit', 'store', 'show']);
+Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
+
+Route::resource('social-secretary-holiday-codes', HolidayCodesOfSocialSecretaryController::class)->only(['edit', 'store']);
 
 Route::controller(TranslationController::class)->group(function () {
 
@@ -155,6 +157,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
 });
 
 Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
+
+    Route::resource('cost-center', CostCenterController::class)->where(['status' => $statusRule, 'company_id' => $integerRule])->except(['index', 'create']);
 
     Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
 
