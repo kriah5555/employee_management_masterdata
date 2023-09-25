@@ -19,8 +19,6 @@ class MinimumSalariesCategoriesRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $sector_id = request()->route('id');
-        print_r($sector_id);
-        exit;
         $sector = Sector::findOrFail($sector_id);
         $categories = $sector->salaryConfig->category;
         if (count($value) != $categories) {

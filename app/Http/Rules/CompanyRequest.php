@@ -31,9 +31,8 @@ class CompanyRequest extends ApiRequest
 
             'employer_id'             => 'nullable|digits_between:1,11',
             'sender_number'           => 'nullable|digits_between:1,11',
-            // 'joint_commission_number' => 'nullable|digits_between:1,11',
             'rsz_number'              => 'nullable|digits_between:1,11',
-            'social_secretary_number' => 'nullable|digits_between:1,11',
+            'social_secretary_number' => 'nullable',
             'username'                => 'nullable|string|max:50',
             'email'                   => 'required|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',
             'phone'                   => [
