@@ -8,6 +8,7 @@ use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\WorkstationLinkedToCompanyRule;
 use App\Rules\WorkstationLinkedToLocationRule;
 use App\Models\CostCenter;
+use App\Rules\UniqueCostCenterNumberInCompanyRule;
 
 class CostCenterRequest extends ApiRequest
 {
@@ -18,7 +19,7 @@ class CostCenterRequest extends ApiRequest
 
     public function rules(): array
     {
-        return [
+        $rules =  [
             'name' => [
                 'required',
                 'string',
@@ -26,7 +27,9 @@ class CostCenterRequest extends ApiRequest
                 'regex:/^[a-zA-Z0-9 ]+$/',
             ],
             'company_id' => [
+                'bail',
                 'required',
+                'integer',
                 Rule::exists('companies', 'id'),
             ],
             'cost_center_number' => [
@@ -34,6 +37,7 @@ class CostCenterRequest extends ApiRequest
                 'string',
                 'max:255',
                 'regex:/^[0-9]{6}$/',
+                new UniqueCostCenterNumberInCompanyRule($this->input('company_id'), $this->route('cost_center')),           
             ],
             'location_id' => [
                 'bail',
@@ -59,6 +63,16 @@ class CostCenterRequest extends ApiRequest
                 new EmployeeLinkedToCompanyRule(request()->input('company_id')),
             ],
         ];
+
+        if ($this->isMethod('put') || $this->isMethod('patch')) {
+            $rules['cost_center_id'] = [
+                'bail',
+                'integer',
+                'required',
+                Rule::exists('cost_centers', 'id'),
+            ];
+        }
+        return $rules;
     }
 
     public function prepareForValidation()
@@ -66,12 +80,14 @@ class CostCenterRequest extends ApiRequest
         // Check if the request method is "PUT" or "PATCH" (update request)
         if ($this->isMethod('put') || $this->isMethod('patch')) {
             // Access the cost_center_id from the request data
-            $costCenterId = $this->input('cost_center_id');
-            // Retrieve the associated CostCenter model
-            $costCenter = CostCenter::findOrFail($costCenterId);
+            if ($this->input('cost_center_id')) {
+                $costCenterId = $this->input('cost_center_id');
+                // Retrieve the associated CostCenter model
+                $costCenter = CostCenter::findOrFail($costCenterId);
 
-            // Set the company_id in the request data based on the cost_center's company_id
-            $this->merge(['company_id' => $costCenter->location->company]);
+                // Set the company_id in the request data based on the cost_center's company_id
+                $this->merge(['company_id' => $costCenter->location->company]);
+            }
         }
     }
 

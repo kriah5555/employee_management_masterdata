@@ -4,6 +4,7 @@ namespace App\Http\Rules\HolidayCode;
 
 use App\Http\Rules\ApiRequest;
 use App\Rules\HolidayCountFieldRule;
+use Illuminate\Validation\Rule;
 
 class HolidayCodeRequest extends ApiRequest
 {
@@ -24,8 +25,11 @@ class HolidayCodeRequest extends ApiRequest
     {
         return [
             'holiday_code_name'                 => 'required|string|max:255',
-            // 'count'                             => 'bail|required|numeric|regex:/^\d+(\.\d{1,2})?$/',
-            'internal_code'                     => 'required|integer',
+            'internal_code' => [
+                'required',
+                'integer',
+                Rule::unique('holiday_codes', 'internal_code')->ignore($this->route('holiday_code')), # check if the code is unique or not
+            ],
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => 'required|in:1,2,3',
             'count_type'                        => 'required|in:1,2,3',

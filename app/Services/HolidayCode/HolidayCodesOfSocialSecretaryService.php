@@ -69,14 +69,16 @@ class HolidayCodesOfSocialSecretaryService extends BaseService
                     $holidayCodeId       = $social_secretary_code['holiday_code_id'];
                     $socialSecretaryCode = $social_secretary_code['social_secretary_code'];
 
-                    // Use updateOrCreate to update existing or create new records
-                    $this->model::updateOrCreate(
-                        [
-                            'holiday_code_id'     => $holidayCodeId,
-                            'social_secretary_id' => $social_secretary_id,
-                        ],
-                        ['social_secretary_code' => $socialSecretaryCode]
-                    );
+                    if ($socialSecretaryCode) {
+                        // Use updateOrCreate to update existing or create new records
+                        $this->model::updateOrCreate(
+                            [
+                                'holiday_code_id'     => $holidayCodeId,
+                                'social_secretary_id' => $social_secretary_id,
+                            ],
+                            ['social_secretary_code' => $socialSecretaryCode]
+                        );
+                    }
                 }
             DB::commit();
             return true; // Successfully saved holiday codes
