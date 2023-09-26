@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('employee_types', function (Blueprint $table) {
-            $table->string('salary_type');
+            $table->string('salary_type')->nullable();
         });
     }
 
