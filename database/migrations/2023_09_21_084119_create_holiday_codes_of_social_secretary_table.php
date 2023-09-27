@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('holiday_code_id')->nullable()->references('id')->on('holiday_codes')->onDelete('cascade');
             $table->foreignId('social_secretary_id')->nullable()->references('id')->on('social_secretaries')->onDelete('cascade');
-            $table->string('social_secretary_code')->default(null);
+            $table->string('social_secretary_code')->default("");
             $table->boolean('status')->default(true);
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
