@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Services\Employee\EmployeeService;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
@@ -123,7 +124,7 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeProfileService->getSalary($request->employee_type_id, $request->function_title_id, $request->experience_in_months)
+                'data'    => $this->employeeService->getSalary($request->employee_type_id, $request->function_title_id, $request->experience_in_months)
             ],
             JsonResponse::HTTP_OK,
         );

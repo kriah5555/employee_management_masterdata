@@ -22,7 +22,7 @@ use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Sector\SectorSalarySteps;
 
 
-class EmployeeProfileService
+class EmployeeService
 {
 
     public function __construct(
