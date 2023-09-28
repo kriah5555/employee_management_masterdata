@@ -159,3 +159,16 @@ if (!function_exists('generateValueLabelArray')) {
         }, $array);
     }
 }
+
+if (!function_exists('getOptionsFromConfig')) {
+    function getOptionsFromConfig($key)
+    {
+        $values = config($key);
+        return array_map(function ($value, $label) {
+            return [
+                'value' => $value,
+                'label' => $label,
+            ];
+        }, array_keys($values), $values);
+    }
+}

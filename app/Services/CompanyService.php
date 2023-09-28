@@ -214,8 +214,22 @@ class CompanyService extends BaseService
         return $result;
     }
 
-    public function getFunctionsForCompany()
+    public function getFunctionsForCompany(Company $company)
     {
-        
+        return $company->sectors->flatMap(function ($sector) {
+            return $sector->functionCategories->flatMap(function ($functionCategory) {
+                return $functionCategory->functionTitles;
+            });
+        });
+    }
+
+    public function getFunctionOptionsForCompany(Company $company)
+    {
+        return collectionToValueLabelFormat($this->getFunctionsForCompany($company));
+    }
+
+    public function getCompanyDetails($companyId): Company
+    {
+        return Company::findOrFail($companyId);
     }
 }

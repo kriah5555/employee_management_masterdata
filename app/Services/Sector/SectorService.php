@@ -8,11 +8,14 @@ use App\Models\Sector\SectorSalaryConfig;
 use App\Models\Sector\SectorSalarySteps;
 use App\Models\Sector\SectorAgeSalary;
 use App\Services\EmployeeType\EmployeeTypeService;
+use App\Services\EmployeeFunction\FunctionService;
 use App\Models\MinimumSalary;
 
 class SectorService
 {
     protected $employeeTypeService;
+
+    protected $functionService;
 
     public function __construct(EmployeeTypeService $employeeTypeService)
     {
@@ -72,11 +75,11 @@ class SectorService
     {
         try {
             DB::beginTransaction();
-                $sector = Sector::create($values);
-                $sector->employeeTypes()->sync($values['employee_types'] ?? []);
-                $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
-                $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
-                $this->updateSectorAgeSalary($sector, $values['age']);
+            $sector = Sector::create($values);
+            $sector->employeeTypes()->sync($values['employee_types'] ?? []);
+            $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
+            $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
+            $this->updateSectorAgeSalary($sector, $values['age']);
             DB::commit();
             return $sector;
         } catch (Exception $e) {
@@ -163,7 +166,7 @@ class SectorService
     public function updateSectorAgeSalary(Sector $sector, $value)
     {
         foreach ($value as $val) {
-            $age_values[$val['age']] =[
+            $age_values[$val['age']] = [
                 "percentage"       => $val['percentage'],
                 "max_time_to_work" => $val['max_time_to_work']
             ];
@@ -205,5 +208,7 @@ class SectorService
         $options['employee_types'] = $this->employeeTypeService->getEmployeeTypeOptions();
         return $options;
     }
+
+    // public function getAllFunctionsBy
 
 }

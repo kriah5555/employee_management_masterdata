@@ -51,6 +51,6 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 
     public function getEmployeeProfileBySsn(string $socialSecurityNumber)
     {
-        return EmployeeProfile::where('social_security_number', '=', $socialSecurityNumber)->get();
+        return EmployeeProfile::whereRaw("REPLACE(REPLACE(social_security_number, '.', ''), '-', '') = ?", [$socialSecurityNumber])->get();
     }
 }

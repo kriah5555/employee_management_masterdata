@@ -18,7 +18,7 @@ use App\Models\Employee\Transport;
 use App\Repositories\ExtraBenefitsRepository;
 use App\Repositories\LocationRepository;
 
-class EmployeeProfileService
+class EmployeeService
 {
     protected $employeeProfileRepository;
 
@@ -77,22 +77,20 @@ class EmployeeProfileService
         try {
             $existingEmpProfile = $this->employeeProfileRepository->getEmployeeProfileBySsn($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
-                // $uid = $this->createUser($values['first_name'], $values['first_name']);
+                $uid = $this->createUser($values['first_name'], $values['first_name']);
             } else {
                 $uid = $existingEmpProfile->last()->uid;
             }
             DB::beginTransaction();
             $user = User::find($uid);
             $values['uid'] = $uid;
-            // $user = User::find($uid);
-            // $values['uid'] = $uid;
             $address = $this->addressRepository->createAddress($values);
             $values['address_id'] = $address->id;
             $extraBenefits = $this->extraBenefitsRepository->createExtraBenefits($values);
             $values['extra_benefits_id'] = $extraBenefits->id;
             if (array_key_exists('bank_account_number', $values)) {
-                // $bankAccount = $this->bankAccountRepository->createBankAccount($values);
-                // $values['bank_accountid'] = $bankAccount->id;
+                $bankAccount = $this->bankAccountRepository->createBankAccount($values);
+                $values['bank_accountid'] = $bankAccount->id;
             }
             $values['company_id'] = $company_id;
             $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
@@ -138,13 +136,17 @@ class EmployeeProfileService
     {
         $options = [];
         $options['genders'] = $this->getGenderOptions();
-        $options['marital_status'] = $this->getMaritalStatusOptions();
+        $options['marital_statuses'] = $this->getMaritalStatusOptions();
         $options['languages'] = $this->getLanguageOptions();
-        $options['transport'] = $this->getTransportOptions();
+        $options['transport_options'] = $this->getTransportOptions();
         $options['employee_type_categories'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
-        $options['dependent_spouse'] = $this->getDependentSpouseOptions();
+        $options['dependent_spouse_options'] = $this->getDependentSpouseOptions();
         $companyLocations = $this->locationRepository->getCompanyLocations($companyId);
         $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
+        $options['sub_types'] = $this->getSubTypeOptions();
+        $options['schedule_types'] = $this->getScheduleTypeOptions();
+        $options['employement_types'] = $this->getEmployementTypeOptions();
+        $options['functions'] = $this->companyService->getFunctionOptionsForCompany($this->companyService->getCompanyDetails($companyId));
         return $options;
     }
 
@@ -165,13 +167,7 @@ class EmployeeProfileService
 
     public function getLanguageOptions()
     {
-        $languages = config('constants.LANGUAGE_OPTIONS');
-        return array_map(function ($value, $label) {
-            return [
-                'value' => $value,
-                'label' => $label,
-            ];
-        }, array_keys($languages), $languages);
+        return getOptionsFromConfig('constants.LANGUAGE_OPTIONS');
     }
 
     public function getTransportOptions()
@@ -181,12 +177,21 @@ class EmployeeProfileService
 
     public function getDependentSpouseOptions()
     {
-        $languages = config('constants.DEPENDENT_SPOUSE_OPTIONS');
-        return array_map(function ($value, $label) {
-            return [
-                'value' => $value,
-                'label' => $label,
-            ];
-        }, array_keys($languages), $languages);
+        return getOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
+    }
+
+    public function getSubTypeOptions()
+    {
+        return getOptionsFromConfig('constants.SUB_TYPE_OPTIONS');
+    }
+
+    public function getScheduleTypeOptions()
+    {
+        return getOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
+    }
+
+    public function getEmployementTypeOptions()
+    {
+        return getOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
     }
 }
