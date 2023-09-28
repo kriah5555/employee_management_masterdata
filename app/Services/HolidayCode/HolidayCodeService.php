@@ -50,7 +50,7 @@ class HolidayCodeService extends BaseService
             'consider_plan_hours_in_week_hours' => $this->transformOptions(config('constants.YES_OR_NO_OPTIONs')),
             'employee_category'                 => $this->transformOptions(config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS')),
             'contract_type'                     => $this->transformOptions(config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS')),
-            // 'carry_forword'                     => $this->transformOptions(config('constants.YES_OR_NO_OPTIONs')),
+            'type'                              => $this->transformOptions(config('constants.HOLIDAY_TYPE_OPTIONS')),
         ];
     }
 
@@ -78,7 +78,7 @@ class HolidayCodeService extends BaseService
             'employee_category'                 => config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS'),
             'contract_type'                     => config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS'),
             'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS'),
-            // 'carry_forword',
+            'type'                              => config('constants.HOLIDAY_TYPE_OPTIONS'),
         ];
 
         // Process each key

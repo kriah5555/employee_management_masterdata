@@ -12,12 +12,13 @@ return new class extends Migration {
     {
         Schema::create('sector_night_hours_config', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
-            $table->time('start_at');
-            $table->time('end_at');
-            $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->string('unique_key');
+            $table->string('type'); // 'companies' or 'locations'
+            $table->timestamp('validity');
+            $table->foreignId('company_location_id')
+                ->constrained(['companies', 'locations'])
+                ->onDelete('cascade');
+            $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -32,6 +32,7 @@ class HolidayCodeRequest extends ApiRequest
             ],
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => 'required|in:1,2,3',
+            'type'                              => 'required|in:1,2',
             'count_type'                        => 'required|in:1,2,3',
             'icon_type'                         => 'required|in:1,2,3,4',
             'consider_plan_hours_in_week_hours' => 'required|in:0,1',

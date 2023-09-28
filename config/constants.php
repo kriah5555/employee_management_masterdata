@@ -16,6 +16,8 @@ return [
 
     'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
 
+    'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Holiday', 2 => 'Leave'],
+
     'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
 
     'YES_OR_NO_OPTIONs'                 => [0 => 'No', 1 => 'Yes'],
