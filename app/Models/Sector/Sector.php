@@ -11,6 +11,7 @@ use App\Models\EmployeeFunction\FunctionCategory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Models\Sector\SectorSalarySteps;
 
 class Sector extends Model
 {

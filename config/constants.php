@@ -36,5 +36,13 @@ return [
 
     'DEPENDENT_SPOUSE_OPTIONS'          => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
 
-    'REASON_OPTIONS'                    => ['stop_planning' => 'Stop plan', 'start_planning' => 'Start plan', 'block_employee' => 'Block employee']
+    'REASON_OPTIONS'                    => ['stop_planning' => 'Stop plan', 'start_planning' => 'Start plan', 'block_employee' => 'Block employee'],
+
+    'SALARY_TYPES'                      => [
+        'min'   => 'Sector min salary',
+        'min1' => 'Sector min salary -1',
+        'min2' => 'Sector min salary -2',
+        'flex'  => 'Flex salary',
+        'na'    => 'Not applicable',
+    ],
 ];

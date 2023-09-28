@@ -57,10 +57,12 @@ class SectorSalarySteps extends Model
     {
         return $this->belongsTo(Sector::class);
     }
+
     public function salarySteps()
     {
         return $this->hasMany(SectorSalaryConfig::class);
     }
+    
     public function minimumSalary()
     {
         return $this->hasMany(MinimumSalary::class);

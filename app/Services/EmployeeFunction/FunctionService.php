@@ -11,11 +11,8 @@ use Exception;
 
 class FunctionService
 {
-    protected $sectorService;
-
-    public function __construct(SectorService $sectorService)
+    public function __construct(protected SectorService $sectorService)
     {
-        $this->sectorService = $sectorService;
     }
 
     public function createFunctionCategory()

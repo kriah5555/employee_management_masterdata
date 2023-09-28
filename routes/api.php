@@ -148,6 +148,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
         Route::get('/employees/create/{company_id}', 'create');
 
         Route::post('/employees/store/{company_id}', 'store');
+
+        Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
     });
 
     Route::resource('genders', GenderController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);

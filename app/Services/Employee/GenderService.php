@@ -9,11 +9,8 @@ use App\Models\Employee\Gender;
 
 class GenderService
 {
-    protected $genderRepository;
-
-    public function __construct(GenderRepository $genderRepository)
+    public function __construct(protected GenderRepository $genderRepository)
     {
-        $this->genderRepository = $genderRepository;
     }
     /**
      * Function to get all the employee types

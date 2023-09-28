@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Services\Employee\EmployeeProfileService;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
@@ -48,8 +49,6 @@ class EmployeeController extends Controller
      */
     public function store(EmployeeProfileRequest $request, $company_id)
     {
-        print_r($request->validated());
-        exit;
         return returnResponse(
             [
                 'success' => true,
@@ -115,6 +114,17 @@ class EmployeeController extends Controller
             [
                 'success' => true,
                 'message' => 'Employee type deleted successfully'
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function getFunctionSalaryToCreateEmployee(Request $request)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->employeeProfileService->getSalary($request->employee_type_id, $request->function_title_id, $request->experience_in_months)
             ],
             JsonResponse::HTTP_OK,
         );

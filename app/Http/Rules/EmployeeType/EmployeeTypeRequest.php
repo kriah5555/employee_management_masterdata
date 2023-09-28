@@ -45,6 +45,10 @@ class EmployeeTypeRequest extends ApiRequest
             'leave_access'              => 'required|boolean',
             'holiday_access'            => 'required|boolean',
             'consecutive_days_limit'    => 'required|integer|min:1|max:7',
+            'salary_type'               => [
+                'required',
+                Rule::in(array_keys(config('constants.SALARY_TYPES'))),
+            ],
         ];
 
     }
