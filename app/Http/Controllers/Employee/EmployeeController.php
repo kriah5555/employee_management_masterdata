@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Employee;
 
 use App\Models\EmployeeType\EmployeeType;
-use App\Http\Rules\Employee\EmployeeProfileRequest;
+use App\Http\Rules\Employee\CreateEmployeeRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
-use App\Services\Employee\EmployeeProfileService;
-use Illuminate\Http\Request;
+use App\Services\Employee\EmployeeService;
 
 class EmployeeController extends Controller
 {
-    protected $employeeProfileService;
+    protected $employeeService;
 
-    public function __construct(EmployeeProfileService $employeeProfileService)
+    public function __construct(EmployeeService $employeeService)
     {
-        $this->employeeProfileService = $employeeProfileService;
+        $this->employeeService = $employeeService;
     }
 
     /**
@@ -27,7 +26,7 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeProfileService->index($companyId)
+                'data'    => $this->employeeService->index($companyId)
             ],
             JsonResponse::HTTP_OK,
         );
@@ -38,7 +37,7 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeProfileService->create($companyId)
+                'data'    => $this->employeeService->create($companyId)
             ],
             JsonResponse::HTTP_OK,
         );
@@ -47,13 +46,13 @@ class EmployeeController extends Controller
     /**
      * API to get the details required for creating an employee type.
      */
-    public function store(EmployeeProfileRequest $request, $company_id)
+    public function store(CreateEmployeeRequest $request, $company_id)
     {
         return returnResponse(
             [
                 'success' => true,
                 'message' => 'Employee created successfully',
-                'data'    => $this->employeeProfileService->createNewEmployeeProfile($request->all(), $company_id)
+                'data'    => $this->employeeService->createNewEmployeeProfile($request->all(), $company_id)
             ],
             JsonResponse::HTTP_OK,
         );
@@ -67,7 +66,7 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeProfileService->show($id),
+                'data'    => $this->employeeService->show($id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -82,7 +81,7 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeProfileService->edit($id),
+                'data'    => $this->employeeService->edit($id),
             ],
             JsonResponse::HTTP_OK,
         );

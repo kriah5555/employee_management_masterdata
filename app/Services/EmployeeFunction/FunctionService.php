@@ -170,7 +170,7 @@ class FunctionService
     public function getCompanyFunctionTitlesOptions($company_id)
     {
         $functionTitles = self::getCompanyFunctionTitles($company_id);
-        
+
         return array_map(function ($title) {
             return [
                 'value' => $title['id'],
@@ -178,4 +178,11 @@ class FunctionService
             ];
         }, $functionTitles);
     }
+
+    public function getFunctionTitleDetails($id)
+    {
+        return FunctionTitle::findOrFail($id);
+    }
+
+    // public function getFunctionsUnderSector
 }

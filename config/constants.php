@@ -45,4 +45,9 @@ return [
         'flex'  => 'Flex salary',
         'na'    => 'Not applicable',
     ],
+    'SUB_TYPE_OPTIONS'                  => ['servant' => 'Servant', 'worker' => 'Worker'],
+
+    'SCHEDULE_TYPE_OPTIONS'             => ['part_time' => 'Part time', 'full_time' => 'Full time'],
+
+    'EMPLOYMENT_TYPE_OPTIONS'           => ['fixed' => 'Fixed', 'flexible' => 'Flexible'],
 ];

@@ -8,7 +8,7 @@ class EmployeeTypeCategory extends BaseModel
 {
     protected static $sort = ['sort_order', 'name'];
 
-    protected $columnsToLog = ['sort_order', 'name', 'description', 'status'];
+    protected $columnsToLog = ['sort_order', 'name', 'description', 'status', 'sub_category_types', 'schedule_types', 'employement_types'];
     /**
      * The table associated with the model.
      *
@@ -40,6 +40,9 @@ class EmployeeTypeCategory extends BaseModel
         'description',
         'status',
         'sort_order',
+        'sub_category_types',
+        'schedule_types',
+        'employement_type',
         'created_by',
         'updated_by'
     ];
