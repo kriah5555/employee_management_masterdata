@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\EmployeeFunction\FunctionService;
 
-class EmployeeFunctionDetailsRule implements ValidationRule
+class EmployeeCommuteDetailsRule implements ValidationRule
 {
     protected $employeeTypeService;
 

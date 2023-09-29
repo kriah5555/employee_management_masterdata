@@ -3,6 +3,10 @@
 namespace App\Services\Employee;
 
 use App\Models\Company;
+use App\Models\Employee\EmployeeContractDetails;
+use App\Models\Employee\EmployeeProfile;
+use App\Models\Employee\LongTermEmployeeContractDetails;
+use App\Models\EmployeeType\EmployeeType;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -82,6 +86,7 @@ class EmployeeService
                 $uid = $existingEmpProfile->last()->uid;
             }
             DB::beginTransaction();
+            $this->createEmployeeContract(EmployeeProfile::findOrFail(1), $values['employee_contract_details']);
             $user = User::find($uid);
             $values['uid'] = $uid;
             $address = $this->addressRepository->createAddress($values);
@@ -94,12 +99,25 @@ class EmployeeService
             }
             $values['company_id'] = $company_id;
             $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
+            $this->createEmployeeContract($empProfile, $values['employee_contract_details']);
             $user->assignRole('employee');
             DB::commit();
             return $empProfile;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
+        }
+    }
+
+    public function createEmployeeContract($empProfile, $contractDetails)
+    {
+        $contractDetails['employee_profile_id'] = $empProfile->id;
+        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
+        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+        $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
+        if ($employeeType->employeeTypeCategory->id == 1) {
+            $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
+            LongTermEmployeeContractDetails::create($contractDetails);
         }
     }
 

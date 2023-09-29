@@ -48,8 +48,6 @@ class EmployeeController extends Controller
      */
     public function store(CreateEmployeeRequest $request, $company_id)
     {
-        print_r($request->validated());
-        exit;
         return returnResponse(
             [
                 'success' => true,
