@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MealVoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sector\SectorController;
@@ -156,6 +157,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
     Route::resource('marital-statuses', MaritalStatusController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+
+    Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
 });
 

@@ -7,6 +7,7 @@ use App\Models\Employee\EmployeeContractDetails;
 use App\Models\Employee\EmployeeProfile;
 use App\Models\Employee\LongTermEmployeeContractDetails;
 use App\Models\EmployeeType\EmployeeType;
+use App\Models\MealVoucher;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -121,6 +122,18 @@ class EmployeeService
         }
     }
 
+    // public function createEmployeeFunction($empProfile, $contractDetails)
+    // {
+    //     $contractDetails['employee_profile_id'] = $empProfile->id;
+    //     $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
+    //     $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+    //     $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
+    //     if ($employeeType->employeeTypeCategory->id == 1) {
+    //         $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
+    //         LongTermEmployeeContractDetails::create($contractDetails);
+    //     }
+    // }
+
     public function createUser($firstName, $lastName)
     {
         $username = $firstName . $lastName;
@@ -164,6 +177,7 @@ class EmployeeService
         $options['sub_types'] = $this->getSubTypeOptions();
         $options['schedule_types'] = $this->getScheduleTypeOptions();
         $options['employement_types'] = $this->getEmployementTypeOptions();
+        $options['meal_voucher_options'] = $this->getMealVoucherOptions();
         $options['functions'] = $this->companyService->getFunctionOptionsForCompany($this->companyService->getCompanyDetails($companyId));
         return $options;
     }
@@ -193,9 +207,14 @@ class EmployeeService
         return CommuteType::where('status', '=', true)->select(['id as value', 'name as label'])->get();
     }
 
+    public function getMealVoucherOptions()
+    {
+        return MealVoucher::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+    }
+
     public function getDependentSpouseOptions()
     {
-        return getKeyNameOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
+        return getValueLabelOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
     }
 
     public function getSubTypeOptions()

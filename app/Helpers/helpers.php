@@ -99,7 +99,7 @@ if (!function_exists('generateRandomPassword')) {
 if (!function_exists('makeApiRequest')) {
     function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
     {
-        $url = 'https://dev.indii-2.0.i-manager.infanion.com/api/create-user';
+        // $url = 'https://dev.indii-2.0.i-manager.infanion.com/api/create-user';
         try {
             // Build the HTTP request
             $request = Http::withHeaders($headers);

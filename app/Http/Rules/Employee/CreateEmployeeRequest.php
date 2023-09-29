@@ -51,6 +51,13 @@ class CreateEmployeeRequest extends ApiRequest
                 'integer',
                 Rule::exists('marital_statuses', 'id'),
             ],
+            'meal_voucher_id'           => [
+                'bail',
+                'required',
+                'integer',
+                Rule::exists('meal_vouchers', 'id'),
+            ],
+            'meal_voucher_amount'       => 'string|max:255',
             'dependent_spouse'          => 'string|max:255',
             'bank_account_number'       => 'nullable|string|max:255',
             'street_house_no'           => 'required|string|max:255',
