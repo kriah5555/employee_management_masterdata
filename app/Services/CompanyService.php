@@ -188,7 +188,7 @@ class CompanyService extends BaseService
 
         $employeeTypeCategoryOptions = $employeeTypeOptions = [];
         foreach ($employeeTypes as $employeeType) {
-            $employeeTypeCategoryOptions[] = [
+            $employeeTypeCategoryOptions[$employeeType->employeeTypeCategory->id] = [
                 'key'  => $employeeType->employeeTypeCategory->id,
                 'name' => $employeeType->employeeTypeCategory->name
             ];
@@ -198,7 +198,7 @@ class CompanyService extends BaseService
             ];
         }
         return [
-            'employee_type_categories' => $employeeTypeCategoryOptions,
+            'employee_type_categories' => array_values($employeeTypeCategoryOptions),
             'employee_types'           => $employeeTypeOptions
         ];
 
