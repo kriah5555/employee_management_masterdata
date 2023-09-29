@@ -128,7 +128,7 @@ class EmployeeService
         $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
         $options['sub_types'] = $this->getSubTypeOptions();
         $options['schedule_types'] = $this->getScheduleTypeOptions();
-        $options['employement_types'] = $this->getEmployementTypeOptions();
+        $options['employment_types'] = $this->getEmploymentTypeOptions();
         $options['functions'] = $this->companyService->getFunctionOptionsForCompany($this->companyService->getCompanyDetails($companyId));
         return $options;
     }
@@ -173,7 +173,7 @@ class EmployeeService
         return getOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
     }
 
-    public function getEmployementTypeOptions()
+    public function getEmploymentTypeOptions()
     {
         return getOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
     }
@@ -182,14 +182,14 @@ class EmployeeService
     {
         try{
             $employeeType = $this->employeeTypeService->model::findOrFail($employee_type_id);
-            $salary_type = $employeeType->salary_type;
+            $salary_type  = $employeeType->salary_type;
 
-            $minimumSalary = 0;
+            $minimumSalary   = 0;
             $salaryTypeLabel = null;
 
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
                 // Retrieve the FunctionTitle based on its ID
-                $functionTitle = FunctionTitle::findOrFail($function_title_id);
+                $functionTitle    = FunctionTitle::findOrFail($function_title_id);
                 $functionCategory = $functionTitle->functionCategory;
 
                 if ($functionCategory && $functionCategory->sector) {
@@ -211,6 +211,8 @@ class EmployeeService
                             $function_category_number = 999;
                         }
 
+                        $function_category_number = max(1, $function_category_number);
+
                         $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
                             ->where('category_number', $function_category_number);
 
@@ -223,7 +225,7 @@ class EmployeeService
 
             return [
                 'minimumSalary' => $minimumSalary,
-                'salary_type' => [
+                'salary_type'   => [
                     'value' => $salary_type,
                     'label' => config('constants.SALARY_TYPES')[$salary_type],
                 ],
