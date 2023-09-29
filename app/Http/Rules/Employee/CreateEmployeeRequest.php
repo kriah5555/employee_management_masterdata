@@ -60,11 +60,11 @@ class CreateEmployeeRequest extends ApiRequest
             'latitude'                  => 'nullable|numeric',
             'longitude'                 => 'nullable|numeric',
             'children'                  => 'nullable|integer',
-            'transport_id'              => [
+            'commute_type_id'           => [
                 'bail',
                 'required',
                 'integer',
-                Rule::exists('transports', 'id'),
+                Rule::exists('commute_types', 'id'),
             ],
             'fuel_card'                 => 'required|boolean',
             'company_car'               => 'required|boolean',

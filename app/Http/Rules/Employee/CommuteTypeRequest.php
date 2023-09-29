@@ -4,7 +4,7 @@ namespace App\Http\Rules\Employee;
 
 use App\Http\Rules\ApiRequest;
 
-class GenderRequest extends ApiRequest
+class CommuteTypeRequest extends ApiRequest
 {
 
     /**

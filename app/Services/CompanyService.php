@@ -180,38 +180,59 @@ class CompanyService extends BaseService
     {
         $company = Company::with('sectors.employeeTypes.employeeTypeCategory')
             ->findOrFail($companyId);
-
-        $employeeTypeCategories = $company->sectors
-            ->flatMap(function ($sector) {
-                return $sector->employeeTypes->map(function ($employeeType) {
-                    return [
-                        'employee_type_category_id'   => $employeeType->employeeTypeCategory->id,
-                        'employee_type_category_name' => $employeeType->employeeTypeCategory->name,
-                        'employee_types'              => []
-                    ];
-                });
+        $employeeTypes = $company->sectors->flatMap(function ($sector) {
+            return $sector->employeeTypes->map(function ($employeeType) {
+                return $employeeType;
             });
-        $employeeTypeCategories = $employeeTypeCategories->unique('employee_type_category_id')->values();
+        })->all();
 
-        $employeeTypesWithCategory = $company->sectors
-            ->flatMap(function ($sector) {
-                return $sector->employeeTypes->map(function ($employeeType) {
-                    return [
-                        'employee_type_id'          => $employeeType->id,
-                        'employee_type'             => $employeeType->name,
-                        'employee_type_category_id' => $employeeType->employeeTypeCategory->id,
-                    ];
-                });
-            });
-        $employeeTypesWithCategory = $employeeTypesWithCategory->groupBy('employee_type_category_id');
-        $employeeTypesWithCategory = json_decode($employeeTypesWithCategory, true);
-        $result = [];
-        foreach ($employeeTypeCategories as $employeeTypeCategory) {
-            $employeeTypeCategory['employee_types'] = $employeeTypesWithCategory[$employeeTypeCategory['employee_type_category_id']];
-            $result[] = $employeeTypeCategory;
+        $employeeTypeCategoryOptions = $employeeTypeOptions = [];
+        foreach ($employeeTypes as $employeeType) {
+            $employeeTypeCategoryOptions[] = [
+                'key'  => $employeeType->employeeTypeCategory->id,
+                'name' => $employeeType->employeeTypeCategory->name
+            ];
+            $employeeTypeOptions[$employeeType->employeeTypeCategory->id][] = [
+                'key'  => $employeeType->id,
+                'name' => $employeeType->name
+            ];
         }
+        return [
+            'employee_type_categories' => $employeeTypeCategoryOptions,
+            'employee_types'           => $employeeTypeOptions
+        ];
 
-        return $result;
+        // $employeeTypeCategories = $company->sectors
+        //     ->flatMap(function ($sector) {
+        //         return $sector->employeeTypes->map(function ($employeeType) {
+        //             return [
+        //                 'employee_type_category_id'   => $employeeType->employeeTypeCategory->id,
+        //                 'employee_type_category_name' => $employeeType->employeeTypeCategory->name,
+        //                 'employee_types'              => []
+        //             ];
+        //         });
+        //     });
+        // $employeeTypeCategories = $employeeTypeCategories->unique('employee_type_category_id')->values();
+
+        // $employeeTypesWithCategory = $company->sectors
+        //     ->flatMap(function ($sector) {
+        //         return $sector->employeeTypes->map(function ($employeeType) {
+        //             return [
+        //                 'employee_type_id'          => $employeeType->id,
+        //                 'employee_type'             => $employeeType->name,
+        //                 'employee_type_category_id' => $employeeType->employeeTypeCategory->id,
+        //             ];
+        //         });
+        //     });
+        // $employeeTypesWithCategory = $employeeTypesWithCategory->groupBy('employee_type_category_id');
+        // $employeeTypesWithCategory = json_decode($employeeTypesWithCategory, true);
+        // $result = [];
+        // foreach ($employeeTypeCategories as $employeeTypeCategory) {
+        //     $employeeTypeCategory['employee_types'] = $employeeTypesWithCategory[$employeeTypeCategory['employee_type_category_id']];
+        //     $result[] = $employeeTypeCategory;
+        // }
+
+        // return $result;
     }
 
     public function getFunctionsForCompany(Company $company)

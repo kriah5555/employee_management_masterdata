@@ -5,22 +5,21 @@ namespace App\Models\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeCommuteDistance extends BaseModel
+class CommuteType extends BaseModel
 {
     use UserAudit;
-
+    protected static $sort = ['sort_order', 'name'];
     protected $columnsToLog = [
-        'employee_profile_id',
-        'location_id',
-        'distance',
-        'status',
+        'sort_order',
+        'name',
+        'status'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_commute_distances';
+    protected $table = 'commute_types';
 
     /**
      * The primary key associated with the table.
@@ -49,9 +48,8 @@ class EmployeeCommuteDistance extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_profile_id',
-        'location_id',
-        'distance',
-        'status',
+        'sort_order',
+        'name',
+        'status'
     ];
 }

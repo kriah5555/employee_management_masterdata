@@ -17,18 +17,19 @@ class MaritalStatusRequest extends ApiRequest
         $rules = [];
         if ($this->isMethod('post') || $this->isMethod('put')) {
             $rules = [
-                'sort_order' => 'required|integer'
+                'sort_order' => 'required|integer',
+                'name'       => 'required|string|max:255'
             ];
-            if ($this->isMethod('post')) {
-                $rules = array_merge($rules, [
-                    'name' => 'required|string|unique:marital_statuses,name|max:255',
-                ]);
-            } else {
-                $maritalStatus = $this->route('marital_status');
-                $rules = array_merge($rules, [
-                    'name' => 'required|string|max:255|unique:marital_statuses,name,' . $maritalStatus->id,
-                ]);
-            }
+            // if ($this->isMethod('post')) {
+            //     $rules = array_merge($rules, [
+            //         'name' => 'required|string|max:255',
+            //     ]);
+            // } else {
+            //     $maritalStatus = $this->route('marital_status');
+            //     $rules = array_merge($rules, [
+            //         'name' => 'required|string|max:255|unique:marital_statuses,name,' . $maritalStatus->id,
+            //     ]);
+            // }
         }
         return $rules;
 

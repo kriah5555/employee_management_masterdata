@@ -5,21 +5,22 @@ namespace App\Models\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class Transport extends BaseModel
+class EmployeeCommute extends BaseModel
 {
     use UserAudit;
-    protected static $sort = ['sort_order', 'name'];
+
     protected $columnsToLog = [
-        'sort_order',
-        'name',
-        'status'
+        'employee_profile_id',
+        'location_id',
+        'distance',
+        'status',
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'transports';
+    protected $table = 'employee_commute';
 
     /**
      * The primary key associated with the table.
@@ -48,8 +49,9 @@ class Transport extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'sort_order',
-        'name',
-        'status'
+        'employee_profile_id',
+        'location_id',
+        'distance',
+        'status',
     ];
 }

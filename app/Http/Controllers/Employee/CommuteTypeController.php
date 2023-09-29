@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
-use App\Services\Employee\GenderService;
+use App\Services\Employee\CommuteTypeService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\Employee\GenderRequest;
-use App\Models\Employee\Gender;
-use Illuminate\Http\Request;
+use App\Http\Rules\Employee\CommuteTypeRequest;
+use App\Models\Employee\CommuteType;
 
 
-class GenderController extends Controller
+class CommuteTypeController extends Controller
 {
-    protected $genderService;
+    protected $commuteTypeService;
 
-    public function __construct(GenderService $genderService)
+    public function __construct(CommuteTypeService $commuteTypeService)
     {
-        $this->genderService = $genderService;
+        $this->commuteTypeService = $commuteTypeService;
     }
 
     public function index()
@@ -24,7 +23,7 @@ class GenderController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->genderService->index(),
+                'data'    => $this->commuteTypeService->index(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -35,7 +34,7 @@ class GenderController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->genderService->show($id),
+                'data'    => $this->commuteTypeService->show($id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -46,31 +45,31 @@ class GenderController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->genderService->edit($id),
+                'data'    => $this->commuteTypeService->edit($id),
             ],
             JsonResponse::HTTP_OK,
         );
     }
 
-    public function store(GenderRequest $request)
+    public function store(CommuteTypeRequest $request)
     {
         return returnResponse(
             [
                 'success' => true,
-                'message' => 'Gender created successfully',
-                'data'    => $this->genderService->store($request->validated())
+                'message' => 'Commute type created successfully',
+                'data'    => $this->commuteTypeService->store($request->validated())
             ],
             JsonResponse::HTTP_OK,
         );
     }
 
-    public function update(GenderRequest $request, Gender $gender)
+    public function update(CommuteTypeRequest $request, CommuteType $commuteType)
     {
-        if ($this->genderService->update($gender, $request->validated())) {
+        if ($this->commuteTypeService->update($commuteType, $request->validated())) {
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Gender updated successfully',
+                    'message' => 'Commute type updated successfully',
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -85,13 +84,13 @@ class GenderController extends Controller
         }
     }
 
-    public function destroy(Gender $gender)
+    public function destroy(CommuteType $commuteType)
     {
-        if ($this->genderService->delete($gender)) {
+        if ($this->commuteTypeService->delete($commuteType)) {
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Gender deleted',
+                    'message' => 'Commute type deleted',
                 ],
                 JsonResponse::HTTP_OK,
             );

@@ -10,9 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('employee_commute_distances', function (Blueprint $table) {
+        Schema::create('employee_commute', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
+            $table->foreignId('commute_type_id')->nullable()->references('id')->on('commute_types')->onDelete('cascade');
             $table->foreignId('location_id')->nullable()->references('id')->on('locations')->onDelete('cascade');
             $table->float('distance')->nullable();
             $table->boolean('status')->default(true);
@@ -28,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('employee_commute_distances');
+        Schema::dropIfExists('employee_commute');
     }
 };

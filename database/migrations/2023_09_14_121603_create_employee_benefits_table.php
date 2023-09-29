@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('employee_benefits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transport_id')->nullable()->references('id')->on('transports')->onDelete('cascade');
             $table->boolean('fuel_card')->default(false);
             $table->boolean('company_car')->default(false);
             $table->float('clothing_compensation')->nullable();

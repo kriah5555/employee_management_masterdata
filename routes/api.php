@@ -25,6 +25,7 @@ use App\Http\Controllers\Employee\MaritalStatusController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\HolidayCode\HolidayCodesOfSocialSecretaryController;
+use App\Http\Controllers\Employee\CommuteTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,6 +154,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
     Route::resource('genders', GenderController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::resource('marital-statuses', MaritalStatusController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+
+    Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
 });
 

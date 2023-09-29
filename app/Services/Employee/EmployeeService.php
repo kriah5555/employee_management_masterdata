@@ -14,7 +14,7 @@ use App\Models\Employee\Gender;
 use App\Models\Employee\MaritalStatus;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\Employee\Transport;
+use App\Models\Employee\CommuteType;
 use App\Repositories\ExtraBenefitsRepository;
 use App\Repositories\LocationRepository;
 
@@ -138,8 +138,8 @@ class EmployeeService
         $options['genders'] = $this->getGenderOptions();
         $options['marital_statuses'] = $this->getMaritalStatusOptions();
         $options['languages'] = $this->getLanguageOptions();
-        $options['transport_options'] = $this->getTransportOptions();
-        $options['employee_type_categories'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
+        $options['commute_type_options'] = $this->getCommuteTypeOptions();
+        $options['employee_contract_options'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
         $options['dependent_spouse_options'] = $this->getDependentSpouseOptions();
         $companyLocations = $this->locationRepository->getCompanyLocations($companyId);
         $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
@@ -167,31 +167,31 @@ class EmployeeService
 
     public function getLanguageOptions()
     {
-        return getOptionsFromConfig('constants.LANGUAGE_OPTIONS');
+        return getValueLabelOptionsFromConfig('constants.LANGUAGE_OPTIONS');
     }
 
-    public function getTransportOptions()
+    public function getCommuteTypeOptions()
     {
-        return Transport::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+        return CommuteType::where('status', '=', true)->select(['id as value', 'name as label'])->get();
     }
 
     public function getDependentSpouseOptions()
     {
-        return getOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
+        return getKeyNameOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
     }
 
     public function getSubTypeOptions()
     {
-        return getOptionsFromConfig('constants.SUB_TYPE_OPTIONS');
+        return getKeyNameOptionsFromConfig('constants.SUB_TYPE_OPTIONS');
     }
 
     public function getScheduleTypeOptions()
     {
-        return getOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
+        return getKeyNameOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
     }
 
     public function getEmployementTypeOptions()
     {
-        return getOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
+        return getKeyNameOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
     }
 }

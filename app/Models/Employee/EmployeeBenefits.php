@@ -10,7 +10,6 @@ class EmployeeBenefits extends BaseModel
     use UserAudit;
 
     protected $columnsToLog = [
-        'transport_id',
         'fuel_card',
         'company_car',
         'clothing_compensation',
@@ -50,7 +49,6 @@ class EmployeeBenefits extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'transport_id',
         'fuel_card',
         'company_car',
         'clothing_compensation',

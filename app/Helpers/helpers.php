@@ -160,14 +160,27 @@ if (!function_exists('generateValueLabelArray')) {
     }
 }
 
-if (!function_exists('getOptionsFromConfig')) {
-    function getOptionsFromConfig($key)
+if (!function_exists('getValueLabelOptionsFromConfig')) {
+    function getValueLabelOptionsFromConfig($key)
     {
         $values = config($key);
         return array_map(function ($value, $label) {
             return [
                 'value' => $value,
                 'label' => $label,
+            ];
+        }, array_keys($values), $values);
+    }
+}
+
+if (!function_exists('getKeyNameOptionsFromConfig')) {
+    function getKeyNameOptionsFromConfig($key)
+    {
+        $values = config($key);
+        return array_map(function ($value, $label) {
+            return [
+                'key'  => $value,
+                'name' => $label,
             ];
         }, array_keys($values), $values);
     }
