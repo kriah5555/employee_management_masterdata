@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::table('employee_type_categories', function (Blueprint $table) {
             $table->boolean('sub_category_types')->default(false); // Servant or worker is required or not
             $table->boolean('schedule_types')->default(false); // Fixed or flexible schedule options is required or not
-            $table->boolean('employement_types')->default(false); // Part time or full time options is required or not
+            $table->boolean('employment_types')->default(false); // Part time or full time options is required or not
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration {
         Schema::table('employee_type_categories', function (Blueprint $table) {
             $table->dropColumn('sub_category_types');
             $table->dropColumn('schedule_types');
-            $table->dropColumn('employement_types');
+            $table->dropColumn('employment_types');
         });
     }
 };

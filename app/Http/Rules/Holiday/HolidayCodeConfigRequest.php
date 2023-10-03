@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Rules\HolidayCode;
+namespace App\Http\Rules\Holiday;
 
 use App\Http\Rules\ApiRequest;
 use Illuminate\Validation\Rule;

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\HolidayCode;
+namespace App\Models\Holiday;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\HolidayCode\EmployeeHolidayCount;
+use App\Models\Holiday\EmployeeHolidayCount;
 
 class EmployeeHolidayCountReasons extends Model
 {

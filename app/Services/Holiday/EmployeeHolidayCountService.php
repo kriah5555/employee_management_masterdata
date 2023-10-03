@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\HolidayCode;
+namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\HolidayCode\EmployeeHolidayCount;
-use App\Models\HolidayCode\EmployeeHolidayCountReasons;
+use App\Models\Holiday\EmployeeHolidayCount;
+use App\Models\Holiday\EmployeeHolidayCountReasons;
 use App\Services\BaseService;
-use App\Services\HolidayCode\HolidayCodeService;
+use App\Services\Holiday\HolidayCodeService;
 use App\Repositories\EmployeeProfileRepository;
 
 class EmployeeHolidayCountService extends BaseService

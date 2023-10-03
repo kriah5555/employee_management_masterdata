@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\HolidayCode;
+namespace App\Http\Controllers\Holiday;
 
 use App\Models\HolidayCodesOfSocialSecretary;
-use App\Services\HolidayCode\HolidayCodesOfSocialSecretaryService;
+use App\Services\Holiday\HolidayCodesOfSocialSecretaryService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\HolidayCode\HolidayCodesOfSocialSecretaryRequest;
+use App\Http\Rules\Holiday\HolidayCodesOfSocialSecretaryRequest;
 
 class HolidayCodesOfSocialSecretaryController extends Controller
 {

@@ -5,12 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\EmployeeType\EmployeeTypeController;
-use App\Http\Controllers\HolidayCode\HolidayCodesController;
-use App\Http\Controllers\HolidayCode\HolidayCodeConfigController;
+use App\Http\Controllers\Holiday\HolidayCodesController;
+use App\Http\Controllers\Holiday\HolidayCodeConfigController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
-// use App\Http\Controllers\HolidayCode\HolidayCodeCountController;
-use App\Http\Controllers\HolidayCode\EmployeeHolidayCountController;
+// use App\Http\Controllers\Holiday\HolidayCodeCountController;
+use App\Http\Controllers\Holiday\EmployeeHolidayCountController;
 use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
@@ -24,7 +24,8 @@ use App\Http\Controllers\Employee\GenderController;
 use App\Http\Controllers\Employee\MaritalStatusController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
-use App\Http\Controllers\HolidayCode\HolidayCodesOfSocialSecretaryController;
+use App\Http\Controllers\Holiday\HolidayCodesOfSocialSecretaryController;
+use App\Http\Controllers\Holiday\PublicHolidayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +78,7 @@ Route::resources([
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
     'social-secretary'    => SocialSecretaryController::class,
+    'public-holidays'     => PublicHolidayController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
