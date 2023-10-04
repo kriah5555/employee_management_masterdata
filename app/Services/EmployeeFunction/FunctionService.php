@@ -53,7 +53,7 @@ class FunctionService
 
     public function indexFunctionCategories()
     {
-        return FunctionCategory::all();
+        return FunctionCategory::with(['sector'])->get();
     }
 
     public function storeFunctionCategories($values)
