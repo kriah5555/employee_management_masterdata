@@ -37,9 +37,11 @@ return [
     'DEPENDENT_SPOUSE_OPTIONS'  => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
 
     'REASON_OPTIONS'            => [
-        'stop_planning'  => 'Stop plan', 
-        'start_planning' => 'Start plan', 
-        'block_employee' => 'Block employee'
+        'stop_planning'        => 'Stop plan', 
+        'start_planning'       => 'Start plan', 
+        'block_employee'       => 'Block employee',
+        'flex_check_blocking'  => 'Flex heck blocking',
+        'change_employee_type' => 'Change employee type',
     ],
 
     'SALARY_TYPES' => [

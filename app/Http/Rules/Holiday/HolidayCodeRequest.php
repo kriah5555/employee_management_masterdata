@@ -23,7 +23,7 @@ class HolidayCodeRequest extends ApiRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'holiday_code_name'                 => 'required|string|max:255',
             'internal_code' => [
                 'required',
@@ -50,7 +50,20 @@ class HolidayCodeRequest extends ApiRequest
                 'bail',
                 new HolidayCountFieldRule()
             ],
-        ];
+            'link_companies' => 'required|in:all,include,exclude',
+            'companies'      => 'nullable|array',
+            'companies.*'    => 
+            [
+                'bail',
+                'integer',
+                Rule::exists('companies', 'id')
+            ],
+            ];
+
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            unset($rules['companies'], $rules['companies.*'], $rules['link_companies']);
+        }
+        return $rules;
     }
 
     public function messages()
