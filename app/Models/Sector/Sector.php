@@ -12,8 +12,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use App\Models\Sector\SectorSalarySteps;
+use App\Models\BaseModel;
 
-class Sector extends Model
+class Sector extends BaseModel
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
