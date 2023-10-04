@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\HolidayCode;
+namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
-use App\Services\HolidayCode\HolidayCodeService;
-use App\Models\HolidayCode\HolidayCodesOfSocialSecretary;
+use App\Services\Holiday\HolidayCodeService;
+use App\Models\Holiday\HolidayCodesOfSocialSecretary;
 use App\Services\BaseService;
 use App\Services\SocialSecretary\SocialSecretaryService;
 

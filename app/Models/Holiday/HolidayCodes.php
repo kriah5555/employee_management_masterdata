@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models\HolidayCode;
+namespace App\Models\Holiday;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\EmployeeType\EmployeeType;
 use App\Models\Company;
 
 class HolidayCodes extends Model
@@ -80,5 +81,15 @@ class HolidayCodes extends Model
     public function companies()
     {
         return $this->belongsToMany(Company::class, 'company_holiday_codes', 'holiday_code_id', 'company_id');
+    }
+
+    public function employeeTypes()
+    {
+        return $this->belongsToMany(EmployeeType::class, 'employee_type_holiday_codes', 'holiday_code_id', 'employee_type_id');
+    }
+
+    public function employeeTypesValue()
+    {
+        return $this->belongsToMany(EmployeeType::class, 'employee_type_holiday_codes', 'holiday_code_id', 'employee_type_id')->select(['employee_type_id as value', 'name as label']);
     }
 }

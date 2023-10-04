@@ -14,13 +14,13 @@ class UniqueCostCenterNumberInCompanyRule implements ValidationRule
 
     public function __construct($company_id, $cost_center = null)
     {
-        $this->company_id = $company_id;
+        $this->company_id  = $company_id;
         $this->cost_center = $cost_center;
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $company_id = $this->company_id;
+        $company_id  = $this->company_id;
         $cost_center = $this->cost_center;
         
         $query = CostCenter::where('cost_center_number', $value)

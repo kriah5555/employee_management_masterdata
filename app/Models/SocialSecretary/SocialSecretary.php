@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BaseModel;
-use App\Models\HolidayCode\HolidayCodesOfSocialSecretary;
+use App\Models\Holiday\HolidayCodesOfSocialSecretary;
 
 class SocialSecretary extends BaseModel
 {

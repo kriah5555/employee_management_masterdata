@@ -1,17 +1,22 @@
 <?php
 
-namespace App\Services\HolidayCode;
+namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\HolidayCode\HolidayCodes;
+use App\Models\Holiday\HolidayCodes;
 use App\Models\Company;
 use App\Services\BaseService;
+use App\Services\EmployeeType\EmployeeTypeService;
 
 class HolidayCodeService extends BaseService
 {
+    protected $employeeTypeService;
+
     public function __construct(HolidayCodes $holidayCodes)
     {
         parent::__construct($holidayCodes);
+        $this->employeeTypeService = app(EmployeeTypeService::class);
+
     }
 
     # if the $args['with'] is passed then the count will be returned according to days or hours default in db the count will be stored as hours only
@@ -51,6 +56,7 @@ class HolidayCodeService extends BaseService
             'employee_category'                 => $this->transformOptions(config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS')),
             'contract_type'                     => $this->transformOptions(config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS')),
             'type'                              => $this->transformOptions(config('constants.HOLIDAY_TYPE_OPTIONS')),
+            'employee_types'                    => $this->employeeTypeService->getEmployeeTypeOptions(),
         ];
     }
 
@@ -67,7 +73,7 @@ class HolidayCodeService extends BaseService
         $options = $this->getOptionsToCreate();
 
         // Get holiday details
-        $details = $this->get($holiday_code_id);
+        $details = $this->get($holiday_code_id, ['employeeTypesValue']);
         $details['count'] = $details['count_type'] == 2 ? $details['count'] / config('constants.DAY_HOURS') : $details['count'];
         
         // Define a mapping of keys to transform
@@ -110,10 +116,20 @@ class HolidayCodeService extends BaseService
 
     public function create($values)
     {
-        
-        $values['employee_category'] = json_encode($values['employee_category']); // Encode the employee_category array as JSON before saving
-        $holidayCode = $this->model::create($values);// Create the holiday code record
-        return $holidayCode;
+        try {
+            DB::beginTransaction();
+            $values['employee_category'] = json_encode($values['employee_category']); // Encode the employee_category array as JSON before saving
+            $holidayCode                 = $this->model::create($values);// Create the holiday code record
+            $employee_types              = $values['employee_types'] ?? [];
+            $holidayCode->employeeTypes()->sync($employee_types);
+            DB::commit();
+            return $holidayCode;
+        } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+
     }
 
     public function getHolidayCodesWithStatusForCompany($company_id)

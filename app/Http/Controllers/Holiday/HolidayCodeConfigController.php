@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\HolidayCode;
+namespace App\Http\Controllers\Holiday;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Services\HolidayCode\HolidayCodeService;
-use App\Http\Rules\HolidayCode\HolidayCodeConfigRequest;
+use App\Services\Holiday\HolidayCodeService;
+use App\Http\Rules\Holiday\HolidayCodeConfigRequest;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 

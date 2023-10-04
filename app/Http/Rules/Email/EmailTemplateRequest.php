@@ -17,15 +17,10 @@ class EmailTemplateRequest extends ApiRequest
             'subject.*'     => 'nullable|string',
             'template_type' => [
                 'required',
-                'string',
-                'regex:/^[a-zA-Z0-9_\-]+$/',
-                Rule::unique('email_templates', 'template_type'),
+                Rule::in(array_keys(config('constants.EMAIL_TEMPLATES'))),
+                Rule::unique('email_templates', 'template_type')->ignore($this->route('email_template')),
             ],
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            unset($email_template_rules['template_type']);
-        }
 
         return $email_template_rules;
     }

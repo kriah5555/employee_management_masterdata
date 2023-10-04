@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Rules\HolidayCode;
+namespace App\Http\Rules\Holiday;
 
 use App\Http\Rules\ApiRequest;
 use App\Rules\HolidayCountFieldRule;
@@ -40,6 +40,12 @@ class HolidayCodeRequest extends ApiRequest
             'employee_category.*'               => 'in:1,2', // Individual category values must be valid
             'contract_type'                     => 'required|in:1,2,3',
             'status'                            => 'required|boolean',
+            'employee_types'                    => 'nullable|array',
+            'employee_types.*'                  => [
+                'bail',
+                'integer',
+                Rule::exists('employee_types', 'id'),
+            ],
             'count'                             => [
                 'bail',
                 new HolidayCountFieldRule()

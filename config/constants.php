@@ -2,7 +2,7 @@
 
 return [
 
-    'CONTRACT_TYPE_RENEWAL_OPTIONS'     => [
+    'CONTRACT_TYPE_RENEWAL_OPTIONS' => [
         'daily'        => 'Daily',
         'weekly'       => 'Weekly',
         'monthly'      => 'Monthly',
@@ -34,20 +34,31 @@ return [
         'fr' => 'French'
     ],
 
-    'DEPENDENT_SPOUSE_OPTIONS'          => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
+    'DEPENDENT_SPOUSE_OPTIONS'  => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
 
-    'REASON_OPTIONS'                    => ['stop_planning' => 'Stop plan', 'start_planning' => 'Start plan', 'block_employee' => 'Block employee'],
+    'REASON_OPTIONS'            => [
+        'stop_planning'  => 'Stop plan', 
+        'start_planning' => 'Start plan', 
+        'block_employee' => 'Block employee'
+    ],
 
-    'SALARY_TYPES'                      => [
+    'SALARY_TYPES' => [
         'min'   => 'Sector min salary',
-        'min1' => 'Sector min salary -1',
-        'min2' => 'Sector min salary -2',
+        'min1'  => 'Sector min salary -1',
+        'min2'  => 'Sector min salary -2',
         'flex'  => 'Flex salary',
         'na'    => 'Not applicable',
     ],
-    'SUB_TYPE_OPTIONS'                  => ['servant' => 'Servant', 'worker' => 'Worker'],
+    
+    'SUB_TYPE_OPTIONS'        => ['servant' => 'Servant', 'worker' => 'Worker'],
 
-    'SCHEDULE_TYPE_OPTIONS'             => ['part_time' => 'Part time', 'full_time' => 'Full time'],
+    'SCHEDULE_TYPE_OPTIONS'   => ['part_time' => 'Part time', 'full_time' => 'Full time'],
 
-    'EMPLOYMENT_TYPE_OPTIONS'           => ['fixed' => 'Fixed', 'flexible' => 'Flexible'],
+    'EMPLOYMENT_TYPE_OPTIONS' => ['fixed' => 'Fixed', 'flexible' => 'Flexible'],
+
+    'DEFAULT_DATE_FORMAT'     => 'd-m-Y',
+
+    'EMAIL_TEMPLATES'         => [
+        'planning_mail' => 'Planning Mail',
+    ],
 ];
