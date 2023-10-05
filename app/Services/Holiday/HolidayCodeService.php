@@ -58,9 +58,10 @@ class HolidayCodeService extends BaseService
             'consider_plan_hours_in_week_hours' => $this->transformOptions(config('constants.YES_OR_NO_OPTIONs')),
             'employee_category'                 => $this->transformOptions(config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS')),
             'contract_type'                     => $this->transformOptions(config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS')),
-            'type'                              => $this->transformOptions(config('constants.HOLIDAY_TYPE_OPTIONS')),
+            'type'                              => $this->transformOptions(config('constants.HOLIDAY_OPTIONS')),
             'employee_types'                    => $this->employeeTypeService->getEmployeeTypeOptions(),
             'companies'                         => $this->companyService->getCompanyOptions(),
+            'include_exclude_company'           => $this->transformOptions(config('constants.HOLIDAY_INCLUDE_OPTIONS')),
         ];
     }
 
@@ -75,7 +76,7 @@ class HolidayCodeService extends BaseService
     {
         // Get options for creating
         $options = $this->getOptionsToCreate();
-        unset($options['companies']);
+        unset($options['companies'], $options['include_exclude_company']);
 
         // Get holiday details
         $details          = $this->get($holiday_code_id, ['employeeTypesValue']);

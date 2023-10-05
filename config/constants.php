@@ -16,7 +16,7 @@ return [
 
     'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
 
-    'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Holiday', 2 => 'Leave'],
+    'HOLIDAY_OPTIONS'                    => [1 => 'Holiday', 2 => 'Leave'],
 
     'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
 
@@ -25,6 +25,8 @@ return [
     'HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS' => [1 => 'Servant', 2 => 'Worker'],
 
     'HOLIDAY_CONTRACT_TYPE_OPTIONS'     => [1 => 'Both', 2 => 'Full time', 3 => 'Part time'],
+    
+    'HOLIDAY_INCLUDE_OPTIONS'           => ['all' => 'ALL', 'include' => 'Include', 'exclude' => 'Exclude'],
 
     'DAY_HOURS'                         => 8,
 
