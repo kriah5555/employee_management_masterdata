@@ -103,19 +103,19 @@ Route::controller(TranslationController::class)->group(function () {
 
 Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
 
-    Route::get('get-monthly-minimum-salaries/{id}', 'getMinimumSalaries');
+    Route::get('monthly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries')->where(['sector_id' => $integerRule]);
 
-    Route::get('get-hourly-minimum-salaries/{id}', 'getMinimumSalaries');
+    Route::post('monthly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['sector_id' => $integerRule]);
 
+    Route::post('monthly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+    
     // Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
+    
+    Route::get('hourly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries');
 
-    Route::post('undo-monthly-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+    Route::post('hourly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
 
-    Route::post('undo-hourly-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
-
-    Route::post('update-monthly-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
-
-    Route::post('update-hourly-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+    Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 });
 
 Route::controller(LocationController::class)->group(function () use ($statusRule) {

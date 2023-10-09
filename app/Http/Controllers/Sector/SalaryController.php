@@ -33,17 +33,9 @@ class SalaryController extends Controller
 
     private function getSalaryTypeFromPath($path)
     {
-        if (
-            str_contains($path, "/get-monthly-minimum-salaries/") || 
-            str_contains($path, "/update-monthly-minimum-salaries") || 
-            str_contains($path, "/undo-monthly-minimum-salaries")
-        ) {
+        if (str_contains($path, "/monthly-minimum-salaries/")) {
             return config('constants.MONTHLY_SALARY');
-        } elseif (
-            str_contains($path, "/get-hourly-minimum-salaries/") || 
-            str_contains($path, "/update-hourly-minimum-salaries") || 
-            str_contains($path, "/undo-hourly-minimum-salaries")
-        ) {
+        } elseif (str_contains($path, "/hourly-minimum-salaries/")) {
             return config('constants.HOURLY_SALARY');
         }
         
@@ -56,7 +48,6 @@ class SalaryController extends Controller
     public function updateMinimumSalaries(UpdateMinimumSalariesRequest $request, $id)
     {
         $salary_type = $this->getSalaryTypeFromPath($request->getPathInfo());
-
         $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries'], $salary_type);
         return returnResponse(
             [

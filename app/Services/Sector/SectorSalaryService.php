@@ -161,7 +161,6 @@ class SectorSalaryService
         $field           = $this->getFieldBySalaryType($salary_type);
         $old_salary_data = MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps)->get();
         $save_old_data   = [];
-                
         foreach ($old_salary_data as $salary_data) {
             $save_old_data[$salary_data->sector_salary_steps_id][$salary_data->category_number] = $salary_data->$field;
         }
