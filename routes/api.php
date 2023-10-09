@@ -83,7 +83,7 @@ Route::resources([
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
-Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update']);
+Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
 
 Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
@@ -103,18 +103,19 @@ Route::controller(TranslationController::class)->group(function () {
 
 Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
 
-    Route::get('get-minimum-salaries/{id}', 'getMinimumSalaries');
+    Route::get('get-monthly-minimum-salaries/{id}', 'getMinimumSalaries');
 
-    Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
+    Route::get('get-hourly-minimum-salaries/{id}', 'getMinimumSalaries');
 
-    Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+    // Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
 
-    Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+    Route::post('undo-monthly-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
 
-    Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+    Route::post('undo-hourly-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
 
-    Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+    Route::post('update-monthly-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 
+    Route::post('update-hourly-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 });
 
 Route::controller(LocationController::class)->group(function () use ($statusRule) {

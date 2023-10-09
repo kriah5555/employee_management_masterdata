@@ -81,7 +81,6 @@ class HolidayCodeService extends BaseService
         // Get holiday details
         $details          = $this->get($holiday_code_id, ['employeeTypesValue']);
         $details['count'] = $details['count_type'] == 2 ? $details['count'] / config('constants.DAY_HOURS') : $details['count'];
-        
         // Define a mapping of keys to transform
         $keysToTransform = [
             'holiday_type'                      => config('constants.HOLIDAY_TYPE_OPTIONS'),
@@ -90,7 +89,7 @@ class HolidayCodeService extends BaseService
             'employee_category'                 => config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS'),
             'contract_type'                     => config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS'),
             'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS'),
-            'type'                              => config('constants.HOLIDAY_TYPE_OPTIONS'),
+            'type'                              => config('constants.HOLIDAY_OPTIONS'),
         ];
 
         // Process each key

@@ -28,8 +28,6 @@ class UpdateMinimumSalariesRequest extends ApiRequest
     }
     public function messages()
     {
-        return [
-            // 'salaries.required' => 'Name is required.',
-        ];
+        return [];
     }
 }

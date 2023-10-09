@@ -65,4 +65,7 @@ return [
     'EMAIL_TEMPLATES'         => [
         'planning_mail' => 'Planning Mail',
     ],
+
+    'MONTHLY_SALARY' => 1,
+    'HOURLY_SALARY'  => 2,
 ];

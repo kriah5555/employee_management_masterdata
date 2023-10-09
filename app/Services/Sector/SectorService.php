@@ -156,7 +156,8 @@ class SectorService
                     'category_number'        => $category_number
                 ]);
                 if ($minimum_salary->wasRecentlyCreated) {
-                    $minimum_salary->salary = 0;
+                    $minimum_salary->monthly_minimum_salary = 0;
+                    $minimum_salary->hourly_minimum_salary  = 0;
                     $minimum_salary->save();
                 }
             }
