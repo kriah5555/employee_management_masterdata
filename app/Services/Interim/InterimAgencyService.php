@@ -68,4 +68,14 @@ class InterimAgencyService extends BaseService
         $options['details'] = $company_details;
         return $options;
     }
+
+    public function getInterimAgencyOptions()
+    {
+        try {
+            return $this->model::where('status', true)->select(['id as value', 'name as label'])->get();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }

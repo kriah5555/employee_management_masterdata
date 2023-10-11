@@ -11,6 +11,7 @@ use App\Models\Location;
 use App\Models\Holiday\HolidayCodes;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\SocialSecretary\SocialSecretary;
+use App\Models\Interim\InterimAgency;
 class Company extends Model
 {
     use HasFactory, SoftDeletes;
@@ -45,6 +46,8 @@ class Company extends Model
         'rsz_number',
         'social_secretary_number',
         'social_secretary_id',
+        'interim_agency_id',
+        'oauth_key',
         'username',
         'email',
         'phone',
@@ -99,6 +102,23 @@ class Company extends Model
             return [
                 'level' => $this->socialSecretary->id,
                 'value' => $this->socialSecretary->name, // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
+            ];
+        } else {
+            return null;
+        }
+    }
+
+    public function interimAgency()
+    {
+        return $this->belongsTo(InterimAgency::class, 'interim_agency_id');
+    }
+
+    public function interimAgencyValue()
+    {   
+        if ($this->interimAgency) {
+            return [
+                'level' => $this->interimAgency->id,
+                'value' => $this->interimAgency->name, // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
             ];
         } else {
             return null;

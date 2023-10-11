@@ -24,7 +24,6 @@ class ContractTemplateController extends Controller
 
         // Generate the URL for the file
         $fileUrl = asset('storage/' . $filePath);
-        dd($fileUrl);
 
         return returnResponse(
             [

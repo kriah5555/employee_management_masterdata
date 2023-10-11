@@ -15,6 +15,7 @@ use App\Services\WorkstationService;
 use App\Services\BaseService;
 use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
+use App\Services\Interim\InterimAgencyService;
 
 class CompanyService extends BaseService
 {
@@ -22,11 +23,14 @@ class CompanyService extends BaseService
 
     protected $socialSecretaryService;
 
+    protected $interimAgencyService;
+
     public function __construct(Company $company, SectorService $sectorService)
     {
         parent::__construct($company);
         $this->sectorService          = $sectorService;
         $this->socialSecretaryService = app(SocialSecretaryService::class);
+        $this->interimAgencyService   = app(InterimAgencyService::class);
     }
 
     public function create($values)
@@ -161,7 +165,8 @@ class CompanyService extends BaseService
     {
         return [
             'sectors'            => $this->sectorService->getSectorOptions(),
-            'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions()
+            'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions(),
+            'interim_agencies'   => $this->interimAgencyService->getInterimAgencyOptions(),
         ];
     }
 
@@ -170,18 +175,9 @@ class CompanyService extends BaseService
         $company_details = $this->model::with(['address', 'sectors', 'sectorsValue', 'logoFile'])->findOrFail($company_id);
         $options            = $this->getOptionsToCreate();
         $options['details'] = $company_details;
-        $options['details']['social_secretaries_value'] = $company_details->socialSecretaryValue();
-        unset($options['details']['socialSecretary']);
-        unset($options['details']['sectors']);
-        
-        // if ($company_details->socialSecretaries) {
-    
-        //     // Add social_secretaries key-value pairs to details
-        //     $options['details']['social_secretaries_value'] = [
-        //         'label' => $company_details->socialSecretaries->id,
-        //         'value' => $company_details->socialSecretaries->name
-        //     ];
-        // }
+        $options['details']['social_secretary_value'] = $company_details->socialSecretaryValue();
+        $options['details']['interim_agency_value']   = $company_details->interimAgencyValue();
+        unset($options['details']['socialSecretary'], $options['details']['sectors'], $options['details']['interimAgency']);
 
         return $options;
     }
