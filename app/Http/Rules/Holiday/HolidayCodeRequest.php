@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Rules\HolidayCode;
+namespace App\Http\Rules\Holiday;
 
 use App\Http\Rules\ApiRequest;
 use App\Rules\HolidayCountFieldRule;
@@ -23,7 +23,7 @@ class HolidayCodeRequest extends ApiRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'holiday_code_name'                 => 'required|string|max:255',
             'internal_code' => [
                 'required',
@@ -32,6 +32,7 @@ class HolidayCodeRequest extends ApiRequest
             ],
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => 'required|in:1,2,3',
+            'type'                              => 'required|in:1,2',
             'count_type'                        => 'required|in:1,2,3',
             'icon_type'                         => 'required|in:1,2,3,4',
             'consider_plan_hours_in_week_hours' => 'required|in:0,1',
@@ -39,11 +40,30 @@ class HolidayCodeRequest extends ApiRequest
             'employee_category.*'               => 'in:1,2', // Individual category values must be valid
             'contract_type'                     => 'required|in:1,2,3',
             'status'                            => 'required|boolean',
+            'employee_types'                    => 'nullable|array',
+            'employee_types.*'                  => [
+                'bail',
+                'integer',
+                Rule::exists('employee_types', 'id'),
+            ],
             'count'                             => [
                 'bail',
                 new HolidayCountFieldRule()
             ],
-        ];
+            'link_companies' => 'required|in:all,include,exclude',
+            'companies'      => 'nullable|array',
+            'companies.*'    => 
+            [
+                'bail',
+                'integer',
+                Rule::exists('companies', 'id')
+            ],
+            ];
+
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            unset($rules['companies'], $rules['companies.*'], $rules['link_companies']);
+        }
+        return $rules;
     }
 
     public function messages()

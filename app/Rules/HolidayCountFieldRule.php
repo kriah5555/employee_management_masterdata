@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\HolidayCode\HolidayCodes;
+use App\Models\Holiday\HolidayCodes;
 use Illuminate\Validation\Rule;
 
 class HolidayCountFieldRule implements ValidationRule
@@ -24,7 +24,6 @@ class HolidayCountFieldRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // dd($attribute, $value);
         $rules = [
             'numeric',
             'regex:/^\d+(\.\d{1,2})?$/',

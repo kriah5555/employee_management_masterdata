@@ -56,6 +56,7 @@ class SectorSalaryConfig extends Model
     {
         return $this->belongsTo(Sector::class);
     }
+    
     public function salarySteps()
     {
         return $this->hasMany(SectorSalarySteps::class);

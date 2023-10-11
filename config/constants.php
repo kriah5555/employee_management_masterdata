@@ -2,7 +2,7 @@
 
 return [
 
-    'CONTRACT_TYPE_RENEWAL_OPTIONS'     => [
+    'CONTRACT_TYPE_RENEWAL_OPTIONS' => [
         'daily'        => 'Daily',
         'weekly'       => 'Weekly',
         'monthly'      => 'Monthly',
@@ -16,6 +16,8 @@ return [
 
     'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
 
+    'HOLIDAY_OPTIONS'                    => [1 => 'Holiday', 2 => 'Leave'],
+
     'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
 
     'YES_OR_NO_OPTIONs'                 => [0 => 'No', 1 => 'Yes'],
@@ -23,6 +25,8 @@ return [
     'HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS' => [1 => 'Servant', 2 => 'Worker'],
 
     'HOLIDAY_CONTRACT_TYPE_OPTIONS'     => [1 => 'Both', 2 => 'Full time', 3 => 'Part time'],
+    
+    'HOLIDAY_INCLUDE_OPTIONS'           => ['all' => 'ALL', 'include' => 'Include', 'exclude' => 'Exclude'],
 
     'DAY_HOURS'                         => 8,
 
@@ -32,13 +36,36 @@ return [
         'fr' => 'French'
     ],
 
-    'DEPENDENT_SPOUSE_OPTIONS'          => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
+    'DEPENDENT_SPOUSE_OPTIONS'  => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
 
-    'REASON_OPTIONS'                    => ['stop_planning' => 'Stop plan', 'start_planning' => 'Start plan', 'block_employee' => 'Block employee'],
+    'REASON_OPTIONS'            => [
+        'stop_planning'        => 'Stop plan', 
+        'start_planning'       => 'Start plan', 
+        'block_employee'       => 'Block employee',
+        'flex_check_blocking'  => 'Flex heck blocking',
+        'change_employee_type' => 'Change employee type',
+    ],
 
-    'SUB_TYPE_OPTIONS'                  => ['servant' => 'Servant', 'worker' => 'Worker'],
+    'SALARY_TYPES' => [
+        'min'   => 'Sector min salary',
+        'min1'  => 'Sector min salary -1',
+        'min2'  => 'Sector min salary -2',
+        'flex'  => 'Flex salary',
+        'na'    => 'Not applicable',
+    ],
+    
+    'SUB_TYPE_OPTIONS'        => ['servant' => 'Servant', 'worker' => 'Worker'],
 
-    'SCHEDULE_TYPE_OPTIONS'             => ['part_time' => 'Part time', 'full_time' => 'Full time'],
+    'SCHEDULE_TYPE_OPTIONS'   => ['part_time' => 'Part time', 'full_time' => 'Full time'],
 
-    'EMPLOYMENT_TYPE_OPTIONS'           => ['fixed' => 'Fixed', 'flexible' => 'Flexible'],
+    'EMPLOYMENT_TYPE_OPTIONS' => ['fixed' => 'Fixed', 'flexible' => 'Flexible'],
+
+    'DEFAULT_DATE_FORMAT'     => 'd-m-Y',
+
+    'EMAIL_TEMPLATES'         => [
+        'planning_mail' => 'Planning Mail',
+    ],
+
+    'MONTHLY_SALARY' => 1,
+    'HOURLY_SALARY'  => 2,
 ];

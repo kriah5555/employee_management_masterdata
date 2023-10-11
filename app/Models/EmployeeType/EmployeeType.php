@@ -53,6 +53,7 @@ class EmployeeType extends BaseModel
         'name',
         'description',
         'employee_type_category_id',
+        'salary_type',
         'status',
         'created_by',
         'updated_by',

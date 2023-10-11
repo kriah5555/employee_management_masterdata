@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\HolidayCode;
+namespace App\Models\Holiday;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\HolidayCode\HolidayCodes;
+use App\Models\Holiday\HolidayCodes;
 use App\Models\BaseModel;
 
 class HolidayCodesOfSocialSecretary extends BaseModel

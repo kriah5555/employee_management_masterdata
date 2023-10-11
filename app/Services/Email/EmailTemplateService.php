@@ -48,12 +48,33 @@ class EmailTemplateService extends BaseService
                 }
         
                 $emailTemplate->save();
-                return $emailTemplate;
             DB::commit();
+            return $emailTemplate;
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function getOptionsToCreate()
+    {
+        $options = config('constants.EMAIL_TEMPLATES');
+
+        return ['email_template_type' => array_map(function ($key, $value) {
+            return ['value' => $key, 'label' => $value];
+        }, array_keys($options), $options)];
+    }
+
+    public function getOptionsToEdit($email_template_id)
+    {
+        $email_template     = $this->get($email_template_id);
+        $options            = $this->getOptionsToCreate();
+        $email_template['template_type'] = [
+            'value' => $email_template['template_type'],
+            'label' => config('constants.EMAIL_TEMPLATES')[$email_template['template_type']]
+        ];
+        $options['details'] = $email_template;
+        return $options;
     }
 }

@@ -23,38 +23,22 @@ use App\Models\Employee\CommuteType;
 use App\Repositories\ExtraBenefitsRepository;
 use App\Repositories\LocationRepository;
 
+use App\Models\EmployeeFunction\FunctionTitle;
+use App\Models\Sector\SectorSalarySteps;
+
+
 class EmployeeService
 {
-    protected $employeeProfileRepository;
-
-    protected $addressRepository;
-
-    protected $bankAccountRepository;
-
-    protected $employeeTypeService;
-
-    protected $companyService;
-
-    protected $extraBenefitsRepository;
-
-    protected $locationRepository;
 
     public function __construct(
-        EmployeeProfileRepository $employeeProfileRepository,
-        AddressRepository $addressRepository,
-        BankAccountRepository $bankAccountRepository,
-        EmployeeTypeService $employeeTypeService,
-        CompanyService $companyService,
-        ExtraBenefitsRepository $extraBenefitsRepository,
-        LocationRepository $locationRepository
+        protected EmployeeProfileRepository $employeeProfileRepository,
+        protected AddressRepository $addressRepository,
+        protected BankAccountRepository $bankAccountRepository,
+        protected EmployeeTypeService $employeeTypeService,
+        protected CompanyService $companyService,
+        protected ExtraBenefitsRepository $extraBenefitsRepository,
+        protected LocationRepository $locationRepository
     ) {
-        $this->employeeProfileRepository = $employeeProfileRepository;
-        $this->addressRepository = $addressRepository;
-        $this->bankAccountRepository = $bankAccountRepository;
-        $this->employeeTypeService = $employeeTypeService;
-        $this->companyService = $companyService;
-        $this->extraBenefitsRepository = $extraBenefitsRepository;
-        $this->locationRepository = $locationRepository;
     }
     /**
      * Function to get all the employee types
@@ -191,6 +175,7 @@ class EmployeeService
         $options['schedule_types'] = $this->getScheduleTypeOptions();
         $options['employement_types'] = $this->getEmployementTypeOptions();
         $options['meal_voucher_options'] = $this->getMealVoucherOptions();
+        $options['employment_types'] = $this->getEmploymentTypeOptions();
         $options['functions'] = $this->companyService->getFunctionOptionsForCompany($this->companyService->getCompanyDetails($companyId));
         return $options;
     }
@@ -240,8 +225,66 @@ class EmployeeService
         return getKeyNameOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
     }
 
-    public function getEmployementTypeOptions()
+    public function getEmploymentTypeOptions()
     {
         return getKeyNameOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
+    }
+
+    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '')
+    {
+        try {
+            $employeeType = $this->employeeTypeService->model::findOrFail($employee_type_id);
+            $salary_type = $employeeType->salary_type;
+
+            $minimumSalary = 0;
+            $salaryTypeLabel = null;
+
+            if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
+                // Retrieve the FunctionTitle based on its ID
+                $functionTitle = FunctionTitle::findOrFail($function_title_id);
+                $functionCategory = $functionTitle->functionCategory;
+
+                if ($functionCategory && $functionCategory->sector) {
+                    $sectorSalarySteps = $functionCategory->sector->salaryConfig->salarySteps()
+                        ->where('from', '<=', $experience_in_months)
+                        ->where('to', '>=', $experience_in_months)
+                        ->get();
+
+                    if ($sectorSalarySteps->isNotEmpty()) {
+                        $function_category_number = $functionCategory->category;
+
+                        if ($salary_type === 'min') {
+                            $function_category_number = $function_category_number;
+                        } elseif ($salary_type === 'min1') {
+                            $function_category_number -= 1;
+                        } elseif ($salary_type === 'min2') {
+                            $function_category_number -= 2;
+                        } elseif ($salary_type === 'flex') {
+                            $function_category_number = 999;
+                        }
+
+                        $function_category_number = max(1, $function_category_number);
+
+                        $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
+                            ->where('category_number', $function_category_number);
+
+                        if ($minimumSalaries->isNotEmpty()) {
+                            $minimumSalary = $minimumSalaries->first()->salary;
+                        }
+                    }
+                }
+            }
+
+            return [
+                'minimumSalary' => $minimumSalary,
+                'salary_type'   => [
+                    'value' => $salary_type,
+                    'label' => config('constants.SALARY_TYPES')[$salary_type],
+                ],
+            ];
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }

@@ -65,6 +65,7 @@ class CompanyService extends BaseService
 
             DB::commit();
         } catch (Exception $e) {
+            DB::rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -161,10 +162,15 @@ class CompanyService extends BaseService
 
     public function getOptionsToEdit($company_id)
     {
-        $company_details = $this->get($company_id, ['address', 'sectors', 'sectorsValue', 'logoFile']);
-        $options = $this->getOptionsToCreate();
+        $company_details    = $this->get($company_id, ['address', 'sectors', 'sectorsValue', 'logoFile']);
+        $options            = $this->getOptionsToCreate();
         $options['details'] = $company_details;
         return $options;
+    }
+
+    public function getCompanyOptions()
+    {
+        return $this->model::select(['id as value', 'company_name as label'])->get();
     }
 
     public function getAll(array $args = [])

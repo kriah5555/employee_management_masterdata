@@ -1,17 +1,25 @@
 <?php
 
-namespace App\Services\HolidayCode;
+namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\HolidayCode\HolidayCodes;
+use App\Models\Holiday\HolidayCodes;
 use App\Models\Company;
 use App\Services\BaseService;
+use App\Services\EmployeeType\EmployeeTypeService;
+use App\Services\CompanyService;
 
 class HolidayCodeService extends BaseService
 {
+    protected $employeeTypeService;
+
+    protected $companyService;
+
     public function __construct(HolidayCodes $holidayCodes)
     {
         parent::__construct($holidayCodes);
+        $this->employeeTypeService = app(EmployeeTypeService::class);
+        $this->companyService      = app(CompanyService::class);
     }
 
     # if the $args['with'] is passed then the count will be returned according to days or hours default in db the count will be stored as hours only
@@ -50,7 +58,10 @@ class HolidayCodeService extends BaseService
             'consider_plan_hours_in_week_hours' => $this->transformOptions(config('constants.YES_OR_NO_OPTIONs')),
             'employee_category'                 => $this->transformOptions(config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS')),
             'contract_type'                     => $this->transformOptions(config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS')),
-            // 'carry_forword'                     => $this->transformOptions(config('constants.YES_OR_NO_OPTIONs')),
+            'type'                              => $this->transformOptions(config('constants.HOLIDAY_OPTIONS')),
+            'employee_types'                    => $this->employeeTypeService->getEmployeeTypeOptions(),
+            'companies'                         => $this->companyService->getCompanyOptions(),
+            'include_exclude_company'           => $this->transformOptions(config('constants.HOLIDAY_INCLUDE_OPTIONS')),
         ];
     }
 
@@ -65,11 +76,11 @@ class HolidayCodeService extends BaseService
     {
         // Get options for creating
         $options = $this->getOptionsToCreate();
+        unset($options['companies'], $options['include_exclude_company']);
 
         // Get holiday details
-        $details = $this->get($holiday_code_id);
+        $details          = $this->get($holiday_code_id, ['employeeTypesValue']);
         $details['count'] = $details['count_type'] == 2 ? $details['count'] / config('constants.DAY_HOURS') : $details['count'];
-        
         // Define a mapping of keys to transform
         $keysToTransform = [
             'holiday_type'                      => config('constants.HOLIDAY_TYPE_OPTIONS'),
@@ -78,7 +89,7 @@ class HolidayCodeService extends BaseService
             'employee_category'                 => config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS'),
             'contract_type'                     => config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS'),
             'count_type'                        => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS'),
-            // 'carry_forword',
+            'type'                              => config('constants.HOLIDAY_OPTIONS'),
         ];
 
         // Process each key
@@ -110,10 +121,21 @@ class HolidayCodeService extends BaseService
 
     public function create($values)
     {
-        
-        $values['employee_category'] = json_encode($values['employee_category']); // Encode the employee_category array as JSON before saving
-        $holidayCode = $this->model::create($values);// Create the holiday code record
-        return $holidayCode;
+        try {
+            DB::beginTransaction();
+            $values['employee_category'] = json_encode($values['employee_category']); // Encode the employee_category array as JSON before saving
+            $holidayCode                 = $this->model::create($values);// Create the holiday code record
+            $employee_types              = $values['employee_types'] ?? [];
+            $holidayCode->employeeTypes()->sync($employee_types);
+            $holidayCode->linkCompanies($values['link_companies'], $values['companies'] ?? []);
+            DB::commit();
+            return $holidayCode;
+        } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+
     }
 
     public function getHolidayCodesWithStatusForCompany($company_id)
@@ -128,8 +150,8 @@ class HolidayCodeService extends BaseService
             // Format the holiday codes with their status
             $formattedHolidayCodes = $allHolidayCodes->map(function ($holidayCode) use ($linkedHolidayCodesIds) {
                 return [
-                    'value' => $holidayCode->id,
-                    'label' => $holidayCode->holiday_code_name,
+                    'value'  => $holidayCode->id,
+                    'label'  => $holidayCode->holiday_code_name,
                     'status' => in_array($holidayCode->id, $linkedHolidayCodesIds),
                 ];
             });
@@ -152,7 +174,7 @@ class HolidayCodeService extends BaseService
         try {
             DB::beginTransaction();
 
-                $company = Company::findOrFail($company_id);
+                $company          = Company::findOrFail($company_id);
                 $holiday_code_ids = $values['holiday_code_ids'] ?? [];
 
                 // Sync the holiday codes to the company

@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\EmployeeType\EmployeeTypeController;
-use App\Http\Controllers\HolidayCode\HolidayCodesController;
-use App\Http\Controllers\HolidayCode\HolidayCodeConfigController;
+use App\Http\Controllers\Holiday\HolidayCodesController;
+use App\Http\Controllers\Holiday\HolidayCodeConfigController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
-// use App\Http\Controllers\HolidayCode\HolidayCodeCountController;
-use App\Http\Controllers\HolidayCode\EmployeeHolidayCountController;
+// use App\Http\Controllers\Holiday\HolidayCodeCountController;
+use App\Http\Controllers\Holiday\EmployeeHolidayCountController;
 use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\WorkstationController;
@@ -23,8 +23,9 @@ use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
-use App\Http\Controllers\HolidayCode\HolidayCodesOfSocialSecretaryController;
 use App\Http\Controllers\Employee\CommuteTypeController;
+use App\Http\Controllers\Holiday\HolidayCodesOfSocialSecretaryController;
+use App\Http\Controllers\Holiday\PublicHolidayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,11 +78,12 @@ Route::resources([
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
     'social-secretary'    => SocialSecretaryController::class,
+    'public-holidays'     => PublicHolidayController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
-Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update']);
+Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
 
 Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
@@ -101,18 +103,19 @@ Route::controller(TranslationController::class)->group(function () {
 
 Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
 
-    Route::get('get-minimum-salaries/{id}', 'getMinimumSalaries');
+    Route::get('monthly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries')->where(['sector_id' => $integerRule]);
 
-    Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
+    Route::post('monthly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['sector_id' => $integerRule]);
 
-    Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+    Route::post('monthly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
 
-    Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+    // Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
 
-    Route::post('undo-coefficient-minimum-salaries/{sector_id}', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+    Route::get('hourly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries');
 
-    Route::post('update-minimum-salaries/{id}', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+    Route::post('hourly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
 
+    Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 });
 
 Route::controller(LocationController::class)->group(function () use ($statusRule) {
@@ -148,6 +151,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
         Route::get('/employees/create/{company_id}', 'create');
 
         Route::post('/employees/store/{company_id}', 'store');
+
+        Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
     });
 
     Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);

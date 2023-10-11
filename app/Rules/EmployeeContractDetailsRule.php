@@ -35,7 +35,7 @@ class EmployeeContractDetailsRule implements ValidationRule
         } elseif (!in_array($value['schedule_type'], array_keys(config('constants.SCHEDULE_TYPE_OPTIONS')))) {
             $fail('Incorrect schedule type');
         }
-        if ($employeeType->employeeTypeCategory->employement_types && !array_key_exists('employement_type', $value)) {
+        if ($employeeType->employeeTypeCategory->employment_types && !array_key_exists('employement_type', $value)) {
             $fail('Please select employement type');
         } elseif (!in_array($value['employement_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
             $fail('Incorrect employement type');

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models\HolidayCode;
+namespace App\Models\Holiday;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\EmployeeType\EmployeeType;
 use App\Models\Company;
 
 class HolidayCodes extends Model
@@ -48,14 +49,14 @@ class HolidayCodes extends Model
             $holidayCode->processCountAttribute();
         });
 
-        static::created(function ($holidayCode) {
-            $companies = Company::all();
+        // static::created(function ($holidayCode) {
+        //     $companies = Company::all();
 
-            // Attach the newly created holiday code to all companies
-            $companies->each(function ($company) use ($holidayCode) {
-                    $company->holidayCodes()->attach($holidayCode);
-                });
-        });
+        //     // Attach the newly created holiday code to all companies
+        //     $companies->each(function ($company) use ($holidayCode) {
+        //             $company->holidayCodes()->attach($holidayCode);
+        //     });
+        // });
     }
 
     private function processCountAttribute()
@@ -80,5 +81,31 @@ class HolidayCodes extends Model
     public function companies()
     {
         return $this->belongsToMany(Company::class, 'company_holiday_codes', 'holiday_code_id', 'company_id');
+    }
+
+    public function employeeTypes()
+    {
+        return $this->belongsToMany(EmployeeType::class, 'employee_type_holiday_codes', 'holiday_code_id', 'employee_type_id');
+    }
+
+    public function employeeTypesValue()
+    {
+        return $this->belongsToMany(EmployeeType::class, 'employee_type_holiday_codes', 'holiday_code_id', 'employee_type_id')->select(['employee_type_id as value', 'name as label']);
+    }
+
+    # link the holiday codes with company
+    public function linkCompanies($link, $company_ids)
+    {
+        $companies = Company::query();
+    
+        if ($link === 'include') {
+            $companies->whereIn('id', $company_ids);
+        } elseif ($link === 'exclude') {
+            $companies->whereNotIn('id', $company_ids);
+        }
+    
+        $companies->get()->each(function ($company) {
+            $company->holidayCodes()->syncWithoutDetaching($this->id);
+        });
     }
 }

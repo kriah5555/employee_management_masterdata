@@ -46,4 +46,10 @@ class SectorAgeSalary extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function getMaxTimeToWorkAttribute($value)
+    {
+        // Format the time to "HH:MM" format
+        return date('H:i', strtotime($value));
+    }
 }

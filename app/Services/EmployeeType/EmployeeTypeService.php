@@ -15,12 +15,16 @@ use App\Services\Rule\RuleService;
 class EmployeeTypeService
 {
     protected $contractTypeService;
+
     protected $ruleService;
 
-    public function __construct(ContractTypeService $contractTypeService, RuleService $ruleService)
+    public $model;
+
+    public function __construct()
     {
-        $this->contractTypeService = $contractTypeService;
-        $this->ruleService = $ruleService;
+        $this->contractTypeService = app(ContractTypeService::class);
+        $this->ruleService         = app(RuleService::class);
+        $this->model               = app(EmployeeType::class);
     }
     /**
      * Function to get all the employee types
@@ -37,8 +41,9 @@ class EmployeeTypeService
     {
         $options = [];
         $options['employee_type_categories'] = $this->getEmployeeTypeCategoryOptions();
-        $options['contract_types'] = $this->contractTypeService->getContractTypesOptions();
-        $options['dimona_types'] = $this->getDimonaTypesOptions();
+        $options['contract_types']           = $this->contractTypeService->getContractTypesOptions();
+        $options['dimona_types']             = $this->getDimonaTypesOptions();
+        $options['salary_type']              = $this->getSalaryTypeOptions();
         return $options;
     }
 
@@ -88,6 +93,10 @@ class EmployeeTypeService
         $employeeType->employeeTypeConfig;
         $employeeType->dimonaConfig;
         $employeeType->dimonaConfig->dimonaTypeValue;
+        $employeeType->salary_type = [
+            'value' => $employeeType->salary_type,
+            'label' => config('constants.SALARY_TYPES')[$employeeType->salary_type] ?? '',
+        ];
         $options['details'] = $employeeType;
         return $options;
     }
@@ -153,5 +162,14 @@ class EmployeeTypeService
         return EmployeeType::where('status', '=', true)
             ->select('id as value', 'name as label')
             ->get();
+    }
+
+    public function getSalaryTypeOptions()
+    {
+        $options = config('constants.SALARY_TYPES');
+
+        return array_map(function ($key, $value) {
+            return ['value' => $key, 'label' => $value];
+        }, array_keys($options), $options);
     }
 }

@@ -26,6 +26,28 @@ class EmailTemplateApiController extends Controller
         );
     }
 
+    public function create()
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->emailTemplateService->getOptionsToCreate()
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+    public function edit($email_template_id)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->emailTemplateService->getOptionsToEdit($email_template_id)
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
     public function store(EmailTemplateRequest $request)
     {
         return returnResponse(

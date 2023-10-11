@@ -17,6 +17,7 @@ class MinimumSalaryBackup extends Model
         'sector_salary_config_id',
         'category',
         'revert_count',
+        'salary_type',
         'salary_data',
         'status',
         'created_by',

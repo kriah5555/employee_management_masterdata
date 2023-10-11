@@ -7,6 +7,7 @@ use App\Services\Sector\SectorService;
 use App\Http\Rules\UpdateMinimumSalariesRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class SalaryController extends Controller
 {
@@ -19,20 +20,35 @@ class SalaryController extends Controller
      */
     public function getMinimumSalaries($id)
     {
+        $salary_type = $this->getSalaryTypeFromPath(request()->getPathInfo());
+
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->sectorSalaryService->getMinimumSalariesBySectorId($id),
+                'data'    => $this->sectorSalaryService->getMinimumSalariesBySectorId($id, $salary_type),
             ],
             JsonResponse::HTTP_OK,
         );
     }
+
+    private function getSalaryTypeFromPath($path)
+    {
+        if (str_contains($path, "/monthly-minimum-salaries/")) {
+            return config('constants.MONTHLY_SALARY');
+        } elseif (str_contains($path, "/hourly-minimum-salaries/")) {
+            return config('constants.HOURLY_SALARY');
+        }
+        
+        return ''; // Default if no match is found
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function updateMinimumSalaries(UpdateMinimumSalariesRequest $request, $id)
     {
-        $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries']);
+        $salary_type = $this->getSalaryTypeFromPath($request->getPathInfo());
+        $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries'], $salary_type);
         return returnResponse(
             [
                 'success' => true,
@@ -61,7 +77,8 @@ class SalaryController extends Controller
     public function undoIncrementedMinimumSalaries($sector_id)
     {
         try {
-            $status = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id);
+            $salary_type = $this->getSalaryTypeFromPath(request()->getPathInfo());
+            $status      = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id, $salary_type);
 
             $data = [];
             if ($status == 'success' || empty($status)) {

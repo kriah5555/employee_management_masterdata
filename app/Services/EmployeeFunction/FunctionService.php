@@ -11,11 +11,8 @@ use Exception;
 
 class FunctionService
 {
-    protected $sectorService;
-
-    public function __construct(SectorService $sectorService)
+    public function __construct(protected SectorService $sectorService)
     {
-        $this->sectorService = $sectorService;
     }
 
     public function createFunctionCategory()
@@ -56,7 +53,7 @@ class FunctionService
 
     public function indexFunctionCategories()
     {
-        return FunctionCategory::all();
+        return FunctionCategory::with(['sector'])->get();
     }
 
     public function storeFunctionCategories($values)

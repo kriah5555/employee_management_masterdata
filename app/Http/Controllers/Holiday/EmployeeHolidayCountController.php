@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\HolidayCode;
+namespace App\Http\Controllers\Holiday;
 
-use App\Services\HolidayCode\EmployeeHolidayCountService;
+use App\Services\Holiday\EmployeeHolidayCountService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\HolidayCode\EmployeeHolidayCountRequest;
+use App\Http\Rules\Holiday\EmployeeHolidayCountRequest;
 
 class EmployeeHolidayCountController extends Controller
 {
