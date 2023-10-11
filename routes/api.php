@@ -27,6 +27,7 @@ use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\Holiday\HolidayCodesOfSocialSecretaryController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
+use App\Http\Controllers\Interim\InterimAgencyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +82,7 @@ Route::resources([
     'social-secretary'    => SocialSecretaryController::class,
     'public-holidays'     => PublicHolidayController::class,
     'contract-templates'  => ContractTemplateController::class,
+    'interim-agencies'    => InterimAgencyController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
