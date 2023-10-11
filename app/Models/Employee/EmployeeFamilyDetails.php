@@ -5,21 +5,21 @@ namespace App\Models\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeContractDetails extends BaseModel
+class EmployeeFamilyDetails extends BaseModel
 {
     use UserAudit;
+
     protected $columnsToLog = [
         'employee_profile_id',
-        'employee_type_id',
-        'start_date',
-        'end_date'
+        'marital_status_id',
+        'dependent_spouse',
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_contract_details';
+    protected $table = 'employee_family_details';
 
     /**
      * The primary key associated with the table.
@@ -39,9 +39,7 @@ class EmployeeContractDetails extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at',
-        'start_date',
-        'end_date'
+        'deleted_at'
     ];
 
     /**
@@ -51,8 +49,7 @@ class EmployeeContractDetails extends BaseModel
      */
     protected $fillable = [
         'employee_profile_id',
-        'employee_type_id',
-        'from_date',
-        'to_date'
+        'marital_status_id',
+        'dependent_spouse',
     ];
 }

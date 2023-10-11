@@ -25,6 +25,8 @@ return new class extends Migration {
             $table->string('username')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

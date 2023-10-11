@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\EmployeeTypeCategorySeeder;
 use Database\Seeders\DimonaTypesSeeder;
 use Database\Seeders\ContractRenewalTypesSeeder;
+use Database\Seeders\TestDataSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
             EmployeeTypeCategorySeeder::class,
             DimonaTypesSeeder::class,
             ContractRenewalTypesSeeder::class,
+            TestDataSeeder::class,
         ]);
     }
 }

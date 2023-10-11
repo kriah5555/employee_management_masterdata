@@ -5,21 +5,23 @@ namespace App\Models\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class Gender extends BaseModel
+class EmployeeContactDetails extends BaseModel
 {
     use UserAudit;
-    protected static $sort = ['sort_order', 'name'];
+
     protected $columnsToLog = [
-        'sort_order',
-        'name',
-        'status'
+        'employee_profile_id',
+        'email',
+        'secondary_email',
+        'phone_number',
+        'status',
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'genders';
+    protected $table = 'employee_contact_details';
 
     /**
      * The primary key associated with the table.
@@ -48,8 +50,10 @@ class Gender extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'sort_order',
-        'name',
-        'status'
+        'employee_profile_id',
+        'email',
+        'secondary_email',
+        'phone_number',
+        'status',
     ];
 }

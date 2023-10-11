@@ -77,8 +77,10 @@ class EmployeeService
         return $options;
     }
 
-    public function createNewEmployeeProfile($values, $company_id)
+    public function createNewEmployee($values, $company_id)
     {
+        print_r('as');
+        exit;
         try {
             $existingEmpProfile = $this->employeeProfileRepository->getEmployeeProfileBySsn($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
@@ -87,7 +89,6 @@ class EmployeeService
                 $uid = $existingEmpProfile->last()->uid;
             }
             DB::beginTransaction();
-            $this->createEmployeeContract(EmployeeProfile::findOrFail(1), $values['employee_contract_details']);
             $user = User::find($uid);
             $values['uid'] = $uid;
             $address = $this->addressRepository->createAddress($values);
@@ -100,6 +101,10 @@ class EmployeeService
             }
             $values['company_id'] = $company_id;
             $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
+            if (array_key_exists('social_secretory_number', $values) || array_key_exists('contract_number', $values)) {
+                $bankAccount = $this->bankAccountRepository->createEmployeeSocialSecretaryDetails($values);
+                $values['bank_accountid'] = $bankAccount->id;
+            }
             $this->createEmployeeContract($empProfile, $values['employee_contract_details']);
             $user->assignRole('employee');
             DB::commit();
@@ -111,6 +116,18 @@ class EmployeeService
     }
 
     public function createEmployeeContract($empProfile, $contractDetails)
+    {
+        $contractDetails['employee_profile_id'] = $empProfile->id;
+        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
+        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+        $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
+        if ($employeeType->employeeTypeCategory->id == 1) {
+            $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
+            LongTermEmployeeContractDetails::create($contractDetails);
+        }
+    }
+
+    public function createEmployeeSocialSecretaryDetails($empProfile, $contractDetails)
     {
         $contractDetails['employee_profile_id'] = $empProfile->id;
         $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
@@ -166,12 +183,8 @@ class EmployeeService
     public function create($companyId)
     {
         $options = [];
-        $options['genders'] = $this->getGenderOptions();
-        $options['marital_statuses'] = $this->getMaritalStatusOptions();
-        $options['languages'] = $this->getLanguageOptions();
         $options['commute_type_options'] = $this->getCommuteTypeOptions();
         $options['employee_contract_options'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
-        $options['dependent_spouse_options'] = $this->getDependentSpouseOptions();
         $companyLocations = $this->locationRepository->getCompanyLocations($companyId);
         $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
         $options['sub_types'] = $this->getSubTypeOptions();

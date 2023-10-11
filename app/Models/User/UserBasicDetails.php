@@ -1,26 +1,33 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeProfile extends BaseModel
+class User extends BaseModel
 {
     use UserAudit;
-
+    protected static $sort = ['first_name'];
     protected $columnsToLog = [
         'user_id',
-        'company_id',
+        'first_name',
+        'last_name',
+        'social_security_number',
+        'gender_id',
+        'date_of_birth',
+        'place_of_birth',
+        'license_expiry_date',
+        'language',
+        'extra_info',
         'status',
     ];
-
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_profiles';
+    protected $table = 'user_basic_details';
 
     /**
      * The primary key associated with the table.
@@ -40,7 +47,9 @@ class EmployeeProfile extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'date_of_birth',
+        'license_expiry_date'
     ];
 
     /**
@@ -50,7 +59,15 @@ class EmployeeProfile extends BaseModel
      */
     protected $fillable = [
         'user_id',
-        'company_id',
+        'first_name',
+        'last_name',
+        'social_security_number',
+        'gender_id',
+        'date_of_birth',
+        'place_of_birth',
+        'license_expiry_date',
+        'language',
+        'extra_info',
         'status',
     ];
 }

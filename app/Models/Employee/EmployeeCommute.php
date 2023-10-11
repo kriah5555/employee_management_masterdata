@@ -11,6 +11,7 @@ class EmployeeCommute extends BaseModel
 
     protected $columnsToLog = [
         'employee_profile_id',
+        'commute_type_id',
         'location_id',
         'distance',
         'status',
@@ -50,6 +51,7 @@ class EmployeeCommute extends BaseModel
      */
     protected $fillable = [
         'employee_profile_id',
+        'commute_type_id',
         'location_id',
         'distance',
         'status',

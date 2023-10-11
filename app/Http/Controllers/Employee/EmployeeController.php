@@ -52,7 +52,7 @@ class EmployeeController extends Controller
             [
                 'success' => true,
                 'message' => 'Employee created successfully',
-                'data'    => $this->employeeService->createNewEmployeeProfile($request->all(), $company_id)
+                'data'    => $this->employeeService->createNewEmployee($request->validated(), $company_id)
             ],
             JsonResponse::HTTP_OK,
         );

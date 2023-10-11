@@ -1,25 +1,33 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeContractDetails extends BaseModel
+class UserAddress extends BaseModel
 {
     use UserAudit;
+    protected static $sort = ['first_name'];
     protected $columnsToLog = [
-        'employee_profile_id',
-        'employee_type_id',
-        'start_date',
-        'end_date'
+        'user_id',
+        'street_house_no',
+        'postal_code',
+        'city',
+        'country',
+        'status',
+        'latitude',
+        'longitude',
+        'address_type',
+        'extra_info',
+        'status',
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_contract_details';
+    protected $table = 'user_addresses';
 
     /**
      * The primary key associated with the table.
@@ -40,8 +48,6 @@ class EmployeeContractDetails extends BaseModel
         'created_at',
         'updated_at',
         'deleted_at',
-        'start_date',
-        'end_date'
     ];
 
     /**
@@ -50,9 +56,16 @@ class EmployeeContractDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_profile_id',
-        'employee_type_id',
-        'from_date',
-        'to_date'
+        'user_id',
+        'street_house_no',
+        'postal_code',
+        'city',
+        'country',
+        'status',
+        'latitude',
+        'longitude',
+        'address_type',
+        'extra_info',
+        'status',
     ];
 }

@@ -9,12 +9,13 @@ class LongTermEmployeeContractDetails extends BaseModel
 {
     use UserAudit;
     protected $columnsToLog = [
-        'employee_contract_details_id',
+        'employee_profile_id',
         'sub_type',
         'schedule_type',
         'employement_type',
         'weekly_contract_hours',
-        'work_days_per_week'
+        'work_days_per_week',
+        'status'
     ];
     /**
      * The table associated with the model.
@@ -41,7 +42,7 @@ class LongTermEmployeeContractDetails extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -50,11 +51,12 @@ class LongTermEmployeeContractDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_contract_details_id',
+        'employee_profile_id',
         'sub_type',
         'schedule_type',
         'employement_type',
         'weekly_contract_hours',
-        'work_days_per_week'
+        'work_days_per_week',
+        'status'
     ];
 }

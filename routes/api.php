@@ -21,8 +21,6 @@ use App\Http\Controllers\Contract\ContractTypeController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeController;
-use App\Http\Controllers\Employee\GenderController;
-use App\Http\Controllers\Employee\MaritalStatusController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\HolidayCode\HolidayCodesOfSocialSecretaryController;
@@ -141,7 +139,7 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
 
 Route::group(['middleware' => 'setactiveuser'], function () {
 
-    Route::resource('employees', EmployeeController::class)->only(['show', 'edit']);
+    // Route::resource('employees', EmployeeController::class)->only(['show', 'edit']);
 
     Route::controller(EmployeeController::class)->group(function () {
 
@@ -151,10 +149,6 @@ Route::group(['middleware' => 'setactiveuser'], function () {
 
         Route::post('/employees/store/{company_id}', 'store');
     });
-
-    Route::resource('genders', GenderController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
-
-    Route::resource('marital-statuses', MaritalStatusController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
