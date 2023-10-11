@@ -17,6 +17,7 @@ use App\Http\Controllers\WorkstationController;
 use App\Http\Controllers\Email\EmailTemplateApiController;
 use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
+use App\Http\Controllers\Contract\ContractTemplateController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeController;
@@ -79,6 +80,7 @@ Route::resources([
     'locations'           => LocationController::class,
     'social-secretary'    => SocialSecretaryController::class,
     'public-holidays'     => PublicHolidayController::class,
+    'contract-templates'  => ContractTemplateController::class,
 ]);
 
 Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
@@ -148,6 +150,8 @@ Route::group(['middleware' => 'setactiveuser'], function () {
 
         Route::get('/employees/get-company-employees/{company_id}', 'index');
 
+        Route::get('/employees/create/{company_id}', 'create');
+        
         Route::get('/employees/create/{company_id}', 'create');
 
         Route::post('/employees/store/{company_id}', 'store');

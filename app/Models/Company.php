@@ -10,7 +10,7 @@ use App\Models\Address;
 use App\Models\Location;
 use App\Models\Holiday\HolidayCodes;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Models\SocialSecretary\SocialSecretary;
 class Company extends Model
 {
     use HasFactory, SoftDeletes;
@@ -44,6 +44,7 @@ class Company extends Model
         'sender_number',
         'rsz_number',
         'social_secretary_number',
+        'social_secretary_id',
         'username',
         'email',
         'phone',
@@ -85,6 +86,23 @@ class Company extends Model
     {
         return $this->belongsToMany(HolidayCodes::class, 'company_holiday_codes', 'company_id', 'holiday_code_id')
                     ->where('holiday_codes.status', true);
+    }
+
+    public function socialSecretary()
+    {
+        return $this->belongsTo(SocialSecretary::class, 'social_secretary_id');
+    }
+
+    public function socialSecretaryValue()
+    {   
+        if ($this->socialSecretary) {
+            return [
+                'level' => $this->socialSecretary->id,
+                'value' => $this->socialSecretary->name, // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
+            ];
+        } else {
+            return null;
+        }
     }
 
     public function logoFile()
