@@ -67,5 +67,9 @@ return [
     ],
 
     'MONTHLY_SALARY' => 1,
+
     'HOURLY_SALARY'  => 2,
+
+    'CONTRACT_TEMPLATE_TYPE'  => ['company' => 'Company', 'default' => 'Default'],
+
 ];

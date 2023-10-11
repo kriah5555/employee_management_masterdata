@@ -14,4 +14,14 @@ class SocialSecretaryService extends BaseService
     {
         parent::__construct($socialSecretary);
     }  
+
+    public function getSocialSecretaryOptions()
+    {
+        try {
+            return $this->model::where('status', true)->select(['id as label', 'name as value'])->get();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }

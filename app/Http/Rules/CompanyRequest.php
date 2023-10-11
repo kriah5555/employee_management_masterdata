@@ -23,6 +23,11 @@ class CompanyRequest extends ApiRequest
             'address'                 => ['required', new AddressRule()],
             'locations'               => ['nullable', 'array', new LocationRule()],
             'workstations'            => ['nullable', 'array', new WorkstationRule()],
+            'social_secretary_id'     => [
+                'bail',
+                'nullable',
+                Rule::exists('social_secretaries', 'id')
+            ],
             'sectors.*'               => [
                 'bail',
                 'integer',

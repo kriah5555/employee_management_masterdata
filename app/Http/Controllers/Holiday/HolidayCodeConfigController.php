@@ -13,6 +13,7 @@ use App\Services\CompanyService;
 class HolidayCodeConfigController extends Controller
 {
     protected $company_service;
+    
     public function __construct(protected HolidayCodeService $holiday_code_service)
     {
         $this->company_service = app(CompanyService::class);

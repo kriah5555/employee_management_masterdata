@@ -81,23 +81,33 @@ class CostCenterService extends BaseService
 
     public function getOptionsToCreate($company_id)
     {
-        $options = $this->workstationService->getOptionsToCreate($company_id);
-        $options['workstations'] = [];
-        unset($options['function_titles']);
-        foreach ($options['locations'] as $option) {
-            $workstations = $this->workstationService->locationService->get($option['value'], ['workstationsValues'])->toArray()['workstations_values'];
-            $options['workstations'][$option['value']] = $workstations; // Use square brackets for assignment
+        try {
+            $options = $this->workstationService->getOptionsToCreate($company_id);
+            $options['workstations'] = [];
+            unset($options['function_titles']);
+            foreach ($options['locations'] as $option) {
+                $workstations = $this->workstationService->locationService->get($option['value'], ['workstationsValues'])->toArray()['workstations_values'];
+                $options['workstations'][$option['value']] = $workstations; // Use square brackets for assignment
+            }
+            $options['employees'] = $this->getEmployeeOptions($company_id);
+            return $options;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
         }
-        $options['employees'] = $this->getEmployeeOptions($company_id);
-        return $options;
     }
 
     public function getOptionsToEdit($costCenterId)
     {
-        $costCenter_details = $this->get($costCenterId, ['workstationsValue','location', 'employeesValue']);
-        $costCenter_details->locationValue;
-        $options            = $this->getOptionsToCreate($costCenter_details->location->company);
-        $options['details'] = $costCenter_details;
-        return $options;
+        try {
+            $costCenter_details = $this->get($costCenterId, ['workstationsValue','location', 'employeesValue']);
+            $costCenter_details->locationValue;
+            $options            = $this->getOptionsToCreate($costCenter_details->location->company);
+            $options['details'] = $costCenter_details;
+            return $options;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }

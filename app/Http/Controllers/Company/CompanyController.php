@@ -7,8 +7,6 @@ use App\Http\Rules\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-
-
 class CompanyController extends Controller
 {
     public function __construct(protected CompanyService $company_service)

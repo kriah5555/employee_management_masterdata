@@ -14,15 +14,19 @@ use App\Services\LocationService;
 use App\Services\WorkstationService;
 use App\Services\BaseService;
 use App\Services\Sector\SectorService;
+use App\Services\SocialSecretary\SocialSecretaryService;
 
 class CompanyService extends BaseService
 {
     protected $sectorService;
 
+    protected $socialSecretaryService;
+
     public function __construct(Company $company, SectorService $sectorService)
     {
         parent::__construct($company);
-        $this->sectorService = $sectorService;
+        $this->sectorService          = $sectorService;
+        $this->socialSecretaryService = app(SocialSecretaryService::class);
     }
 
     public function create($values)
@@ -156,15 +160,29 @@ class CompanyService extends BaseService
     public function getOptionsToCreate()
     {
         return [
-            'sectors' => $this->sectorService->getSectorOptions(),
+            'sectors'            => $this->sectorService->getSectorOptions(),
+            'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions()
         ];
     }
 
     public function getOptionsToEdit($company_id)
     {
-        $company_details    = $this->get($company_id, ['address', 'sectors', 'sectorsValue', 'logoFile']);
+        $company_details = $this->model::with(['address', 'sectors', 'sectorsValue', 'logoFile'])->findOrFail($company_id);
         $options            = $this->getOptionsToCreate();
         $options['details'] = $company_details;
+        $options['details']['social_secretaries_value'] = $company_details->socialSecretaryValue();
+        unset($options['details']['socialSecretary']);
+        unset($options['details']['sectors']);
+        
+        // if ($company_details->socialSecretaries) {
+    
+        //     // Add social_secretaries key-value pairs to details
+        //     $options['details']['social_secretaries_value'] = [
+        //         'label' => $company_details->socialSecretaries->id,
+        //         'value' => $company_details->socialSecretaries->name
+        //     ];
+        // }
+
         return $options;
     }
 
