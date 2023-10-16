@@ -42,7 +42,7 @@ class EmployeeTypeCategory extends BaseModel
         'sort_order',
         'sub_category_types',
         'schedule_types',
-        'employement_type',
+        'employment_types',
         'created_by',
         'updated_by'
     ];

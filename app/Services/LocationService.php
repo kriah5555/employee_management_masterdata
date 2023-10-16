@@ -2,30 +2,28 @@
 
 namespace App\Services;
 
-use App\Models\Location;
 use App\Models\Workstation;
 use App\Services\AddressService;
 use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use App\Services\BaseService;
-use App\Rules\WorkstationLinkedToCompanyRule;
+use App\Repositories\Company\LocationRepository;
 
-class LocationService extends BaseService
+class LocationService
 {
-    public function __construct(Location $location)
+    protected $locationRepository;
+
+    protected $addressService;
+
+    public function __construct(LocationRepository $locationRepository, AddressService $addressService)
     {
-        parent::__construct($location);
+        $this->locationRepository = $locationRepository;
+        $this->addressService = $addressService;
     }
 
     public function getAll(array $args = [])
     {
-        return $this->model
-            ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
-            ->when(isset($args['company_id']), fn($q) => $q->where('company', $args['company_id']))
-            ->when(isset($args['with']), fn($q) => $q->with($args['with']))
-            ->with(['workstationsValues', 'address'])
-            ->get();
+        return $this->locationRepository->getLocationsOfCompany($args['company_id']);
     }
 
     public static function getLocationRules($for_company_creation = true)
@@ -50,14 +48,6 @@ class LocationService extends BaseService
             'integer',
             Rule::exists('companies', 'id')
         ];
-
-        // $rules['workstations']     = 'nullable|array';
-        // $rules['workstations.*'] = [
-        //     'bail',
-        //     'integer',
-        //     Rule::exists('workstations', 'id'),
-        //     new WorkstationLinkedToCompanyRule(request()->input('company')),
-        // ];
         return $rules;
     }
 
@@ -65,12 +55,9 @@ class LocationService extends BaseService
     {
         try {
             DB::beginTransaction();
-            $address = new AddressService();
-            $address = $address->createNewAddress($values['address']);
+            $address = $this->addressService->createNewAddress($values['address']);
             $values['address'] = $address->id;
-            $location = $this->model->create($values);
-            // $workstations      = $values['workstations'] ?? [];
-            // $location->workstations()->sync($workstations);
+            $location = $this->locationRepository->createLocation($values);
             DB::commit();
             return $location;
         } catch (Exception $e) {
@@ -84,10 +71,7 @@ class LocationService extends BaseService
     {
         try {
             DB::beginTransaction();
-            $address = new AddressService();
-            $address->updateAddress($location->address, $values['address']);
-            // $workstations      = $values['workstations'] ?? [];
-            // $location->workstations()->sync($workstations);
+            $this->addressService->updateAddress($location->address, $values['address']);
             unset($values['address']);
             unset($values['company']);
             $location->update($values);

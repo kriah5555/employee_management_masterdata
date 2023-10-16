@@ -17,8 +17,8 @@ return new class extends Migration {
             $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
             $table->foreignId('function_category_id')->nullable()->references('id')->on('function_category')->onDelete('cascade');
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

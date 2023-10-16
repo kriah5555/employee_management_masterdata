@@ -15,18 +15,27 @@ use App\Services\WorkstationService;
 use App\Services\BaseService;
 use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
+use App\Repositories\Company\CompanyRepository;
 
-class CompanyService extends BaseService
+class CompanyService
 {
+    protected $companyRepository;
+
     protected $sectorService;
 
     protected $socialSecretaryService;
 
-    public function __construct(Company $company, SectorService $sectorService)
+    protected $locationService;
+
+    protected $addressService;
+
+    public function __construct(CompanyRepository $companyRepository, SectorService $sectorService, LocationService $locationService, AddressService $addressService, SocialSecretaryService $socialSecretaryService)
     {
-        parent::__construct($company);
-        $this->sectorService          = $sectorService;
-        $this->socialSecretaryService = app(SocialSecretaryService::class);
+        $this->companyRepository = $companyRepository;
+        $this->sectorService = $sectorService;
+        $this->socialSecretaryService = $socialSecretaryService;
+        $this->addressService = $addressService;
+        $this->locationService = $locationService;
     }
 
     public function create($values)
@@ -34,9 +43,8 @@ class CompanyService extends BaseService
         try {
             return DB::transaction(function () use ($values) {
                 $request_data = $values;
-                $address_service = new AddressService();
 
-                $company_address = $address_service->createNewAddress($values['address']);
+                $company_address = $this->addressService->createNewAddress($values['address']);
                 $request_data['address'] = $company_address->id;
                 $request_data['logo'] = isset($request_data['logo']) ? self::addCompanyLogo($request_data) : '';
                 $company = Company::create($request_data);
@@ -59,8 +67,7 @@ class CompanyService extends BaseService
         try {
             DB::beginTransaction();
             $this->updateCompanyLogoData($company, $values);
-            $address_service = new AddressService();
-            $company_address = $address_service->updateAddress($company->address, $values['address']);
+            $company_address = $this->addressService->updateAddress($company->address, $values['address']);
             unset($values['address']);
             $company->update($values);
             $this->syncSectors($company, $values);
@@ -168,14 +175,14 @@ class CompanyService extends BaseService
     public function getOptionsToEdit($company_id)
     {
         $company_details = $this->model::with(['address', 'sectors', 'sectorsValue', 'logoFile'])->findOrFail($company_id);
-        $options            = $this->getOptionsToCreate();
+        $options = $this->getOptionsToCreate();
         $options['details'] = $company_details;
         $options['details']['social_secretaries_value'] = $company_details->socialSecretaryValue();
         unset($options['details']['socialSecretary']);
         unset($options['details']['sectors']);
-        
+
         // if ($company_details->socialSecretaries) {
-    
+
         //     // Add social_secretaries key-value pairs to details
         //     $options['details']['social_secretaries_value'] = [
         //         'label' => $company_details->socialSecretaries->id,
@@ -210,7 +217,7 @@ class CompanyService extends BaseService
             });
         })->all();
 
-        $employeeTypeCategoryOptions = $employeeTypeOptions = [];
+        $employeeTypeCategoryOptions = $employeeTypeOptions = $employeeTypeCategoryConfig = [];
         foreach ($employeeTypes as $employeeType) {
             $employeeTypeCategoryOptions[$employeeType->employeeTypeCategory->id] = [
                 'key'  => $employeeType->employeeTypeCategory->id,
@@ -220,43 +227,17 @@ class CompanyService extends BaseService
                 'key'  => $employeeType->id,
                 'name' => $employeeType->name
             ];
+            $employeeTypeCategoryConfig[$employeeType->employeeTypeCategory->id] = [
+                'sub_category_types' => $employeeType->employeeTypeCategory->sub_category_types,
+                'schedule_types'     => $employeeType->employeeTypeCategory->schedule_types,
+                'employment_types'   => $employeeType->employeeTypeCategory->employment_types,
+            ];
         }
         return [
-            'employee_type_categories' => array_values($employeeTypeCategoryOptions),
-            'employee_types'           => $employeeTypeOptions
+            'employee_type_categories'      => array_values($employeeTypeCategoryOptions),
+            'employee_types'                => $employeeTypeOptions,
+            'employee_type_category_config' => $employeeTypeCategoryConfig
         ];
-
-        // $employeeTypeCategories = $company->sectors
-        //     ->flatMap(function ($sector) {
-        //         return $sector->employeeTypes->map(function ($employeeType) {
-        //             return [
-        //                 'employee_type_category_id'   => $employeeType->employeeTypeCategory->id,
-        //                 'employee_type_category_name' => $employeeType->employeeTypeCategory->name,
-        //                 'employee_types'              => []
-        //             ];
-        //         });
-        //     });
-        // $employeeTypeCategories = $employeeTypeCategories->unique('employee_type_category_id')->values();
-
-        // $employeeTypesWithCategory = $company->sectors
-        //     ->flatMap(function ($sector) {
-        //         return $sector->employeeTypes->map(function ($employeeType) {
-        //             return [
-        //                 'employee_type_id'          => $employeeType->id,
-        //                 'employee_type'             => $employeeType->name,
-        //                 'employee_type_category_id' => $employeeType->employeeTypeCategory->id,
-        //             ];
-        //         });
-        //     });
-        // $employeeTypesWithCategory = $employeeTypesWithCategory->groupBy('employee_type_category_id');
-        // $employeeTypesWithCategory = json_decode($employeeTypesWithCategory, true);
-        // $result = [];
-        // foreach ($employeeTypeCategories as $employeeTypeCategory) {
-        //     $employeeTypeCategory['employee_types'] = $employeeTypesWithCategory[$employeeTypeCategory['employee_type_category_id']];
-        //     $result[] = $employeeTypeCategory;
-        // }
-
-        // return $result;
     }
 
     public function getFunctionsForCompany(Company $company)
@@ -274,6 +255,11 @@ class CompanyService extends BaseService
     }
 
     public function getCompanyDetails($companyId): Company
+    {
+        return Company::findOrFail($companyId);
+    }
+
+    public function getLocationsUnderCompany($companyId): Company
     {
         return Company::findOrFail($companyId);
     }

@@ -34,7 +34,7 @@ return [
     */
 
     'connections' => [
-        'master'  => [
+        'master' => [
             'driver'         => 'pgsql',
             'url'            => env('DATABASE_URL'),
             'host'           => env('DB_HOST', '127.0.0.1'),
@@ -48,22 +48,8 @@ return [
             'search_path'    => 'public',
             'sslmode'        => 'prefer',
         ],
-        'logging' => [
-            'driver'         => 'pgsql',
-            'url'            => env('LOGGING_DATABASE_URL'),
-            'host'           => env('LOGGING_DB_HOST', '127.0.0.1'),
-            'port'           => env('LOGGING_DB_PORT', '5432'),
-            'database'       => env('LOGGING_DB_DATABASE', 'forge'),
-            'username'       => env('LOGGING_DB_USERNAME', 'forge'),
-            'password'       => env('LOGGING_DB_PASSWORD', ''),
-            'charset'        => 'utf8',
-            'prefix'         => '',
-            'prefix_indexes' => true,
-            'search_path'    => 'public',
-            'sslmode'        => 'prefer',
-        ],
 
-        'user'    => [
+        'userdb' => [
             'driver'         => 'pgsql',
             'url'            => env('USER_DATABASE_URL'),
             'host'           => env('DB_HOST', '127.0.0.1'),

@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->boolean('verified')->default(false);
             $table->foreignId('verification_file_id')->nullable()->references('id')->on('files')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

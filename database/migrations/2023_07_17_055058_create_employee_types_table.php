@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->string('name');
             $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreignId('employee_type_category_id')->references('id')->on('employee_type_categories')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();

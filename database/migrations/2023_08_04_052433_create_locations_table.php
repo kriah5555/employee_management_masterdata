@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->boolean('status')->default(true);
             $table->foreignId('company')->nullable()->references('id')->on('companies')->onDelete('cascade');
             $table->foreignId('address')->nullable()->references('id')->on('address')->onDelete('cascade');
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

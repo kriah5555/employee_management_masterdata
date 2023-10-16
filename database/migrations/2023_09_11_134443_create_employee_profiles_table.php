@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id');
             $table->foreignId('company_id')->nullable()->references('id')->on('companies')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,8 +27,8 @@ return new class extends Migration {
             $table->string('secondary_email');
             $table->string('phone_number');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -40,8 +40,8 @@ return new class extends Migration {
             $table->float('clothing_compensation')->nullable();
             $table->float('clothing_size')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -51,8 +51,8 @@ return new class extends Migration {
             $table->string('social_secretary_number');
             $table->string('contract_number');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -63,8 +63,8 @@ return new class extends Migration {
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -77,8 +77,8 @@ return new class extends Migration {
             $table->float('weekly_contract_hours')->nullable();
             $table->smallInteger('work_days_per_week')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -89,8 +89,8 @@ return new class extends Migration {
             $table->foreignId('location_id')->nullable()->references('id')->on('locations')->onDelete('cascade');
             $table->float('distance')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -99,8 +99,8 @@ return new class extends Migration {
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
             $table->float('salary')->nullable();
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -110,8 +110,8 @@ return new class extends Migration {
             $table->foreignId('function_title_id')->nullable()->references('id')->on('function_titles')->onDelete('cascade');
             $table->foreignId('salary_id')->nullable()->references('id')->on('employee_salary_details')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -122,13 +122,13 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('employee_profiles');
-        Schema::dropIfExists('employee_contact_details');
-        Schema::dropIfExists('employee_social_secretary_details');
-        Schema::dropIfExists('employee_contract_details');
-        Schema::dropIfExists('long_term_employee_contract_details');
-        Schema::dropIfExists('employee_commute');
-        Schema::dropIfExists('employee_function_details');
         Schema::dropIfExists('employee_benefits');
+        Schema::dropIfExists('employee_function_details');
+        Schema::dropIfExists('employee_commute');
+        Schema::dropIfExists('long_term_employee_contract_details');
+        Schema::dropIfExists('employee_contract_details');
+        Schema::dropIfExists('employee_social_secretary_details');
+        Schema::dropIfExists('employee_contact_details');
+        Schema::dropIfExists('employee_profiles');
     }
 };

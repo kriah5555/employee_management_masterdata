@@ -15,6 +15,7 @@ class SectorAgeSalaryRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        $age_data = [];
         foreach ($value as $val) {
             $age_data[$val['age']] = $val['percentage'];
         }

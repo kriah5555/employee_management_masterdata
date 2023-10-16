@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('function_title_id')->references('id')->on('function_titles')->onDelete('cascade');
             $table->foreignId('workstation_id')->references('id')->on('workstations')->onDelete('cascade');
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -184,3 +184,25 @@ if (!function_exists('getKeyNameOptionsFromConfig')) {
         }, array_keys($values), $values);
     }
 }
+
+if (!function_exists('associativeToDictionaryFormat')) {
+    function associativeToDictionaryFormat($associativeArray, $valueKey = 'id', $labelKey = 'value')
+    {
+        $dict = [];
+        foreach ($associativeArray as $key => $value) {
+            // Your custom function logic here, which can use both $key and $value.
+            $dict[] = [
+                $valueKey => $key,
+                $labelKey => $value,
+            ];
+        }
+        return $dict;
+    }
+}
+
+if (!function_exists('formatModelName')) {
+    function formatModelName($modelName)
+    {
+        return ucfirst(strtolower(preg_replace('/(?<!^)([A-Z])/', ' $1', $modelName)));
+    }
+}

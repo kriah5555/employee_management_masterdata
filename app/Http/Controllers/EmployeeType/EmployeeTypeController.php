@@ -7,11 +7,22 @@ use App\Http\Rules\EmployeeType\EmployeeTypeRequest;
 use App\Services\EmployeeType\EmployeeTypeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Services\Contract\ContractTypeService;
+use App\Services\Dimona\DimonaService;
 
 class EmployeeTypeController extends Controller
 {
-    public function __construct(protected EmployeeTypeService $employeeTypService)
+    protected $employeeTypService;
+
+    protected $contractTypeService;
+
+    protected $dimonaService;
+
+    public function __construct(EmployeeTypeService $employeeTypService, ContractTypeService $contractTypeService, DimonaService $dimonaService)
     {
+        $this->employeeTypService = $employeeTypService;
+        $this->contractTypeService = $contractTypeService;
+        $this->dimonaService = $dimonaService;
     }
 
     /**
@@ -19,13 +30,23 @@ class EmployeeTypeController extends Controller
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeTypService->index()
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeTypService->getEmployeeTypes()
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -33,13 +54,28 @@ class EmployeeTypeController extends Controller
      */
     public function create()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeTypService->create()
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'employee_type_categories' => $this->employeeTypService->getEmployeeTypeCategories(),
+                        'contract_types'           => $this->contractTypeService->getActiveContractTypes(),
+                        'dimona_types'             => $this->dimonaService->getActiveDimonaTypes(),
+                        'salary_type'              => $this->employeeTypService->getSalaryTypeOptions()
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -47,14 +83,24 @@ class EmployeeTypeController extends Controller
      */
     public function store(EmployeeTypeRequest $request)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee type created successfully',
-                'data'    => $this->employeeTypService->store($request->validated())
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee type created successfully',
+                    'data'    => $this->employeeTypService->createEmployeeType($request->validated())
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -62,28 +108,23 @@ class EmployeeTypeController extends Controller
      */
     public function show($id)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeTypService->show($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-
-    /**
-     * API to get all the details required for editing an employee type.
-     */
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeTypService->edit($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeTypService->getEmployeeTypeDetails($id),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -91,15 +132,24 @@ class EmployeeTypeController extends Controller
      */
     public function update(EmployeeTypeRequest $request, EmployeeType $employeeType)
     {
-        $this->employeeTypService->update($employeeType, $request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee type updated successfully',
-                'data'    => $this->employeeTypService->update($employeeType, $request->validated()),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $this->employeeTypService->update($employeeType, $request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee type updated successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -107,14 +157,24 @@ class EmployeeTypeController extends Controller
      */
     public function destroy(EmployeeType $employeeType)
     {
-        $employeeType->delete();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee type deleted successfully'
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $employeeType->delete();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee type deleted successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
 }

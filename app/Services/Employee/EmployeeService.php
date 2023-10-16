@@ -173,7 +173,6 @@ class EmployeeService
         $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
         $options['sub_types'] = $this->getSubTypeOptions();
         $options['schedule_types'] = $this->getScheduleTypeOptions();
-        $options['employement_types'] = $this->getEmployementTypeOptions();
         $options['meal_voucher_options'] = $this->getMealVoucherOptions();
         $options['employment_types'] = $this->getEmploymentTypeOptions();
         $options['functions'] = $this->companyService->getFunctionOptionsForCompany($this->companyService->getCompanyDetails($companyId));
@@ -217,17 +216,22 @@ class EmployeeService
 
     public function getSubTypeOptions()
     {
-        return getKeyNameOptionsFromConfig('constants.SUB_TYPE_OPTIONS');
+        return config('constants.SUB_TYPE_OPTIONS');
     }
 
     public function getScheduleTypeOptions()
     {
-        return getKeyNameOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
+        return config('constants.SCHEDULE_TYPE_OPTIONS');
     }
 
     public function getEmploymentTypeOptions()
     {
-        return getKeyNameOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
+        return config('constants.EMPLOYMENT_TYPE_OPTIONS');
+    }
+
+    public function getEmployeeSalaryTypeOptions()
+    {
+        return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
     }
 
     function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '')

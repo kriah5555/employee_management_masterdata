@@ -8,15 +8,18 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Services\Employee\EmployeeService;
+use App\Services\CompanyService;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
     protected $employeeService;
+    protected $companyService;
 
-    public function __construct(EmployeeService $employeeService)
+    public function __construct(EmployeeService $employeeService, CompanyService $companyService)
     {
         $this->employeeService = $employeeService;
+        $this->companyService = $companyService;
     }
 
     /**
@@ -128,6 +131,69 @@ class EmployeeController extends Controller
             ],
             JsonResponse::HTTP_OK,
         );
+    }
+
+    public function getOptionsForEmployeeContractCreation(string $companyId)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
+                        'sub_types'                 => associativeToDictionaryFormat($this->employeeService->getSubTypeOptions()),
+                        'schedule_types'            => associativeToDictionaryFormat($this->employeeService->getScheduleTypeOptions()),
+                        'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions()),
+                        'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions()),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function getFunctionsForLinkingToEmployee(string $companyId)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'functions' => collectionToValueLabelFormat($this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId))),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getOptionsToUpdateEmployeeTransportDetails(string $companyId)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'locations' => collectionToValueLabelFormat($this->locationRepository->getCompanyLocations($companyId)),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

@@ -27,7 +27,6 @@ class EmployeeFunctionDetailsRule implements ValidationRule
         $employeeContractDetails = request()->input('employee_contract_details');
         if (is_array($employeeContractDetails) && isset($employeeContractDetails['employee_type_id'])) {
             $usedFunction = [];
-            $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($employeeContractDetails['employee_type_id']);
             foreach ($value as $data) {
                 if (!array_key_exists('function_id', $data)) {
                     $fail('Please select function');

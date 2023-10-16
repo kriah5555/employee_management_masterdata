@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->string('cost_center_number')->nullable();
             $table->foreignId('location_id')->references('id')->on('locations')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,8 +26,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('cost_center_id')->references('id')->on('cost_centers')->onDelete('cascade');
             $table->foreignId('workstation_id')->references('id')->on('workstations')->onDelete('cascade');
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

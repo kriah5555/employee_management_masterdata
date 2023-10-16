@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->integer('level')->nullable();
             $table->integer('from')->nullable();
             $table->integer('to')->nullable();
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

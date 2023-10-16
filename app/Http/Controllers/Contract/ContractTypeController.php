@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Contract;
 
 use App\Services\Contract\ContractTypeService;
+use App\Services\Contract\ContractRenewalTypeService;
 use App\Models\Contract\ContractType;
 use App\Http\Rules\Contract\ContractTypeRequest;
 use Illuminate\Http\JsonResponse;
@@ -10,8 +11,14 @@ use App\Http\Controllers\Controller;
 
 class ContractTypeController extends Controller
 {
-    public function __construct(protected ContractTypeService $contractTypeService)
+    protected $contractTypeService;
+
+    protected $contractRenewalTypeService;
+
+    public function __construct(ContractTypeService $contractTypeService, ContractRenewalTypeService $contractRenewalTypeService)
     {
+        $this->contractTypeService = $contractTypeService;
+        $this->contractRenewalTypeService = $contractRenewalTypeService;
     }
 
     /**
@@ -19,24 +26,46 @@ class ContractTypeController extends Controller
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->contractTypeService->index(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->contractTypeService->getContractTypes(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function create()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->contractTypeService->create(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'renewal_types' => $this->contractRenewalTypeService->getActiveContractRenewalTypes()
+                    ],
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -44,14 +73,24 @@ class ContractTypeController extends Controller
      */
     public function store(ContractTypeRequest $request)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Contract type created successfully',
-                'data'    => $this->contractTypeService->store($request->validated()),
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Contract type created successfully',
+                    'data'    => $this->contractTypeService->createContractType($request->validated())
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -59,41 +98,48 @@ class ContractTypeController extends Controller
      */
     public function show($id)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->contractTypeService->show($id)
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->contractTypeService->getContractTypeDetails($id)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->contractTypeService->edit($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
     /**
      * Update the specified resource in storage.
      */
     public function update(ContractTypeRequest $request, ContractType $contractType)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => t('Contract type updated successfully'),
-                'data'    => $this->contractTypeService->update($contractType, $request->validated()),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $this->contractTypeService->updateContractType($contractType, $request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Contract type updated successfully'),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -101,13 +147,23 @@ class ContractTypeController extends Controller
      */
     public function destroy(ContractType $contractType)
     {
-        $contractType->delete();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Contract type deleted successfully'
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $this->contractTypeService->deleteContractType($contractType);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Contract type deleted successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

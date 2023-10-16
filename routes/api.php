@@ -68,22 +68,17 @@ Route::group(['middleware' => 'service-registry'], function () {
 });
 
 Route::resources([
-    'employee-types'      => EmployeeTypeController::class,
-    'sectors'             => SectorController::class,
     'function-titles'     => FunctionTitleController::class,
     'function-categories' => FunctionCategoryController::class,
     'companies'           => CompanyController::class,
     'holiday-codes'       => HolidayCodesController::class,
     'email-templates'     => EmailTemplateApiController::class,
-    'contract-types'      => ContractTypeController::class,
     'workstations'        => WorkstationController::class,
     'locations'           => LocationController::class,
     'social-secretary'    => SocialSecretaryController::class,
     'public-holidays'     => PublicHolidayController::class,
     'contract-templates'  => ContractTemplateController::class,
 ]);
-
-Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
 
@@ -151,7 +146,7 @@ Route::group(['middleware' => 'setactiveuser'], function () {
         Route::get('/employees/get-company-employees/{company_id}', 'index');
 
         Route::get('/employees/create/{company_id}', 'create');
-        
+
         Route::get('/employees/create/{company_id}', 'create');
 
         Route::post('/employees/store/{company_id}', 'store');
@@ -180,4 +175,36 @@ Route::controller(ReasonController::class)->group(function () use ($statusRule, 
 
     Route::get('reasons-list/{status}/{category?}', 'index')->where('status', $statusRule);
 
+});
+
+
+Route::get('employees/get-contract-creation-options/{company_id}', [EmployeeController::class, 'getOptionsForEmployeeContractCreation']);
+
+Route::get('employees/get-functions-options/{company_id}', [EmployeeController::class, 'getFunctionsForLinkingToEmployee']);
+
+Route::get('employees/get-transport-details-options/{company_id}', [EmployeeController::class, 'getOptionsToUpdateEmployeeTransportDetails']);
+
+
+Route::group(['middleware' => 'setactiveuser'], function () {
+    $resources = [
+        'contract-types' => [
+            'controller' => ContractTypeController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'employee-types' => [
+            'controller' => EmployeeTypeController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'sectors'        => [
+            'controller' => SectorController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'rules'          => [
+            'controller' => RuleController::class,
+            'methods'    => ['index', 'show', 'edit', 'update']
+        ],
+    ];
+    foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
+        Route::resource($uri, $controller)->only($methods);
+    }
 });
