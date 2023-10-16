@@ -16,6 +16,7 @@ use App\Services\BaseService;
 use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Repositories\Company\CompanyRepository;
+use App\Services\Interim\InterimAgencyService;
 
 class CompanyService
 {
@@ -168,7 +169,8 @@ class CompanyService
     {
         return [
             'sectors'            => $this->sectorService->getSectorOptions(),
-            'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions()
+            'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions(),
+            'interim_agencies'   => $this->interimAgencyService->getInterimAgencyOptions(),
         ];
     }
 
@@ -189,6 +191,9 @@ class CompanyService
         //         'value' => $company_details->socialSecretaries->name
         //     ];
         // }
+        $options['details']['social_secretary_value'] = $company_details->socialSecretaryValue();
+        $options['details']['interim_agency_value'] = $company_details->interimAgencyValue();
+        unset($options['details']['socialSecretary'], $options['details']['sectors'], $options['details']['interimAgency']);
 
         return $options;
     }

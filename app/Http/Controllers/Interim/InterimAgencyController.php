@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Contract;
+namespace App\Http\Controllers\Interim;
 
-use App\Models\Contract\ContractTemplate;
+use App\Models\Interim\InterimAgency;
 use Illuminate\Http\JsonResponse;
+use App\Http\Rules\Interim\InterimAgencyRequest;
+use App\Services\Interim\InterimAgencyService;
 use App\Http\Controllers\Controller;
-use App\Http\Rules\Contract\ContractTemplateRequest;
-use App\Services\Contract\ContractTemplateService;
-
-class ContractTemplateController extends Controller
+class InterimAgencyController extends Controller
 {
-    public function __construct(protected ContractTemplateService $contractTemplateService)
+    public function __construct(protected InterimAgencyService $interim_agency_service)
     {
     }
 
@@ -19,16 +18,10 @@ class ContractTemplateController extends Controller
      */
     public function index()
     {
-        $filename = 'company_1_1694603755_bg2.jpg';
-        $filePath = 'public/company_logos/' . $filename;
-
-        // Generate the URL for the file
-        $fileUrl = asset('storage/' . $filePath);
-
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getAll(),
+                'data'    => $this->interim_agency_service->getAll(['address']),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -42,7 +35,7 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getOptionsToCreate(),
+                'data'    => $this->interim_agency_service->getOptionsToCreate(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -51,13 +44,13 @@ class ContractTemplateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ContractTemplateRequest $request)
+    public function store(InterimAgencyRequest $request)
     {
         return returnResponse(
             [
                 'success' => true,
-                'message' => 'Contract template created successfully',
-                'data'    => $this->contractTemplateService->create($request->validated()),
+                'message' => 'Interim agency created successfully',
+                'data'    => $this->interim_agency_service->create($request->validated()),
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -66,12 +59,12 @@ class ContractTemplateController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(InterimAgency $interimAgency)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->get($id)
+                'data'    => $interimAgency,
             ],
             JsonResponse::HTTP_OK,
         );
@@ -80,12 +73,12 @@ class ContractTemplateController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit($interim_agency_id)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getOptionsToEdit($id),
+                'data'    => $this->interim_agency_service->getOptionsToEdit($interim_agency_id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -94,13 +87,14 @@ class ContractTemplateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ContractTemplateRequest $request, ContractTemplate $contractTemplate)
+    public function update(InterimAgencyRequest $request, InterimAgency $interimAgency)
     {
+        $this->interim_agency_service->update($interimAgency, $request->validated());
         return returnResponse(
             [
                 'success' => true,
-                'message' => t('Contract template updated successfully'),
-                'data'    => $this->contractTypeService->update($contractTemplate, $request->validated()),
+                'message' => 'Interim agency updated successfully',
+                'data'    => $this->interim_agency_service->getOptionsToEdit($interim_agency_id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -109,13 +103,13 @@ class ContractTemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ContractTemplate $contractTemplate)
+    public function destroy(InterimAgency $interimAgency)
     {
-        $contractTemplate->delete();
+        $interimAgency->delete();
         return returnResponse(
             [
                 'success' => true,
-                'message' => 'Contract template deleted successfully'
+                'message' => 'Interim agency deleted successfully'
             ],
             JsonResponse::HTTP_OK,
         );

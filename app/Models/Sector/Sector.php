@@ -53,6 +53,8 @@ class Sector extends BaseModel
         'paritair_committee',
         'description',
         'category',
+        'night_hour_start_time',
+        'night_hour_end_time',
         'status',
         'created_by',
         'updated_by',
@@ -62,6 +64,16 @@ class Sector extends BaseModel
         'created_at',
         'updated_at'
     ];
+
+    public function getNightHourStartTimeAttribute($value)
+    {
+        return date('H:i', strtotime($value));
+    }
+
+    public function getNightHourEndTimeAttribute($value)
+    {
+        return date('H:i', strtotime($value));
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

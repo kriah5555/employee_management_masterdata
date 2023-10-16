@@ -28,7 +28,12 @@ class CompanyRequest extends ApiRequest
                 'nullable',
                 Rule::exists('social_secretaries', 'id')
             ],
-            'sectors.*'               => [
+            'interim_agency_id' => [
+                'bail',
+                'nullable',
+                Rule::exists('interim_agencies', 'id')
+            ],
+            'sectors.*' => [
                 'bail',
                 'integer',
                 Rule::exists('sectors', 'id'),
@@ -39,6 +44,7 @@ class CompanyRequest extends ApiRequest
             'rsz_number'              => 'nullable|digits_between:1,11',
             'social_secretary_number' => 'nullable',
             'username'                => 'nullable|string|max:50',
+            'oauth_key'               => 'nullable',
             'email'                   => 'required|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',
             'phone'                   => [
                 'required',
