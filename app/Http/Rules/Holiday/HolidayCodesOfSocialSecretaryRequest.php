@@ -15,18 +15,18 @@ class HolidayCodesOfSocialSecretaryRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'social_secretary_id' => [
+            'social_secretary_id'                            => [
                 'bail',
                 'required',
                 'integer',
                 Rule::exists('social_secretaries', 'id'),
             ],
-            'social_secretary_codes' => [
+            'social_secretary_codes'                         => [
                 'bail',
                 'required',
                 'array',
             ],
-            'social_secretary_codes.*.holiday_code_id' => [
+            'social_secretary_codes.*.holiday_code_id'       => [
                 'bail',
                 'required',
                 'integer',

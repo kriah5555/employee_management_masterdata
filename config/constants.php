@@ -2,16 +2,6 @@
 
 return [
 
-    'CONTRACT_TYPE_RENEWAL_OPTIONS'     => [
-        'daily'        => 'Daily',
-        'weekly'       => 'Weekly',
-        'monthly'      => 'Monthly',
-        'quarterly'    => 'Quarterly',
-        'semiannually' => 'Semi-Annually',
-        'annually'     => 'Annually',
-        'manual'       => 'Manual renewal',
-    ],
-
     'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Paid', 2 => 'Unpaid', 3 => 'Sick Leave'],
 
     'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
@@ -38,7 +28,7 @@ return [
 
     'DEPENDENT_SPOUSE_OPTIONS'          => ['no' => 'No', 'with_income' => 'With income', 'without_income' => 'Without income'],
 
-    'REASON_OPTIONS'                    => [
+    'REASON_CATEGORIES'                 => [
         'stop_planning'        => 'Stop plan',
         'start_planning'       => 'Start plan',
         'block_employee'       => 'Block employee',

@@ -4,9 +4,9 @@ namespace App\Interfaces\Company;
 
 interface LocationRepositoryInterface
 {
-    public function getLocationsOfCompany();
+    public function getLocationsOfCompany($companyId);
 
-    public function getActiveLocationsOfCompany();
+    public function getActiveLocationsOfCompany($companyId);
 
     public function getLocationById(string $locationId);
 

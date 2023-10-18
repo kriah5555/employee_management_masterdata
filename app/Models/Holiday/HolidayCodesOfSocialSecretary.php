@@ -12,7 +12,7 @@ class HolidayCodesOfSocialSecretary extends BaseModel
     use HasFactory;
 
     protected $table = 'holiday_codes_of_social_secretary';
-    
+
     protected $fillable = [
         'holiday_code_id',
         'social_secretary_id',
@@ -32,6 +32,6 @@ class HolidayCodesOfSocialSecretary extends BaseModel
 
     public function holidayCode()
     {
-        return $this->belongsTo(HolidayCodes::class, 'holiday_code_id');
+        return $this->belongsTo(HolidayCode::class, 'holiday_code_id');
     }
 }

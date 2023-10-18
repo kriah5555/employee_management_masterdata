@@ -7,7 +7,7 @@ use App\Models\Company;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
-    public function getAllCompanies()
+    public function getCompanies()
     {
         return Company::all();
     }

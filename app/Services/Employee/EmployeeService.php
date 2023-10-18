@@ -21,7 +21,7 @@ use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\EmployeeType\EmployeeTypeCategory;
 use App\Models\Employee\CommuteType;
 use App\Repositories\ExtraBenefitsRepository;
-use App\Repositories\LocationRepository;
+use App\Repositories\Company\LocationRepository;
 
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Sector\SectorSalarySteps;

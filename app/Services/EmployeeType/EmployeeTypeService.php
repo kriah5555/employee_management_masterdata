@@ -4,11 +4,6 @@ namespace App\Services\EmployeeType;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeType\EmployeeType;
-use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\EmployeeType\EmployeeTypeConfig;
-use App\Models\EmployeeType\EmployeeTypeDimonaConfig;
-use App\Models\Dimona\DimonaType;
-use Exception;
 use App\Repositories\EmployeeType\EmployeeTypeRepository;
 use App\Repositories\EmployeeType\EmployeeTypeConfigRepository;
 use App\Repositories\EmployeeType\EmployeeTypeDimonaConfigRepository;
@@ -115,5 +110,13 @@ class EmployeeTypeService
         return array_map(function ($key, $value) {
             return ['value' => $key, 'label' => $value];
         }, array_keys($options), $options);
+    }
+    public function getEmployeeCategoryOptions()
+    {
+        return getValueLabelOptionsFromConfig('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS');
+    }
+    public function getEmployeeContractTypeOptions()
+    {
+        return getValueLabelOptionsFromConfig('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS');
     }
 }

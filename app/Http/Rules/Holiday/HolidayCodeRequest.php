@@ -25,19 +25,22 @@ class HolidayCodeRequest extends ApiRequest
     {
         $rules = [
             'holiday_code_name'                 => 'required|string|max:255',
-            'internal_code' => [
+            'internal_code'                     => [
                 'required',
                 'integer',
-                Rule::unique('holiday_codes', 'internal_code')->ignore($this->route('holiday_code')), # check if the code is unique or not
+                Rule::unique('holiday_codes', 'internal_code')->ignore($this->route('holiday_code')),
+                # check if the code is unique or not
             ],
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => 'required|in:1,2,3',
             'type'                              => 'required|in:1,2',
             'count_type'                        => 'required|in:1,2,3',
             'icon_type'                         => 'required|in:1,2,3,4',
-            'consider_plan_hours_in_week_hours' => 'required|in:0,1',
-            'employee_category'                 => 'required|array', // Updated to support an array
-            'employee_category.*'               => 'in:1,2', // Individual category values must be valid
+            'consider_plan_hours_in_week_hours' => 'required|boolean',
+            'employee_category'                 => 'required|array',
+            // Updated to support an array
+            'employee_category.*'               => 'in:1,2',
+            // Individual category values must be valid
             'contract_type'                     => 'required|in:1,2,3',
             'status'                            => 'required|boolean',
             'employee_types'                    => 'nullable|array',
@@ -50,15 +53,15 @@ class HolidayCodeRequest extends ApiRequest
                 'bail',
                 new HolidayCountFieldRule()
             ],
-            'link_companies' => 'required|in:all,include,exclude',
-            'companies'      => 'nullable|array',
-            'companies.*'    => 
-            [
-                'bail',
-                'integer',
-                Rule::exists('companies', 'id')
-            ],
-            ];
+            'link_companies'                    => 'required|in:all,include,exclude',
+            'companies'                         => 'nullable|array',
+            'companies.*'                       =>
+                [
+                    'bail',
+                    'integer',
+                    Rule::exists('companies', 'id')
+                ],
+        ];
 
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             unset($rules['companies'], $rules['companies.*'], $rules['link_companies']);
@@ -86,7 +89,7 @@ class HolidayCodeRequest extends ApiRequest
 
             'contract_type.required'                     => 'The contract type field is required.',
             'contract_type.in'                           => 'Invalid contract type selected.',
-            
+
             'created_by.integer'                         => 'The created by field must be an integer.',
             'updated_by.integer'                         => 'The updated by field must be an integer.',
 

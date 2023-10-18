@@ -42,6 +42,10 @@ class SectorService
     {
         return $this->sectorRepository->getSectors();
     }
+    public function getActiveSectors()
+    {
+        return $this->sectorRepository->getActiveSectors();
+    }
 
     public function createSector($values)
     {
@@ -121,13 +125,6 @@ class SectorService
             $sector_age_salary->max_time_to_work = $data['max_time_to_work'];
             $sector_age_salary->save();
         }
-    }
-
-    public function getSectorOptions()
-    {
-        return Sector::where('status', '=', true)
-            ->select('id as value', 'name as label')
-            ->get();
     }
 
     public function getCategoriesForSector()

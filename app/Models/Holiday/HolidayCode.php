@@ -8,16 +8,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\Company;
 
-class HolidayCodes extends Model
+class HolidayCode extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $table = 'holiday_codes';
 
     protected $casts = [
-        'count' => 'float', // Cast the 'count' attribute to a float
+        'count' => 'float',
+        // Cast the 'count' attribute to a float
     ];
-    
+
     protected $fillable = [
         'holiday_code_name',
         'count',
@@ -36,7 +37,7 @@ class HolidayCodes extends Model
         'created_at',
         'updated_at'
     ];
-    
+
     protected static function boot()
     {
         parent::boot();
@@ -66,7 +67,7 @@ class HolidayCodes extends Model
             $this->count = $this->count * config('constants.DAY_HOURS');
         }
     }
-    
+
     # Link holiday codes to companies by externally calling this function
     public function linkToCompanies()
     {
@@ -97,13 +98,13 @@ class HolidayCodes extends Model
     public function linkCompanies($link, $company_ids)
     {
         $companies = Company::query();
-    
+
         if ($link === 'include') {
             $companies->whereIn('id', $company_ids);
         } elseif ($link === 'exclude') {
             $companies->whereNotIn('id', $company_ids);
         }
-    
+
         $companies->get()->each(function ($company) {
             $company->holidayCodes()->syncWithoutDetaching($this->id);
         });

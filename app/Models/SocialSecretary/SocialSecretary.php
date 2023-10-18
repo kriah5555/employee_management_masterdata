@@ -20,7 +20,7 @@ class SocialSecretary extends BaseModel
         'status',
         'created_by',
         'updated_by'
-    ];  
+    ];
 
     public $timestamps = true;
 

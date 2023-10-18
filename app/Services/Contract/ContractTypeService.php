@@ -4,8 +4,6 @@ namespace App\Services\Contract;
 
 use App\Models\Contract\ContractType;
 use App\Repositories\Contract\ContractTypeRepository;
-use App\Exceptions\ModelUpdateFailedException;
-use App\Exceptions\ModelDeleteFailedException;
 
 class ContractTypeService
 {

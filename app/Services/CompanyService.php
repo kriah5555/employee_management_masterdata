@@ -22,21 +22,21 @@ class CompanyService
 {
     protected $companyRepository;
 
-    protected $sectorService;
-
-    protected $socialSecretaryService;
-
-    protected $locationService;
-
     protected $addressService;
 
-    public function __construct(CompanyRepository $companyRepository, SectorService $sectorService, LocationService $locationService, AddressService $addressService, SocialSecretaryService $socialSecretaryService)
+    public function __construct(CompanyRepository $companyRepository, AddressService $addressService)
     {
         $this->companyRepository = $companyRepository;
-        $this->sectorService = $sectorService;
-        $this->socialSecretaryService = $socialSecretaryService;
         $this->addressService = $addressService;
-        $this->locationService = $locationService;
+    }
+
+    public function getCompanies()
+    {
+        return $this->companyRepository->getCompanies();
+    }
+    public function getActiveCompanies()
+    {
+        return $this->companyRepository->getActiveCompanies();
     }
 
     public function create($values)
@@ -168,7 +168,7 @@ class CompanyService
     public function getOptionsToCreate()
     {
         return [
-            'sectors'            => $this->sectorService->getSectorOptions(),
+            'sectors'            => $this->sectorService->getActiveSectors(),
             'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions(),
             'interim_agencies'   => $this->interimAgencyService->getInterimAgencyOptions(),
         ];

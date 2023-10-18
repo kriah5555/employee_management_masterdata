@@ -7,10 +7,13 @@ use App\Http\Rules\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+
 class CompanyController extends Controller
 {
-    public function __construct(protected CompanyService $company_service)
+    protected $companyService;
+    public function __construct(CompanyService $companyService)
     {
+        $this->companyService = $companyService;
     }
     /**
      * Display a listing of the resource.
@@ -20,7 +23,7 @@ class CompanyController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->company_service->getAll(['with' => 'logoFile']),
+                'data'    => $this->companyService->getCompanies(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -35,7 +38,7 @@ class CompanyController extends Controller
             [
                 'success' => true,
                 'message' => 'Company created successfully',
-                'data'    => $this->company_service->create($request->all()),
+                'data'    => $this->companyService->create($request->all()),
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -58,7 +61,7 @@ class CompanyController extends Controller
     public function update(CompanyRequest $request, Company $company)
     {
         try {
-            $this->company_service->update($company, $request->all());
+            $this->companyService->update($company, $request->all());
             $company->refresh();
 
             return response()->json([
@@ -94,7 +97,7 @@ class CompanyController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->company_service->getOptionsToCreate(),
+                'data'    => $this->companyService->getOptionsToCreate(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -105,7 +108,7 @@ class CompanyController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->company_service->getOptionsToEdit($id),
+                'data'    => $this->companyService->getOptionsToEdit($id),
             ],
             JsonResponse::HTTP_OK,
         );

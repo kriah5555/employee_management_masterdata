@@ -4,7 +4,7 @@ namespace App\Interfaces\Company;
 
 interface CompanyRepositoryInterface
 {
-    public function getAllCompanies();
+    public function getCompanies();
 
     public function getActiveCompanies();
 

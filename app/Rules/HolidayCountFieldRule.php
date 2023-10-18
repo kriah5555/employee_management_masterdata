@@ -39,7 +39,7 @@ class HolidayCountFieldRule implements ValidationRule
 
         // Check if the count exceeds the count in the HolidayCodes table
         if ($this->holiday_code_id) {
-            $holidayCode = HolidayCodes::findOrFail($this->holiday_code_id);
+            $holidayCode = HolidayCode::findOrFail($this->holiday_code_id);
             if ($holidayCode->count_type == 2) {
                 // If count_type is 2, modify the count value
                 $count = $holidayCode->count / config('constants.DAY_HOURS');

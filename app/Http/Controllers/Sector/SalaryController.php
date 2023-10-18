@@ -20,15 +20,24 @@ class SalaryController extends Controller
      */
     public function getMinimumSalaries($id)
     {
-        $salary_type = $this->getSalaryTypeFromPath(request()->getPathInfo());
-
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->sectorSalaryService->getMinimumSalariesBySectorId($id, $salary_type),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $salary_type = $this->getSalaryTypeFromPath(request()->getPathInfo());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->sectorSalaryService->getMinimumSalariesBySectorId($id, $salary_type),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     private function getSalaryTypeFromPath($path)
@@ -38,7 +47,7 @@ class SalaryController extends Controller
         } elseif (str_contains($path, "/hourly-minimum-salaries/")) {
             return config('constants.HOURLY_SALARY');
         }
-        
+
         return ''; // Default if no match is found
     }
 
@@ -47,30 +56,46 @@ class SalaryController extends Controller
      */
     public function updateMinimumSalaries(UpdateMinimumSalariesRequest $request, $id)
     {
-        $salary_type = $this->getSalaryTypeFromPath($request->getPathInfo());
-        $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries'], $salary_type);
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Minimum salaries updated'
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $salary_type = $this->getSalaryTypeFromPath($request->getPathInfo());
+            $this->sectorSalaryService->updateMinimumSalaries($id, $request->validated()['salaries'], $salary_type);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Minimum salaries updated'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function addIncrementToMinimumSalaries($sector_id, $increment_coefficient)
     {
         try {
             $this->sectorSalaryService->incrementMinimumSalaries($sector_id, $increment_coefficient);
-            return response()->json([
-                'success' => true,
-                'message' => 'Minimum salaries updated'
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Minimum salaries updated'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -78,24 +103,28 @@ class SalaryController extends Controller
     {
         try {
             $salary_type = $this->getSalaryTypeFromPath(request()->getPathInfo());
-            $status      = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id, $salary_type);
+            $status = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id, $salary_type);
 
-            $data = [];
             if ($status == 'success' || empty($status)) {
                 $message = t('Minimum salaries reverted successfully');
             } else {
                 $message = $status;
             }
-
-            return response()->json([
-                'success' => true,
-                'message' => $message
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => $message
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }
