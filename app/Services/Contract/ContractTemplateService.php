@@ -38,7 +38,8 @@ class ContractTemplateService extends BaseService
                 'social_secretaries' => $this->social_secretaryService->getSocialSecretaryOptions(),
                 'companies'          => $this->company_service->getCompanyOptions(),
                 'employee_types'     => $this->employee_type_service->getEmployeeTypeOptions(),
-            ];
+                'tokens'             => config('constants.TOKENS'),
+        ];
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

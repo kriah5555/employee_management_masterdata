@@ -18,7 +18,9 @@ class EmailTemplateRequest extends ApiRequest
             'template_type' => [
                 'required',
                 Rule::in(array_keys(config('constants.EMAIL_TEMPLATES'))),
-                Rule::unique('email_templates', 'template_type')->ignore($this->route('email_template')),
+                Rule::unique('email_templates', 'template_type')
+                ->whereNull('deleted_at')
+                ->ignore($this->route('email_template'))
             ],
         ];
 

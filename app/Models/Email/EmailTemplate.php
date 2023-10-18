@@ -20,4 +20,17 @@ class EmailTemplate extends Model
         'body',
         'subject'
     ];
+
+    public $timestamps = true;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 }

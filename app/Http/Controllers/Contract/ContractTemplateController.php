@@ -94,13 +94,14 @@ class ContractTemplateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ContractTemplateRequest $request, ContractTemplate $contractTemplate)
+    public function update(ContractTemplateRequest $request, $id)
     {
+        $contractTemplate = ContractTemplate::findOrFail($id);
         return returnResponse(
             [
                 'success' => true,
                 'message' => t('Contract template updated successfully'),
-                'data'    => $this->contractTypeService->update($contractTemplate, $request->validated()),
+                'data'    => $this->contractTemplateService->update($contractTemplate, $request->validated()),
             ],
             JsonResponse::HTTP_OK,
         );

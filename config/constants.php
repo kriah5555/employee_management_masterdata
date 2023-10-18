@@ -58,7 +58,9 @@ return [
     # 24 hours time format like 11:00
 
     'EMAIL_TEMPLATES'                   => [
-        'planning_mail' => 'Planning Mail',
+        'planning_mail'      => 'Planning Mail',
+        'leave_request_mail' => 'Leave request mail',
+        'plan_reminder'      => 'plan reminder Mail',
     ],
 
     'MONTHLY_SALARY'                    => 1,
@@ -66,5 +68,16 @@ return [
     'HOURLY_SALARY'                     => 2,
 
     'CONTRACT_TEMPLATE_TYPE'            => ['company' => 'Company', 'default' => 'Default'],
+
+    'TOKENS'                            => [
+        'first_name'    => 'First name',
+        'last_name'     => 'Last name',
+        'uid'           => 'User id',
+        'date_of_birth' => 'DOB',
+        'gender'        => 'Gender',
+        'email'         => 'Email',
+        'phone_number'  => 'Phone number',
+        'company_name'  => "Company name",
+    ],
 
 ];

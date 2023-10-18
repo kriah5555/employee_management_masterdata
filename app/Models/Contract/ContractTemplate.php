@@ -13,6 +13,8 @@ class ContractTemplate extends BaseModel
 {
     use HasFactory;
 
+    protected $table = 'contract_templates';
+
     protected $primaryKey = 'id';
     
     protected $fillable = [
@@ -32,10 +34,14 @@ class ContractTemplate extends BaseModel
 
     public function companyValue()
     {
-        return [
-            'level' => $this->company->id,
-            'value' => $this->company->company_name, // Replace 'company_name' with the actual column name for the company name in your Company model
-        ];
+        if ($this->company) {
+            return [
+                'level' => $this->company->id,
+                'value' => $this->company->company_name, // Replace 'company_name' with the actual column name for the company name in your Company model
+            ];
+        } else {
+            return null;
+        }
     }
 
     public function sector()
