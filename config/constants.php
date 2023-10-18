@@ -65,7 +65,9 @@ return [
     'TIME_FORMAT_REGEX'       => '/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/', # 24 hours time format like 11:00
 
     'EMAIL_TEMPLATES'         => [
-        'planning_mail' => 'Planning Mail',
+        'planning_mail'      => 'Planning Mail',
+        'leave_request_mail' => 'Leave request mail',
+        'plan_reminder'      => 'plan reminder Mail',
     ],
 
     'MONTHLY_SALARY' => 1,
