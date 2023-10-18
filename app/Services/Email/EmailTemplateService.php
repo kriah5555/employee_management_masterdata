@@ -59,11 +59,11 @@ class EmailTemplateService extends BaseService
 
     public function getOptionsToCreate()
     {
-        $options = config('constants.EMAIL_TEMPLATES');
-
-        return ['email_template_type' => array_map(function ($key, $value) {
-            return ['value' => $key, 'label' => $value];
-        }, array_keys($options), $options)];
+        return [
+            'email_template_type' => $this->transformOptions(config('constants.EMAIL_TEMPLATES')),
+            'tokens'              => config('constants.TOKENS'),
+            // 'tokens'              => $this->transformOptions(config('constants.TOKENS')),
+        ];
     }
 
     public function getOptionsToEdit($email_template_id)
@@ -76,5 +76,12 @@ class EmailTemplateService extends BaseService
         ];
         $options['details'] = $email_template;
         return $options;
+    }
+
+    private function transformOptions($options)
+    {
+        return array_map(function ($key, $value) {
+            return ['value' => $key, 'label' => $value];
+        }, array_keys($options), $options);
     }
 }
