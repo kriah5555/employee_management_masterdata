@@ -9,87 +9,162 @@ use App\Http\Rules\ReasonRequest;
 
 class ReasonController extends Controller
 {
-    public function __construct(protected ReasonService $reasonService)
+    protected $reasonService;
+
+    public function __construct(ReasonService $reasonService)
     {
+        $this->reasonService = $reasonService;
     }
 
-    public function index($status, $category = '')
+    public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->reasonService->getAll(['status' => $status, 'category' => $category]),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->reasonService->getReasons(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function store(ReasonRequest $request)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => t('Reason created successfully'),
-                'data'    => $this->reasonService->create($request->validated()),
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Reason created successfully'),
+                    'data'    => $this->reasonService->createReason($request->validated()),
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
-    public function show(Reason $reason)
+    public function show($id)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $reason,
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->reasonService->getReasonDetails($id),
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function create()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->reasonService->getOptionsToCreate(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->reasonService->getOptionsToEdit($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'categories' => $this->reasonService->getReasonCategoriesOptions(),
+                    ],
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function update(ReasonRequest $request, Reason $reason)
     {
-        $this->reasonService->update($reason, $request->validated());
-
-        $reason->update($request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => t('Reason updated successfully'),
-                'data'    => $reason,
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $this->reasonService->updateReason($reason, $request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Reason updated successfully')
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function destroy(Reason $reason)
     {
-        $reason->delete();
-        return response()->json([
-            'success' => true,
-            'message' => t('Reason deleted successfully')
-        ]);
+        try {
+            $this->reasonService->deleteReason($reason);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Reason deleted successfully')
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function getReasonsList(string $category)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->reasonService->getReasonsByCategory($category)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

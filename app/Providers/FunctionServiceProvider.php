@@ -4,7 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Services\EmployeeFunction\FunctionService;
-use App\Services\Sector\SectorService;
+use App\Repositories\EmployeeFunction\FunctionCategoryRepository;
+use App\Repositories\EmployeeFunction\FunctionTitleRepository;
 
 class FunctionServiceProvider extends ServiceProvider
 {
@@ -14,7 +15,10 @@ class FunctionServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(FunctionService::class, function ($app) {
-            return new FunctionService($app->make(SectorService::class));
+            return new FunctionService(
+                $app->make(FunctionCategoryRepository::class),
+                $app->make(FunctionTitleRepository::class)
+            );
         });
     }
 

@@ -4,27 +4,43 @@ namespace App\Http\Controllers\Sector;
 
 use App\Models\Sector\Sector;
 use App\Http\Rules\Sector\SectorRequest;
+use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\Sector\SectorService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
 class SectorController extends Controller
 {
-    public function __construct(protected SectorService $sectorService)
+    protected $sectorService;
+
+    protected $employeeTypeService;
+    public function __construct(SectorService $sectorService, EmployeeTypeService $employeeTypeService)
     {
+        $this->sectorService = $sectorService;
+        $this->employeeTypeService = $employeeTypeService;
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->sectorService->index(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->sectorService->getSectors(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function create()
@@ -32,7 +48,9 @@ class SectorController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->sectorService->create()
+                'data'    => [
+                    'employee_types' => $this->employeeTypeService->getActiveEmployeeTypes()
+                ]
             ],
             JsonResponse::HTTP_OK,
         );
@@ -47,7 +65,7 @@ class SectorController extends Controller
             [
                 'success' => true,
                 'message' => 'Sector created successfully',
-                'data'    => $this->sectorService->store($request->validated())
+                'data'    => $this->sectorService->createSector($request->validated())
             ],
             JsonResponse::HTTP_OK,
         );
@@ -61,18 +79,7 @@ class SectorController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->sectorService->show($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->sectorService->edit($id),
+                'data'    => $this->sectorService->getSectorDetails($id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -83,7 +90,7 @@ class SectorController extends Controller
      */
     public function update(SectorRequest $request, Sector $sector)
     {
-        $this->sectorService->update($sector, $request->validated());
+        $this->sectorService->updateSector($sector, $request->validated());
         $sector->refresh();
         return returnResponse(
             [
@@ -100,7 +107,7 @@ class SectorController extends Controller
      */
     public function destroy(Sector $sector)
     {
-        $sector->delete();
+        $this->sectorService->deleteSector($sector);
         return returnResponse(
             [
                 'success' => true,

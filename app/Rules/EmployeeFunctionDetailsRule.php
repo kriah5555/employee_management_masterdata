@@ -27,20 +27,22 @@ class EmployeeFunctionDetailsRule implements ValidationRule
         $employeeContractDetails = request()->input('employee_contract_details');
         if (is_array($employeeContractDetails) && isset($employeeContractDetails['employee_type_id'])) {
             $usedFunction = [];
-            $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($employeeContractDetails['employee_type_id']);
             foreach ($value as $data) {
                 if (!array_key_exists('function_id', $data)) {
                     $fail('Please select function');
+                } elseif (in_array($data['function_id'], $usedFunction)) {
+                    $fail('Cannot link same function twice');
                 } else {
-                    $usedFunction[] = $functionTitle = $this->functionService->getFunctionTitleDetails($data['function_id']);
+                    $functionTitle = $this->functionService->getFunctionTitleDetails($data['function_id']);
+                    $usedFunction[] = $functionTitle->id;
                 }
-                print_r($functionTitle->functionCategory);
-                exit;
+                if (!array_key_exists('salary', $data) || !is_numeric(str_replace(',', '.', $data['salary']))) {
+                    $fail('Please enter correct salary');
+                }
+                if (array_key_exists('experience', $data) && !is_numeric(str_replace(',', '.', $data['experience']))) {
+                    $fail('Please enter correct experience');
+                }
             }
-            // Now you can use $employeeTypeId
-            // ...
         }
-        // print_r('here');
-        // exit;
     }
 }

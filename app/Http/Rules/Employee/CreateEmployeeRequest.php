@@ -43,7 +43,7 @@ class CreateEmployeeRequest extends ApiRequest
                 new SocialSecurityNumberRule(new EmployeeProfileRepository)
             ],
             'place_of_birth'            => 'string|max:255',
-            'licence_expiry_date'       => 'nullable|date',
+            'license_expiry_date'       => 'nullable|date',
             'language'                  => ['required', 'string', 'in:' . implode(',', $allowedLanguageValues)],
             'marital_status_id'         => [
                 'bail',
@@ -51,6 +51,13 @@ class CreateEmployeeRequest extends ApiRequest
                 'integer',
                 Rule::exists('marital_statuses', 'id'),
             ],
+            'meal_voucher_id'           => [
+                'bail',
+                'required',
+                'integer',
+                Rule::exists('meal_vouchers', 'id'),
+            ],
+            'meal_voucher_amount'       => 'string|max:255',
             'dependent_spouse'          => 'string|max:255',
             'bank_account_number'       => 'nullable|string|max:255',
             'street_house_no'           => 'required|string|max:255',
@@ -60,18 +67,15 @@ class CreateEmployeeRequest extends ApiRequest
             'latitude'                  => 'nullable|numeric',
             'longitude'                 => 'nullable|numeric',
             'children'                  => 'nullable|integer',
-            'transport_id'              => [
-                'bail',
-                'required',
-                'integer',
-                Rule::exists('transports', 'id'),
-            ],
             'fuel_card'                 => 'required|boolean',
             'company_car'               => 'required|boolean',
             'extra_info'                => 'nullable|string|max:2000',
             'clothing_compensation'     => ['required', new CurrencyFormatRule],
             'employee_contract_details' => ['bail', 'required', 'array', new EmployeeContractDetailsRule(app(EmployeeTypeService::class))],
             'employee_function_details' => ['bail', 'required', 'array', new EmployeeFunctionDetailsRule(app(EmployeeTypeService::class), app(FunctionService::class))],
+            // 'employee_commute_details'  => ['bail', 'required', 'array', new EmployeeCommuteDetailsRule(app(EmployeeTypeService::class), app(FunctionService::class))],
+            'social_secretary_number'   => 'nullable|string|max:255',
+            'contract_number'           => 'nullable|string|max:255',
         ];
 
     }

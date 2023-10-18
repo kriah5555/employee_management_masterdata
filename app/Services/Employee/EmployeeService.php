@@ -3,6 +3,11 @@
 namespace App\Services\Employee;
 
 use App\Models\Company;
+use App\Models\Employee\EmployeeContractDetails;
+use App\Models\Employee\EmployeeProfile;
+use App\Models\Employee\LongTermEmployeeContractDetails;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\MealVoucher;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -14,9 +19,9 @@ use App\Models\Employee\Gender;
 use App\Models\Employee\MaritalStatus;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\Employee\Transport;
+use App\Models\Employee\CommuteType;
 use App\Repositories\ExtraBenefitsRepository;
-use App\Repositories\LocationRepository;
+use App\Repositories\Company\LocationRepository;
 
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Sector\SectorSalarySteps;
@@ -33,7 +38,8 @@ class EmployeeService
         protected CompanyService $companyService,
         protected ExtraBenefitsRepository $extraBenefitsRepository,
         protected LocationRepository $locationRepository
-    ) {}
+    ) {
+    }
     /**
      * Function to get all the employee types
      */
@@ -55,8 +61,10 @@ class EmployeeService
         return $options;
     }
 
-    public function createNewEmployeeProfile($values, $company_id)
+    public function createNewEmployee($values, $company_id)
     {
+        print_r('as');
+        exit;
         try {
             $existingEmpProfile = $this->employeeProfileRepository->getEmployeeProfileBySsn($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
@@ -77,6 +85,11 @@ class EmployeeService
             }
             $values['company_id'] = $company_id;
             $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
+            if (array_key_exists('social_secretory_number', $values) || array_key_exists('contract_number', $values)) {
+                $bankAccount = $this->bankAccountRepository->createEmployeeSocialSecretaryDetails($values);
+                $values['bank_accountid'] = $bankAccount->id;
+            }
+            $this->createEmployeeContract($empProfile, $values['employee_contract_details']);
             $user->assignRole('employee');
             DB::commit();
             return $empProfile;
@@ -85,6 +98,42 @@ class EmployeeService
             throw $e;
         }
     }
+
+    public function createEmployeeContract($empProfile, $contractDetails)
+    {
+        $contractDetails['employee_profile_id'] = $empProfile->id;
+        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
+        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+        $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
+        if ($employeeType->employeeTypeCategory->id == 1) {
+            $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
+            LongTermEmployeeContractDetails::create($contractDetails);
+        }
+    }
+
+    public function createEmployeeSocialSecretaryDetails($empProfile, $contractDetails)
+    {
+        $contractDetails['employee_profile_id'] = $empProfile->id;
+        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
+        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+        $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
+        if ($employeeType->employeeTypeCategory->id == 1) {
+            $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
+            LongTermEmployeeContractDetails::create($contractDetails);
+        }
+    }
+
+    // public function createEmployeeFunction($empProfile, $contractDetails)
+    // {
+    //     $contractDetails['employee_profile_id'] = $empProfile->id;
+    //     $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
+    //     $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+    //     $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
+    //     if ($employeeType->employeeTypeCategory->id == 1) {
+    //         $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
+    //         LongTermEmployeeContractDetails::create($contractDetails);
+    //     }
+    // }
 
     public function createUser($firstName, $lastName)
     {
@@ -118,16 +167,13 @@ class EmployeeService
     public function create($companyId)
     {
         $options = [];
-        $options['genders'] = $this->getGenderOptions();
-        $options['marital_statuses'] = $this->getMaritalStatusOptions();
-        $options['languages'] = $this->getLanguageOptions();
-        $options['transport_options'] = $this->getTransportOptions();
-        $options['employee_type_categories'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
-        $options['dependent_spouse_options'] = $this->getDependentSpouseOptions();
+        $options['commute_type_options'] = $this->getCommuteTypeOptions();
+        $options['employee_contract_options'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
         $companyLocations = $this->locationRepository->getCompanyLocations($companyId);
         $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
         $options['sub_types'] = $this->getSubTypeOptions();
         $options['schedule_types'] = $this->getScheduleTypeOptions();
+        $options['meal_voucher_options'] = $this->getMealVoucherOptions();
         $options['employment_types'] = $this->getEmploymentTypeOptions();
         $options['functions'] = $this->companyService->getFunctionOptionsForCompany($this->companyService->getCompanyDetails($companyId));
         return $options;
@@ -150,46 +196,56 @@ class EmployeeService
 
     public function getLanguageOptions()
     {
-        return getOptionsFromConfig('constants.LANGUAGE_OPTIONS');
+        return getValueLabelOptionsFromConfig('constants.LANGUAGE_OPTIONS');
     }
 
-    public function getTransportOptions()
+    public function getCommuteTypeOptions()
     {
-        return Transport::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+        return CommuteType::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+    }
+
+    public function getMealVoucherOptions()
+    {
+        return MealVoucher::where('status', '=', true)->select(['id as value', 'name as label'])->get();
     }
 
     public function getDependentSpouseOptions()
     {
-        return getOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
+        return getValueLabelOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
     }
 
     public function getSubTypeOptions()
     {
-        return getOptionsFromConfig('constants.SUB_TYPE_OPTIONS');
+        return config('constants.SUB_TYPE_OPTIONS');
     }
 
     public function getScheduleTypeOptions()
     {
-        return getOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
+        return config('constants.SCHEDULE_TYPE_OPTIONS');
     }
 
     public function getEmploymentTypeOptions()
     {
-        return getOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
+        return config('constants.EMPLOYMENT_TYPE_OPTIONS');
+    }
+
+    public function getEmployeeSalaryTypeOptions()
+    {
+        return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
     }
 
     function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '')
     {
-        try{
+        try {
             $employeeType = $this->employeeTypeService->model::findOrFail($employee_type_id);
-            $salary_type  = $employeeType->salary_type;
+            $salary_type = $employeeType->salary_type;
 
-            $minimumSalary   = 0;
+            $minimumSalary = 0;
             $salaryTypeLabel = null;
 
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
                 // Retrieve the FunctionTitle based on its ID
-                $functionTitle    = FunctionTitle::findOrFail($function_title_id);
+                $functionTitle = FunctionTitle::findOrFail($function_title_id);
                 $functionCategory = $functionTitle->functionCategory;
 
                 if ($functionCategory && $functionCategory->sector) {
@@ -233,6 +289,6 @@ class EmployeeService
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
-        } 
+        }
     }
 }

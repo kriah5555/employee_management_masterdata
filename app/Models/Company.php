@@ -8,10 +8,11 @@ use App\Models\Sector\Sector;
 use App\Models\Files;
 use App\Models\Address;
 use App\Models\Location;
-use App\Models\Holiday\HolidayCodes;
+use App\Models\Holiday\HolidayCode;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\SocialSecretary\SocialSecretary;
 use App\Models\Interim\InterimAgency;
+
 class Company extends Model
 {
     use HasFactory, SoftDeletes;
@@ -87,8 +88,8 @@ class Company extends Model
 
     public function holidayCodes()
     {
-        return $this->belongsToMany(HolidayCodes::class, 'company_holiday_codes', 'company_id', 'holiday_code_id')
-                    ->where('holiday_codes.status', true);
+        return $this->belongsToMany(HolidayCode::class, 'company_holiday_codes', 'company_id', 'holiday_code_id')
+            ->where('holiday_codes.status', true);
     }
 
     public function socialSecretary()
@@ -97,11 +98,12 @@ class Company extends Model
     }
 
     public function socialSecretaryValue()
-    {   
+    {
         if ($this->socialSecretary) {
             return [
                 'level' => $this->socialSecretary->id,
-                'value' => $this->socialSecretary->name, // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
+                'value' => $this->socialSecretary->name,
+                // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
             ];
         } else {
             return null;
@@ -114,11 +116,12 @@ class Company extends Model
     }
 
     public function interimAgencyValue()
-    {   
+    {
         if ($this->interimAgency) {
             return [
                 'level' => $this->interimAgency->id,
-                'value' => $this->interimAgency->name, // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
+                'value' => $this->interimAgency->name,
+                // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
             ];
         } else {
             return null;
@@ -137,10 +140,10 @@ class Company extends Model
 
         static::created(function ($company) {
             // Find all active holiday codes (status = 1)
-            // $activeHolidayCodes = HolidayCodes::where('status', 1)->pluck('id');
+            // $activeHolidayCodes = HolidayCode::where('status', 1)->pluck('id');
 
-            $holiday_codes = HolidayCodes::all()->pluck('id');
-            
+            $holiday_codes = HolidayCode::all()->pluck('id');
+
             // Sync the active holiday codes with the company
             $company->holidayCodes()->sync($holiday_codes);
         });
@@ -149,7 +152,7 @@ class Company extends Model
     # can call this externally and link the holiday codes
     public function linkHolidayCodes()
     {
-        $holiday_codes = HolidayCodes::all()->pluck('id');
+        $holiday_codes = HolidayCode::all()->pluck('id');
         $this->holidayCodes()->sync($holiday_codes);
     }
 

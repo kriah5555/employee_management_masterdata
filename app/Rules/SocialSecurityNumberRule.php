@@ -25,5 +25,7 @@ class SocialSecurityNumberRule implements ValidationRule
         if ($this->employeeProfileRepository->checkEmployeeExistsInCompany($companyId, $value)) {
             $fail("Employee already present in company");
         }
+        print_r('as');
+        exit;
     }
 }

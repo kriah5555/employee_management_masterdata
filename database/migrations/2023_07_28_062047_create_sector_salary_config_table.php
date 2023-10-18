@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
             $table->integer('category')->nullable();
             $table->integer('steps')->nullable();
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

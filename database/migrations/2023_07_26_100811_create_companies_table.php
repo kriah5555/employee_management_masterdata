@@ -16,8 +16,6 @@ return new class extends Migration {
             $table->foreignId('address')->nullable()->references('id')->on('address')->onDelete('cascade');
             $table->string('status')->default(true);
             $table->string('logo')->nullable();
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
             $table->string('employer_id')->nullable();
             $table->string('sender_number')->nullable();
             $table->string('rsz_number')->nullable();
@@ -25,6 +23,8 @@ return new class extends Migration {
             $table->string('username')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

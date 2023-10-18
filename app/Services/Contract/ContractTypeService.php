@@ -3,77 +3,41 @@
 namespace App\Services\Contract;
 
 use App\Models\Contract\ContractType;
-use Illuminate\Support\Facades\DB;
-use App\Models\Contract\ContractRenewalType;
-use Exception;
+use App\Repositories\Contract\ContractTypeRepository;
 
 class ContractTypeService
 {
-    public function index()
+    protected $contractTypeRepository;
+
+    public function __construct(ContractTypeRepository $contractTypeRepository)
     {
-        return ContractType::all();
+        $this->contractTypeRepository = $contractTypeRepository;
+    }
+    public function getContractTypes()
+    {
+        return $this->contractTypeRepository->getContractTypes();
     }
 
-    public function create()
+    public function createContractType($values)
     {
-        $data = [];
-        $data['renewal_types'] = $this->getContractRenewalOptions();
-        return $data;
+        return $this->contractTypeRepository->createContractType($values);
     }
 
-    public function getContractRenewalOptions()
+    public function getContractTypeDetails($id)
     {
-        return ContractRenewalType::where('status', '=', true)->select(['id as value', 'name as label'])->get();
+        return $this->contractTypeRepository->getContractTypeById($id, ['contractRenewalType']);
     }
 
-    public function store($values)
+    public function updateContractType(ContractType $contractType, $values)
     {
-        try {
-            DB::beginTransaction();
-            $employee_type = ContractType::create($values);
-            DB::commit();
-            return $employee_type;
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+        return $this->contractTypeRepository->updateContractType($contractType, $values);
     }
-
-    public function show($id)
+    public function deleteContractType(ContractType $contractType)
     {
-        return ContractType::with(['contractRenewalType'])->findOrFail($id);
+        return $this->contractTypeRepository->deleteContractType($contractType);
     }
-
-    /**
-     * Function to get all the options required to edit contract type
-     */
-    public function edit($id)
+    public function getActiveContractTypes()
     {
-        $options = $this->create();
-        $contractType = ContractType::findOrFail($id);
-        $contractType->contractRenewalTypeValue;
-        $options['details'] = $contractType;
-        return $options;
-    }
-
-    public function update(ContractType $contractType, $values)
-    {
-        try {
-            DB::beginTransaction();
-            $contractType->update($values);
-            DB::commit();
-            return $contractType;
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-    public function getContractTypesOptions()
-    {
-        return ContractType::where('status', '=', true)
-            ->select('id as value', 'name as label')
-            ->get();
+        return $this->contractTypeRepository->getActiveContractTypes();
     }
 }

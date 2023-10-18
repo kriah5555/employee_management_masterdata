@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->longText('description')->nullable();
             $table->foreignId('contract_renewal_type_id')->references('id')->on('contract_renewal_types')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

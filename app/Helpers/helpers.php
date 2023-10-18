@@ -99,8 +99,7 @@ if (!function_exists('generateRandomPassword')) {
 if (!function_exists('makeApiRequest')) {
     function makeApiRequest($url, $method = 'GET', $data = [], $headers = [])
     {
-        //print_r([$url,$method,$data, $headers]);exit;
-        $url = 'https://dev.indii-2.0.i-manager.infanion.com/api/create-user';
+        // $url = 'https://dev.indii-2.0.i-manager.infanion.com/api/create-user';
         try {
             // Build the HTTP request
             $request = Http::withHeaders($headers);
@@ -160,8 +159,8 @@ if (!function_exists('generateValueLabelArray')) {
     }
 }
 
-if (!function_exists('getOptionsFromConfig')) {
-    function getOptionsFromConfig($key)
+if (!function_exists('getValueLabelOptionsFromConfig')) {
+    function getValueLabelOptionsFromConfig($key)
     {
         $values = config($key);
         return array_map(function ($value, $label) {
@@ -170,5 +169,40 @@ if (!function_exists('getOptionsFromConfig')) {
                 'label' => $label,
             ];
         }, array_keys($values), $values);
+    }
+}
+
+if (!function_exists('getKeyNameOptionsFromConfig')) {
+    function getKeyNameOptionsFromConfig($key)
+    {
+        $values = config($key);
+        return array_map(function ($value, $label) {
+            return [
+                'key'  => $value,
+                'name' => $label,
+            ];
+        }, array_keys($values), $values);
+    }
+}
+
+if (!function_exists('associativeToDictionaryFormat')) {
+    function associativeToDictionaryFormat($associativeArray, $valueKey = 'id', $labelKey = 'value')
+    {
+        $dict = [];
+        foreach ($associativeArray as $key => $value) {
+            // Your custom function logic here, which can use both $key and $value.
+            $dict[] = [
+                $valueKey => $key,
+                $labelKey => $value,
+            ];
+        }
+        return $dict;
+    }
+}
+
+if (!function_exists('formatModelName')) {
+    function formatModelName($modelName)
+    {
+        return ucfirst(strtolower(preg_replace('/(?<!^)([A-Z])/', ' $1', $modelName)));
     }
 }

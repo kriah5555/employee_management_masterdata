@@ -15,6 +15,8 @@ return new class extends Migration {
             $table->foreignId('sector_salary_steps_id')->references('id')->on('sector_salary_steps')->onDelete('cascade');
             $table->integer('category_number');
             $table->float('salary')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

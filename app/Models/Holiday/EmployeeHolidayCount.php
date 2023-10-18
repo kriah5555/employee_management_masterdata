@@ -13,7 +13,8 @@ class EmployeeHolidayCount extends Model
     use HasFactory, SoftDeletes;
 
     protected $casts = [
-        'count' => 'float', // Cast the 'count' attribute to a float
+        'count' => 'float',
+        // Cast the 'count' attribute to a float
     ];
 
 
@@ -33,7 +34,7 @@ class EmployeeHolidayCount extends Model
 
     function holidayCode()
     {
-        return $this->hasMany(HolidayCodes::class, 'holiday_code_id');
+        return $this->hasMany(HolidayCode::class, 'holiday_code_id');
     }
 
     public function reasons()

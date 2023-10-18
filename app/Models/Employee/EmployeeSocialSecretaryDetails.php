@@ -11,10 +11,8 @@ class EmployeeSocialSecretaryDetails extends BaseModel
 
     protected $columnsToLog = [
         'employee_profile_id',
-        'location_id',
-        'distance',
-        'clothing_compensation',
-        'status',
+        'social_secretary_number',
+        'contract_number',
     ];
     /**
      * The table associated with the model.
@@ -50,10 +48,8 @@ class EmployeeSocialSecretaryDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'transport_id',
-        'fuel_card',
-        'company_car',
-        'clothing_compensation',
-        'status',
+        'employee_profile_id',
+        'social_secretary_number',
+        'contract_number',
     ];
 }

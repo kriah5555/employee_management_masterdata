@@ -20,8 +20,8 @@ return new class extends Migration {
             $table->boolean('contract_hours_split');
             $table->boolean('leave_access');
             $table->boolean('holiday_access');
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

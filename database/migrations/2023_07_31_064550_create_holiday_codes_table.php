@@ -24,8 +24,8 @@ return new class extends Migration {
             $table->tinyInteger('contract_type'); # [1 => 'Both', 2 => 'Full time', 3 => 'Part time']
             $table->tinyInteger('carry_forword'); #, [0 => 'No', 1 => 'Yes']
             $table->boolean('status')->default(true);
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

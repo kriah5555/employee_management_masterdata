@@ -2,17 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
 use App\Models\Sector\SectorSalarySteps;
 use App\Models\BaseModel;
+use App\Traits\UserAudit;
 
 class MinimumSalary extends BaseModel
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use UserAudit;
 
     /**
      * The table associated with the model.
@@ -22,6 +18,12 @@ class MinimumSalary extends BaseModel
     protected $table = 'sector_minimum_salary';
 
     protected static $sort = ['category_number'];
+    protected $columnsToLog = [
+        'sector_salary_steps_id',
+        'category_number',
+        'hourly_minimum_salary',
+        'monthly_minimum_salary'
+    ];
 
     /**
      * The primary key associated with the table.
@@ -45,7 +47,8 @@ class MinimumSalary extends BaseModel
     protected $fillable = [
         'sector_salary_steps_id',
         'category_number',
-        'salary',
+        'hourly_minimum_salary',
+        'monthly_minimum_salary',
         'created_by',
         'updated_by',
     ];
@@ -55,21 +58,6 @@ class MinimumSalary extends BaseModel
         'updated_at'
     ];
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-        ->logOnly(['sector_salary_steps_id', 'category_number', 'salary'])
-        ->logOnlyDirty(['sector_salary_steps_id', 'category_number', 'salary'])
-        ->dontSubmitEmptyLogs();
-    }
-
-    // protected static function booted()
-    // {
-    //     static::addGlobalScope('sort', function ($query) {
-    //         $query->orderBy('category_number', 'asc');
-    //     });
-    // }
-    
     public function sectorSalaryStep()
     {
         return $this->belongsTo(SectorSalarySteps::class);

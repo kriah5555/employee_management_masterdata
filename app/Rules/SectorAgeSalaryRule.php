@@ -15,6 +15,7 @@ class SectorAgeSalaryRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        $age_data = [];
         foreach ($value as $val) {
             $age_data[$val['age']] = $val['percentage'];
         }
@@ -26,14 +27,14 @@ class SectorAgeSalaryRule implements ValidationRule
             $fail($error);
         } else {
             foreach ($value as $index => $val) {
-                $percentage       = $val['percentage'];
+                $percentage = $val['percentage'];
                 $max_time_to_work = isset($val['max_time_to_work']) ? $val['max_time_to_work'] : ''; // Access the max_time_to_work field
-        
+
                 if (!is_int((int) $percentage) || $percentage < 0 || $percentage > 100) {
                     $error = t("Incorrect :attribute.$index salary percentage.");
                     $fail($error);
                 }
-        
+
                 if (empty($max_time_to_work) || !preg_match(config('constants.TIME_FORMAT_REGEX'), $max_time_to_work)) {
                     $error = t("Incorrect :attribute.$index time format. It should be in 24-hour time format (HH:MM).");
                     $fail($error);

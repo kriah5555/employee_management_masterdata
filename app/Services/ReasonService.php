@@ -2,54 +2,59 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
 use App\Models\Reason;
+use App\Repositories\ReasonRepository;
 
-class ReasonService extends BaseService
+class ReasonService
 {
-    public function __construct(Reason $reason)
+    protected $reasonRepository;
+    public function __construct(ReasonRepository $reasonRepository)
     {
-        parent::__construct($reason);
+        $this->reasonRepository = $reasonRepository;
     }
 
-    private function transformOptions($options)
+    public function getReasons()
     {
+        $reasons = $this->reasonRepository->getReasons();
+        return array_map(function ($reason) {
+            $reason['category'] = config('constants.REASON_CATEGORIES')[$reason['category']] ?? null;
+            return $reason;
+        }, $reasons->toArray());
+        // return $this->reasonRepository->getReasons();
+    }
+    public function createReason($values)
+    {
+        return $this->reasonRepository->createReason($values);
+    }
+    public function updateReason($reason, $values)
+    {
+        return $this->reasonRepository->updateReason($reason, $values);
+    }
+    public function deleteReason($reason)
+    {
+        return $this->reasonRepository->deleteReason($reason);
+    }
+    public function getReasonDetails($id)
+    {
+        $reason = $this->reasonRepository->getReasonById($id);
+        $reason['category'] = [
+            'value' => $reason['category'],
+            'label' => config('constants.REASON_CATEGORIES')[$reason['category']] ?? null
+        ];
+        return $reason;
+        // return $this->reasonRepository->getReasonById($id);
+    }
+
+    public function getReasonCategoriesOptions()
+    {
+        $options = config('constants.REASON_CATEGORIES');
+
         return array_map(function ($key, $value) {
             return ['value' => $key, 'label' => $value];
         }, array_keys($options), $options);
     }
-
-    public function getOptionsToCreate()
+    public function getReasonsByCategory($category)
     {
-        return [
-            'categories' => $this->transformOptions(config('constants.REASON_OPTIONS')),
-        ];
-    }
-
-    public function getOptionsToEdit($reason_id)
-    {
-        $reason_details     = $this->get($reason_id)->toArray();
-        $reason_details['category'] = [
-            'value' => $reason_details['category'],
-            'label' => config('constants.REASON_OPTIONS')[$reason_details['category']] ?? null
-        ];
-        $options            = $this->getOptionsToCreate();
-        $options['details'] = $reason_details;
-        return $options;
-    }
-
-    public function getAll(array $args = [])
-    {
-        $data = $this->model
-            ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
-            ->when(isset($args['category']) && $args['category'] !== '', fn($q) => $q->where('category', $args['category']))
-            ->get(); ;
-
-        // Use the each function to change the "category" field data
-        $data->each(function (&$item) {
-            $item['category'] = config('constants.REASON_OPTIONS')[$item['category']];
-        });
-    
-        return $data;    
+        return $this->reasonRepository->getReasonsByCategory($category);
     }
 }

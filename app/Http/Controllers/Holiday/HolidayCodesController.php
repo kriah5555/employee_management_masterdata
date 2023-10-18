@@ -2,16 +2,27 @@
 
 namespace App\Http\Controllers\Holiday;
 
-use App\Models\Holiday\HolidayCodes;
+use App\Models\Holiday\HolidayCode;
 use App\Services\Holiday\HolidayCodeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\Holiday\HolidayCodeRequest;
 use App\Http\Controllers\Controller;
+use App\Services\EmployeeType\EmployeeTypeService;
+use App\Services\CompanyService;
 
 class HolidayCodesController extends Controller
 {
-    public function __construct(protected HolidayCodeService $holiday_code_service)
+    protected $holidayCodeService;
+
+    protected $employeeTypeService;
+
+    protected $companyService;
+
+    public function __construct(HolidayCodeService $holidayCodeService, EmployeeTypeService $employeeTypeService, CompanyService $companyService)
     {
+        $this->holidayCodeService = $holidayCodeService;
+        $this->employeeTypeService = $employeeTypeService;
+        $this->companyService = $companyService;
     }
     /**
      * Display a listing of the resource.
@@ -21,7 +32,7 @@ class HolidayCodesController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holiday_code_service->getAll(['with' => ['processCountAttribute']])
+                'data'    => $this->holidayCodeService->getHolidayCodes()
             ],
             JsonResponse::HTTP_OK,
         );
@@ -35,7 +46,7 @@ class HolidayCodesController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holiday_code_service->create($request->validated()),
+                'data'    => $this->holidayCodeService->createHolidayCode($request->validated()),
                 'message' => 'Holiday code created successfully',
             ],
             JsonResponse::HTTP_OK,
@@ -45,12 +56,12 @@ class HolidayCodesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(HolidayCodes $holiday_code)
+    public function show($id)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $holiday_code,
+                'data'    => $this->holidayCodeService->getHolidayCodeDetails($id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -61,18 +72,16 @@ class HolidayCodesController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holiday_code_service->getOptionsToCreate(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    public function edit($holiday_code_id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->holiday_code_service->getOptionsToEdit($holiday_code_id),
+                'data'    => [
+                    'holiday_type'      => $this->holidayCodeService->getHolidayCodeTypeOptions(),
+                    'count_type'        => $this->holidayCodeService->getHolidayCodeCountTypeOptions(),
+                    'icon_type'         => $this->holidayCodeService->getHolidayCodeIconTypeOptions(),
+                    'employee_category' => $this->employeeTypeService->getEmployeeCategoryOptions(),
+                    'employee_types'    => $this->employeeTypeService->getEmployeeTypeOptions(),
+                    'contract_type'     => $this->employeeTypeService->getEmployeeContractTypeOptions(),
+                    'type'              => $this->holidayCodeService->getHolidayTypeOptions(),
+                    'companies'         => $this->companyService->getCompanies(),
+                ],
             ],
             JsonResponse::HTTP_OK,
         );
@@ -81,15 +90,13 @@ class HolidayCodesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(HolidayCodeRequest $request, HolidayCodes $holiday_code)
+    public function update(HolidayCodeRequest $request, HolidayCode $holidayCode)
     {
-        $this->holiday_code_service->update($holiday_code, $request->validated());
-        $holiday_code->refresh();
+        $this->holidayCodeService->updateHolidayCode($holidayCode, $request->validated());
         return returnResponse(
             [
                 'success' => true,
                 'message' => 'Holiday code updated successfully',
-                'data'    => $holiday_code,
             ],
             JsonResponse::HTTP_OK,
         );
@@ -98,7 +105,7 @@ class HolidayCodesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(HolidayCodes $holiday_code)
+    public function destroy(HolidayCode $holiday_code)
     {
         $holiday_code->delete();
         return returnResponse(

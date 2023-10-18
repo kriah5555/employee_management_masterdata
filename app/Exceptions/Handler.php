@@ -7,6 +7,7 @@ use Throwable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -52,10 +53,11 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException) {
+            $modelName = formatModelName(class_basename($exception->getModel()));
             return returnResponse(
                 [
                     'success' => false,
-                    'message' => 'Resource not found',
+                    'message' => "{$modelName} not found",
                 ],
                 JsonResponse::HTTP_NOT_FOUND,
             );
@@ -67,6 +69,15 @@ class Handler extends ExceptionHandler
                     'message' => 'Method not allowed',
                 ],
                 JsonResponse::HTTP_METHOD_NOT_ALLOWED,
+            );
+        }
+        if ($exception instanceof NotFoundHttpException) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => 'Route not found',
+                ],
+                JsonResponse::HTTP_NOT_FOUND,
             );
         }
         return parent::render($request, $exception);

@@ -10,131 +10,72 @@ use App\Models\Sector\SectorAgeSalary;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\EmployeeFunction\FunctionService;
 use App\Models\MinimumSalary;
+use App\Repositories\Sector\SectorRepository;
+use App\Repositories\Sector\SectorSalaryConfigRepository;
 
 class SectorService
 {
     protected $employeeTypeService;
 
-    protected $functionService;
+    protected $sectorRepository;
 
-    public function __construct(EmployeeTypeService $employeeTypeService)
+    protected $sectorSalaryConfigRepository;
+
+    public function __construct(SectorRepository $sectorRepository, SectorSalaryConfigRepository $sectorSalaryConfigRepository, EmployeeTypeService $employeeTypeService)
     {
+        $this->sectorRepository = $sectorRepository;
+        $this->sectorSalaryConfigRepository = $sectorSalaryConfigRepository;
         $this->employeeTypeService = $employeeTypeService;
-    }
-
-    public function getSectorById($id)
-    {
-        return Sector::findOrFail($id);
     }
 
     public function getSectorDetails($id)
     {
-        $sector = Sector::with([
+        return $this->sectorRepository->getSectorById($id, [
             'employeeTypes',
             'salaryConfig',
             'salaryConfig.salarySteps',
-            'sectorAgeSalary',
-        ])->findOrFail($id);
-        $temp = [];
-        foreach ($sector->sectorAgeSalary as $data) {
-            $temp[] = ['age' => $data->age, 'value' => $data->percentage];
-        }
-        $sector->age = $temp;
-        return $sector;
+            'sectorAgeSalary'
+        ]);
     }
 
-    public function show($id)
+    public function getSectors()
     {
-        return $this->getSectorDetails($id);
+        return $this->sectorRepository->getSectors();
     }
-
-
-    public function edit($id)
-    {
-        $options = $this->create();
-        $sector = Sector::findOrFail($id);
-        $sector->employeeTypesValue;
-        $sector->salaryConfig;
-        $sector->salaryConfig->salarySteps;
-        $sector->sectorAgeSalary;
-        $options['details'] = $sector;
-        return $options;
-    }
-
-    public function index()
-    {
-        return Sector::all();
-    }
-
     public function getActiveSectors()
     {
-        return Sector::where('status', true)->get();
+        return $this->sectorRepository->getActiveSectors();
     }
 
-    public function store($values)
+    public function createSector($values)
     {
-        try {
-            DB::beginTransaction();
-            $sector = Sector::create($values);
-            $sector->employeeTypes()->sync($values['employee_types'] ?? []);
-            $sector_salary_config = $this->createSectorSalaryConfig($sector, $values['category'], count($values['experience']));
-            $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
-            $this->updateSectorAgeSalary($sector, $values['age']);
-            DB::commit();
-            return $sector;
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function createSectorSalaryConfig(Sector $sector, $categories, $steps)
-    {
-        $sector_salary_config = SectorSalaryConfig::firstOrCreate(['sector_id' => $sector->id]);
-        $sector_salary_config->category = $categories;
-        $sector_salary_config->steps = $steps;
-        $sector_salary_config->save();
-        return $sector_salary_config;
-    }
-
-    public function createSectorAgeSalary(Sector $sector, $age_values)
-    {
-        foreach ($age_values as $data) {
-            $sector_salary_step = SectorSalarySteps::firstOrCreate([
-                'sector_id' => $sector->id,
-                'age'       => $data['level']
-            ]);
-            $sector_salary_step->from = $data['from'];
-            $sector_salary_step->to = $data['to'];
-            $sector_salary_step->save();
-        }
-    }
-
-    public function update(Sector $sector, $values)
-    {
-        try {
-            DB::beginTransaction();
-            $sector->update($values);
-            $sector->employeeTypes()->sync($values['employee_types'] ?? []);
+        return DB::transaction(function () use ($values) {
+            $sector = $this->sectorRepository->createSector($values);
+            $this->sectorRepository->updateSectorEmployeeTypes($sector, $values['employee_types']);
             $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+            return $sector;
+        });
     }
 
     public function updateSectorSalaryConfig(Sector $sector, $categories, $steps)
     {
-        $sector_salary_config = SectorSalaryConfig::where('sector_id', $sector->id)->firstOrFail();
-        $sector_salary_config->category = $categories;
-        $sector_salary_config->steps = $steps;
-        $sector_salary_config->save();
-        return $sector_salary_config;
+        $sectorSalaryConfig = $this->sectorSalaryConfigRepository->getOrCreateSectorSalaryConfig($sector->id);
+        $this->sectorSalaryConfigRepository->updateSectorSalaryConfig($sectorSalaryConfig, ['category' => $categories, 'steps' => $steps]);
+        return $sectorSalaryConfig;
+    }
+
+    public function updateSector(Sector $sector, $values)
+    {
+        return DB::transaction(function () use ($sector, $values) {
+            $this->sectorRepository->updateSector($sector, $values);
+            $this->sectorRepository->updateSectorEmployeeTypes($sector, $values['employee_types']);
+            $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
+            $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
+            $this->updateSectorAgeSalary($sector, $values['age']);
+            return $sector;
+        });
     }
 
     public function updateSectorSalarySteps(SectorSalaryConfig $sector_salary_config, $experience)
@@ -157,7 +98,7 @@ class SectorService
                 ]);
                 if ($minimum_salary->wasRecentlyCreated) {
                     $minimum_salary->monthly_minimum_salary = 0;
-                    $minimum_salary->hourly_minimum_salary  = 0;
+                    $minimum_salary->hourly_minimum_salary = 0;
                     $minimum_salary->save();
                 }
             }
@@ -186,13 +127,6 @@ class SectorService
         }
     }
 
-    public function getSectorOptions()
-    {
-        return Sector::where('status', '=', true)
-            ->select('id as value', 'name as label')
-            ->get();
-    }
-
     public function getCategoriesForSector()
     {
         $data = [];
@@ -203,13 +137,9 @@ class SectorService
         return $data;
     }
 
-    public function create()
+
+    public function deleteSector(Sector $sector)
     {
-        $options = [];
-        $options['employee_types'] = $this->employeeTypeService->getEmployeeTypeOptions();
-        return $options;
+        return $this->sectorRepository->deleteSector($sector);
     }
-
-    // public function getAllFunctionsBy
-
 }

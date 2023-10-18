@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Services\EmployeeType\EmployeeTypeService;
-use App\Services\Contract\ContractTypeService;
-use App\Services\Rule\RuleService;
+use App\Repositories\EmployeeType\EmployeeTypeRepository;
+use App\Repositories\EmployeeType\EmployeeTypeConfigRepository;
+use App\Repositories\EmployeeType\EmployeeTypeDimonaConfigRepository;
+use App\Repositories\EmployeeType\EmployeeTypeCategoryRepository;
 
 class EmployeeTypeServiceProvider extends ServiceProvider
 {
@@ -16,8 +18,10 @@ class EmployeeTypeServiceProvider extends ServiceProvider
     {
         $this->app->bind(EmployeeTypeService::class, function ($app) {
             return new EmployeeTypeService(
-                $app->make(ContractTypeService::class),
-                $app->make(RuleService::class)
+                $app->make(EmployeeTypeRepository::class),
+                $app->make(EmployeeTypeConfigRepository::class),
+                $app->make(EmployeeTypeDimonaConfigRepository::class),
+                $app->make(EmployeeTypeCategoryRepository::class)
             );
         });
     }

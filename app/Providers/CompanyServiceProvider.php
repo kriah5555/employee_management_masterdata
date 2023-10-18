@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Services\CompanyService;
-use App\Services\Sector\SectorService;
-use App\Models\Company;
+use App\Services\AddressService;
+use App\Repositories\Company\CompanyRepository;
 
 class CompanyServiceProvider extends ServiceProvider
 {
@@ -16,8 +16,8 @@ class CompanyServiceProvider extends ServiceProvider
     {
         $this->app->bind(CompanyService::class, function ($app) {
             return new CompanyService(
-                $app->make(Company::class),
-                $app->make(SectorService::class)
+                $app->make(CompanyRepository::class),
+                $app->make(AddressService::class),
             );
         });
     }

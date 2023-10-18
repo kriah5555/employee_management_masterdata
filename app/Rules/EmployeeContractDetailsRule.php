@@ -25,10 +25,10 @@ class EmployeeContractDetailsRule implements ValidationRule
             $fail('Please select employee type');
         }
         $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($value['employee_type_id']);
-        if ($employeeType->employeeTypeCategory->sub_category_types && !array_key_exists('sub_category_type', $value)) {
-            $fail('Please select sub category type');
-        } elseif (!in_array($value['sub_category_type'], array_keys(config('constants.SUB_TYPE_OPTIONS')))) {
-            $fail('Incorrect sub category type');
+        if ($employeeType->employeeTypeCategory->sub_category_types && !array_key_exists('sub_type', $value)) {
+            $fail('Please select sub type');
+        } elseif (!in_array($value['sub_type'], array_keys(config('constants.SUB_TYPE_OPTIONS')))) {
+            $fail('Incorrect sub type');
         }
         if ($employeeType->employeeTypeCategory->schedule_types && !array_key_exists('schedule_type', $value)) {
             $fail('Please select schedule type');
@@ -40,10 +40,10 @@ class EmployeeContractDetailsRule implements ValidationRule
         } elseif (!in_array($value['employement_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
             $fail('Incorrect employement type');
         }
-        if ($employeeType->id == 1 && !array_key_exists('contract_hours', $value)) {
-            $fail('Please enter contract hours');
-        } elseif (!is_numeric(str_replace(',', '.', $value['contract_hours']))) {
-            $fail('Incorrect contract hours');
+        if ($employeeType->id == 1 && !array_key_exists('weekly_contract_hours', $value)) {
+            $fail('Please enter weekly contract hours');
+        } elseif (!is_numeric(str_replace(',', '.', $value['weekly_contract_hours']))) {
+            $fail('Incorrect weekly contract hours');
         }
         if (!array_key_exists('start_date', $value) || strtotime($value['start_date']) === false) {
             $fail('Please select correct contract start date');

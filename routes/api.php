@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MealVoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sector\SectorController;
@@ -9,7 +10,6 @@ use App\Http\Controllers\Holiday\HolidayCodesController;
 use App\Http\Controllers\Holiday\HolidayCodeConfigController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
-// use App\Http\Controllers\Holiday\HolidayCodeCountController;
 use App\Http\Controllers\Holiday\EmployeeHolidayCountController;
 use App\Http\Controllers\Sector\SalaryController;
 use App\Http\Controllers\LocationController;
@@ -21,11 +21,9 @@ use App\Http\Controllers\Contract\ContractTemplateController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeController;
-use App\Http\Controllers\Employee\GenderController;
-use App\Http\Controllers\Employee\MaritalStatusController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
-use App\Http\Controllers\Holiday\HolidayCodesOfSocialSecretaryController;
+use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
 
@@ -69,29 +67,18 @@ Route::group(['middleware' => 'service-registry'], function () {
 });
 
 Route::resources([
-    'employee-types'      => EmployeeTypeController::class,
-    'sectors'             => SectorController::class,
-    'function-titles'     => FunctionTitleController::class,
-    'function-categories' => FunctionCategoryController::class,
-    'companies'           => CompanyController::class,
-    'holiday-codes'       => HolidayCodesController::class,
-    'email-templates'     => EmailTemplateApiController::class,
-    'contract-types'      => ContractTypeController::class,
-    'workstations'        => WorkstationController::class,
-    'locations'           => LocationController::class,
-    'social-secretary'    => SocialSecretaryController::class,
-    'public-holidays'     => PublicHolidayController::class,
-    'contract-templates'  => ContractTemplateController::class,
-    'interim-agencies'    => InterimAgencyController::class,
+    'companies'          => CompanyController::class,
+    'email-templates'    => EmailTemplateApiController::class,
+    'workstations'       => WorkstationController::class,
+    'locations'          => LocationController::class,
+    'public-holidays'    => PublicHolidayController::class,
+    'contract-templates' => ContractTemplateController::class,
+    'interim-agencies'   => InterimAgencyController::class,
 ]);
-
-Route::resource('rules', RuleController::class)->only(['index', 'show', 'edit', 'update']);
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
 
 Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
-
-Route::resource('social-secretary-holiday-codes', HolidayCodesOfSocialSecretaryController::class)->only(['edit', 'store']);
 
 Route::controller(TranslationController::class)->group(function () {
 
@@ -105,22 +92,6 @@ Route::controller(TranslationController::class)->group(function () {
 
 });
 
-Route::controller(SalaryController::class)->group(function () use ($integerRule, $numericWithOptionalDecimalRule) {
-
-    Route::get('monthly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries')->where(['sector_id' => $integerRule]);
-
-    Route::post('monthly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['sector_id' => $integerRule]);
-
-    Route::post('monthly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
-    
-    // Route::post('add-coefficient-minimum-salaries/{id}/{increment_coefficient}', 'addIncrementToMinimumSalaries')->where(['id' => $integerRule, 'increment_coefficient' => $numericWithOptionalDecimalRule]);
-    
-    Route::get('hourly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries');
-
-    Route::post('hourly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
-
-    Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
-});
 
 Route::controller(LocationController::class)->group(function () use ($statusRule) {
 
@@ -146,14 +117,12 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
 
 Route::group(['middleware' => 'setactiveuser'], function () {
 
-    Route::resource('employees', EmployeeController::class)->only(['show', 'edit']);
-
     Route::controller(EmployeeController::class)->group(function () {
 
         Route::get('/employees/get-company-employees/{company_id}', 'index');
 
         Route::get('/employees/create/{company_id}', 'create');
-        
+
         Route::get('/employees/create/{company_id}', 'create');
 
         Route::post('/employees/store/{company_id}', 'store');
@@ -161,9 +130,9 @@ Route::group(['middleware' => 'setactiveuser'], function () {
         Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
     });
 
-    Route::resource('genders', GenderController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
-    Route::resource('marital-statuses', MaritalStatusController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
 });
 
@@ -176,10 +145,93 @@ Route::controller(CostCenterController::class)->group(function () use ($statusRu
     Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
 });
 
-Route::controller(ReasonController::class)->group(function () use ($statusRule, $integerRule) {
+Route::get('employees/get-contract-creation-options/{company_id}', [EmployeeController::class, 'getOptionsForEmployeeContractCreation']);
 
-    Route::resource('reasons', ReasonController::class)->except(['index']);
+Route::get('employees/get-functions-options/{company_id}', [EmployeeController::class, 'getFunctionsForLinkingToEmployee']);
 
-    Route::get('reasons-list/{status}/{category?}', 'index')->where('status', $statusRule);
+Route::get('employees/get-transport-details-options/{company_id}', [EmployeeController::class, 'getOptionsToUpdateEmployeeTransportDetails']);
 
+
+Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
+    $resources = [
+        'contract-types'      => [
+            'controller' => ContractTypeController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'employee-types'      => [
+            'controller' => EmployeeTypeController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'sectors'             => [
+            'controller' => SectorController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'function-categories' => [
+            'controller' => FunctionCategoryController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'function-titles'     => [
+            'controller' => FunctionTitleController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'reasons'             => [
+            'controller' => ReasonController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'holiday-codes'       => [
+            'controller' => HolidayCodesController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'rules'               => [
+            'controller' => RuleController::class,
+            'methods'    => ['index', 'show', 'edit', 'update']
+        ],
+        'social-secretary'    => [
+            'controller' => SocialSecretaryController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'companies'           => [
+            'controller' => CompanyController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+    ];
+    foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
+        Route::resource($uri, $controller)->only($methods);
+    }
+    Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
+
+    Route::get('get-function-category-options-by-sector/{sector_id}', [SectorController::class, 'getOptionsForEmployeeContractCreation']);
+
+    Route::controller(SalaryController::class)->group(function () use ($integerRule) {
+
+        Route::get('monthly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries')->where(['sector_id' => $integerRule]);
+
+        Route::post('monthly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['sector_id' => $integerRule]);
+
+        Route::post('monthly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+
+        Route::get('hourly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries');
+
+        Route::post('hourly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
+
+        Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+    });
+
+    Route::controller(ReasonController::class)->group(function () {
+
+        Route::get('reasons-list/{category?}', 'getReasonsList');
+
+    });
+    Route::controller(SocialSecretaryController::class)->group(function () use ($integerRule) {
+
+        Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
+
+        Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
+    });
+    Route::controller(CompanyController::class)->group(function () use ($integerRule) {
+
+        // Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
+
+        // Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
+    });
 });

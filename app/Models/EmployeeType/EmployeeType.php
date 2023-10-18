@@ -13,7 +13,7 @@ class EmployeeType extends BaseModel
 {
     use UserAudit;
     protected static $sort = ['name'];
-    protected $columnsToLog = ['name', 'description', 'employee_type_category_id', 'status'];
+    protected $columnsToLog = ['name', 'description', 'employee_type_category_id', 'status', 'salary_type'];
     /**
      * The table associated with the model.
      *
@@ -63,21 +63,10 @@ class EmployeeType extends BaseModel
     {
         return $this->belongsTo(EmployeeTypeCategory::class);
     }
-    public function employeeTypeCategoryValue()
-    {
-        return $this->belongsTo(EmployeeTypeCategory::class, 'employee_type_category_id')
-            ->select('id as value', 'name as label')
-            ->where('status', true);
-    }
 
     public function contractTypes()
     {
         return $this->belongsToMany(ContractType::class, 'contract_type_employee_type');
-    }
-
-    public function contractTypesValue()
-    {
-        return $this->belongsToMany(ContractType::class, 'contract_type_employee_type')->select(['contract_type_id as value', 'name as label']);
     }
 
     public function employeeTypeConfig()

@@ -15,22 +15,28 @@ use App\Services\WorkstationService;
 use App\Services\BaseService;
 use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
+use App\Repositories\Company\CompanyRepository;
 use App\Services\Interim\InterimAgencyService;
 
-class CompanyService extends BaseService
+class CompanyService
 {
-    protected $sectorService;
+    protected $companyRepository;
 
-    protected $socialSecretaryService;
+    protected $addressService;
 
-    protected $interimAgencyService;
-
-    public function __construct(Company $company, SectorService $sectorService)
+    public function __construct(CompanyRepository $companyRepository, AddressService $addressService)
     {
-        parent::__construct($company);
-        $this->sectorService          = $sectorService;
-        $this->socialSecretaryService = app(SocialSecretaryService::class);
-        $this->interimAgencyService   = app(InterimAgencyService::class);
+        $this->companyRepository = $companyRepository;
+        $this->addressService = $addressService;
+    }
+
+    public function getCompanies()
+    {
+        return $this->companyRepository->getCompanies();
+    }
+    public function getActiveCompanies()
+    {
+        return $this->companyRepository->getActiveCompanies();
     }
 
     public function create($values)
@@ -38,9 +44,8 @@ class CompanyService extends BaseService
         try {
             return DB::transaction(function () use ($values) {
                 $request_data = $values;
-                $address_service = new AddressService();
 
-                $company_address = $address_service->createNewAddress($values['address']);
+                $company_address = $this->addressService->createNewAddress($values['address']);
                 $request_data['address'] = $company_address->id;
                 $request_data['logo'] = isset($request_data['logo']) ? self::addCompanyLogo($request_data) : '';
                 $company = Company::create($request_data);
@@ -63,8 +68,7 @@ class CompanyService extends BaseService
         try {
             DB::beginTransaction();
             $this->updateCompanyLogoData($company, $values);
-            $address_service = new AddressService();
-            $company_address = $address_service->updateAddress($company->address, $values['address']);
+            $company_address = $this->addressService->updateAddress($company->address, $values['address']);
             unset($values['address']);
             $company->update($values);
             $this->syncSectors($company, $values);
@@ -164,7 +168,7 @@ class CompanyService extends BaseService
     public function getOptionsToCreate()
     {
         return [
-            'sectors'            => $this->sectorService->getSectorOptions(),
+            'sectors'            => $this->sectorService->getActiveSectors(),
             'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions(),
             'interim_agencies'   => $this->interimAgencyService->getInterimAgencyOptions(),
         ];
@@ -173,10 +177,22 @@ class CompanyService extends BaseService
     public function getOptionsToEdit($company_id)
     {
         $company_details = $this->model::with(['address', 'sectors', 'sectorsValue', 'logoFile'])->findOrFail($company_id);
-        $options            = $this->getOptionsToCreate();
+        $options = $this->getOptionsToCreate();
         $options['details'] = $company_details;
+        $options['details']['social_secretaries_value'] = $company_details->socialSecretaryValue();
+        unset($options['details']['socialSecretary']);
+        unset($options['details']['sectors']);
+
+        // if ($company_details->socialSecretaries) {
+
+        //     // Add social_secretaries key-value pairs to details
+        //     $options['details']['social_secretaries_value'] = [
+        //         'label' => $company_details->socialSecretaries->id,
+        //         'value' => $company_details->socialSecretaries->name
+        //     ];
+        // }
         $options['details']['social_secretary_value'] = $company_details->socialSecretaryValue();
-        $options['details']['interim_agency_value']   = $company_details->interimAgencyValue();
+        $options['details']['interim_agency_value'] = $company_details->interimAgencyValue();
         unset($options['details']['socialSecretary'], $options['details']['sectors'], $options['details']['interimAgency']);
 
         return $options;
@@ -200,38 +216,33 @@ class CompanyService extends BaseService
     {
         $company = Company::with('sectors.employeeTypes.employeeTypeCategory')
             ->findOrFail($companyId);
-
-        $employeeTypeCategories = $company->sectors
-            ->flatMap(function ($sector) {
-                return $sector->employeeTypes->map(function ($employeeType) {
-                    return [
-                        'employee_type_category_id'   => $employeeType->employeeTypeCategory->id,
-                        'employee_type_category_name' => $employeeType->employeeTypeCategory->name,
-                        'employee_types'              => []
-                    ];
-                });
+        $employeeTypes = $company->sectors->flatMap(function ($sector) {
+            return $sector->employeeTypes->map(function ($employeeType) {
+                return $employeeType;
             });
-        $employeeTypeCategories = $employeeTypeCategories->unique('employee_type_category_id')->values();
+        })->all();
 
-        $employeeTypesWithCategory = $company->sectors
-            ->flatMap(function ($sector) {
-                return $sector->employeeTypes->map(function ($employeeType) {
-                    return [
-                        'employee_type_id'          => $employeeType->id,
-                        'employee_type'             => $employeeType->name,
-                        'employee_type_category_id' => $employeeType->employeeTypeCategory->id,
-                    ];
-                });
-            });
-        $employeeTypesWithCategory = $employeeTypesWithCategory->groupBy('employee_type_category_id');
-        $employeeTypesWithCategory = json_decode($employeeTypesWithCategory, true);
-        $result = [];
-        foreach ($employeeTypeCategories as $employeeTypeCategory) {
-            $employeeTypeCategory['employee_types'] = $employeeTypesWithCategory[$employeeTypeCategory['employee_type_category_id']];
-            $result[] = $employeeTypeCategory;
+        $employeeTypeCategoryOptions = $employeeTypeOptions = $employeeTypeCategoryConfig = [];
+        foreach ($employeeTypes as $employeeType) {
+            $employeeTypeCategoryOptions[$employeeType->employeeTypeCategory->id] = [
+                'key'  => $employeeType->employeeTypeCategory->id,
+                'name' => $employeeType->employeeTypeCategory->name
+            ];
+            $employeeTypeOptions[$employeeType->employeeTypeCategory->id][] = [
+                'key'  => $employeeType->id,
+                'name' => $employeeType->name
+            ];
+            $employeeTypeCategoryConfig[$employeeType->employeeTypeCategory->id] = [
+                'sub_category_types' => $employeeType->employeeTypeCategory->sub_category_types,
+                'schedule_types'     => $employeeType->employeeTypeCategory->schedule_types,
+                'employment_types'   => $employeeType->employeeTypeCategory->employment_types,
+            ];
         }
-
-        return $result;
+        return [
+            'employee_type_categories'      => array_values($employeeTypeCategoryOptions),
+            'employee_types'                => $employeeTypeOptions,
+            'employee_type_category_config' => $employeeTypeCategoryConfig
+        ];
     }
 
     public function getFunctionsForCompany(Company $company)
@@ -249,6 +260,11 @@ class CompanyService extends BaseService
     }
 
     public function getCompanyDetails($companyId): Company
+    {
+        return Company::findOrFail($companyId);
+    }
+
+    public function getLocationsUnderCompany($companyId): Company
     {
         return Company::findOrFail($companyId);
     }
