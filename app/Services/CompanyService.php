@@ -23,11 +23,15 @@ class CompanyService
     protected $companyRepository;
 
     protected $addressService;
+    protected $locationService;
+    protected $workstationService;
 
-    public function __construct(CompanyRepository $companyRepository, AddressService $addressService)
+    public function __construct(CompanyRepository $companyRepository, LocationService $locationService, AddressService $addressService, WorkstationService $workstationService)
     {
         $this->companyRepository = $companyRepository;
+        $this->locationService = $locationService;
         $this->addressService = $addressService;
+        $this->workstationService = $workstationService;
     }
 
     public function getCompanies()
@@ -39,58 +43,49 @@ class CompanyService
         return $this->companyRepository->getActiveCompanies();
     }
 
-    public function create($values)
+    public function createCompany($values)
     {
-        try {
-            return DB::transaction(function () use ($values) {
-                $request_data = $values;
-
-                $company_address = $this->addressService->createNewAddress($values['address']);
-                $request_data['address'] = $company_address->id;
-                $request_data['logo'] = isset($request_data['logo']) ? self::addCompanyLogo($request_data) : '';
-                $company = Company::create($request_data);
-                $sectors = $values['sectors'];
-                $location_ids = $this->createCompanyLocations($company, $values); # add company locations
-                $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
-
-                $this->syncSectors($company, $values);
-                $company->refresh();
-                return $company;
-            });
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
+        return DB::transaction(function () use ($values) {
+            $requestData = $values;
+            $company_address = $this->addressService->createNewAddress($values['address']);
+            $requestData['address'] = $company_address->id;
+            $requestData['logo'] = isset($requestData['logo']) ? self::addCompanyLogo($requestData) : '';
+            $company = $this->companyRepository->createCompany($requestData);
+            $location_ids = $this->createCompanyLocations($company, $values); # add company locations
+            $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
+            $this->syncSectors($company, $values);
+            $company->refresh();
+            return $company;
+        });
     }
 
-    public function update($company, $values)
+    public function updateCompany($company, $values)
     {
-        try {
-            DB::beginTransaction();
-            $this->updateCompanyLogoData($company, $values);
-            $company_address = $this->addressService->updateAddress($company->address, $values['address']);
-            unset($values['address']);
-            $company->update($values);
-            $this->syncSectors($company, $values);
-            // $company->sectors()->sync($sectors);
-            $company->refresh();
+        DB::beginTransaction();
+        // $this->updateCompanyLogoData($company, $values);
+        $this->addressService->updateAddress($company->address, $values['address']);
+        $this->syncSectors($company, $values);
+        unset($values['address']);
+        unset($values['sectors']);
+        unset($values['responsible_persons']);
+        unset($values['locations']);
+        unset($values['workstations']);
+        $this->companyRepository->updateCompany($company->id, $values);
+        DB::commit();
+    }
 
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+    public function deleteCompany($companyId)
+    {
+        $this->companyRepository->deleteCompany($companyId);
     }
 
     private function createCompanyLocations(Company $company, $values)
     {
         $location_ids = [];
         if (isset($values['locations'])) {
-            $location_service = new LocationService(new Location());
             foreach ($values['locations'] as $index => $location) {
                 $location['company'] = $company->id;
-                $location_ids[$index] = $location_service->create($location)->id;
+                $location_ids[$index] = $this->locationService->create($location)->id;
             }
         }
         return $location_ids;
@@ -98,14 +93,13 @@ class CompanyService
 
     private function createCompanyWorkstations($values, $location_ids, $company_id)
     {
-        $workstation_service = new WorkstationService(new Workstation());
         if (!empty($location_ids) && isset($values['workstations'])) {
-            foreach ($values['workstations'] as $index => $workstation) {
+            foreach ($values['workstations'] as $workstation) {
                 $workstation['locations'] = array_map(function ($value) use ($location_ids) {
                     return $location_ids[$value];
                 }, $workstation['locations_index']);
                 $workstation['company'] = $company_id;
-                $workstation_service->create($workstation);
+                $this->workstationService->create($workstation);
             }
         }
     }
@@ -261,7 +255,7 @@ class CompanyService
 
     public function getCompanyDetails($companyId): Company
     {
-        return Company::findOrFail($companyId);
+        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address']);
     }
 
     public function getLocationsUnderCompany($companyId): Company

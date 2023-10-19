@@ -4,6 +4,8 @@ namespace App\Repositories\Company;
 
 use App\Interfaces\Company\CompanyRepositoryInterface;
 use App\Models\Company;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
@@ -16,9 +18,9 @@ class CompanyRepository implements CompanyRepositoryInterface
         return Company::where('status', '=', true)->get();
     }
 
-    public function getCompanyById(string $companyId): Company
+    public function getCompanyById(string $companyId, array $relations = []): Collection|Builder|Company
     {
-        return Company::findOrFail($companyId);
+        return Company::with($relations)->findOrFail($companyId);
     }
 
     public function deleteCompany(string $companyId)

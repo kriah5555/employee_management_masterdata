@@ -4,7 +4,8 @@ namespace App\Interfaces;
 
 interface CommuteTypeRepositoryInterface
 {
-    public function getAllCommuteTypes();
+    public function getCommuteTypes();
+    public function getActiveCommuteTypes();
 
     public function getCommuteTypeById(string $commuteTypeId);
 

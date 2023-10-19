@@ -7,9 +7,13 @@ use App\Models\Employee\CommuteType;
 
 class CommuteTypeRepository implements CommuteTypeRepositoryInterface
 {
-    public function getAllCommuteTypes()
+    public function getCommuteTypes()
     {
         return CommuteType::all();
+    }
+    public function getActiveCommuteTypes()
+    {
+        return CommuteType::where('status', '=', true)->get();
     }
 
     public function getCommuteTypeById(string $commuteTypeId): CommuteType

@@ -115,27 +115,6 @@ Route::controller(WorkstationController::class)->group(function () use ($statusR
     Route::get('workstations/create/{company_id}', 'create');
 });
 
-Route::group(['middleware' => 'setactiveuser'], function () {
-
-    Route::controller(EmployeeController::class)->group(function () {
-
-        Route::get('/employees/get-company-employees/{company_id}', 'index');
-
-        Route::get('/employees/create/{company_id}', 'create');
-
-        Route::get('/employees/create/{company_id}', 'create');
-
-        Route::post('/employees/store/{company_id}', 'store');
-
-        Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
-    });
-
-    Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
-
-    Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
-
-});
-
 Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
 
     Route::resource('cost-center', CostCenterController::class)->where(['status' => $statusRule, 'company_id' => $integerRule])->except(['index', 'create']);
@@ -228,10 +207,19 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
     });
-    Route::controller(CompanyController::class)->group(function () use ($integerRule) {
 
-        // Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
+    Route::controller(EmployeeController::class)->group(function () {
 
-        // Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
+        Route::get('/employees/get-company-employees/{company_id}', 'index');
+
+        Route::get('/employees/create/{company_id}', 'create');
+
+        Route::post('/employees/store/{company_id}', 'store');
+
+        Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
     });
+
+    Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+
+    Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 });

@@ -68,8 +68,6 @@ class Company extends Model
         'updated_at'
     ];
 
-    // protected $with = ['sectors', 'address'];
-
     public function sectors()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company');
