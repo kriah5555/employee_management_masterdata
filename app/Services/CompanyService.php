@@ -25,13 +25,21 @@ class CompanyService
     protected $addressService;
     protected $locationService;
     protected $workstationService;
+    protected $sectorService;
+    protected $socialSecretaryService;
+    protected $interimAgencyService;
+    protected $model;
 
     public function __construct(CompanyRepository $companyRepository, LocationService $locationService, AddressService $addressService, WorkstationService $workstationService)
     {
-        $this->companyRepository = $companyRepository;
-        $this->locationService = $locationService;
-        $this->addressService = $addressService;
-        $this->workstationService = $workstationService;
+        $this->companyRepository      = $companyRepository;
+        $this->locationService        = $locationService;
+        $this->addressService         = $addressService;
+        $this->workstationService     = $workstationService;
+        $this->model                  = app(Company::class);
+        $this->sectorService          = app(SectorService::class);
+        $this->socialSecretaryService = app(SocialSecretaryService::class);
+        $this->interimAgencyService   = app(InterimAgencyService::class);
     }
 
     public function getCompanies()

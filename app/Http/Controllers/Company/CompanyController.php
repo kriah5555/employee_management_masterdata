@@ -60,6 +60,14 @@ class CompanyController extends Controller
         ]);
     }
 
+    public function edit($id)
+    {
+        return response()->json([
+            'success' => true,
+            'data'    => $this->companyService->getOptionsToEdit($id),
+        ]);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -105,9 +113,7 @@ class CompanyController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => [
-                    'sectors' => $this->sectorService->getActiveSectors()
-                ],
+                'data'    => $this->companyService->getOptionsToCreate(),
             ],
             JsonResponse::HTTP_OK,
         );

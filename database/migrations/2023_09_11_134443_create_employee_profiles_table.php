@@ -122,13 +122,51 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('employee_benefits');
+        Schema::table('employee_function_details', function (Blueprint $table) {
+            $table->dropForeign(['employee_contract_details_id']);
+            $table->dropForeign(['function_title_id']);
+            $table->dropForeign(['salary_id']);
+        });
+        
+        Schema::table('employee_commute', function (Blueprint $table) {
+            $table->dropForeign(['employee_profile_id']);
+            $table->dropForeign(['commute_type_id']);
+            $table->dropForeign(['location_id']);
+        });
+        
+        Schema::table('employee_contract_details', function (Blueprint $table) {
+            $table->dropForeign(['employee_profile_id']);
+            $table->dropForeign(['employee_type_id']);
+        });
+        
+        Schema::table('long_term_employee_contract_details', function (Blueprint $table) {
+            $table->dropForeign(['employee_contract_details_id']);
+        });
+        
+        Schema::table('employee_benefits', function (Blueprint $table) {
+            $table->dropForeign(['employee_profile_id']);
+        });
+        
+        Schema::table('employee_social_secretary_details', function (Blueprint $table) {
+            $table->dropForeign(['employee_profile_id']);
+        });
+        
+        Schema::table('employee_contact_details', function (Blueprint $table) {
+            $table->dropForeign(['employee_profile_id']);
+        });
+        
+        Schema::table('employee_salary_details', function (Blueprint $table) {
+            $table->dropForeign(['employee_profile_id']);
+        });
+    
         Schema::dropIfExists('employee_function_details');
         Schema::dropIfExists('employee_commute');
         Schema::dropIfExists('long_term_employee_contract_details');
         Schema::dropIfExists('employee_contract_details');
+        Schema::dropIfExists('employee_benefits');
         Schema::dropIfExists('employee_social_secretary_details');
         Schema::dropIfExists('employee_contact_details');
+        Schema::dropIfExists('employee_salary_details');
         Schema::dropIfExists('employee_profiles');
     }
 };
