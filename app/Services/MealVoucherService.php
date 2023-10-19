@@ -20,7 +20,7 @@ class MealVoucherService
      */
     public function index()
     {
-        return $this->mealVoucherRepository->getAllMealVouchers();
+        return $this->mealVoucherRepository->getMealVouchers();
     }
 
     public function show(string $mealVoucherId)

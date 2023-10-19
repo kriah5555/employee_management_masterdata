@@ -20,7 +20,7 @@ class CommuteTypeService
      */
     public function index()
     {
-        return $this->commuteTypeRepository->getAllCommuteTypes();
+        return $this->commuteTypeRepository->getCommuteTypes();
     }
 
     public function show(string $commuteTypeId)

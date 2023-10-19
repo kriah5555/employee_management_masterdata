@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Employee;
 
 use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\Employee\CreateEmployeeRequest;
+use App\Repositories\CommuteTypeRepository;
+use App\Repositories\Company\LocationRepository;
+use App\Repositories\MealVoucherRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
@@ -15,11 +18,17 @@ class EmployeeController extends Controller
 {
     protected $employeeService;
     protected $companyService;
+    protected $locationRepository;
+    protected $commuteTypeRepository;
+    protected $mealVoucherRepository;
 
-    public function __construct(EmployeeService $employeeService, CompanyService $companyService)
+    public function __construct(EmployeeService $employeeService, CompanyService $companyService, LocationRepository $locationRepository, CommuteTypeRepository $commuteTypeRepository, MealVoucherRepository $mealVoucherRepository)
     {
         $this->employeeService = $employeeService;
         $this->companyService = $companyService;
+        $this->locationRepository = $locationRepository;
+        $this->commuteTypeRepository = $commuteTypeRepository;
+        $this->mealVoucherRepository = $mealVoucherRepository;
     }
 
     /**
@@ -41,7 +50,16 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeService->create($companyId)
+                'data'    => [
+                    'commute_type_options'      => $this->commuteTypeRepository->getActiveCommuteTypes(),
+                    'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
+                    'locations'                 => $this->locationRepository->getActiveLocationsOfCompany($companyId),
+                    'sub_types'                 => $this->employeeService->getSubTypeOptions(),
+                    'schedule_types'            => $this->employeeService->getScheduleTypeOptions(),
+                    'meal_vouchers'             => $this->mealVoucherRepository->getActiveMealVouchers(),
+                    'employment_types'          => $this->employeeService->getEmploymentTypeOptions(),
+                    'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
+                ]
             ],
             JsonResponse::HTTP_OK,
         );

@@ -7,10 +7,15 @@ use App\Models\MealVoucher;
 
 class MealVoucherRepository implements MealVoucherRepositoryInterface
 {
-    public function getAllMealVouchers()
+    public function getMealVouchers()
     {
         return MealVoucher::all();
     }
+    public function getActiveMealVouchers()
+    {
+        return MealVoucher::where('status', '=', true)->get();
+    }
+
 
     public function getMealVoucherById(string $mealVoucherId): MealVoucher
     {

@@ -7,13 +7,18 @@ use App\Http\Rules\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Services\Sector\SectorService;
+use App\Services\SocialSecretary\SocialSecretaryService;
+use App\Services\Interim\InterimAgencyService;
 
 class CompanyController extends Controller
 {
     protected $companyService;
-    public function __construct(CompanyService $companyService)
+    protected $sectorService;
+    public function __construct(CompanyService $companyService, SectorService $sectorService)
     {
         $this->companyService = $companyService;
+        $this->sectorService = $sectorService;
     }
     /**
      * Display a listing of the resource.
@@ -38,7 +43,7 @@ class CompanyController extends Controller
             [
                 'success' => true,
                 'message' => 'Company created successfully',
-                'data'    => $this->companyService->create($request->all()),
+                'data'    => $this->companyService->createCompany($request->all()),
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -47,11 +52,11 @@ class CompanyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Company $company)
+    public function show($id)
     {
         return response()->json([
             'success' => true,
-            'data'    => $company,
+            'data'    => $this->companyService->getCompanyDetails($id),
         ]);
     }
 
@@ -61,15 +66,15 @@ class CompanyController extends Controller
     public function update(CompanyRequest $request, Company $company)
     {
         try {
-            $this->companyService->update($company, $request->all());
-            $company->refresh();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Company updated successfully',
-                'data'    => $company,
-            ], JsonResponse::HTTP_CREATED);
-        } catch (Exception $e) {
+            $this->companyService->updateCompany($company, $request->all());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Company updated successfully',
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
             return returnResponse(
                 [
                     'success' => false,
@@ -83,13 +88,16 @@ class CompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Company $company)
+    public function destroy($id)
     {
-        $company->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Company deleted successfully'
-        ]);
+        $this->companyService->deleteCompany($id);
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Company deleted successfully'
+            ],
+            JsonResponse::HTTP_CREATED,
+        );
     }
 
     public function create()
@@ -97,18 +105,9 @@ class CompanyController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->companyService->getOptionsToCreate(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->companyService->getOptionsToEdit($id),
+                'data'    => [
+                    'sectors' => $this->sectorService->getActiveSectors()
+                ],
             ],
             JsonResponse::HTTP_OK,
         );

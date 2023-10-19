@@ -216,17 +216,17 @@ class EmployeeService
 
     public function getSubTypeOptions()
     {
-        return config('constants.SUB_TYPE_OPTIONS');
+        return getValueLabelOptionsFromConfig('constants.SUB_TYPE_OPTIONS');
     }
 
     public function getScheduleTypeOptions()
     {
-        return config('constants.SCHEDULE_TYPE_OPTIONS');
+        return getValueLabelOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
     }
 
     public function getEmploymentTypeOptions()
     {
-        return config('constants.EMPLOYMENT_TYPE_OPTIONS');
+        return getValueLabelOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
     }
 
     public function getEmployeeSalaryTypeOptions()

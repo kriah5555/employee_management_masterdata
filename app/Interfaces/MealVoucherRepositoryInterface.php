@@ -4,7 +4,7 @@ namespace App\Interfaces;
 
 interface MealVoucherRepositoryInterface
 {
-    public function getAllMealVouchers();
+    public function getMealVouchers();
 
     public function getMealVoucherById(string $mealVoucherId);
 

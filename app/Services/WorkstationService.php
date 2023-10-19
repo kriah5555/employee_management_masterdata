@@ -3,28 +3,22 @@
 namespace App\Services;
 
 use App\Models\Workstation;
-use App\Services\AddressService;
-use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Rules\FunctionTitlesLinkedToSectorRule;
 use App\Rules\FunctionTitlesLinkedToCompany;
 use App\Rules\LocationLinkedToCompanyRule;
 use App\Services\BaseService;
-use App\Services\LocationService;
 use Illuminate\Database\Eloquent\Builder;
-use App\Services\EmployeeFunction\FunctionService;
+use App\Repositories\Company\WorkstationRepository;
 
-class WorkstationService extends BaseService
+class WorkstationService
 {
-    public $locationService;
-    protected $functionService;
+    protected $workstationRepository;
 
-    public function __construct(protected Workstation $workstation)
+    public function __construct(WorkstationRepository $workstationRepository)
     {
-        parent::__construct($workstation);
-        $this->locationService = app(LocationService::class);
-        $this->functionService = app(FunctionService::class);    
+        $this->workstationRepository = $workstationRepository;
     }
 
 
@@ -73,15 +67,15 @@ class WorkstationService extends BaseService
 
     private static function addCompanyCreationRules($rules)
     {
-        $rules['locations_index']     = 'required|array';
-        $rules['locations_index.*']   = 'integer';
+        $rules['locations_index'] = 'required|array';
+        $rules['locations_index.*'] = 'integer';
         $rules['function_titles.*'][] = new FunctionTitlesLinkedToSectorRule(request()->input('sectors')); # to validate if the selected function title is linked to the sector selected
         return $rules;
     }
 
     private static function addWorkstationCreationRules($rules)
     {
-        $rules['locations']   = 'nullable|array';
+        $rules['locations'] = 'nullable|array';
         $rules['locations.*'] = [
             'integer',
             Rule::exists('locations', 'id'),
@@ -100,35 +94,28 @@ class WorkstationService extends BaseService
 
     public function create($values)
     {
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
-            $locations       = $values['locations'] ?? [];
-            $function_titles = $values['function_titles'] ?? [];
+        $locations = $values['locations'] ?? [];
+        $function_titles = $values['function_titles'] ?? [];
 
-            // $add_locations = isset($values['locations']);
-            unset($values['locations']);
-            unset($values['locations_index']);
+        unset($values['locations']);
+        unset($values['locations_index']);
 
-            $workstation = parent::create($values);
+        $workstation = $this->workstationRepository->createWorkstation($values);
 
-            // Attach locations and function titles
-            // if ($add_locations) { # in company creation flow we are linking locations in workstations but not workstation creation
-            $workstation->locations()->sync($locations);
-            // }
-            $workstation->functionTitles()->sync($function_titles);
+        // Attach locations and function titles
+        // if ($add_locations) { # in company creation flow we are linking locations in workstations but not workstation creation
+        $workstation->locations()->sync($locations);
+        // }
+        $workstation->functionTitles()->sync($function_titles);
 
-            // Save the workstation
-            $workstation->save();
+        // Save the workstation
+        $workstation->save();
 
-            DB::commit();
+        DB::commit();
 
-            return $workstation;
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+        return $workstation;
     }
 
     public function updateWorkstation(Workstation $workstation, $values)
@@ -137,14 +124,14 @@ class WorkstationService extends BaseService
             DB::beginTransaction();
 
             $function_titles = $values['function_titles'] ?? [];
-            $locations       = $values['locations'] ?? [];
+            $locations = $values['locations'] ?? [];
 
             $workstation->functionTitles()->sync($function_titles);
             $workstation->locations()->sync($locations);
 
             unset($values['function_titles']);
             $workstation->update($values);
-            
+
             DB::commit();
             return $workstation;
         } catch (Exception $e) {
@@ -175,8 +162,8 @@ class WorkstationService extends BaseService
     public function getOptionsToEdit($workstation_id)
     {
         $workstation_details = $this->get($workstation_id, ['locationsValue', 'functionTitlesValue']);
-        $options             = $this->getOptionsToCreate($workstation_details->company);
-        $options['details']  = $workstation_details;
+        $options = $this->getOptionsToCreate($workstation_details->company);
+        $options['details'] = $workstation_details;
         return $options;
     }
 }
