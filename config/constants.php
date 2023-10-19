@@ -69,15 +69,15 @@ return [
 
     'CONTRACT_TEMPLATE_TYPE'            => ['company' => 'Company', 'default' => 'Default'],
 
-    'TOKENS'                            => [
-        'first_name'    => 'First name',
-        'last_name'     => 'Last name',
-        'uid'           => 'User id',
-        'date_of_birth' => 'DOB',
-        'gender'        => 'Gender',
-        'email'         => 'Email',
-        'phone_number'  => 'Phone number',
-        'company_name'  => "Company name",
+    'TOKENS'  => [
+        '{first_name}'    => 'First name', 
+        '{last_name}'     => 'Last name', 
+        '{uid}'           => 'User id',
+        '{date_of_birth}' => 'DOB',
+        '{gender}'        => 'Gender',
+        '{email}'         => 'Email',
+        '{phone_number}'  => 'Phone number',
+        '{company_name}'  => "Company name",
     ],
 
 ];
