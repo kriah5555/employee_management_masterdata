@@ -59,6 +59,8 @@ class EmployeeController extends Controller
                     'meal_vouchers'             => $this->mealVoucherRepository->getActiveMealVouchers(),
                     'employment_types'          => $this->employeeService->getEmploymentTypeOptions(),
                     'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
+                    'genders'                   => $this->employeeService->getGenders(),
+                    'marital_statuses'          => $this->employeeService->getMaritalStatus(),
                 ]
             ],
             JsonResponse::HTTP_OK,
