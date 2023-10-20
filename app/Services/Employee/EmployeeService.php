@@ -291,4 +291,26 @@ class EmployeeService
             throw $e;
         }
     }
+
+    public function getGenders()
+    {
+        $url = config('app.identity_manager_url') . '/genders';
+        $response = makeApiRequest($url, 'GET');
+        if ($response['success']) {
+            return $response['data'];
+        } else {
+            throw new Exception('Failed to get genders');
+        }
+    }
+
+    public function getMaritalStatus()
+    {
+        $url = config('app.identity_manager_url') . '/marital-statuses';
+        $response = makeApiRequest($url, 'GET');
+        if ($response['success']) {
+            return $response['data'];
+        } else {
+            throw new Exception('Failed to get marital statuses');
+        }
+    }
 }

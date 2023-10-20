@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name'                => env('APP_NAME', 'Laravel'),
+    'name'                 => env('APP_NAME', 'Laravel'),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'env'                 => env('APP_ENV', 'production'),
+    'env'                  => env('APP_ENV', 'production'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug'               => (bool) env('APP_DEBUG', false),
+    'debug'                => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,9 +54,9 @@ return [
     |
     */
 
-    'url'                 => env('APP_URL', 'http://localhost'),
+    'url'                  => env('APP_URL', 'http://localhost'),
 
-    'asset_url'           => env('ASSET_URL'),
+    'asset_url'            => env('ASSET_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone'            => 'UTC',
+    'timezone'             => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'locale'              => 'en',
+    'locale'               => 'en',
 
     /*
     |--------------------------------------------------------------------------
@@ -95,10 +95,10 @@ return [
     |
     */
 
-    'fallback_locale'     => 'en',
+    'fallback_locale'      => 'en',
 
     // Add the list of available locales you want to support
-    'available_locales'   => ['en', 'nl', 'fr'],
+    'available_locales'    => ['en', 'nl', 'fr'],
     // Add more locales if needed
 
     /*
@@ -112,7 +112,7 @@ return [
     |
     */
 
-    'faker_locale'        => 'en_US',
+    'faker_locale'         => 'en_US',
 
     /*
     |--------------------------------------------------------------------------
@@ -125,9 +125,9 @@ return [
     |
     */
 
-    'key'                 => env('APP_KEY'),
+    'key'                  => env('APP_KEY'),
 
-    'cipher'              => 'AES-256-CBC',
+    'cipher'               => 'AES-256-CBC',
 
     /*
     |--------------------------------------------------------------------------
@@ -142,7 +142,7 @@ return [
     |
     */
 
-    'maintenance'         => [
+    'maintenance'          => [
         'driver' => 'file',
         // 'store'  => 'redis',
     ],
@@ -158,7 +158,7 @@ return [
     |
     */
 
-    'providers'           => [
+    'providers'            => [
 
             /*
              * Laravel Framework Service Providers...
@@ -219,9 +219,11 @@ return [
     |
     */
 
-    'aliases'             => Facade::defaultAliases()->merge([
+    'aliases'              => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
-    'service_gateway_url' => env('SERVICE_GATEWAY_URL', 'http://api-gateway.indii2.local'),
+    'service_gateway_url'  => env('SERVICE_GATEWAY_URL', 'http://api-gateway.indii2.local'),
+    'masterdata_url'       => env('MASTERDATA_URL', 'http://masterdata.indii2.local/api'),
+    'identity_manager_url' => env('IDENTITY_MANAGER_URL', 'http://identity-manager.indii2.local/api'),
 ];
