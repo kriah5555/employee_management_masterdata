@@ -2,11 +2,11 @@
 
 return [
 
-    'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Paid', 2 => 'Unpaid', 3 => 'Sick Leave'],
+    'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Paid', 2 => 'Unpaid'],
 
     'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
 
-    'HOLIDAY_OPTIONS'                   => [1 => 'Holiday', 2 => 'Leave'],
+    'HOLIDAY_OPTIONS'                   => [1 => 'Holiday', 2 => 'Leave', 3 => 'Sick Leave', 4 => 'Over time'],
 
     'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
 

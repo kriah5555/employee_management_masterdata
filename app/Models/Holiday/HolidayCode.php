@@ -15,8 +15,7 @@ class HolidayCode extends Model
     protected $table = 'holiday_codes';
 
     protected $casts = [
-        'count' => 'float',
-        // Cast the 'count' attribute to a float
+        'count' => 'float', // Cast the 'count' attribute to a float
     ];
 
     protected $fillable = [
