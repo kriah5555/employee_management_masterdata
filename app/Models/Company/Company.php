@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Company;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +12,9 @@ use App\Models\Holiday\HolidayCode;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\SocialSecretary\SocialSecretary;
 use App\Models\Interim\InterimAgency;
+use App\Models\Company\CompanyDatabase;
+use App\Models\Tenant;
+
 
 class Company extends Model
 {
@@ -73,6 +76,31 @@ class Company extends Model
         return $this->belongsToMany(Sector::class, 'sector_to_company');
     }
 
+    public function companyDatabase()
+    {
+        return $this->hasOne(CompanyDatabase::class);
+    }
+
+    public function createDatabaseTenancy() 
+    {
+        $database_name = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $this->company_name) . '_' . $this->id); // Replace spaces and special characters with underscores
+
+        Tenant::create([
+            'tenancy_db_name' => $database_name,
+        ]);
+
+        return $this->companyDatabase()->create([
+            'database_name' => $database_name,
+        ]);    
+    }
+
+    public function getTenantDetails()
+    {
+        dd(Tenant::all()->ToArray());
+        $tenant = Tenant::where('tenancy_db_name', $this->companyDatabase->database_name)->get();
+        return $tenant;
+    }
+
     public function sectorsValue()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company', 'company_id', 'sector_id')
@@ -101,7 +129,6 @@ class Company extends Model
             return [
                 'level' => $this->socialSecretary->id,
                 'value' => $this->socialSecretary->name,
-                // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
             ];
         } else {
             return null;
@@ -119,7 +146,6 @@ class Company extends Model
             return [
                 'level' => $this->interimAgency->id,
                 'value' => $this->interimAgency->name,
-                // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
             ];
         } else {
             return null;
@@ -137,12 +163,7 @@ class Company extends Model
         parent::boot();
 
         static::created(function ($company) {
-            // Find all active holiday codes (status = 1)
-            // $activeHolidayCodes = HolidayCode::where('status', 1)->pluck('id');
-
             $holiday_codes = HolidayCode::all()->pluck('id');
-
-            // Sync the active holiday codes with the company
             $company->holidayCodes()->sync($holiday_codes);
         });
     }

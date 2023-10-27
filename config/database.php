@@ -63,6 +63,20 @@ return [
             'search_path'    => 'public',
             'sslmode'        => 'prefer',
         ],
+
+        'tenant' => [
+            'driver'         => 'pgsql',
+            'url'            => env('USER_DATABASE_URL'),
+            'host'           => env('DB_HOST', '127.0.0.1'),
+            'port'           => env('DB_PORT', '5432'),
+            'username'       => env('DB_USERNAME', 'forge'),
+            'password'       => env('DB_PASSWORD', ''),
+            'charset'        => 'utf8',
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'search_path'    => 'public',
+            'sslmode'        => 'prefer',
+        ],
     ],
 
     /*

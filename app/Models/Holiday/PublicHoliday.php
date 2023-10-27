@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\BaseModel;
-use App\Models\Company;
+use App\Models\Company\Company;
 class PublicHoliday extends BaseModel
 {
     use HasFactory, SoftDeletes;

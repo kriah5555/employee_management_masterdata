@@ -5,7 +5,7 @@ namespace App\Services\EmployeeFunction;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
-use App\Models\Company;
+use App\Models\Company\Company;
 use Exception;
 use App\Repositories\EmployeeFunction\FunctionCategoryRepository;
 use App\Repositories\EmployeeFunction\FunctionTitleRepository;

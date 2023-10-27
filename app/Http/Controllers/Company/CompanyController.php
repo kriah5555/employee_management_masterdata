@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Http\Rules\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +18,7 @@ class CompanyController extends Controller
     public function __construct(CompanyService $companyService, SectorService $sectorService)
     {
         $this->companyService = $companyService;
-        $this->sectorService = $sectorService;
+        $this->sectorService  = $sectorService;
     }
     /**
      * Display a listing of the resource.

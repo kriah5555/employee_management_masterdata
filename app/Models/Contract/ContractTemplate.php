@@ -4,7 +4,7 @@ namespace App\Models\Contract;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Models\Sector\Sector;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\SocialSecretary\SocialSecretary;

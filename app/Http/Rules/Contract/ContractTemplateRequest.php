@@ -33,16 +33,9 @@ class ContractTemplateRequest extends ApiRequest
             ],
             'social_secretary_id' => [
                 'bail',
-                'required',
-                'integer',
-                Rule::exists('social_secretaries', 'id'),
-            ],
-            'sector_id' => [
-                'bail',
                 'nullable',
                 'integer',
-                Rule::exists('sectors', 'id'),
-                new SectorLinkedToEmployeeTypeRule($this->input('employee_type_id')),
+                Rule::exists('social_secretaries', 'id'),
             ],
             'company_id' => [
                 'bail',

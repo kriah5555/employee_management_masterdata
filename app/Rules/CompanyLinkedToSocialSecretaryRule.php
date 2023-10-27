@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\Company;
+use App\Models\Company\Company;
 
 class CompanyLinkedToSocialSecretaryRule implements ValidationRule
 {

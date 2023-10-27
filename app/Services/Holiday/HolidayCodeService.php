@@ -4,7 +4,7 @@ namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Holiday\HolidayCode;
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Repositories\Holiday\HolidayCodeRepository;
 
 class HolidayCodeService

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\EmployeeType\EmployeeType;
-use App\Models\Company;
+use App\Models\Company\Company;
 
 class HolidayCode extends Model
 {

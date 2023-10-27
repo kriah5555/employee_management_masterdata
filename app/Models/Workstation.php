@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Location;
-use App\Models\Company;
+use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workstation extends Model

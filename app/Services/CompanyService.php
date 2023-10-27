@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Models\Address;
 use App\Models\Location;
 use App\Models\Workstation;
@@ -53,18 +53,19 @@ class CompanyService
 
     public function createCompany($values)
     {
-        return DB::transaction(function () use ($values) {
-            $requestData = $values;
-            $company_address = $this->addressService->createNewAddress($values['address']);
+        DB::beginTransaction();
+            $requestData            = $values;
+            $company_address        = $this->addressService->createNewAddress($values['address']);
             $requestData['address'] = $company_address->id;
-            $requestData['logo'] = isset($requestData['logo']) ? self::addCompanyLogo($requestData) : '';
-            $company = $this->companyRepository->createCompany($requestData);
-            $location_ids = $this->createCompanyLocations($company, $values); # add company locations
+            $requestData['logo']    = isset($requestData['logo']) ? self::addCompanyLogo($requestData) : '';
+            $company                = $this->companyRepository->createCompany($requestData);
+            $location_ids           = $this->createCompanyLocations($company, $values); # add company locations
             $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             $this->syncSectors($company, $values);
             $company->refresh();
-            return $company;
-        });
+        DB::commit();
+        $company->createDatabaseTenancy();
+        return $company;
     }
 
     public function updateCompany($company, $values)
@@ -178,23 +179,12 @@ class CompanyService
 
     public function getOptionsToEdit($company_id)
     {
-        $company_details = $this->model::with(['address', 'sectors', 'sectorsValue', 'logoFile'])->findOrFail($company_id);
-        $options = $this->getOptionsToCreate();
-        $options['details'] = $company_details;
+        $company_details                                = $this->model::with(['address', 'sectors', 'sectorsValue', 'logoFile'])->findOrFail($company_id);
+        $options                                        = $this->getOptionsToCreate();
+        $options['details']                             = $company_details;
         $options['details']['social_secretaries_value'] = $company_details->socialSecretaryValue();
-        unset($options['details']['socialSecretary']);
-        unset($options['details']['sectors']);
-
-        // if ($company_details->socialSecretaries) {
-
-        //     // Add social_secretaries key-value pairs to details
-        //     $options['details']['social_secretaries_value'] = [
-        //         'label' => $company_details->socialSecretaries->id,
-        //         'value' => $company_details->socialSecretaries->name
-        //     ];
-        // }
-        $options['details']['social_secretary_value'] = $company_details->socialSecretaryValue();
-        $options['details']['interim_agency_value'] = $company_details->interimAgencyValue();
+        $options['details']['social_secretary_value']   = $company_details->socialSecretaryValue();
+        $options['details']['interim_agency_value']     = $company_details->interimAgencyValue();
         unset($options['details']['socialSecretary'], $options['details']['sectors'], $options['details']['interimAgency']);
 
         return $options;

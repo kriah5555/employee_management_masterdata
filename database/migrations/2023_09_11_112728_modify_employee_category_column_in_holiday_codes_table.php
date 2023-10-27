@@ -31,7 +31,7 @@ return new class extends Migration
         });
         
         Schema::table('holiday_codes', function (Blueprint $table) {
-            $table->tinyInteger('employee_category');
+            $table->tinyInteger('employee_category')->nullable();
         });
         
     }
