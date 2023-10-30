@@ -72,7 +72,6 @@ Route::resources([
     'workstations'       => WorkstationController::class,
     'locations'          => LocationController::class,
     'public-holidays'    => PublicHolidayController::class,
-    'contract-templates' => ContractTemplateController::class,
     'interim-agencies'   => InterimAgencyController::class,
 ]);
 
@@ -89,6 +88,14 @@ Route::controller(TranslationController::class)->group(function () {
     Route::post('/translations', 'store');
 
     Route::post('/translate', 'getStringTranslation');
+
+});
+
+Route::controller(ContractTemplateController::class)->group(function () use ($integerRule) {
+
+    Route::resource('contract-templates', ContractTemplateController::class)->except(['edit']);
+
+    Route::get('company-contract-templates/{company_id}', 'index');
 
 });
 

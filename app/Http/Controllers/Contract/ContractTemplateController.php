@@ -17,18 +17,13 @@ class ContractTemplateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($company_id = '')
     {
-        $filename = 'company_1_1694603755_bg2.jpg';
-        $filePath = 'public/company_logos/' . $filename;
-
-        // Generate the URL for the file
-        $fileUrl = asset('storage/' . $filePath);
-
+        
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getAll(['with' => 'employeeType']),
+                'data'    => ($company_id) ? $this->contractTemplateService->getCompanyContractTemplates($company_id) : $this->contractTemplateService->getAll(['with' => 'employeeType']),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -71,21 +66,7 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->get($id)
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->contractTemplateService->getOptionsToEdit($id),
+                'data'    => $this->contractTemplateService->get($id, ['company', 'employeeType', 'company', 'socialSecretary'])
             ],
             JsonResponse::HTTP_OK,
         );
