@@ -71,15 +71,11 @@ class CompanyService
     public function updateCompany($company, $values)
     {
         DB::beginTransaction();
-        // $this->updateCompanyLogoData($company, $values);
-        $this->addressService->updateAddress($company->address, $values['address']);
-        $this->syncSectors($company, $values);
-        unset($values['address']);
-        unset($values['sectors']);
-        unset($values['responsible_persons']);
-        unset($values['locations']);
-        unset($values['workstations']);
-        $this->companyRepository->updateCompany($company->id, $values);
+            // $this->updateCompanyLogoData($company, $values);
+            $this->addressService->updateAddress($company->address, $values['address']);
+            $this->syncSectors($company, $values);
+            unset($values['address'], $values['sectors'], $values['responsible_persons'], $values['locations'], $values['workstations']);
+            $this->companyRepository->updateCompany($company->id, $values);
         DB::commit();
     }
 

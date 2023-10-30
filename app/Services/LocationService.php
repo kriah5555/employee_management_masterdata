@@ -53,11 +53,8 @@ class LocationService extends BaseService
     public function create($values)
     {
         try {
+            setTenantDB('');
             DB::beginTransaction();
-                // $tenant = Tenant::find("0ae408e5-9564-4506-9ab4-dc1abc2191f6");
-                // tenancy()->initialize($tenant);
-
-                // config(['database.connections.tenant_template.database' => 'test_tenancy_2']);
                 $address = $this->addressService->createNewAddress($values['address']);
                 $values['address'] = $address->id;
                 $location = $this->locationRepository->createLocation($values);

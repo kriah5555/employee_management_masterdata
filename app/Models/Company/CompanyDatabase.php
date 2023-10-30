@@ -5,6 +5,7 @@ namespace App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Company\Company;
+use App\Models\Tenant;
 
 class CompanyDatabase extends Model
 {
@@ -18,6 +19,7 @@ class CompanyDatabase extends Model
         'database_name',
         'status',
         'company_id',
+        'tenant_id',
     ];
 
     public $timestamps = true;
@@ -36,5 +38,10 @@ class CompanyDatabase extends Model
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 }

@@ -83,22 +83,16 @@ class Company extends Model
 
     public function createDatabaseTenancy() 
     {
-        $database_name = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $this->company_name) . '_' . $this->id); // Replace spaces and special characters with underscores
+        $database_name = 'tenant_'.strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $this->company_name) . '_' . $this->id);
 
-        Tenant::create([
+        $tenant = Tenant::create([
             'tenancy_db_name' => $database_name,
         ]);
 
         return $this->companyDatabase()->create([
             'database_name' => $database_name,
-        ]);    
-    }
-
-    public function getTenantDetails()
-    {
-        dd(Tenant::all()->ToArray());
-        $tenant = Tenant::where('tenancy_db_name', $this->companyDatabase->database_name)->get();
-        return $tenant;
+            'tenant_id'     => $tenant->id,
+        ]);
     }
 
     public function sectorsValue()
