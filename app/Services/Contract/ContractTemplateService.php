@@ -36,8 +36,8 @@ class ContractTemplateService extends BaseService
             return [
                 'sectors'            => $this->sector_service->getActiveSectors(),
                 'social_secretaries' => $this->social_secretaryService->getSocialSecretaryOptions(),
-                'companies'          => $this->company_service->getCompanyOptions(),
-                'employee_types'     => $this->employee_type_service->getEmployeeTypeOptions(),
+                'companies'          => $this->company_service->getActiveCompanies(),
+                'employee_types'     => $this->employee_type_service->getActiveEmployeeTypes(),
                 'tokens'             => config('constants.TOKENS'),
         ];
         } catch (Exception $e) {
@@ -48,19 +48,17 @@ class ContractTemplateService extends BaseService
 
     public function getOptionsToEdit($contract_template_id)
     {
-        $contract_template = $this->get($contract_template_id, ['sector']);
+        $contract_template = $this->get($contract_template_id);
         $companyValue = $contract_template->companyValue();
-        $sectorValue = $contract_template->sectorValue();
         $employeeTypeValue = $contract_template->employeeTypeValue();
         $socialSecretaryValue = $contract_template->socialSecretaryValue();
         $options = $this->getOptionsToCreate();
         $options['details'] = $contract_template;
         $options['details']['company_value'] = $companyValue;
-        $options['details']['sector_value'] = $sectorValue;
-        $options['details']['employee_type_value'] = $employeeTypeValue;
-        $options['details']['social_secretary_value'] = $socialSecretaryValue;
+        // $options['details']['employee_type_value'] = $employeeTypeValue;
+        // $options['details']['social_secretary_value'] = $socialSecretaryValue;
 
-        unset($options['details']['company'], $options['details']['sector'], $options['details']['employeeType'], $options['details']['socialSecretary']);
+        unset($options['details']['company']);
 
         return $options;
     }

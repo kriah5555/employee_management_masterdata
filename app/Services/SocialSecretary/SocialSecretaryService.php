@@ -43,7 +43,8 @@ class SocialSecretaryService
     public function getSocialSecretaryOptions()
     {
         try {
-            return SocialSecretary::where('status', true)->select(['id as label', 'name as value'])->get();
+            return SocialSecretary::where('status', true)->get();
+            // return SocialSecretary::where('status', true)->select(['id as label', 'name as value'])->get();
         } catch (\Exception $e) {
             error_log($e->getMessage());
             throw $e;

@@ -18,7 +18,7 @@ class CompanyLinkedToSocialSecretaryRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!empty($value)) {
+        if (!empty($value) && !empty($this->social_secretary_id)) {
             $exists = Company::where('id', $value)
                 ->where('social_secretary_id', $this->social_secretary_id)
                 ->exists();

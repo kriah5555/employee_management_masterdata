@@ -28,7 +28,7 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getAll(),
+                'data'    => $this->contractTemplateService->getAll(['with' => 'employeeType']),
             ],
             JsonResponse::HTTP_OK,
         );

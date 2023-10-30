@@ -23,7 +23,7 @@ class ContractTemplate extends BaseModel
         'status',
         'employee_type_id',
         'social_secretary_id',
-        'sector_id',
+        // 'sector_id',
         'company_id',
     ];
 
@@ -44,22 +44,22 @@ class ContractTemplate extends BaseModel
         }
     }
 
-    public function sector()
-    {
-        return $this->belongsTo(Sector::class, 'sector_id');
-    }
+    // public function sector()
+    // {
+    //     return $this->belongsTo(Sector::class, 'sector_id');
+    // }
 
-    public function sectorValue()
-    {
-        if ($this->sector) {
-            return [
-                'level' => $this->sector->id,
-                'value' => $this->sector->name, // Replace 'company_name' with the actual column name for the company name in your Company model
-            ];
-        } else {
-            return null;
-        }
-    }
+    // public function sectorValue()
+    // {
+    //     if ($this->sector) {
+    //         return [
+    //             'level' => $this->sector->id,
+    //             'value' => $this->sector->name, // Replace 'company_name' with the actual column name for the company name in your Company model
+    //         ];
+    //     } else {
+    //         return null;
+    //     }
+    // }
 
     public function employeeType()
     {
