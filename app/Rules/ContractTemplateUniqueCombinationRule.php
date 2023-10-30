@@ -31,7 +31,6 @@ class ContractTemplateUniqueCombinationRule implements ValidationRule
         if ($this->exclude_id !== null) {
             $query->where('id', '!=', $this->exclude_id);
         }
-
         if ($query->exists()) {
             $fail('The template with the specified criteria already exists.');
         }
