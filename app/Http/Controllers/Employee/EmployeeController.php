@@ -61,6 +61,8 @@ class EmployeeController extends Controller
                     'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
                     'genders'                   => $this->employeeService->getGenders(),
                     'marital_statuses'          => $this->employeeService->getMaritalStatus(),
+                    'dependent_spouse_options'  => $this->employeeService->getDependentSpouseOptions(),
+                    'languages'                 => $this->employeeService->getLanguageOptions(),
                 ]
             ],
             JsonResponse::HTTP_OK,

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\EmployeeProfileRepositoryInterface;
 use App\Models\Employee\EmployeeProfile;
+use App\Models\User;
 
 class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 {
@@ -45,8 +46,19 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 
     public function checkEmployeeExistsInCompany(string $companyId, string $socialSecurityNumber)
     {
-        return EmployeeProfile::where('company_id', '=', $companyId)
-            ->where('social_security_number', '=', $socialSecurityNumber)->exists();
+        // return User::where('social_security_number', $socialSecurityNumber)->whereHas('employeeProfiles', function ($query) use ($companyId) {
+        //     $query->on('master')->where('company_id', $companyId);
+        // })->exists();
+        // return User::where('id', $userId)
+        //     ->whereHas('employees', function ($query) use ($employeeId) {
+        //         $query->where('id', $employeeId);
+        //     })
+        //     ->exists();
+        return EmployeeProfile::where('company_id', $companyId)->whereHas('user', function ($query) use ($socialSecurityNumber) {
+            $query->where('social_security_number', $socialSecurityNumber);
+        })->exists();
+        // return EmployeeProfile::where('company_id', '=', $companyId)
+        //     ->where('social_security_number', '=', $socialSecurityNumber)->exists();
     }
 
     public function getEmployeeProfileBySsn(string $socialSecurityNumber)

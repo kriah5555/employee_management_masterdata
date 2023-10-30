@@ -4,6 +4,7 @@ namespace App\Models\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\User;
 
 class EmployeeProfile extends BaseModel
 {
@@ -53,4 +54,9 @@ class EmployeeProfile extends BaseModel
         'company_id',
         'status',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class)
+            ->where('status', true);
+    }
 }

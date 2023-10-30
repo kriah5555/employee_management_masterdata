@@ -3,7 +3,7 @@
 namespace App\Models\Contract;
 
 use App\Models\BaseModel;
-use App\Models\ContractType;
+use App\Models\Contract\ContractType;
 
 class ContractRenewalType extends BaseModel
 {

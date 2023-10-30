@@ -63,7 +63,7 @@ class EmployeeService
 
     public function createNewEmployee($values, $company_id)
     {
-        print_r('as');
+        print_r($values);
         exit;
         try {
             $existingEmpProfile = $this->employeeProfileRepository->getEmployeeProfileBySsn($values['social_security_number']);
@@ -196,7 +196,13 @@ class EmployeeService
 
     public function getLanguageOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.LANGUAGE_OPTIONS');
+        $url = config('app.identity_manager_url') . '/employee/get-language-options';
+        $response = makeApiRequest($url, 'GET');
+        if ($response['success']) {
+            return $response['data'];
+        } else {
+            throw new Exception('Failed to get language options');
+        }
     }
 
     public function getCommuteTypeOptions()
@@ -211,7 +217,13 @@ class EmployeeService
 
     public function getDependentSpouseOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
+        $url = config('app.identity_manager_url') . '/employee/get-dependent-spouse-options';
+        $response = makeApiRequest($url, 'GET');
+        if ($response['success']) {
+            return $response['data'];
+        } else {
+            throw new Exception('Failed to get dependent spouse options');
+        }
     }
 
     public function getSubTypeOptions()

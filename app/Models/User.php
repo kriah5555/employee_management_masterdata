@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\HasPermissions;
+use App\Models\Employee\EmployeeProfile;
 
 class User extends Authenticatable
 {
@@ -21,8 +22,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'username',
+        'social_security_number',
         'password',
         'status',
+        'created_by',
+        'updated_by'
     ];
 
     /**
@@ -50,5 +54,10 @@ class User extends Authenticatable
     public function findForPassport($username)
     {
         return $this->where('username', $username)->first();
+    }
+    public function employeeProfiles()
+    {
+        return $this->hasMany(EmployeeProfile::class)
+            ->where('status', true);
     }
 }
