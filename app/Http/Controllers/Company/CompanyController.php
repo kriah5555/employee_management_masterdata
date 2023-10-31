@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Interim\InterimAgencyService;
+use App\Models\Tenant;
+use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
@@ -18,7 +20,7 @@ class CompanyController extends Controller
     public function __construct(CompanyService $companyService, SectorService $sectorService)
     {
         $this->companyService = $companyService;
-        $this->sectorService  = $sectorService;
+        $this->sectorService = $sectorService;
     }
     /**
      * Display a listing of the resource.
