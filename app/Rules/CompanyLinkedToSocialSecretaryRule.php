@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\Company;
+use App\Models\Company\Company;
 
 class CompanyLinkedToSocialSecretaryRule implements ValidationRule
 {
@@ -18,7 +18,7 @@ class CompanyLinkedToSocialSecretaryRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!empty($value)) {
+        if (!empty($value) && !empty($this->social_secretary_id)) {
             $exists = Company::where('id', $value)
                 ->where('social_secretary_id', $this->social_secretary_id)
                 ->exists();

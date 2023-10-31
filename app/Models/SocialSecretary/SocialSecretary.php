@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BaseModel;
 use App\Models\Holiday\HolidayCodesOfSocialSecretary;
-use App\Models\Company;
+use App\Models\Company\Company;
 
 class SocialSecretary extends BaseModel
 {

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Holiday\HolidayCodeService;
 use App\Http\Rules\Holiday\HolidayCodeConfigRequest;
-use App\Models\Company;
+use App\Models\Company\Company;
 use Illuminate\Http\JsonResponse;
 use App\Services\CompanyService;
 

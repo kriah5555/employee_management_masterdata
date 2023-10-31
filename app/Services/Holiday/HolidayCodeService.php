@@ -4,7 +4,7 @@ namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Holiday\HolidayCode;
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Repositories\Holiday\HolidayCodeRepository;
 
 class HolidayCodeService
@@ -54,6 +54,7 @@ class HolidayCodeService
         return $holidayCode;
         // return $this->holidayCodeRepository->getHolidayCodeById($id);
     }
+    
     public function getHolidayCodeTypeOptions()
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_TYPE_OPTIONS');
@@ -66,9 +67,15 @@ class HolidayCodeService
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_ICON_TYPE_OPTIONS');
     }
+
     public function getHolidayTypeOptions()
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_OPTIONS');
+    }
+
+    public function getCompanyLinkingOptions()
+    {
+        return getValueLabelOptionsFromConfig('constants.HOLIDAY_INCLUDE_OPTIONS');
     }
 
     public function createHolidayCode($values)

@@ -67,8 +67,8 @@ class WorkstationService
 
     private static function addCompanyCreationRules($rules)
     {
-        $rules['locations_index'] = 'required|array';
-        $rules['locations_index.*'] = 'integer';
+        $rules['locations_index']     = 'nullable|array';
+        $rules['locations_index.*']   = 'integer';
         $rules['function_titles.*'][] = new FunctionTitlesLinkedToSectorRule(request()->input('sectors')); # to validate if the selected function title is linked to the sector selected
         return $rules;
     }

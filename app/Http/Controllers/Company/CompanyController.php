@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Http\Rules\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Interim\InterimAgencyService;
+use App\Models\Tenant;
+use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {

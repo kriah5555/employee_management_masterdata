@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\CompanyService;
 
-class HolidayCodesController extends Controller
+class HolidayCodeController extends Controller
 {
     protected $holidayCodeService;
 
@@ -80,7 +80,8 @@ class HolidayCodesController extends Controller
                     'employee_types'    => $this->employeeTypeService->getEmployeeTypeOptions(),
                     'contract_type'     => $this->employeeTypeService->getEmployeeContractTypeOptions(),
                     'type'              => $this->holidayCodeService->getHolidayTypeOptions(),
-                    'companies'         => $this->companyService->getCompanies(),
+                    'companies'         => $this->companyService->getCompanyOptions(),
+                    'holiday_include_options' => $this->holidayCodeService->getCompanyLinkingOptions(),
                 ],
             ],
             JsonResponse::HTTP_OK,

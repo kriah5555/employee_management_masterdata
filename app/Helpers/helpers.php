@@ -2,6 +2,7 @@
 use Spatie\TranslationLoader\LanguageLine;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use App\Models\Tenant;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -204,5 +205,17 @@ if (!function_exists('formatModelName')) {
     function formatModelName($modelName)
     {
         return ucfirst(strtolower(preg_replace('/(?<!^)([A-Z])/', ' $1', $modelName)));
+    }
+}
+
+if (!function_exists('setTenantDB')) {
+    function setTenantDB($tenant_id)
+    {
+        $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to det tenant id from header
+        $tenant    = Tenant::find($tenant_id);
+        if ($tenant){
+            tenancy()->initialize($tenant);
+            config(['database.connections.tenant_template.database' => $tenant->database_name]);
+        }
     }
 }

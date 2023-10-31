@@ -3,7 +3,7 @@
 namespace App\Repositories\Company;
 
 use App\Interfaces\Company\CompanyRepositoryInterface;
-use App\Models\Company;
+use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 

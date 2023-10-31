@@ -9,7 +9,7 @@ use App\Repositories\Company\LocationRepository;
 use App\Repositories\MealVoucherRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Services\Employee\EmployeeService;
 use App\Services\CompanyService;
 use Illuminate\Http\Request;

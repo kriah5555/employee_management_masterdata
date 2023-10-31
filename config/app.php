@@ -205,6 +205,7 @@ return [
         App\Providers\FunctionServiceProvider::class,
         App\Providers\CompanyServiceProvider::class,
         App\Providers\ContractServiceProvider::class,
+        App\Providers\TenancyServiceProvider::class, 
 
     ],
 

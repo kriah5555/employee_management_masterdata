@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Address;
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Models\Employee\CommuteType;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
@@ -289,39 +289,39 @@ class TestDataSeeder extends Seeder
             FunctionTitle::insert($functionTitles);
         }
 
-        $companyDetails = [
-            'company_name'            => 'Test company',
-            'employer_id'             => 12345,
-            'sender_number'           => 12345,
-            'rsz_number'              => 12345,
-            'social_secretary_number' => 12345,
-            'username'                => "username",
-            'email'                   => "companyemail@gmail.com",
-            'phone'                   => "+919000000000",
-            'address_details'         => [
-                'street_house_no' => 'street',
-                'postal_code'     => 1234,
-                'city'            => 'city',
-                'country'         => 'country'
-            ],
-            'location_details'        => [
-                "location_name" => "Location 1"
-            ],
-            'sectors'                 => [1]
-        ];
-        $companyAddressObj = Address::create($companyDetails['address_details']);
-        $locationAddressObj = Address::create($companyDetails['address_details']);
-        $locationDetails = $companyDetails['location_details'];
-        unset($companyDetails['location_details']);
-        $sectors = $companyDetails['sectors'];
-        unset($companyDetails['sectors']);
-        unset($companyDetails['address_details']);
-        $companyDetails['address'] = $companyAddressObj->id;
-        $companyObj = Company::create($companyDetails);
-        $companyObj->sectors()->sync($sectors);
-        $locationDetails['company'] = $companyObj->id;
-        $locationDetails['address'] = $locationAddressObj->id;
-        Location::create($locationDetails);
+        // $companyDetails = [
+        //     'company_name'            => 'Test company',
+        //     'employer_id'             => 12345,
+        //     'sender_number'           => 12345,
+        //     'rsz_number'              => 12345,
+        //     'social_secretary_number' => 12345,
+        //     'username'                => "username",
+        //     'email'                   => "companyemail@gmail.com",
+        //     'phone'                   => "+919000000000",
+        //     'address_details'         => [
+        //         'street_house_no' => 'street',
+        //         'postal_code'     => 1234,
+        //         'city'            => 'city',
+        //         'country'         => 'country'
+        //     ],
+        //     'location_details'        => [
+        //         "location_name" => "Location 1"
+        //     ],
+        //     'sectors'                 => [1]
+        // ];
+        // $companyAddressObj = Address::create($companyDetails['address_details']);
+        // $locationAddressObj = Address::create($companyDetails['address_details']);
+        // $locationDetails = $companyDetails['location_details'];
+        // unset($companyDetails['location_details']);
+        // $sectors = $companyDetails['sectors'];
+        // unset($companyDetails['sectors']);
+        // unset($companyDetails['address_details']);
+        // $companyDetails['address'] = $companyAddressObj->id;
+        // $companyObj = Company::create($companyDetails);
+        // $companyObj->sectors()->sync($sectors);
+        // $locationDetails['company'] = $companyObj->id;
+        // $locationDetails['address'] = $locationAddressObj->id;
+        // Location::create($locationDetails);
 
     }
 }

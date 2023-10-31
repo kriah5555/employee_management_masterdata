@@ -11,6 +11,8 @@ class Location extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $connection = 'tenant';
+
     protected $table = "locations";
 
     protected $hidden = ['pivot'];

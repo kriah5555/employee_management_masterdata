@@ -2,7 +2,7 @@
 
 namespace App\Services\Employee;
 
-use App\Models\Company;
+use App\Models\Company\Company;
 use App\Models\Employee\EmployeeContractDetails;
 use App\Models\Employee\EmployeeProfile;
 use App\Models\Employee\LongTermEmployeeContractDetails;

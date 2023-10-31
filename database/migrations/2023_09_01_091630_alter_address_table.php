@@ -24,8 +24,8 @@ return new class extends Migration
     {
         Schema::table('address', function (Blueprint $table) {
             $table->dropColumn('street_house_no'); // Revert back by dropping the 'address' column
-            $table->string('street');
-            $table->string('house_no');
+            $table->string('street')->nullable();
+            $table->string('house_no')->nullable();
         });
     }
 };

@@ -40,6 +40,11 @@ class SocialSecretaryService
         return $this->socialSecretaryRepository->deleteSocialSecretary($socialSecretary);
     }
 
+    public function getActiveSocialSecretaries()
+    {
+        return $this->socialSecretaryRepository->getActiveSocialSecretaries();
+    }
+
     public function getSocialSecretaryOptions()
     {
         try {

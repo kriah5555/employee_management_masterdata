@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\EmployeeType\EmployeeTypeController;
-use App\Http\Controllers\Holiday\HolidayCodesController;
+use App\Http\Controllers\Holiday\HolidayCodeController;
 use App\Http\Controllers\Holiday\HolidayCodeConfigController;
 use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
@@ -72,7 +72,6 @@ Route::resources([
     'workstations'       => WorkstationController::class,
     'locations'          => LocationController::class,
     'public-holidays'    => PublicHolidayController::class,
-    'contract-templates' => ContractTemplateController::class,
     'interim-agencies'   => InterimAgencyController::class,
 ]);
 
@@ -89,6 +88,14 @@ Route::controller(TranslationController::class)->group(function () {
     Route::post('/translations', 'store');
 
     Route::post('/translate', 'getStringTranslation');
+
+});
+
+Route::controller(ContractTemplateController::class)->group(function () use ($integerRule) {
+
+    Route::resource('contract-templates', ContractTemplateController::class)->except(['edit']);
+
+    Route::get('company-contract-templates/{company_id}', 'index');
 
 });
 
@@ -158,7 +165,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
         'holiday-codes'       => [
-            'controller' => HolidayCodesController::class,
+            'controller' => HolidayCodeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
         'rules'               => [

@@ -32,15 +32,16 @@ class HolidayCodeRequest extends ApiRequest
                 # check if the code is unique or not
             ],
             'description'                       => 'nullable|string|max:255',
-            'holiday_type'                      => 'required|in:1,2,3',
-            'type'                              => 'required|in:1,2',
+            'holiday_type'                      => [
+                'required',
+                Rule::in(array_keys(config('constants.HOLIDAY_TYPE_OPTIONS'))),
+            ],
+            'type'                              => 'required|in:1,2,3,4',
             'count_type'                        => 'required|in:1,2,3',
             'icon_type'                         => 'required|in:1,2,3,4',
             'consider_plan_hours_in_week_hours' => 'required|boolean',
             'employee_category'                 => 'required|array',
-            // Updated to support an array
             'employee_category.*'               => 'in:1,2',
-            // Individual category values must be valid
             'contract_type'                     => 'required|in:1,2,3',
             'status'                            => 'required|boolean',
             'employee_types'                    => 'nullable|array',
@@ -48,10 +49,6 @@ class HolidayCodeRequest extends ApiRequest
                 'bail',
                 'integer',
                 Rule::exists('employee_types', 'id'),
-            ],
-            'count'                             => [
-                'bail',
-                new HolidayCountFieldRule()
             ],
             'link_companies'                    => 'required|in:all,include,exclude',
             'companies'                         => 'nullable|array',
@@ -63,6 +60,13 @@ class HolidayCodeRequest extends ApiRequest
                 ],
         ];
 
+        if ($this->input('type') == 1) { # if the type is holiday then only add validation for count
+            $rules['count'] = [
+                'bail',
+                new HolidayCountFieldRule()
+            ];
+        }
+        
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             unset($rules['companies'], $rules['companies.*'], $rules['link_companies']);
         }

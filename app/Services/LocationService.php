@@ -8,8 +8,10 @@ use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Company\LocationRepository;
+use App\Services\BaseService;
+use App\Models\Location;
 
-class LocationService
+class LocationService extends BaseService
 {
     protected $locationRepository;
 
@@ -17,6 +19,7 @@ class LocationService
 
     public function __construct(LocationRepository $locationRepository, AddressService $addressService)
     {
+        parent::__construct(Location::class);
         $this->locationRepository = $locationRepository;
         $this->addressService = $addressService;
     }
@@ -54,6 +57,7 @@ class LocationService
     public function create($values)
     {
         try {
+            setTenantDB('');
             DB::beginTransaction();
             $address = $this->addressService->createNewAddress($values['address']);
             $values['address'] = $address->id;
