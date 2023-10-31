@@ -10,18 +10,22 @@ use Illuminate\Support\Facades\DB;
 use App\Repositories\Company\LocationRepository;
 use App\Services\BaseService;
 use App\Models\Location;
-use Stancl\Tenancy\Facades\Tenancy;
-use App\Models\Tenant;
 
 class LocationService extends BaseService
 {
-    public function __construct(protected LocationRepository $locationRepository, protected AddressService $addressService)
+    protected $locationRepository;
+
+    protected $addressService;
+
+    public function __construct(LocationRepository $locationRepository, AddressService $addressService)
     {
         parent::__construct(Location::class);
+        $this->locationRepository = $locationRepository;
+        $this->addressService = $addressService;
     }
 
     public function getAll(array $args = [])
-    {        
+    {
         return $this->locationRepository->getLocationsOfCompany($args['company_id']);
     }
 
@@ -55,9 +59,9 @@ class LocationService extends BaseService
         try {
             setTenantDB('');
             DB::beginTransaction();
-                $address = $this->addressService->createNewAddress($values['address']);
-                $values['address'] = $address->id;
-                $location = $this->locationRepository->createLocation($values);
+            $address = $this->addressService->createNewAddress($values['address']);
+            $values['address'] = $address->id;
+            $location = $this->locationRepository->createLocation($values);
             DB::commit();
             return $location;
         } catch (Exception $e) {
@@ -71,10 +75,10 @@ class LocationService extends BaseService
     {
         try {
             DB::beginTransaction();
-                $this->addressService->updateAddress($location->address, $values['address']);
-                unset($values['address']);
-                unset($values['company']);
-                $location->update($values);
+            $this->addressService->updateAddress($location->address, $values['address']);
+            unset($values['address']);
+            unset($values['company']);
+            $location->update($values);
             DB::commit();
             return $location;
         } catch (Exception $e) {

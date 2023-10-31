@@ -22,8 +22,7 @@ class ContractTemplateUniqueCombinationRule implements ValidationRule
          $query = ContractTemplate::query();
          $query->where([
             'employee_type_id'    => request()->input('employee_type_id'),
-            'social_secretary_id' => request()->input('social_secretary_id'),
-            'sector_id'           => request()->input('sector_id', null),
+            'social_secretary_id' => request()->input('social_secretary_id', null),
             'company_id'          => request()->input('company_id', null),
             'language'            => request()->input('language'),
         ]);
@@ -32,9 +31,8 @@ class ContractTemplateUniqueCombinationRule implements ValidationRule
         if ($this->exclude_id !== null) {
             $query->where('id', '!=', $this->exclude_id);
         }
-
         if ($query->exists()) {
-            $fail('The combination of employee type, social secretary, sector, and company already exists.');
+            $fail('The template with the specified criteria already exists.');
         }
     }
 }

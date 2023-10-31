@@ -23,7 +23,7 @@ class ContractTemplate extends BaseModel
         'status',
         'employee_type_id',
         'social_secretary_id',
-        'sector_id',
+        // 'sector_id',
         'company_id',
     ];
 
@@ -37,29 +37,29 @@ class ContractTemplate extends BaseModel
         if ($this->company) {
             return [
                 'level' => $this->company->id,
-                'value' => $this->company->company_name, // Replace 'company_name' with the actual column name for the company name in your Company model
+                'value' => $this->company->company_name, 
             ];
         } else {
             return null;
         }
     }
 
-    public function sector()
-    {
-        return $this->belongsTo(Sector::class, 'sector_id');
-    }
+    // public function sector()
+    // {
+    //     return $this->belongsTo(Sector::class, 'sector_id');
+    // }
 
-    public function sectorValue()
-    {
-        if ($this->sector) {
-            return [
-                'level' => $this->sector->id,
-                'value' => $this->sector->name, // Replace 'company_name' with the actual column name for the company name in your Company model
-            ];
-        } else {
-            return null;
-        }
-    }
+    // public function sectorValue()
+    // {
+    //     if ($this->sector) {
+    //         return [
+    //             'level' => $this->sector->id,
+    //             'value' => $this->sector->name, 
+    //         ];
+    //     } else {
+    //         return null;
+    //     }
+    // }
 
     public function employeeType()
     {
@@ -71,7 +71,7 @@ class ContractTemplate extends BaseModel
         if ($this->employeeType) {
             return [
                 'level' => $this->employeeType->id,
-                'value' => $this->employeeType->name, // Replace 'company_name' with the actual column name for the company name in your Company model
+                'value' => $this->employeeType->name, 
             ];
         } else {
             return null;
@@ -93,7 +93,7 @@ class ContractTemplate extends BaseModel
         if ($this->socialSecretary) {
             return [
                 'level' => $this->socialSecretary->id,
-                'value' => $this->socialSecretary->name, // Replace 'name' with the actual column name for the social secretary name in your SocialSecretary model
+                'value' => $this->socialSecretary->name,
             ];
         } else {
             return null;
