@@ -2,6 +2,7 @@
 
 namespace App\Models\Interim;
 
+use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\BaseModel;
@@ -15,6 +16,7 @@ class InterimAgency extends BaseModel
 
     protected $fillable = [
         'name',
+        'email',
         'employer_id',
         'sender_number',
         'username',
@@ -35,5 +37,9 @@ class InterimAgency extends BaseModel
     public function address()
     {
         return $this->belongsTo(Address::class, 'address');
+    }
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class);
     }
 }

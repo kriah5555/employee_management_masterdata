@@ -10,12 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('employee_holiday_count', function (Blueprint $table) {
+        Schema::create('workstation_to_functions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
-            $table->foreignId('holiday_code_id')->nullable()->references('id')->on('holiday_codes')->onDelete('cascade');
-            $table->decimal('count', 5, 2)->default(0.00); # 5 total digits, 2 decimal places, default 0.00
-            $table->boolean('status')->default(true);
+            $table->unsignedBigInteger('function_title_id');
+            $table->foreignId('workstation_id')->references('id')->on('workstations')->onDelete('cascade');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -28,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('employee_holiday_count');
+        Schema::dropIfExists('workstation_to_functions');
     }
 };

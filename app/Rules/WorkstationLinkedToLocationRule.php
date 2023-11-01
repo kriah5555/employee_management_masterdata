@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Location;
+use App\Models\Company\Location;
 
 
 class WorkstationLinkedToLocationRule implements Rule

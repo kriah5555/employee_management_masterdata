@@ -7,12 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Sector\Sector;
 use App\Models\Files;
 use App\Models\Address;
-use App\Models\Location;
+use App\Models\Company\Location;
 use App\Models\Holiday\HolidayCode;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\SocialSecretary\SocialSecretary;
 use App\Models\Interim\InterimAgency;
-use App\Models\Company\CompanyDatabase;
 use App\Models\Tenant;
 
 
@@ -76,22 +75,14 @@ class Company extends Model
         return $this->belongsToMany(Sector::class, 'sector_to_company');
     }
 
-    public function companyDatabase()
+    public function createDatabaseTenancy()
     {
-        return $this->hasOne(CompanyDatabase::class);
-    }
+        $database_name = 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $this->company_name) . '_' . $this->id);
 
-    public function createDatabaseTenancy() 
-    {
-        $database_name = 'tenant_'.strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $this->company_name) . '_' . $this->id);
-
-        $tenant = Tenant::create([
+        Tenant::create([
             'tenancy_db_name' => $database_name,
-        ]);
-
-        return $this->companyDatabase()->create([
-            'database_name' => $database_name,
-            'tenant_id'     => $tenant->id,
+            'database_name'   => $database_name,
+            'company_id'      => $this->id,
         ]);
     }
 

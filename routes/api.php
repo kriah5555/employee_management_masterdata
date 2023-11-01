@@ -67,12 +67,11 @@ Route::group(['middleware' => 'service-registry'], function () {
 });
 
 Route::resources([
-    'companies'          => CompanyController::class,
-    'email-templates'    => EmailTemplateApiController::class,
-    'workstations'       => WorkstationController::class,
-    'locations'          => LocationController::class,
-    'public-holidays'    => PublicHolidayController::class,
-    'interim-agencies'   => InterimAgencyController::class,
+    'companies'       => CompanyController::class,
+    'email-templates' => EmailTemplateApiController::class,
+    'workstations'    => WorkstationController::class,
+    'locations'       => LocationController::class,
+    'public-holidays' => PublicHolidayController::class,
 ]);
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
@@ -174,6 +173,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'social-secretary'    => [
             'controller' => SocialSecretaryController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'interim-agencies'    => [
+            'controller' => InterimAgencyController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
         'companies'           => [

@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Services\LocationService;
 use App\Services\Sector\SectorService;
-use App\Models\Location;
+use App\Models\Company\Location;
 
 class LocationServiceProvider extends ServiceProvider
 {

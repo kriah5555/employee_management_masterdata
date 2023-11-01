@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\LocationService;
 use App\Http\Rules\LocationRequest;
-use App\Models\Location;
+use App\Models\Company\Location;
 use Illuminate\Http\JsonResponse;
 
 class LocationController extends Controller

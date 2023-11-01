@@ -17,12 +17,18 @@ class InterimAgencyRequest extends ApiRequest
     {
         return [
             'name'                      => 'required|string|max:255',
+            'email'                     => 'required|string|max:255',
+            'companies'                 => 'nullable|array',
+            'companies.*'               => [
+                'bail',
+                'integer',
+                Rule::exists('companies', 'id'),
+            ],
             'employer_id'               => 'nullable|digits_between:1,11',
             'sender_number'             => 'nullable|digits_between:1,11',
             'username'                  => 'nullable|string|max:50',
             'joint_commissioner_number' => 'nullable',
             'rsz_number'                => 'nullable|digits_between:1,11',
-            'address'                   => ['required', new AddressRule()],
             'status'                    => 'required|boolean',
         ];
     }

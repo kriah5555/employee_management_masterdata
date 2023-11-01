@@ -24,7 +24,7 @@ return new class extends Migration {
     {
         Schema::table('holiday_codes', function (Blueprint $table) {
             $table->tinyInteger('carry_forword')->default(1); // Recreate the removed field if you ever need it
-            $table->dropColumn('count'); 
+            $table->dropColumn('count');
         });
         Schema::create('holiday_code_count', function (Blueprint $table) {
             $table->id();

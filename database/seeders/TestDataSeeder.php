@@ -7,7 +7,7 @@ use App\Models\Company\Company;
 use App\Models\Employee\CommuteType;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
-use App\Models\Location;
+use App\Models\Company\Location;
 use App\Models\MinimumSalary;
 use App\Models\Sector\SectorAgeSalary;
 use Illuminate\Database\Seeder;

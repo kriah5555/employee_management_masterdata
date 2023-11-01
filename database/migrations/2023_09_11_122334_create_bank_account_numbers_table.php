@@ -13,8 +13,7 @@ return new class extends Migration {
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('bank_account_number');
-            $table->boolean('verified')->default(false);
-            $table->foreignId('verification_file_id')->nullable()->references('id')->on('files')->onDelete('cascade');
+            $table->foreignId('account_image_id')->nullable()->references('id')->on('files')->onDelete('cascade');
             $table->boolean('status')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

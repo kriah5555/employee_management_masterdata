@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('employee_profiles', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreignId('company_id')->nullable()->references('id')->on('companies')->onDelete('cascade');
             $table->boolean('status')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -59,7 +58,7 @@ return new class extends Migration {
         Schema::create('employee_contract_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->references('id')->on('employee_profiles')->onDelete('cascade');
-            $table->foreignId('employee_type_id')->references('id')->on('employee_types')->onDelete('cascade');
+            $table->unsignedBigInteger('employee_type_id');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->boolean('status')->default(true);
@@ -85,7 +84,7 @@ return new class extends Migration {
         Schema::create('employee_commute', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
-            $table->foreignId('commute_type_id')->nullable()->references('id')->on('commute_types')->onDelete('cascade');
+            $table->unsignedBigInteger('commute_types');
             $table->foreignId('location_id')->nullable()->references('id')->on('locations')->onDelete('cascade');
             $table->float('distance')->nullable();
             $table->boolean('status')->default(true);
@@ -107,7 +106,7 @@ return new class extends Migration {
         Schema::create('employee_function_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_contract_details_id')->references('id')->on('employee_contract_details')->onDelete('cascade');
-            $table->foreignId('function_title_id')->nullable()->references('id')->on('function_titles')->onDelete('cascade');
+            $table->unsignedBigInteger('function_title_id');
             $table->foreignId('salary_id')->nullable()->references('id')->on('employee_salary_details')->onDelete('cascade');
             $table->boolean('status')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();
@@ -127,38 +126,38 @@ return new class extends Migration {
             $table->dropForeign(['function_title_id']);
             $table->dropForeign(['salary_id']);
         });
-        
+
         Schema::table('employee_commute', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
             $table->dropForeign(['commute_type_id']);
             $table->dropForeign(['location_id']);
         });
-        
+
         Schema::table('employee_contract_details', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
             $table->dropForeign(['employee_type_id']);
         });
-        
+
         Schema::table('long_term_employee_contract_details', function (Blueprint $table) {
             $table->dropForeign(['employee_contract_details_id']);
         });
-        
+
         Schema::table('employee_benefits', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
         });
-        
+
         Schema::table('employee_social_secretary_details', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
         });
-        
+
         Schema::table('employee_contact_details', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
         });
-        
+
         Schema::table('employee_salary_details', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
         });
-    
+
         Schema::dropIfExists('employee_function_details');
         Schema::dropIfExists('employee_commute');
         Schema::dropIfExists('long_term_employee_contract_details');

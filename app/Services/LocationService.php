@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Company\LocationRepository;
 use App\Services\BaseService;
-use App\Models\Location;
+use App\Models\Company\Location;
 
 class LocationService extends BaseService
 {

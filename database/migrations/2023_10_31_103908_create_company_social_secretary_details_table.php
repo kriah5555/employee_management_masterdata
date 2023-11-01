@@ -10,12 +10,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('locations', function (Blueprint $table) {
+        Schema::create('company_social_secretary_details', function (Blueprint $table) {
             $table->id();
-            $table->string('location_name');
-            $table->boolean('status')->default(true);
-            $table->foreignId('company')->nullable()->references('id')->on('companies')->onDelete('cascade');
-            $table->foreignId('address')->nullable()->references('id')->on('address')->onDelete('cascade');
+            $table->foreignId('social_secretary_id')->nullable()->references('id')->on('social_secretaries')->onDelete('cascade');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -28,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('locations');
+        Schema::dropIfExists('company_social_secretary_details');
     }
 };

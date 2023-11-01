@@ -2,80 +2,52 @@
 
 namespace App\Services\Interim;
 
-use Illuminate\Support\Facades\DB;
-use App\Models\Address;
-use App\Services\AddressService;
-use App\Services\BaseService;
-use App\Services\Sector\SectorService;
 use App\Models\Interim\InterimAgency;
+use Illuminate\Support\Facades\DB;
+use App\Repositories\Interim\InterimAgencyRepository;
 
-class InterimAgencyService extends BaseService
+class InterimAgencyService
 {
-    protected $sectorService;
 
-    protected $address_service;
+    protected $interimAgencyRepository;
 
-    public function __construct(InterimAgency $interimAgency, SectorService $sectorService)
+    public function __construct(InterimAgencyRepository $interimAgencyRepository)
     {
-        parent::__construct($interimAgency);
-        $this->address_service = app(AddressService::class);
+        $this->interimAgencyRepository = $interimAgencyRepository;
     }
 
-    public function create($values)
+    public function createInterimAgency($values)
     {
-        try {
-            DB::beginTransaction();
-
-                $address           = $this->address_service->createNewAddress($values['address']);
-                $values['address'] = $address->id;
-                $company           = parent::create($values);
-
-            DB::commit();
-            return $company;
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+        return DB::transaction(function () use ($values) {
+            $interimAgency = $this->interimAgencyRepository->createInterimAgency($values);
+            $interimAgency = $this->interimAgencyRepository->updateLinkedCompanies($interimAgency, $values['companies']);
+            return $interimAgency;
+        });
+    }
+    public function getInterimAgencies()
+    {
+        return $this->interimAgencyRepository->getInterimAgencies();
+    }
+    public function getActiveInterimAgencies()
+    {
+        return $this->interimAgencyRepository->getActiveInterimAgencies();
     }
 
-    public function update($interim_agency, $values)
+    public function updateInterimAgency($interimAgency, $values)
     {
-        try {
-            DB::beginTransaction();
-
-                $this->address_service->updateAddress($interim_agency->address, $values['address']);
-                unset($values['address']);
-                $interim_agency->update($values);
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
-            error_log($e->getMessage());
-            throw $e;
-        }
+        DB::transaction(function () use ($interimAgency, $values) {
+            $this->interimAgencyRepository->updateInterimAgency($interimAgency, $values);
+            $this->interimAgencyRepository->updateLinkedCompanies($interimAgency, $values['companies']);
+        });
     }
 
-    public function getOptionsToCreate()
+    public function getInterimAgencyDetails($interimAgencyId): InterimAgency
     {
-        return [];
+        return $this->interimAgencyRepository->getInterimAgencyById($interimAgencyId, ['companies']);
     }
 
-    public function getOptionsToEdit($company_id)
+    public function deleteInterimAgency($interimAgency)
     {
-        $company_details    = $this->get($company_id, ['address']);
-        $options            = $this->getOptionsToCreate();
-        $options['details'] = $company_details;
-        return $options;
-    }
-
-    public function getInterimAgencyOptions()
-    {
-        try {
-            return $this->model::where('status', true)->select(['id as value', 'name as label'])->get();
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
+        $this->interimAgencyRepository->deleteInterimAgency($interimAgency);
     }
 }

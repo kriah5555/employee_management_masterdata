@@ -3,7 +3,7 @@
 namespace App\Repositories\Company;
 
 use App\Interfaces\Company\LocationRepositoryInterface;
-use App\Models\Location;
+use App\Models\Company\Location;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 

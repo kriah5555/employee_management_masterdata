@@ -17,10 +17,14 @@ class CompanyController extends Controller
 {
     protected $companyService;
     protected $sectorService;
-    public function __construct(CompanyService $companyService, SectorService $sectorService)
+    protected $socialSecretaryService;
+    protected $interimAgencyService;
+    public function __construct(CompanyService $companyService, SectorService $sectorService, SocialSecretaryService $socialSecretaryService, InterimAgencyService $interimAgencyService)
     {
         $this->companyService = $companyService;
         $this->sectorService = $sectorService;
+        $this->socialSecretaryService = $socialSecretaryService;
+        $this->interimAgencyService = $interimAgencyService;
     }
     /**
      * Display a listing of the resource.
@@ -115,7 +119,11 @@ class CompanyController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->companyService->getOptionsToCreate(),
+                'data'    => [
+                    'sectors'            => $this->sectorService->getActiveSectors(),
+                    'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions(),
+                    // 'interim_agencies'   => $this->interimAgencyService->getInterimAgencyOptions(),
+                ],
             ],
             JsonResponse::HTTP_OK,
         );

@@ -5,7 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Company;
 use App\Models\Address;
-use App\Models\Location;
+use App\Models\Company\Location;
 use App\Models\Workstation;
 use App\Models\LocationRequest;
 use App\Models\Files;

@@ -3,14 +3,20 @@
 namespace App\Http\Controllers\Interim;
 
 use App\Models\Interim\InterimAgency;
+use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\Interim\InterimAgencyRequest;
 use App\Services\Interim\InterimAgencyService;
 use App\Http\Controllers\Controller;
+
 class InterimAgencyController extends Controller
 {
-    public function __construct(protected InterimAgencyService $interim_agency_service)
+    protected $interimAgencyService;
+    protected $companyService;
+    public function __construct(InterimAgencyService $interimAgencyService, CompanyService $companyService)
     {
+        $this->interimAgencyService = $interimAgencyService;
+        $this->companyService = $companyService;
     }
 
     /**
@@ -18,13 +24,23 @@ class InterimAgencyController extends Controller
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->interim_agency_service->getAll(['address']),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->interimAgencyService->getInterimAgencies(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -32,13 +48,25 @@ class InterimAgencyController extends Controller
      */
     public function create()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->interim_agency_service->getOptionsToCreate(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'companies' => $this->companyService->getCompanies()
+                    ],
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -46,42 +74,48 @@ class InterimAgencyController extends Controller
      */
     public function store(InterimAgencyRequest $request)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Interim agency created successfully',
-                'data'    => $this->interim_agency_service->create($request->validated()),
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Interim agency created successfully',
+                    'data'    => $this->interimAgencyService->createInterimAgency($request->validated()),
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(InterimAgency $interimAgency)
+    public function show($interimAgencyId)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $interimAgency,
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($interim_agency_id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->interim_agency_service->getOptionsToEdit($interim_agency_id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->interimAgencyService->getInterimAgencyDetails($interimAgencyId),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -89,15 +123,24 @@ class InterimAgencyController extends Controller
      */
     public function update(InterimAgencyRequest $request, InterimAgency $interimAgency)
     {
-        $this->interim_agency_service->update($interimAgency, $request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Interim agency updated successfully',
-                'data'    => $this->interim_agency_service->getOptionsToEdit($interim_agency_id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $this->interimAgencyService->updateInterimAgency($interimAgency, $request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Interim agency updated successfully',
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -105,13 +148,23 @@ class InterimAgencyController extends Controller
      */
     public function destroy(InterimAgency $interimAgency)
     {
-        $interimAgency->delete();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Interim agency deleted successfully'
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $this->interimAgencyService->deleteInterimAgency($interimAgency);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Interim agency deleted successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }
