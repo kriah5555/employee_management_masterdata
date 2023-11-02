@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\Company;
 use App\Traits\UserAudit;
 use App\Models\BaseModel;
+use App\Models\SocialSecretary\SocialSecretary;
 
 class CompanySocialSecretaryDetails extends BaseModel
 {
@@ -33,5 +34,9 @@ class CompanySocialSecretaryDetails extends BaseModel
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+    public function socialSecretary()
+    {
+        return $this->hasOne(SocialSecretary::class);
     }
 }

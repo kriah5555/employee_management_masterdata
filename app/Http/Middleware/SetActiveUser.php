@@ -23,7 +23,7 @@ class SetActiveUser
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $uid = $request->header('uid');
+        $uid = $request->header('Uid');
         if ($uid) {
             $this->authService->setActiveUserByUid($uid);
         }

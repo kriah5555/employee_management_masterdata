@@ -70,7 +70,6 @@ Route::resources([
     'companies'       => CompanyController::class,
     'email-templates' => EmailTemplateApiController::class,
     'workstations'    => WorkstationController::class,
-    'locations'       => LocationController::class,
     'public-holidays' => PublicHolidayController::class,
 ]);
 
@@ -99,16 +98,6 @@ Route::controller(ContractTemplateController::class)->group(function () use ($in
 });
 
 
-Route::controller(LocationController::class)->group(function () use ($statusRule) {
-
-    Route::get('locations/{company_id}/{status}', 'index')->where('status', $statusRule);
-
-    Route::get('/locations/create/{company_id}', 'create');
-
-    Route::resource('locations', LocationController::class);
-
-    Route::get('company/locations/{company_id}/{status}', 'locations')->where('status', $statusRule);
-});
 
 Route::controller(WorkstationController::class)->group(function () use ($statusRule, $integerRule) {
 
@@ -137,7 +126,7 @@ Route::get('employees/get-functions-options/{company_id}', [EmployeeController::
 Route::get('employees/get-transport-details-options/{company_id}', [EmployeeController::class, 'getOptionsToUpdateEmployeeTransportDetails']);
 
 
-Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
+Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $statusRule) {
     $resources = [
         'contract-types'      => [
             'controller' => ContractTypeController::class,
@@ -232,4 +221,24 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+
+    Route::group(['middleware' => 'initialize-tenancy'], function () use ($statusRule) {
+        // Route::controller(LocationController::class)->group(function () use ($statusRule) {
+
+        //     Route::get('locations/{company_id}/{status}', 'index')->where('status', $statusRule);
+
+        //     Route::get('/locations/create/{company_id}', 'create');
+
+        //     Route::get('company/locations/{company_id}/{status}', 'locations')->where('status', $statusRule);
+        // });
+        $resources = [
+            'locations' => [
+                'controller' => LocationController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            ],
+        ];
+        foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
+            Route::resource($uri, $controller)->only($methods);
+        }
+    });
 });

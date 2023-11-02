@@ -12,6 +12,7 @@ use App\Models\Holiday\HolidayCode;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\SocialSecretary\SocialSecretary;
 use App\Models\Interim\InterimAgency;
+use App\Models\Company\CompanySocialSecretaryDetails;
 
 
 class Company extends Model
@@ -90,9 +91,9 @@ class Company extends Model
             ->where('holiday_codes.status', true);
     }
 
-    public function socialSecretary()
+    public function companySocialSecretaryDetails()
     {
-        return $this->belongsTo(SocialSecretary::class, 'social_secretary_id');
+        return $this->hasOne(CompanySocialSecretaryDetails::class);
     }
 
     public function socialSecretaryValue()

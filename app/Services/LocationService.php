@@ -26,7 +26,20 @@ class LocationService extends BaseService
 
     public function getAll(array $args = [])
     {
-        return $this->locationRepository->getLocationsOfCompany($args['company_id']);
+        return $this->locationRepository->getLocations($args['company_id']);
+    }
+
+    public function getLocations()
+    {
+        return $this->locationRepository->getLocations();
+    }
+    public function getLocationById($locationId)
+    {
+        return $this->locationRepository->getLocationById($locationId);
+    }
+    public function deleteLocation($locationId)
+    {
+        return $this->locationRepository->deleteLocation($locationId);
     }
 
     public static function getLocationRules($for_company_creation = true)

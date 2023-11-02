@@ -229,11 +229,20 @@ class CompanyService
 
     public function getCompanyDetails($companyId): Company
     {
-        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address']);
+        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails']);
     }
 
     public function getLocationsUnderCompany($companyId): Company
     {
         return Company::findOrFail($companyId);
+    }
+
+    public function getCompanyById($companyId): Company
+    {
+        return $this->companyRepository->getCompanyById($companyId);
+    }
+    public function getTenantByCompanyId($companyId): Tenant
+    {
+        return Tenant::where('company_id', $companyId)->get()[0];
     }
 }

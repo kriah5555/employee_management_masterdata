@@ -9,16 +9,18 @@ use Illuminate\Http\JsonResponse;
 
 class LocationController extends Controller
 {
-    public function __construct(protected LocationService $location_service)
+    protected $locationService;
+    public function __construct(LocationService $locationService)
     {
+        $this->locationService = $locationService;
     }
 
-    public function index($company_id, $status = 1)
+    public function index()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->location_service->getAll(['company_id' => $company_id, 'status' => $status]),
+                'data'    => $this->locationService->getLocations(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -29,7 +31,7 @@ class LocationController extends Controller
      */
     public function store(LocationRequest $request)
     {
-        $location = $this->location_service->create($request->validated());
+        $location = $this->locationService->create($request->validated());
         return returnResponse(
             [
                 'success' => true,
@@ -43,11 +45,11 @@ class LocationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Location $location)
+    public function show(string $locationId)
     {
         return response()->json([
             'success' => true,
-            'data'    => $location,
+            'data'    => $this->locationService->getLocationById($locationId),
         ]);
     }
 
@@ -55,7 +57,7 @@ class LocationController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => $this->location_service->getOptionsToCreate($company_id),
+            'data'    => $this->locationService->getOptionsToCreate($company_id),
         ]);
     }
 
@@ -63,7 +65,7 @@ class LocationController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => $this->location_service->getOptionsToEdit($location_id),
+            'data'    => $this->locationService->getOptionsToEdit($location_id),
         ]);
     }
 
@@ -72,7 +74,7 @@ class LocationController extends Controller
      */
     public function update(LocationRequest $request, Location $location)
     {
-        $this->location_service->update($location, $request->validated());
+        $this->locationService->update($location, $request->validated());
         $location->refresh();
         return returnResponse(
             [
@@ -84,9 +86,9 @@ class LocationController extends Controller
         );
     }
 
-    public function destroy(Location $location)
+    public function destroy(string $locationId)
     {
-        $location->delete();
+        $this->locationService->deleteLocation($locationId);
         return response()->json([
             'success' => true,
             'message' => t('Location deleted successfully')

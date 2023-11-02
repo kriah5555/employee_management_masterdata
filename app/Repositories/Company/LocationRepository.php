@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 class LocationRepository implements LocationRepositoryInterface
 {
-    public function getLocationsOfCompany($companyId)
+    public function getLocations()
     {
-        return Location::where('company', '=', $companyId)->get();
+        return Location::all();
     }
     public function getActiveLocationsOfCompany($companyId)
     {
