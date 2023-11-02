@@ -9,7 +9,7 @@ class LongTermEmployeeContractDetails extends BaseModel
 {
     use UserAudit;
     protected $columnsToLog = [
-        'employee_profile_id',
+        'employee_contract_details_id',
         'sub_type',
         'schedule_type',
         'employement_type',
@@ -51,7 +51,7 @@ class LongTermEmployeeContractDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_profile_id',
+        'employee_contract_details_id',
         'sub_type',
         'schedule_type',
         'employement_type',

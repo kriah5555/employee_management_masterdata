@@ -3,6 +3,7 @@ use Spatie\TranslationLoader\LanguageLine;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use App\Models\Tenant;
+use Illuminate\Support\Facades\Request;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -212,10 +213,17 @@ if (!function_exists('setTenantDB')) {
     function setTenantDB($tenant_id)
     {
         $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to det tenant id from header
-        $tenant    = Tenant::find($tenant_id);
-        if ($tenant){
+        $tenant = Tenant::find($tenant_id);
+        if ($tenant) {
             tenancy()->initialize($tenant);
             config(['database.connections.tenant_template.database' => $tenant->database_name]);
         }
+    }
+}
+
+if (!function_exists('getCompanyId')) {
+    function getCompanyId()
+    {
+        return Request::header('Company-Id');
     }
 }

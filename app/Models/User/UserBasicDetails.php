@@ -4,8 +4,9 @@ namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\User\User;
 
-class User extends BaseModel
+class UserBasicDetails extends BaseModel
 {
     use UserAudit;
     protected static $sort = ['first_name'];
@@ -27,6 +28,7 @@ class User extends BaseModel
      *
      * @var string
      */
+    protected $connection = 'userdb';
     protected $table = 'user_basic_details';
 
     /**
@@ -70,4 +72,8 @@ class User extends BaseModel
         'extra_info',
         'status',
     ];
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }
