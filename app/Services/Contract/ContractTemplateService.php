@@ -75,4 +75,14 @@ class ContractTemplateService extends BaseService
             throw $e;
         }
     }
+
+    public function create($data)
+    {
+        try {
+            return $this->model::create($data);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }

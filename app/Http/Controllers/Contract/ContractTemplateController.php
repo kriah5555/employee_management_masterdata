@@ -48,6 +48,15 @@ class ContractTemplateController extends Controller
      */
     public function store(ContractTemplateRequest $request)
     {
+        // $pdfFilePath = $request->file('pdf_file')->getPathname();
+        // $htmlOutput = shell_exec("pdftohtml -i -noframes -stdout '$pdfFilePath'");
+
+        // $htmlOutput = shell_exec("pdftohtml -i -noframes -p -c -nodrm '$pdfFilePath' -");
+
+        // $htmlOutput = shell_exec("pdftohtml -i -noframes -p -c -nodrm '$pdfFilePath' ");
+
+
+        // dd($pdfFilePath, $htmlOutput);
         return returnResponse(
             [
                 'success' => true,

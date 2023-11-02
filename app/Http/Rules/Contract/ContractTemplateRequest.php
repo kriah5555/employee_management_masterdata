@@ -44,6 +44,7 @@ class ContractTemplateRequest extends ApiRequest
                 Rule::exists('companies', 'id'),
                 new CompanyLinkedToSocialSecretaryRule($this->input('social_secretary_id')),
             ],
+            'pdf_file' => '',
             'language' => [
                 'required',
                 Rule::in(config('app.available_locales')),
