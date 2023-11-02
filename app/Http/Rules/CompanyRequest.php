@@ -28,12 +28,12 @@ class CompanyRequest extends ApiRequest
                 'nullable',
                 Rule::exists('social_secretaries', 'id')
             ],
-            'interim_agency_id' => [
+            'interim_agency_id'       => [
                 'bail',
                 'nullable',
                 Rule::exists('interim_agencies', 'id')
             ],
-            'sectors.*' => [
+            'sectors.*'               => [
                 'bail',
                 'integer',
                 Rule::exists('sectors', 'id'),
@@ -42,7 +42,8 @@ class CompanyRequest extends ApiRequest
             'employer_id'             => 'nullable|digits_between:1,11',
             'sender_number'           => 'nullable|digits_between:1,11',
             'rsz_number'              => 'nullable|digits_between:1,11',
-            'social_secretary_number' => 'nullable',
+            'social_secretary_number' => 'nullable|string',
+            'contact_email'           => 'nullable|string',
             'username'                => 'nullable|string|max:50',
             'oauth_key'               => 'nullable',
             'email'                   => 'required|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',
@@ -50,7 +51,7 @@ class CompanyRequest extends ApiRequest
                 'required',
                 'string',
                 'max:20',
-                //'regex:/^(\+[0-9]{1,4}\s[0-9]{1,3}\s[0-9]{1,3}\s[0-9\s]+)$/', # need to be added back 
+                //'regex:/^(\+[0-9]{1,4}\s[0-9]{1,3}\s[0-9]{1,3}\s[0-9\s]+)$/', # need to be added back
             ],
         ];
     }
@@ -62,7 +63,7 @@ class CompanyRequest extends ApiRequest
             'email.required' => t('The email field is required.'),
             'email.max'      => t('The email field may not be greater than 255 characters.'),
             'email.regex'    => t('The email field must be a valid email address.'),
-            
+
             'phone.required' => t('The phone field is required.'),
             'phone.string'   => t('The phone field must be a string.'),
             'phone.max'      => t('The phone field may not be greater than 20 characters.'),

@@ -6,6 +6,8 @@ use App\Interfaces\Company\CompanyRepositoryInterface;
 use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use App\Exceptions\ModelDeleteFailedException;
+use App\Exceptions\ModelUpdateFailedException;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
@@ -23,9 +25,13 @@ class CompanyRepository implements CompanyRepositoryInterface
         return Company::with($relations)->findOrFail($companyId);
     }
 
-    public function deleteCompany(string $companyId)
+    public function deleteCompany(Company $company)
     {
-        Company::destroy($companyId);
+        if ($company->delete()) {
+            return true;
+        } else {
+            throw new ModelDeleteFailedException('Failed to delete company');
+        }
     }
 
     public function createCompany(array $details): Company
@@ -33,8 +39,12 @@ class CompanyRepository implements CompanyRepositoryInterface
         return Company::create($details);
     }
 
-    public function updateCompany(string $companyId, array $updatedDetails)
+    public function updateCompany(Company $company, array $updatedDetails)
     {
-        return Company::whereId($companyId)->update($updatedDetails);
+        if ($company->update($updatedDetails)) {
+            return true;
+        } else {
+            throw new ModelUpdateFailedException('Failed to update company');
+        }
     }
 }

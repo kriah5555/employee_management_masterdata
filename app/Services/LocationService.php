@@ -57,14 +57,14 @@ class LocationService extends BaseService
     public function create($values)
     {
         try {
-            setTenantDB('');
+            // setTenantDB('');
             DB::beginTransaction();
             $address = $this->addressService->createNewAddress($values['address']);
             $values['address'] = $address->id;
             $location = $this->locationRepository->createLocation($values);
             DB::commit();
             return $location;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
             throw $e;

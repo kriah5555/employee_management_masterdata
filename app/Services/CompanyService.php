@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Company\CompanySocialSecretaryDetails;
+use App\Repositories\Company\CompanySocialSecretaryDetailsRepository;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Company;
 use App\Models\Address;
@@ -12,34 +14,30 @@ use App\Models\Files;
 use App\Services\AddressService;
 use App\Services\LocationService;
 use App\Services\WorkstationService;
-use App\Services\BaseService;
-use App\Services\Sector\SectorService;
-use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Repositories\Company\CompanyRepository;
-use App\Services\Interim\InterimAgencyService;
+use App\Models\Tenant;
 
 class CompanyService
 {
     protected $companyRepository;
-
+    protected $companySocialSecretaryDetailsRepository;
     protected $addressService;
     protected $locationService;
     protected $workstationService;
-    protected $sectorService;
-    protected $socialSecretaryService;
-    protected $interimAgencyService;
     protected $model;
 
-    public function __construct(CompanyRepository $companyRepository, LocationService $locationService, AddressService $addressService, WorkstationService $workstationService)
-    {
+    public function __construct(
+        CompanyRepository $companyRepository,
+        CompanySocialSecretaryDetailsRepository $companySocialSecretaryDetailsRepository,
+        LocationService $locationService,
+        AddressService $addressService,
+        WorkstationService $workstationService
+    ) {
         $this->companyRepository = $companyRepository;
+        $this->companySocialSecretaryDetailsRepository = $companySocialSecretaryDetailsRepository;
         $this->locationService = $locationService;
         $this->addressService = $addressService;
         $this->workstationService = $workstationService;
-        $this->model = app(Company::class);
-        $this->sectorService = app(SectorService::class);
-        $this->socialSecretaryService = app(SocialSecretaryService::class);
-        $this->interimAgencyService = app(InterimAgencyService::class);
     }
 
     public function getCompanies()
@@ -51,21 +49,39 @@ class CompanyService
         return $this->companyRepository->getActiveCompanies();
     }
 
-    public function createCompany($values)
+    public function createNewCompany($values)
     {
-        DB::beginTransaction();
-        $requestData = $values;
-        $company_address = $this->addressService->createNewAddress($values['address']);
-        $requestData['address'] = $company_address->id;
-        $requestData['logo'] = isset($requestData['logo']) ? self::addCompanyLogo($requestData) : '';
-        $company = $this->companyRepository->createCompany($requestData);
+        $company = $this->createCompany($values);
+        $tenant = $this->createTenant($company);
+        setTenantDB($tenant->id);
         $location_ids = $this->createCompanyLocations($company, $values); # add company locations
         $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
-        $this->syncSectors($company, $values);
-        $company->refresh();
-        DB::commit();
-        $company->createDatabaseTenancy();
         return $company;
+    }
+
+    public function createCompany($values)
+    {
+        return DB::transaction(function () use ($values) {
+            $requestData = $values;
+            $company_address = $this->addressService->createNewAddress($values['address']);
+            $requestData['address'] = $company_address->id;
+            $requestData['logo'] = isset($requestData['logo']) ? self::addCompanyLogo($requestData) : '';
+            $company = $this->companyRepository->createCompany($requestData);
+            $this->companySocialSecretaryDetailsRepository->createCompanySocialSecretaryDetails($company, $requestData);
+            $this->syncSectors($company, $values);
+            $company->refresh();
+            return $company;
+        });
+    }
+    public function createTenant($company)
+    {
+        $database_name = 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $company->company_name) . '_' . $company->id);
+
+        return Tenant::create([
+            'tenancy_db_name' => $database_name,
+            'database_name'   => $database_name,
+            'company_id'      => $company->id,
+        ]);
     }
 
     public function updateCompany($company, $values)
@@ -162,42 +178,6 @@ class CompanyService
             'file_path' => $request_data['logo']->storeAs('public/company_logos', $filename)
         ]);
         return $file->id;
-    }
-
-    public function getOptionsToCreate()
-    {
-        return [
-            'sectors'            => $this->sectorService->getActiveSectors(),
-            'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions(),
-            'interim_agencies'   => $this->interimAgencyService->getInterimAgencyOptions(),
-        ];
-    }
-
-    public function getOptionsToEdit($company_id)
-    {
-        $company_details = $this->model::with(['address', 'sectors', 'sectorsValue', 'logoFile'])->findOrFail($company_id);
-        $options = $this->getOptionsToCreate();
-        $options['details'] = $company_details;
-        $options['details']['social_secretaries_value'] = $company_details->socialSecretaryValue();
-        $options['details']['social_secretary_value'] = $company_details->socialSecretaryValue();
-        $options['details']['interim_agency_value'] = $company_details->interimAgencyValue();
-        unset($options['details']['socialSecretary'], $options['details']['sectors'], $options['details']['interimAgency']);
-
-        return $options;
-    }
-
-    public function getCompanyOptions()
-    {
-        return $this->model::select(['id as value', 'company_name as label'])->get();
-    }
-
-    public function getAll(array $args = [])
-    {
-        if (isset($args['with'])) {
-            return $this->model::with($args['with'])->get();
-        } else {
-            return $this->model::all();
-        }
     }
 
     public function getEmployeeContractOptionsForCreation(string $companyId)

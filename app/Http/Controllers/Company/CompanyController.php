@@ -49,7 +49,7 @@ class CompanyController extends Controller
             [
                 'success' => true,
                 'message' => 'Company created successfully',
-                'data'    => $this->companyService->createCompany($request->all()),
+                'data'    => $this->companyService->createNewCompany($request->all()),
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -102,16 +102,26 @@ class CompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Company $company)
     {
-        $this->companyService->deleteCompany($id);
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Company deleted successfully'
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            $this->companyService->deleteCompany($company);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Company deleted successfully'
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function create()
@@ -121,7 +131,7 @@ class CompanyController extends Controller
                 'success' => true,
                 'data'    => [
                     'sectors'            => $this->sectorService->getActiveSectors(),
-                    'social_secretaries' => $this->socialSecretaryService->getSocialSecretaryOptions(),
+                    'social_secretaries' => $this->socialSecretaryService->getActiveSocialSecretaries(),
                     // 'interim_agencies'   => $this->interimAgencyService->getInterimAgencyOptions(),
                 ],
             ],

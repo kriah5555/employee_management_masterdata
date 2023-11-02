@@ -12,7 +12,6 @@ use App\Models\Holiday\HolidayCode;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\SocialSecretary\SocialSecretary;
 use App\Models\Interim\InterimAgency;
-use App\Models\Tenant;
 
 
 class Company extends Model
@@ -47,7 +46,6 @@ class Company extends Model
         'employer_id',
         'sender_number',
         'rsz_number',
-        'social_secretary_number',
         'social_secretary_id',
         'interim_agency_id',
         'oauth_key',
@@ -73,17 +71,6 @@ class Company extends Model
     public function sectors()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company');
-    }
-
-    public function createDatabaseTenancy()
-    {
-        $database_name = 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $this->company_name) . '_' . $this->id);
-
-        Tenant::create([
-            'tenancy_db_name' => $database_name,
-            'database_name'   => $database_name,
-            'company_id'      => $this->id,
-        ]);
     }
 
     public function sectorsValue()

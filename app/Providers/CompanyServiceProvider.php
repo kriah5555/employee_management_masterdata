@@ -8,6 +8,7 @@ use App\Services\AddressService;
 use App\Repositories\Company\CompanyRepository;
 use App\Services\LocationService;
 use App\Services\WorkstationService;
+use App\Repositories\Company\CompanySocialSecretaryDetailsRepository;
 
 class CompanyServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,7 @@ class CompanyServiceProvider extends ServiceProvider
         $this->app->bind(CompanyService::class, function ($app) {
             return new CompanyService(
                 $app->make(CompanyRepository::class),
+                $app->make(CompanySocialSecretaryDetailsRepository::class),
                 $app->make(LocationService::class),
                 $app->make(AddressService::class),
                 $app->make(WorkstationService::class),
