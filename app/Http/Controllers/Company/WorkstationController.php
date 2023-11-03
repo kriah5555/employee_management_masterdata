@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Company;
 
 use App\Services\WorkstationService;
 use App\Http\Rules\WorkstationRequest;
 use Illuminate\Http\JsonResponse;
-use App\Models\Workstation;
+use App\Models\Company\Workstation;
 
 class WorkstationController extends Controller
 {

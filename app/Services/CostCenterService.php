@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
-use App\Models\CostCenter;
+use App\Models\Company\CostCenter;
 use App\Services\WorkstationService;
 use App\Models\Employee\EmployeeProfile;
 class CostCenterService extends BaseService

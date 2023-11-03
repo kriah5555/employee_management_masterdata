@@ -11,6 +11,8 @@ use App\Models\Company\Company;
 
 class SocialSecretary extends BaseModel
 {
+    protected $connection = 'master';
+
     use HasFactory, SoftDeletes;
 
     protected $table = 'social_secretaries';

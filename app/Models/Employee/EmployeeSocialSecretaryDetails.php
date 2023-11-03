@@ -9,6 +9,8 @@ class EmployeeSocialSecretaryDetails extends BaseModel
 {
     use UserAudit;
 
+    protected $connection = 'tenant';
+
     protected $columnsToLog = [
         'employee_profile_id',
         'social_secretary_number',

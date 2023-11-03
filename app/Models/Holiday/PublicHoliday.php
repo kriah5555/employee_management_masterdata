@@ -11,6 +11,8 @@ class PublicHoliday extends BaseModel
 {
     use HasFactory, SoftDeletes;
 
+    protected $connection = 'master';
+
     protected static $sort = ['name', 'date'];
 
     protected $dateFormat = 'd-m-Y'; // Use 'd-m-Y' format for the date attribute

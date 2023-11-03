@@ -3,7 +3,7 @@
 namespace App\Repositories\Company;
 
 use App\Interfaces\Company\WorkstationRepositoryInterface;
-use App\Models\Workstation;
+use App\Models\Company\Workstation;
 
 class WorkstationRepository implements WorkstationRepositoryInterface
 {

@@ -10,6 +10,8 @@ class EmployeeProfile extends BaseModel
 {
     use UserAudit;
 
+    protected $connection = 'tenant';
+
     protected $columnsToLog = [
         'user_id',
         'company_id',

@@ -6,6 +6,8 @@ use App\Models\BaseModel;
 
 class EmployeeTypeCategory extends BaseModel
 {
+    protected $connection = 'master';
+
     protected static $sort = ['sort_order', 'name'];
 
     protected $columnsToLog = ['sort_order', 'name', 'description', 'status', 'sub_category_types', 'schedule_types', 'employment_types'];

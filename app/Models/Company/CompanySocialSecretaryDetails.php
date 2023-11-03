@@ -13,6 +13,8 @@ class CompanySocialSecretaryDetails extends BaseModel
 {
     use HasFactory, SoftDeletes, UserAudit;
 
+    protected $connection = 'master';
+
     protected $table = 'company_social_secretary_details';
 
     protected $primaryKey = 'id';
@@ -37,6 +39,6 @@ class CompanySocialSecretaryDetails extends BaseModel
     }
     public function socialSecretary()
     {
-        return $this->hasOne(SocialSecretary::class);
+        return $this->hasOne(SocialSecretary::class, 'social_secretary_id');
     }
 }

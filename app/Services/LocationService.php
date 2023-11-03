@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Workstation;
+use App\Models\Company\Workstation;
 use App\Services\AddressService;
 use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;

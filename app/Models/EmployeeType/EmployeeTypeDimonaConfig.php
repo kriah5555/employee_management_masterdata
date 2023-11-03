@@ -8,7 +8,10 @@ use App\Models\Dimona\DimonaType;
 
 class EmployeeTypeDimonaConfig extends BaseModel
 {
+    protected $connection = 'master';
+
     protected static $sort = [];
+
     protected $columnsToLog = [
         'employee_type_id',
         'dimona_type_id'

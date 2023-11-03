@@ -8,6 +8,9 @@ use App\Traits\UserAudit;
 class EmployeeContractDetails extends BaseModel
 {
     use UserAudit;
+
+    protected $connection = 'tenant';
+
     protected $columnsToLog = [
         'employee_profile_id',
         'employee_type_id',

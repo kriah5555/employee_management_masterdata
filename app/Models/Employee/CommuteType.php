@@ -8,6 +8,9 @@ use App\Traits\UserAudit;
 class CommuteType extends BaseModel
 {
     use UserAudit;
+
+    protected $connection = 'tenant';
+
     protected static $sort = ['sort_order', 'name'];
     protected $columnsToLog = [
         'sort_order',

@@ -12,6 +12,8 @@ use App\Models\SocialSecretary\SocialSecretary;
 class ContractTemplate extends BaseModel
 {
     use HasFactory;
+    
+    protected $connection = 'master';
 
     protected $table = 'contract_templates';
 
