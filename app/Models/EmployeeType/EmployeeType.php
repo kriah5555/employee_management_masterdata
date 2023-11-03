@@ -14,6 +14,8 @@ class EmployeeType extends BaseModel
     use UserAudit;
     
     protected $connection = 'master';
+    
+    protected $table = 'employee_types';
 
     protected static $sort = ['name'];
     
@@ -23,8 +25,6 @@ class EmployeeType extends BaseModel
      *
      * @var string
      */
-    protected $connection = 'master';
-    protected $table = 'employee_types';
 
     protected $hidden = ['pivot'];
 

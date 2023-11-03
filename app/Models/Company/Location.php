@@ -5,7 +5,7 @@ namespace App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Company\Address;
+use App\Models\Company\AddressCompany;
 use App\Models\Company\Company;
 class Location extends Model
 {
@@ -40,7 +40,7 @@ class Location extends Model
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address');
+        return $this->belongsTo(AddressCompany::class, 'address');
     }
 
     public function company()

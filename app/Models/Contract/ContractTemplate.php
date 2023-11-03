@@ -25,8 +25,6 @@ class ContractTemplate extends BaseModel
         'status',
         'employee_type_id',
         'social_secretary_id',
-        // 'sector_id',
-        'company_id',
     ];
 
     public function company()
@@ -34,53 +32,7 @@ class ContractTemplate extends BaseModel
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function companyValue()
-    {
-        if ($this->company) {
-            return [
-                'level' => $this->company->id,
-                'value' => $this->company->company_name, 
-            ];
-        } else {
-            return null;
-        }
-    }
-
-    // public function sector()
-    // {
-    //     return $this->belongsTo(Sector::class, 'sector_id');
-    // }
-
-    // public function sectorValue()
-    // {
-    //     if ($this->sector) {
-    //         return [
-    //             'level' => $this->sector->id,
-    //             'value' => $this->sector->name, 
-    //         ];
-    //     } else {
-    //         return null;
-    //     }
-    // }
-
     public function employeeType()
-    {
-        return $this->belongsTo(EmployeeType::class, 'employee_type_id');
-    }
-
-    public function employeeTypeValue()
-    {
-        if ($this->employeeType) {
-            return [
-                'level' => $this->employeeType->id,
-                'value' => $this->employeeType->name, 
-            ];
-        } else {
-            return null;
-        }
-    }
-
-    public function getEmployeeTypeValue()
     {
         return $this->belongsTo(EmployeeType::class, 'employee_type_id');
     }
@@ -88,17 +40,5 @@ class ContractTemplate extends BaseModel
     public function socialSecretary()
     {
         return $this->belongsTo(SocialSecretary::class, 'social_secretary_id');
-    }
-
-    public function socialSecretaryValue()
-    {   
-        if ($this->socialSecretary) {
-            return [
-                'level' => $this->socialSecretary->id,
-                'value' => $this->socialSecretary->name,
-            ];
-        } else {
-            return null;
-        }
     }
 }

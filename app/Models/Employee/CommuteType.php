@@ -9,7 +9,7 @@ class CommuteType extends BaseModel
 {
     use UserAudit;
 
-    protected $connection = 'tenant';
+    protected $connection = 'master';
 
     protected static $sort = ['sort_order', 'name'];
     protected $columnsToLog = [
@@ -22,7 +22,6 @@ class CommuteType extends BaseModel
      *
      * @var string
      */
-    protected $connection = 'master';
     protected $table = 'commute_types';
 
     /**
