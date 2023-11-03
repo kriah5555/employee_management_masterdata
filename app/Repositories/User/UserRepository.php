@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\User;
 
-use App\Interfaces\UserRepositoryInterface;
+use App\Interfaces\User\UserRepositoryInterface;
 use App\Models\User\User;
 
 class UserRepository implements UserRepositoryInterface
@@ -26,5 +26,9 @@ class UserRepository implements UserRepositoryInterface
     public function updateUser(string $id, array $updatedDetails)
     {
         return User::whereId($id)->update($updatedDetails);
+    }
+    public function getUserBySocialSecurityNumber(string $socialSecurityNumber)
+    {
+        return User::where('social_security_number', $socialSecurityNumber)->get();
     }
 }

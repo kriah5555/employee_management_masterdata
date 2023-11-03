@@ -34,19 +34,20 @@ class EmployeeController extends Controller
     /**
      * API to get list of all employee types.
      */
-    public function index(string $companyId)
+    public function index()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeService->index($companyId)
+                'data'    => $this->employeeService->index()
             ],
             JsonResponse::HTTP_OK,
         );
     }
 
-    public function create(string $companyId)
+    public function create(Request $request)
     {
+        $companyId = $request->header('Company-Id');
         return returnResponse(
             [
                 'success' => true,
@@ -72,13 +73,14 @@ class EmployeeController extends Controller
     /**
      * API to get the details required for creating an employee type.
      */
-    public function store(CreateEmployeeRequest $request, $company_id)
+    public function store(CreateEmployeeRequest $request)
     {
+        $companyId = $request->header('Company-Id');
         return returnResponse(
             [
                 'success' => true,
                 'message' => 'Employee created successfully',
-                'data'    => $this->employeeService->createNewEmployee($request->validated(), $company_id)
+                'data'    => $this->employeeService->createNewEmployee($request->validated(), $companyId)
             ],
             JsonResponse::HTTP_OK,
         );
@@ -92,7 +94,7 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeService->show($id),
+                'data'    => $this->employeeService->getEmployeeDetails($id),
             ],
             JsonResponse::HTTP_OK,
         );

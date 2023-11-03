@@ -207,16 +207,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
     });
 
-    Route::controller(EmployeeController::class)->group(function () {
-
-        Route::get('/employees/get-company-employees/{company_id}', 'index');
-
-        Route::get('/employees/create/{company_id}', 'create');
-
-        Route::post('/employees/store/{company_id}', 'store');
-
-        Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
-    });
 
     Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
@@ -236,9 +226,23 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
                 'controller' => LocationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
+            'employees' => [
+                'controller' => EmployeeController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            ],
         ];
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
         }
     });
+    // Route::controller(EmployeeController::class)->group(function () {
+
+    //     Route::get('/employees', 'index');
+
+    //     Route::get('/employees/create/{company_id}', 'create');
+
+    //     Route::post('/employees/store/{company_id}', 'store');
+
+    //     Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
+    // });
 });

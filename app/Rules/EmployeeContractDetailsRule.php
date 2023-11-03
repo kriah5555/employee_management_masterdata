@@ -20,7 +20,6 @@ class EmployeeContractDetailsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $companyId = request()->route('company_id');
         if (!array_key_exists('employee_type_id', $value)) {
             $fail('Please select employee type');
         }

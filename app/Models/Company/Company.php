@@ -24,9 +24,8 @@ class Company extends Model
      *
      * @var string
      */
-
     protected $connection = 'master';
-
+    
     protected $table = 'companies';
 
     protected $hidden = ['pivot'];

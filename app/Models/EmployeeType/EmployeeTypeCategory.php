@@ -16,6 +16,7 @@ class EmployeeTypeCategory extends BaseModel
      *
      * @var string
      */
+    protected $connection = 'master';
     protected $table = 'employee_type_categories';
 
     /**

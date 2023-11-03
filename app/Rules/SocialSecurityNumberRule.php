@@ -21,11 +21,9 @@ class SocialSecurityNumberRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $companyId = request()->route('company_id');
+        $companyId = getCompanyId();
         if ($this->employeeProfileRepository->checkEmployeeExistsInCompany($companyId, $value)) {
             $fail("Employee already present in company");
         }
-        print_r('as');
-        exit;
     }
 }

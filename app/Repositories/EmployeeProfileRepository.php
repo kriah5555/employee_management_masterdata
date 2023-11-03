@@ -54,7 +54,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         //         $query->where('id', $employeeId);
         //     })
         //     ->exists();
-        return EmployeeProfile::where('company_id', $companyId)->whereHas('user', function ($query) use ($socialSecurityNumber) {
+        return EmployeeProfile::whereHas('user', function ($query) use ($socialSecurityNumber) {
             $query->where('social_security_number', $socialSecurityNumber);
         })->exists();
         // return EmployeeProfile::where('company_id', '=', $companyId)

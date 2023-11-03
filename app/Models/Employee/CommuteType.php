@@ -22,6 +22,7 @@ class CommuteType extends BaseModel
      *
      * @var string
      */
+    protected $connection = 'master';
     protected $table = 'commute_types';
 
     /**

@@ -19,6 +19,7 @@ class MealVoucher extends BaseModel
      *
      * @var string
      */
+    protected $connection = 'master';
     protected $table = 'meal_vouchers';
 
     /**

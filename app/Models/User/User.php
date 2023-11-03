@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\HasPermissions;
+use App\Models\User\UserBasicDetails;
 
 class User extends Authenticatable
 {
@@ -51,5 +52,9 @@ class User extends Authenticatable
     public function findForPassport($username)
     {
         return $this->where('username', $username)->first();
+    }
+    public function userBasicDetails()
+    {
+        return $this->hasOne(UserBasicDetails::class);
     }
 }
