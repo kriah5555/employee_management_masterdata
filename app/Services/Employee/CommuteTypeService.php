@@ -5,7 +5,7 @@ namespace App\Services\Employee;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Repositories\CommuteTypeRepository;
-use App\Models\Employee\CommuteType;
+use App\Models\CommuteType;
 
 class CommuteTypeService
 {
@@ -48,5 +48,10 @@ class CommuteTypeService
     public function delete(CommuteType $commuteType)
     {
         return $this->commuteTypeRepository->deleteCommuteType($commuteType->id);
+    }
+
+    public function getActiveCommuteTypes()
+    {
+        return $this->commuteTypeRepository->getActiveCommuteTypes();
     }
 }

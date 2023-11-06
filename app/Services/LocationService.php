@@ -19,14 +19,13 @@ class LocationService extends BaseService
 
     public function __construct(LocationRepository $locationRepository, AddressService $addressService)
     {
-        parent::__construct(Location::class);
         $this->locationRepository = $locationRepository;
         $this->addressService = $addressService;
     }
 
-    public function getAll(array $args = [])
+    public function getActiveLocations()
     {
-        return $this->locationRepository->getLocations($args['company_id']);
+        return $this->locationRepository->getActiveLocations();
     }
 
     public function getLocations()

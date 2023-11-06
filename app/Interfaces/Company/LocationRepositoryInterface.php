@@ -6,7 +6,7 @@ interface LocationRepositoryInterface
 {
     public function getLocations();
 
-    public function getActiveLocationsOfCompany($companyId);
+    public function getActiveLocations();
 
     public function getLocationById(string $locationId);
 

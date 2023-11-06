@@ -5,30 +5,31 @@ namespace App\Http\Controllers\Employee;
 use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\Employee\CreateEmployeeRequest;
 use App\Repositories\CommuteTypeRepository;
-use App\Repositories\Company\LocationRepository;
 use App\Repositories\MealVoucherRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Models\Company\Company;
 use App\Services\Employee\EmployeeService;
 use App\Services\CompanyService;
 use Illuminate\Http\Request;
+use App\Services\LocationService;
+use App\Services\Employee\CommuteTypeService;
+use App\Services\MealVoucherService;
 
 class EmployeeController extends Controller
 {
     protected $employeeService;
     protected $companyService;
-    protected $locationRepository;
-    protected $commuteTypeRepository;
-    protected $mealVoucherRepository;
+    protected $locationService;
+    protected $commuteTypeService;
+    protected $mealVoucherService;
 
-    public function __construct(EmployeeService $employeeService, CompanyService $companyService, LocationRepository $locationRepository, CommuteTypeRepository $commuteTypeRepository, MealVoucherRepository $mealVoucherRepository)
+    public function __construct(EmployeeService $employeeService, CompanyService $companyService, LocationService $locationService, CommuteTypeService $commuteTypeService, MealVoucherService $mealVoucherService)
     {
         $this->employeeService = $employeeService;
         $this->companyService = $companyService;
-        $this->locationRepository = $locationRepository;
-        $this->commuteTypeRepository = $commuteTypeRepository;
-        $this->mealVoucherRepository = $mealVoucherRepository;
+        $this->locationService = $locationService;
+        $this->commuteTypeService = $commuteTypeService;
+        $this->mealVoucherService = $mealVoucherService;
     }
 
     /**
@@ -45,37 +46,12 @@ class EmployeeController extends Controller
         );
     }
 
-    public function create(Request $request)
-    {
-        $companyId = $request->header('Company-Id');
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => [
-                    'commute_type_options'      => $this->commuteTypeRepository->getActiveCommuteTypes(),
-                    'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
-                    'locations'                 => $this->locationRepository->getActiveLocationsOfCompany($companyId),
-                    'sub_types'                 => $this->employeeService->getSubTypeOptions(),
-                    'schedule_types'            => $this->employeeService->getScheduleTypeOptions(),
-                    'meal_vouchers'             => $this->mealVoucherRepository->getActiveMealVouchers(),
-                    'employment_types'          => $this->employeeService->getEmploymentTypeOptions(),
-                    'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
-                    'genders'                   => $this->employeeService->getGenders(),
-                    'marital_statuses'          => $this->employeeService->getMaritalStatus(),
-                    'dependent_spouse_options'  => $this->employeeService->getDependentSpouseOptions(),
-                    'languages'                 => $this->employeeService->getLanguageOptions(),
-                ]
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
     /**
      * API to get the details required for creating an employee type.
      */
     public function store(CreateEmployeeRequest $request)
     {
-        $companyId = $request->header('Company-Id');
+        $companyId = getCompanyId();
         return returnResponse(
             [
                 'success' => true,
@@ -157,37 +133,20 @@ class EmployeeController extends Controller
         );
     }
 
-    public function getOptionsForEmployeeContractCreation(string $companyId)
+    public function createEmployeeContract()
     {
+        $companyId = getCompanyId();
         try {
             return returnResponse(
                 [
                     'success' => true,
                     'data'    => [
                         'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
-                        'sub_types'                 => associativeToDictionaryFormat($this->employeeService->getSubTypeOptions()),
-                        'schedule_types'            => associativeToDictionaryFormat($this->employeeService->getScheduleTypeOptions()),
-                        'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions()),
-                        'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions()),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-    public function getFunctionsForLinkingToEmployee(string $companyId)
-    {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'functions' => collectionToValueLabelFormat($this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId))),
+                        'sub_types'                 => $this->employeeService->getSubTypeOptions(),
+                        'schedule_types'            => $this->employeeService->getScheduleTypeOptions(),
+                        'employment_types'          => $this->employeeService->getEmploymentTypeOptions(),
+                        'salary_types'              => $this->employeeService->getEmployeeSalaryTypeOptions(),
+                        'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
                     ]
                 ],
                 JsonResponse::HTTP_OK,
@@ -200,14 +159,35 @@ class EmployeeController extends Controller
         }
     }
 
-    public function getOptionsToUpdateEmployeeTransportDetails(string $companyId)
+    public function createEmployeeCommute()
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
                     'data'    => [
-                        'locations' => collectionToValueLabelFormat($this->locationRepository->getCompanyLocations($companyId)),
+                        'locations'            => $this->locationService->getActiveLocations(),
+                        'commute_type_options' => $this->commuteTypeService->getActiveCommuteTypes(),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function createEmployeeBenefits()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'meal_vouchers' => $this->mealVoucherService->getActiveMealVouchers(),
                     ]
                 ],
                 JsonResponse::HTTP_OK,

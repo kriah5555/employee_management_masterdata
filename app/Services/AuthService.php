@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\User\User;
 
 class AuthService
 {

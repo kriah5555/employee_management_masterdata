@@ -14,14 +14,12 @@ class UserBasicDetails extends BaseModel
         'user_id',
         'first_name',
         'last_name',
-        'social_security_number',
         'gender_id',
         'date_of_birth',
         'place_of_birth',
         'license_expiry_date',
         'language',
-        'extra_info',
-        'status',
+        'extra_info'
     ];
     /**
      * The table associated with the model.
@@ -63,7 +61,6 @@ class UserBasicDetails extends BaseModel
         'user_id',
         'first_name',
         'last_name',
-        'social_security_number',
         'gender_id',
         'date_of_birth',
         'place_of_birth',
@@ -74,6 +71,6 @@ class UserBasicDetails extends BaseModel
     ];
     public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 }

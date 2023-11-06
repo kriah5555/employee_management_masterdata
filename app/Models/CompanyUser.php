@@ -4,24 +4,21 @@ namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
-use App\Models\User\User;
 
-class UserFamilyDetails extends BaseModel
+class CompanyUser extends BaseModel
 {
     use UserAudit;
-    protected static $sort = ['first_name'];
     protected $columnsToLog = [
-        'user_id',
-        'marital_status_id',
-        'dependent_spouse'
+        'company_id',
+        'user_id'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $connection = 'userdb';
-    protected $table = 'user_family_details';
+    protected $connection = 'master';
+    protected $table = 'company_users';
 
     /**
      * The primary key associated with the table.
@@ -50,13 +47,7 @@ class UserFamilyDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'user_id',
-        'marital_status_id',
-        'dependent_spouse',
-        'status',
+        'company_id',
+        'user_id'
     ];
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 }

@@ -119,12 +119,6 @@ Route::controller(CostCenterController::class)->group(function () use ($statusRu
     Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
 });
 
-Route::get('employees/get-contract-creation-options/{company_id}', [EmployeeController::class, 'getOptionsForEmployeeContractCreation']);
-
-Route::get('employees/get-functions-options/{company_id}', [EmployeeController::class, 'getFunctionsForLinkingToEmployee']);
-
-Route::get('employees/get-transport-details-options/{company_id}', [EmployeeController::class, 'getOptionsToUpdateEmployeeTransportDetails']);
-
 
 Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $statusRule) {
     $resources = [
@@ -212,15 +206,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
 
     Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
-    Route::group(['middleware' => 'initialize-tenancy'], function () use ($statusRule) {
-        // Route::controller(LocationController::class)->group(function () use ($statusRule) {
-
-        //     Route::get('locations/{company_id}/{status}', 'index')->where('status', $statusRule);
-
-        //     Route::get('/locations/create/{company_id}', 'create');
-
-        //     Route::get('company/locations/{company_id}/{status}', 'locations')->where('status', $statusRule);
-        // });
+    Route::group(['middleware' => 'initialize-tenancy'], function () {
         $resources = [
             'locations' => [
                 'controller' => LocationController::class,
@@ -228,12 +214,15 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
             ],
             'employees' => [
                 'controller' => EmployeeController::class,
-                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'show', 'store', 'update', 'destroy']
             ],
         ];
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
         }
+        Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
+        Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
+        Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
     });
     // Route::controller(EmployeeController::class)->group(function () {
 

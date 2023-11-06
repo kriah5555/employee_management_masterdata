@@ -5,7 +5,7 @@ namespace App\Http\Rules\Employee;
 use App\Http\Rules\ApiRequest;
 use App\Rules\SocialSecurityNumberRule;
 use App\Rules\ValidateLengthIgnoringSymbols;
-use App\Repositories\EmployeeProfileRepository;
+use App\Repositories\Employee\EmployeeProfileRepository;
 use Illuminate\Validation\Rule;
 use App\Rules\CurrencyFormatRule;
 use App\Rules\EmployeeContractDetailsRule;

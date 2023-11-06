@@ -2,14 +2,21 @@
 
 namespace App\Models\Company;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Address;
+use App\Models\BaseModel;
+use App\Traits\UserAudit;
+use App\Models\Workstation;
 
-class Location extends Model
+class Location extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    use UserAudit;
+    protected static $sort = ['location_name'];
+    protected $columnsToLog = [
+        'location_name',
+        'status',
+        'company',
+        'address'
+    ];
 
     protected $connection = 'tenant';
 

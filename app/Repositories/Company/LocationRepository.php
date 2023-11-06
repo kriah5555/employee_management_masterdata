@@ -13,9 +13,9 @@ class LocationRepository implements LocationRepositoryInterface
     {
         return Location::all();
     }
-    public function getActiveLocationsOfCompany($companyId)
+    public function getActiveLocations()
     {
-        return Location::where('company', '=', $companyId)->where('status', '=', true)->get();
+        return Location::allActive();
     }
 
     public function getLocationById(string $locationId, array $relations = []): Collection|Builder|Location

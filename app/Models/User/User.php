@@ -8,6 +8,8 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\HasPermissions;
 use App\Models\User\UserBasicDetails;
+use App\Models\User\UserBankAccount;
+use App\Models\User\UserFamilyDetails;
 
 class User extends Authenticatable
 {
@@ -57,4 +59,21 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserBasicDetails::class);
     }
+    public function userAddress()
+    {
+        return $this->hasOne(UserAddress::class);
+    }
+    public function userBankAccount()
+    {
+        return $this->hasOne(UserBankAccount::class);
+    }
+    public function userFamilyDetails()
+    {
+        return $this->hasOne(UserFamilyDetails::class);
+    }
+    // public function employeeProfiles()
+    // {
+    //     return $this->hasMany(EmployeeProfile::class)
+    //         ->where('status', true);
+    // }
 }
