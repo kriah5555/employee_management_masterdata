@@ -7,8 +7,12 @@ use App\Traits\UserAudit;
 
 class Reason extends BaseModel
 {
+    protected $connection = 'master';
+
     use UserAudit;
+
     protected static $sort = ['name'];
+
     protected $columnsToLog = [
         'name',
         'category',

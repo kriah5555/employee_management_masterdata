@@ -8,7 +8,10 @@ use Stancl\Tenancy\Database\Concerns\HasDatabase;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
+    protected $connection = 'master';
+
     use HasDatabase;
+
     public static function getCustomColumns(): array
     {
         return [

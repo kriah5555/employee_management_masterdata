@@ -11,7 +11,7 @@ use App\Models\Interim\InterimAgency;
 use App\Models\Company\CompanySocialSecretaryDetails;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
-
+use App\Models\Tenant;
 
 class Company extends BaseModel
 {
@@ -39,6 +39,7 @@ class Company extends BaseModel
      * @var string
      */
     protected $connection = 'master';
+
     protected $table = 'companies';
 
     protected $hidden = ['pivot'];
@@ -62,8 +63,6 @@ class Company extends BaseModel
         'employer_id',
         'sender_number',
         'rsz_number',
-        'social_secretary_id',
-        'interim_agency_id',
         'oauth_key',
         'username',
         'email',
@@ -111,33 +110,14 @@ class Company extends BaseModel
         return $this->hasOne(CompanySocialSecretaryDetails::class);
     }
 
-    public function socialSecretaryValue()
+    public function tenant()
     {
-        if ($this->socialSecretary) {
-            return [
-                'level' => $this->socialSecretary->id,
-                'value' => $this->socialSecretary->name,
-            ];
-        } else {
-            return null;
-        }
+        return $this->hasOne(Tenant::class);
     }
 
-    public function interimAgency()
+    public function interimAgencies()
     {
-        return $this->belongsTo(InterimAgency::class, 'interim_agency_id');
-    }
-
-    public function interimAgencyValue()
-    {
-        if ($this->interimAgency) {
-            return [
-                'level' => $this->interimAgency->id,
-                'value' => $this->interimAgency->name,
-            ];
-        } else {
-            return null;
-        }
+        return $this->belongsToMany(InterimAgency::class, 'company_interim_agency', 'company_id', 'interim_agency_id');
     }
 
     public function logoFile()

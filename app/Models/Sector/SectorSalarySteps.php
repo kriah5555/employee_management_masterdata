@@ -11,6 +11,8 @@ use App\Models\MinimumSalary;
 
 class SectorSalarySteps extends Model
 {
+    protected $connection = 'master';
+
     use HasFactory, SoftDeletes;
 
     /**

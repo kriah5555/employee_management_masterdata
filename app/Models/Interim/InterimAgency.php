@@ -12,6 +12,8 @@ class InterimAgency extends BaseModel
 {
     use HasFactory, SoftDeletes;
 
+    protected $connection = 'master';
+
     protected static $sort = ['name'];
 
     protected $fillable = [
@@ -23,7 +25,7 @@ class InterimAgency extends BaseModel
         'joint_commissioner_number',
         'rsz_number',
         'status',
-        'address',
+        // 'address',
         'created_by',
         'updated_by',
     ];
@@ -34,10 +36,11 @@ class InterimAgency extends BaseModel
         'deleted_at'
     ];
 
-    public function address()
-    {
-        return $this->belongsTo(Address::class, 'address');
-    }
+    // public function address()
+    // {
+    //     return $this->belongsTo(Address::class, 'address');
+    // }
+
     public function companies()
     {
         return $this->belongsToMany(Company::class);

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Company;
 
-use App\Models\CostCenter;
+use App\Models\Company\CostCenter;
 use App\Services\CostCenterService;
 use App\Http\Rules\CostCenterRequest;
 use Illuminate\Http\JsonResponse;

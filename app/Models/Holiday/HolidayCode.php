@@ -10,6 +10,8 @@ use App\Models\Company\Company;
 
 class HolidayCode extends Model
 {
+    protected $connection = 'master';
+
     use HasFactory, SoftDeletes;
 
     protected $table = 'holiday_codes';

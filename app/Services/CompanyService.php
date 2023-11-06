@@ -6,9 +6,9 @@ use App\Models\Company\CompanySocialSecretaryDetails;
 use App\Repositories\Company\CompanySocialSecretaryDetailsRepository;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Company;
-use App\Models\Address;
+use App\Models\Company\Address;
 use App\Models\Company\Location;
-use App\Models\Workstation;
+use App\Models\Company\Workstation;
 use App\Models\LocationRequest;
 use App\Models\Files;
 use App\Services\AddressService;
@@ -19,26 +19,14 @@ use App\Models\Tenant;
 
 class CompanyService
 {
-    protected $companyRepository;
-    protected $companySocialSecretaryDetailsRepository;
-    protected $addressService;
-    protected $locationService;
-    protected $workstationService;
-    protected $model;
 
     public function __construct(
-        CompanyRepository $companyRepository,
-        CompanySocialSecretaryDetailsRepository $companySocialSecretaryDetailsRepository,
-        LocationService $locationService,
-        AddressService $addressService,
-        WorkstationService $workstationService
-    ) {
-        $this->companyRepository = $companyRepository;
-        $this->companySocialSecretaryDetailsRepository = $companySocialSecretaryDetailsRepository;
-        $this->locationService = $locationService;
-        $this->addressService = $addressService;
-        $this->workstationService = $workstationService;
-    }
+        protected CompanyRepository $companyRepository,
+        protected CompanySocialSecretaryDetailsRepository $companySocialSecretaryDetailsRepository,
+        protected LocationService $locationService,
+        protected AddressService $addressService,
+        protected WorkstationService $workstationService
+    ) {}
 
     public function getCompanies()
     {
@@ -51,28 +39,40 @@ class CompanyService
 
     public function createNewCompany($values)
     {
-        $company = $this->createCompany($values);
-        $tenant = $this->createTenant($company);
-        setTenantDB($tenant->id);
-        $location_ids = $this->createCompanyLocations($company, $values); # add company locations
-        $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
-        return $company;
+        try {
+            DB::beginTransaction();
+                $company      = $this->createCompany($values);
+                // $location_ids = $this->createCompanyLocations($company, $values); # add company locations
+                // $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
+            DB::commit();
+            $tenant       = $this->createTenant($company);
+            return $company;
+        } catch (Exception $e) {
+            DB::rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function createCompany($values)
     {
         return DB::transaction(function () use ($values) {
-            $requestData = $values;
-            $company_address = $this->addressService->createNewAddress($values['address']);
+            $requestData            = $values;
+            $company_address        = $this->addressService->createNewAddress($values['address']);
             $requestData['address'] = $company_address->id;
-            $requestData['logo'] = isset($requestData['logo']) ? self::addCompanyLogo($requestData) : '';
-            $company = $this->companyRepository->createCompany($requestData);
-            $this->companySocialSecretaryDetailsRepository->createCompanySocialSecretaryDetails($company, $requestData);
-            $this->syncSectors($company, $values);
+            $requestData['logo']    = isset($requestData['logo']) ? self::addCompanyLogo($requestData) : '';
+            unset($requestData['social_Secretary_details'], $requestData['sectors'], $requestData['interim_agencies']);
+            $company                = $this->companyRepository->createCompany($requestData);
+            if (isset($values['social_Secretary_details'])) {
+                $company->companySocialSecretaryDetails()->create($values['social_Secretary_details']);
+            }
+            $company->sectors()->sync($values['sectors'] ?? []);
+            $company->interimAgencies()->sync($values['interim_agencies'] ?? []);
             $company->refresh();
             return $company;
         });
     }
+    
     public function createTenant($company)
     {
         $database_name = 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $company->company_name) . '_' . $company->id);
@@ -87,11 +87,16 @@ class CompanyService
     public function updateCompany($company, $values)
     {
         DB::beginTransaction();
-        // $this->updateCompanyLogoData($company, $values);
-        $this->addressService->updateAddress($company->address, $values['address']);
-        $this->syncSectors($company, $values);
-        unset($values['address'], $values['sectors'], $values['responsible_persons'], $values['locations'], $values['workstations']);
-        $this->companyRepository->updateCompany($company->id, $values);
+            // $this->updateCompanyLogoData($company, $values);
+            $this->addressService->updateAddress($company->address, $values['address']);
+
+            if (isset($values['social_Secretary_details'])) {
+                $company->companySocialSecretaryDetails()->updateOrCreate([], $values['social_Secretary_details']);
+            }
+            $company->sectors()->sync($values['sectors'] ?? []);
+            $company->interimAgencies()->sync($values['interim_agencies'] ?? []);
+            unset($values['social_Secretary_details'], $values['sectors'], $values['interim_agencies'], $values['address']);
+            $this->companyRepository->updateCompany($company, $values);
         DB::commit();
     }
 
@@ -136,17 +141,6 @@ class CompanyService
         }
 
         $company->update($request_data);
-    }
-
-    private function syncSectors(Company $company, $values)
-    {
-        if (isset($values['sectors'])) {
-            $sectors = $values['sectors'];
-        } else {
-            $sectors = [];
-        }
-
-        $company->sectors()->sync($sectors);
     }
 
     public function getCompanyLogo(Company $company)
@@ -229,7 +223,7 @@ class CompanyService
 
     public function getCompanyDetails($companyId): Company
     {
-        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails']);
+        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails', 'interimAgencies']);
     }
 
     public function getLocationsUnderCompany($companyId): Company

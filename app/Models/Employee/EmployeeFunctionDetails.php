@@ -9,6 +9,8 @@ class EmployeeFunctionDetails extends BaseModel
 {
     use UserAudit;
 
+    protected $connection = 'tenant';
+
     protected $columnsToLog = [
         'employee_contract_details_id',
         'function_title_id',

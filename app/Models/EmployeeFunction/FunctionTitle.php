@@ -7,9 +7,11 @@ use App\Models\BaseModel;
 
 class FunctionTitle extends BaseModel
 {
-    protected static $sort = ['name'];
-    protected $columnsToLog = ['name', 'description', 'function_code', 'function_category_id', 'status'];
     protected $connection = 'master';
+
+    protected static $sort = ['name'];
+    
+    protected $columnsToLog = ['name', 'description', 'function_code', 'function_category_id', 'status'];
     /**
      * The table associated with the model.
      *

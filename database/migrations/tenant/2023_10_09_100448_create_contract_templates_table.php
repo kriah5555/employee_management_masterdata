@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('language')->default('en');
             $table->boolean('status')->default(true);
             $table->foreignId('employee_type_id')->nullable()->references('id')->on('employee_types')->onDelete('cascade');
-            $table->foreignId('social_secretary_id')->nullable()->references('id')->on('social_secretaries')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

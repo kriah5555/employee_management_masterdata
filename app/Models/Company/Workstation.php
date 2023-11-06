@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Company;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Workstation extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $connection = 'tenant';
 
     protected $hidden = ['pivot'];
 

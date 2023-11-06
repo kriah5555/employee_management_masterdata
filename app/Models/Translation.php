@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Translation extends Model
 {
+    protected $connection = 'master';
+
     use HasFactory;
 
     protected $table = 'translations';

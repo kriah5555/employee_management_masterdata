@@ -9,6 +9,8 @@ use App\Models\BaseModel;
 
 class HolidayCodesOfSocialSecretary extends BaseModel
 {
+    protected $connection = 'master';
+
     use HasFactory;
 
     protected $table = 'holiday_codes_of_social_secretary';

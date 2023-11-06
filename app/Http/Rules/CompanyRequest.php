@@ -6,6 +6,7 @@ use Illuminate\Validation\Rule;
 use App\Rules\AddressRule;
 use App\Rules\LocationRule;
 use App\Rules\WorkstationRule;
+use App\Rules\CompanySocialSecretaryRule;
 
 class CompanyRequest extends ApiRequest
 {
@@ -17,33 +18,26 @@ class CompanyRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'company_name'            => 'required|string|max:255',
-            'status'                  => 'required|boolean',
-            'sectors'                 => 'required|array',
-            'address'                 => ['required', new AddressRule()],
-            'locations'               => ['nullable', 'array', new LocationRule()],
-            'workstations'            => ['nullable', 'array', new WorkstationRule()],
-            'social_secretary_id'     => [
-                'bail',
-                'nullable',
-                Rule::exists('social_secretaries', 'id')
-            ],
-            'interim_agency_id'       => [
-                'bail',
-                'nullable',
-                Rule::exists('interim_agencies', 'id')
-            ],
+            'company_name'             => 'required|string|max:255',
+            'status'                   => 'required|boolean',
+            'sectors'                  => 'required|array',
+            'interim_agencies'         => 'nullable|array',
+            'address'                  => ['required', new AddressRule()],
+            'locations'                => ['nullable', 'array', new LocationRule()],
+            'workstations'             => ['nullable', 'array', new WorkstationRule()],
+            'social_Secretary_details' => ['nullable', 'array', new CompanySocialSecretaryRule()],
             'sectors.*'               => [
                 'bail',
                 'integer',
                 Rule::exists('sectors', 'id'),
             ],
-
+            'interim_agencies.*'               => [
+                'bail',
+                'integer',
+                Rule::exists('interim_agencies', 'id'),
+            ],
             'employer_id'             => 'nullable|digits_between:1,11',
-            'sender_number'           => 'nullable|digits_between:1,11',
             'rsz_number'              => 'nullable|digits_between:1,11',
-            'social_secretary_number' => 'nullable|string',
-            'contact_email'           => 'nullable|string',
             'username'                => 'nullable|string|max:50',
             'oauth_key'               => 'nullable',
             'email'                   => 'required|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',

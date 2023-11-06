@@ -9,6 +9,8 @@ class EmployeeAddress extends BaseModel
 {
     use UserAudit;
 
+    protected $connection = 'tenant';
+
     protected $columnsToLog = [
         'employee_profile_id',
         'account_number',

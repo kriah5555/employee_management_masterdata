@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SectorAgeSalary extends Model
 {
+    protected $connection = 'master';
+
     use HasFactory, SoftDeletes;
 
     /**

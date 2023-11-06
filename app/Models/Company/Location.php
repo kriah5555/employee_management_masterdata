@@ -2,10 +2,11 @@
 
 namespace App\Models\Company;
 
-use App\Models\Address;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
-use App\Models\Workstation;
+use App\Models\Company\AddressCompany;
+use App\Models\Company\Company;
+use App\Models\Company\Workstation;
 
 class Location extends BaseModel
 {
@@ -47,6 +48,11 @@ class Location extends BaseModel
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address');
+        return $this->belongsTo(AddressCompany::class, 'address');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(company::class, 'company');
     }
 }

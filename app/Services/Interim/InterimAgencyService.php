@@ -20,10 +20,13 @@ class InterimAgencyService
     {
         return DB::transaction(function () use ($values) {
             $interimAgency = $this->interimAgencyRepository->createInterimAgency($values);
-            $interimAgency = $this->interimAgencyRepository->updateLinkedCompanies($interimAgency, $values['companies']);
+            if (isset($values['companies'])) {
+                $interimAgency = $this->interimAgencyRepository->updateLinkedCompanies($interimAgency, $values['companies']);
+            }
             return $interimAgency;
         });
     }
+
     public function getInterimAgencies()
     {
         return $this->interimAgencyRepository->getInterimAgencies();
@@ -37,7 +40,9 @@ class InterimAgencyService
     {
         DB::transaction(function () use ($interimAgency, $values) {
             $this->interimAgencyRepository->updateInterimAgency($interimAgency, $values);
-            $this->interimAgencyRepository->updateLinkedCompanies($interimAgency, $values['companies']);
+            if (isset($values['companies'])) {
+                $this->interimAgencyRepository->updateLinkedCompanies($interimAgency, $values['companies']);
+            }
         });
     }
 

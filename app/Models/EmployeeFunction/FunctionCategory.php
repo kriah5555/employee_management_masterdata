@@ -8,7 +8,10 @@ use App\Models\EmployeeFunction\FunctionTitle;
 
 class FunctionCategory extends BaseModel
 {
+    protected $connection = 'master';
+
     protected static $sort = ['name'];
+    
     protected $columnsToLog = ['name', 'description', 'category', 'sector_id', 'status'];
     /**
      * The table associated with the model.

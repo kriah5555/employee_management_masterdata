@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Company;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +12,8 @@ use App\Models\Employee\EmployeeProfile;
 
 class CostCenter extends BaseModel
 {
+    protected $connection = 'tenant';
+    
     use HasFactory, SoftDeletes, UserAudit;
 
     protected $table = 'cost_centers';

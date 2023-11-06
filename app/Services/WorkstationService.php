@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Workstation;
+use App\Models\Company\Workstation;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Rules\FunctionTitlesLinkedToSectorRule;

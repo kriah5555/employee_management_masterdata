@@ -12,15 +12,19 @@ use App\Traits\UserAudit;
 class EmployeeType extends BaseModel
 {
     use UserAudit;
+    
+    protected $connection = 'master';
+    
+    protected $table = 'employee_types';
+
     protected static $sort = ['name'];
+    
     protected $columnsToLog = ['name', 'description', 'employee_type_category_id', 'status', 'salary_type'];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $connection = 'master';
-    protected $table = 'employee_types';
 
     protected $hidden = ['pivot'];
 

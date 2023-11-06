@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\CostCenter;
+use App\Models\Company\CostCenter;
 use App\Models\Company\Location;
 
 class UniqueCostCenterNumberInCompanyRule implements ValidationRule
