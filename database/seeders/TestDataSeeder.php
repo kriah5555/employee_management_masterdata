@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Address;
 use App\Models\Company\Company;
-use App\Models\CommuteType;
+use App\Models\Employee\CommuteType;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Company\Location;
