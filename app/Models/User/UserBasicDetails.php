@@ -14,6 +14,7 @@ class UserBasicDetails extends BaseModel
         'user_id',
         'first_name',
         'last_name',
+        'nationality',
         'gender_id',
         'date_of_birth',
         'place_of_birth',
@@ -61,13 +62,13 @@ class UserBasicDetails extends BaseModel
         'user_id',
         'first_name',
         'last_name',
+        'nationality',
         'gender_id',
         'date_of_birth',
         'place_of_birth',
         'license_expiry_date',
         'language',
-        'extra_info',
-        'status',
+        'extra_info'
     ];
     public function user()
     {

@@ -99,18 +99,10 @@ class EmployeeService
             DB::connection('userdb')->beginTransaction();
             $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
-                $user = $this->createUser($values);
+                $user = $this->userService->createNewUser($values);
             } else {
                 $user = $existingEmpProfile->last();
             }
-            $this->userService->createOrUpdateUserBasicDetails($user, $values);
-            $this->userService->createOrUpdateUserAddress($user, $values);
-            // $user->userAddress()->updateOrCreate($values);
-            // if (array_key_exists('bank_account_number', $values) && $values['bank_account_number'] != '') {
-            //     $this->userService->createUserBankAccount($values);
-            // }
-            // $user->userBankAccount()->updateOrCreate($values);
-            // $user->userFamilyDetails()->updateOrCreate($values);
             print_r($user);
             exit;
             $values['company_id'] = $company_id;
@@ -176,10 +168,12 @@ class EmployeeService
         $username = $values['first_name'] . $values['last_name'];
         $username = strtolower(str_replace(' ', '', $username));
         $password = ucfirst($username) . '$';
-        $values['username'] = generateUniqueUsername($username);
-        $values['password'] = Hash::make($password);
-        $user = User::create($values);
-        return $user;
+        $saveValues = [
+            'username'               => generateUniqueUsername($username),
+            'password'               => Hash::make($password),
+            'social_security_number' => $values['social_security_number'],
+        ];
+        return User::create($saveValues);
     }
 
     public function create($companyId)
