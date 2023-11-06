@@ -10,6 +10,8 @@ class EmailTemplate extends Model
 {
     use HasTranslations, SoftDeletes;
 
+    protected $connection = 'master';
+
     protected $table = 'email_templates';
     
     public $translatable = ['body', 'subject'];

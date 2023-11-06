@@ -12,8 +12,8 @@ use App\Http\Controllers\EmployeeFunction\FunctionTitleController;
 use App\Http\Controllers\EmployeeFunction\FunctionCategoryController;
 use App\Http\Controllers\Holiday\EmployeeHolidayCountController;
 use App\Http\Controllers\Sector\SalaryController;
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\WorkstationController;
+use App\Http\Controllers\Company\LocationController;
+use App\Http\Controllers\Company\WorkstationController;
 use App\Http\Controllers\Email\EmailTemplateApiController;
 use App\Http\Controllers\Translations\TranslationController;
 use App\Http\Controllers\Contract\ContractTypeController;
@@ -21,11 +21,12 @@ use App\Http\Controllers\Contract\ContractTemplateController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeController;
-use App\Http\Controllers\CostCenterController;
+use App\Http\Controllers\Company\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
+use App\Http\Controllers\Company\CompanyContractTemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,12 +68,10 @@ Route::group(['middleware' => 'service-registry'], function () {
 });
 
 Route::resources([
-    'companies'          => CompanyController::class,
-    'email-templates'    => EmailTemplateApiController::class,
-    'workstations'       => WorkstationController::class,
-    'locations'          => LocationController::class,
-    'public-holidays'    => PublicHolidayController::class,
-    'interim-agencies'   => InterimAgencyController::class,
+    'companies'       => CompanyController::class,
+    'email-templates' => EmailTemplateApiController::class,
+    'workstations'    => WorkstationController::class,
+    'public-holidays' => PublicHolidayController::class,
 ]);
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
@@ -95,21 +94,9 @@ Route::controller(ContractTemplateController::class)->group(function () use ($in
 
     Route::resource('contract-templates', ContractTemplateController::class)->except(['edit']);
 
-    Route::get('company-contract-templates/{company_id}', 'index');
-
 });
 
 
-Route::controller(LocationController::class)->group(function () use ($statusRule) {
-
-    Route::get('locations/{company_id}/{status}', 'index')->where('status', $statusRule);
-
-    Route::get('/locations/create/{company_id}', 'create');
-
-    Route::resource('locations', LocationController::class);
-
-    Route::get('company/locations/{company_id}/{status}', 'locations')->where('status', $statusRule);
-});
 
 Route::controller(WorkstationController::class)->group(function () use ($statusRule, $integerRule) {
 
@@ -131,14 +118,8 @@ Route::controller(CostCenterController::class)->group(function () use ($statusRu
     Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
 });
 
-Route::get('employees/get-contract-creation-options/{company_id}', [EmployeeController::class, 'getOptionsForEmployeeContractCreation']);
 
-Route::get('employees/get-functions-options/{company_id}', [EmployeeController::class, 'getFunctionsForLinkingToEmployee']);
-
-Route::get('employees/get-transport-details-options/{company_id}', [EmployeeController::class, 'getOptionsToUpdateEmployeeTransportDetails']);
-
-
-Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
+Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $statusRule) {
     $resources = [
         'contract-types'      => [
             'controller' => ContractTypeController::class,
@@ -174,6 +155,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'social-secretary'    => [
             'controller' => SocialSecretaryController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'interim-agencies'    => [
+            'controller' => InterimAgencyController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
         'companies'           => [
@@ -215,18 +200,46 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
     });
 
-    Route::controller(EmployeeController::class)->group(function () {
-
-        Route::get('/employees/get-company-employees/{company_id}', 'index');
-
-        Route::get('/employees/create/{company_id}', 'create');
-
-        Route::post('/employees/store/{company_id}', 'store');
-
-        Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
-    });
 
     Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
+
+    Route::group(['middleware' => 'initialize-tenancy'], function () {
+        $resources = [
+            'locations' => [
+                'controller' => LocationController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            ],
+            'employees' => [
+                'controller' => EmployeeController::class,
+                'methods'    => ['index', 'show', 'store', 'update', 'destroy']
+            ],
+        ];
+        foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
+            Route::resource($uri, $controller)->only($methods);
+        }
+
+        Route::controller(CompanyContractTemplateController::class)->group(function () {
+
+            Route::resource('company-contract-templates', CompanyContractTemplateController::class)->except(['edit']);
+        
+        });
+
+
+        Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
+        Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
+        Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
+    });
+
+    // Route::controller(EmployeeController::class)->group(function () {
+
+    //     Route::get('/employees', 'index');
+
+    //     Route::get('/employees/create/{company_id}', 'create');
+
+    //     Route::post('/employees/store/{company_id}', 'store');
+
+    //     Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
+    // });
 });

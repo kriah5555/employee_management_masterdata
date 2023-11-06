@@ -7,7 +7,7 @@ use App\Rules\LocationLinkedToCompanyRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\WorkstationLinkedToCompanyRule;
 use App\Rules\WorkstationLinkedToLocationRule;
-use App\Models\CostCenter;
+use App\Models\Company\CostCenter;
 use App\Rules\UniqueCostCenterNumberInCompanyRule;
 
 class CostCenterRequest extends ApiRequest

@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
+    protected $connection = 'master';
+
     use HasFactory, SoftDeletes;
+
     protected $table = 'address';
 
     protected $primaryKey = 'id';

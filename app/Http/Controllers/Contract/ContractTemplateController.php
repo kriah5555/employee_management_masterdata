@@ -17,13 +17,12 @@ class ContractTemplateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($company_id = '')
+    public function index()
     {
-        
         return returnResponse(
             [
                 'success' => true,
-                'data'    => ($company_id) ? $this->contractTemplateService->getCompanyContractTemplates($company_id) : $this->contractTemplateService->getAll(['with' => 'employeeType']),
+                'data'    => $this->contractTemplateService->getAll(['with' => 'employeeType']),
             ],
             JsonResponse::HTTP_OK,
         );

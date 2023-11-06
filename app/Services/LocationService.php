@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Workstation;
+use App\Models\Company\Workstation;
 use App\Services\AddressService;
 use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Company\LocationRepository;
 use App\Services\BaseService;
-use App\Models\Location;
+use App\Models\Company\Location;
 
 class LocationService extends BaseService
 {
@@ -19,14 +19,26 @@ class LocationService extends BaseService
 
     public function __construct(LocationRepository $locationRepository, AddressService $addressService)
     {
-        parent::__construct(Location::class);
         $this->locationRepository = $locationRepository;
         $this->addressService = $addressService;
     }
 
-    public function getAll(array $args = [])
+    public function getActiveLocations()
     {
-        return $this->locationRepository->getLocationsOfCompany($args['company_id']);
+        return $this->locationRepository->getActiveLocations();
+    }
+
+    public function getLocations()
+    {
+        return $this->locationRepository->getLocations();
+    }
+    public function getLocationById($locationId)
+    {
+        return $this->locationRepository->getLocationById($locationId);
+    }
+    public function deleteLocation($locationId)
+    {
+        return $this->locationRepository->deleteLocation($locationId);
     }
 
     public static function getLocationRules($for_company_creation = true)
@@ -57,14 +69,14 @@ class LocationService extends BaseService
     public function create($values)
     {
         try {
-            setTenantDB('');
+            // setTenantDB('');
             DB::beginTransaction();
             $address = $this->addressService->createNewAddress($values['address']);
             $values['address'] = $address->id;
             $location = $this->locationRepository->createLocation($values);
             DB::commit();
             return $location;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
             throw $e;

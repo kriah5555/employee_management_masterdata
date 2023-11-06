@@ -3,10 +3,12 @@
 namespace App\Models\Contract;
 
 use App\Models\BaseModel;
-use App\Models\ContractType;
+use App\Models\Contract\ContractType;
 
 class ContractRenewalType extends BaseModel
 {
+    protected $connection = 'master';
+
     protected static $sort = ['sort_order', 'name'];
     protected $columnsToLog = ['key', 'name', 'sort_order', 'status'];
     /**

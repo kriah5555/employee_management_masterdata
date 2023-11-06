@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Employee\CommuteTypeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Rules\Employee\CommuteTypeRequest;
-use App\Models\Employee\CommuteType;
+use App\Models\CommuteType;
 
 
 class CommuteTypeController extends Controller

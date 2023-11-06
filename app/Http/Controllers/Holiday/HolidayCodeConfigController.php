@@ -13,7 +13,7 @@ use App\Services\CompanyService;
 class HolidayCodeConfigController extends Controller
 {
     protected $company_service;
-    
+
     public function __construct(protected HolidayCodeService $holiday_code_service)
     {
         $this->company_service = app(CompanyService::class);
@@ -34,7 +34,7 @@ class HolidayCodeConfigController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => ['companies' => $this->company_service->getCompanyOptions()]
+                'data'    => ['companies' => $this->company_service->getCompanies()]
             ],
             JsonResponse::HTTP_OK,
         );

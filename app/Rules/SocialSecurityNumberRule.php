@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Repositories\EmployeeProfileRepository;
+use App\Repositories\Employee\EmployeeProfileRepository;
 
 class SocialSecurityNumberRule implements ValidationRule
 {
@@ -21,11 +21,9 @@ class SocialSecurityNumberRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $companyId = request()->route('company_id');
+        $companyId = getCompanyId();
         if ($this->employeeProfileRepository->checkEmployeeExistsInCompany($companyId, $value)) {
             $fail("Employee already present in company");
         }
-        print_r('as');
-        exit;
     }
 }

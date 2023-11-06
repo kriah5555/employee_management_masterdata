@@ -8,23 +8,27 @@ use App\Models\Employee\EmployeeProfile;
 use App\Models\Employee\LongTermEmployeeContractDetails;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\MealVoucher;
+use App\Models\User\UserBasicDetails;
 use App\Services\CompanyService;
+use App\Services\User\UserService;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use App\Repositories\EmployeeProfileRepository;
+use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Repositories\AddressRepository;
 use App\Repositories\BankAccountRepository;
-use App\Models\User;
+use App\Models\User\User;
 use App\Models\Employee\Gender;
 use App\Models\Employee\MaritalStatus;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\Employee\CommuteType;
-use App\Repositories\ExtraBenefitsRepository;
+use App\Models\CommuteType;
+use App\Repositories\Employee\EmployeeBenefitsRepository;
 use App\Repositories\Company\LocationRepository;
 
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Sector\SectorSalarySteps;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 
 class EmployeeService
@@ -32,23 +36,50 @@ class EmployeeService
 
     public function __construct(
         protected EmployeeProfileRepository $employeeProfileRepository,
-        protected AddressRepository $addressRepository,
-        protected BankAccountRepository $bankAccountRepository,
         protected EmployeeTypeService $employeeTypeService,
         protected CompanyService $companyService,
-        protected ExtraBenefitsRepository $extraBenefitsRepository,
-        protected LocationRepository $locationRepository
+        protected EmployeeBenefitsRepository $employeeBenefitsRepository,
+        protected LocationRepository $locationRepository,
+        protected UserService $userService,
     ) {
     }
     /**
      * Function to get all the employee types
      */
-    public function index(string $companyId)
+    public function index()
     {
-        return $this->employeeProfileRepository->getAllEmployeeProfilesByCompany($companyId);
+        $response = [];
+        $employees = $this->employeeProfileRepository->getAllEmployeeProfiles();
+        foreach ($employees as $employee) {
+            $employee->user;
+            $employee->user->userBasicDetails;
+            $employee->user_basic_details = UserBasicDetails::where("user_id", $employee->user->id)->first();
+            // print_r($employee->user->id);
+            // exit;
+            print_r(UserBasicDetails::where("user_id", $employee->user->id)->first());
+            exit;
+            $currentDate = Carbon::now();
+
+            $employeeContracts = $employee->employeeContractDetails->filter(function ($employeeContractDetails) use ($currentDate) {
+                // Check if 'to_date' is greater than or equal to today or if it's null
+                return (
+                    Carbon::parse($employeeContractDetails->start_date)->lessThanOrEqualTo($currentDate) &&
+                    (is_null($employeeContractDetails->start_date) || Carbon::parse($employeeContractDetails->end_date)->greaterThanOrEqualTo($currentDate))
+                );
+            });
+            $currentContract = $employeeContracts[0];
+            if (!array_key_exists($currentContract->employeeType->id, $response)) {
+                $response[$currentContract->employeeType->id] = [
+                    'employee_type' => $currentContract->employeeType->name,
+                    'employees'     => []
+                ];
+            }
+            $response[$currentContract->employeeType->id]['employees'][] = $employee;
+        }
+        return array_values($response);
     }
 
-    public function show(string $employeeProfileId)
+    public function getEmployeeDetails(string $employeeProfileId)
     {
         return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
     }
@@ -63,41 +94,38 @@ class EmployeeService
 
     public function createNewEmployee($values, $company_id)
     {
-        print_r('as');
-        exit;
         try {
-            $existingEmpProfile = $this->employeeProfileRepository->getEmployeeProfileBySsn($values['social_security_number']);
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
-                $uid = $this->createUser($values['first_name'], $values['first_name']);
+                $user = $this->userService->createNewUser($values);
             } else {
-                $uid = $existingEmpProfile->last()->uid;
+                $user = $existingEmpProfile->last();
             }
-            DB::beginTransaction();
-            $user = User::find($uid);
-            $values['uid'] = $uid;
-            $address = $this->addressRepository->createAddress($values);
-            $values['address_id'] = $address->id;
-            $extraBenefits = $this->extraBenefitsRepository->createExtraBenefits($values);
-            $values['extra_benefits_id'] = $extraBenefits->id;
-            if (array_key_exists('bank_account_number', $values)) {
-                $bankAccount = $this->bankAccountRepository->createBankAccount($values);
-                $values['bank_accountid'] = $bankAccount->id;
-            }
+            print_r($user);
+            exit;
             $values['company_id'] = $company_id;
             $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
+            print_r($values);
+            exit;
             if (array_key_exists('social_secretory_number', $values) || array_key_exists('contract_number', $values)) {
-                $bankAccount = $this->bankAccountRepository->createEmployeeSocialSecretaryDetails($values);
+                $bankAccount = $this->createEmployeeSocialSecretaryDetails($empProfile, $values);
                 $values['bank_accountid'] = $bankAccount->id;
             }
             $this->createEmployeeContract($empProfile, $values['employee_contract_details']);
             $user->assignRole('employee');
-            DB::commit();
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
             return $empProfile;
         } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
     }
+
 
     public function createEmployeeContract($empProfile, $contractDetails)
     {
@@ -135,33 +163,17 @@ class EmployeeService
     //     }
     // }
 
-    public function createUser($firstName, $lastName)
+    public function createUser($values)
     {
-        $username = $firstName . $lastName;
+        $username = $values['first_name'] . $values['last_name'];
         $username = strtolower(str_replace(' ', '', $username));
-        // $password = generateRandomPassword();
         $password = ucfirst($username) . '$';
-        $values = [
-            'username' => generateUniqueUsername($username),
-            'password' => $password
+        $saveValues = [
+            'username'               => generateUniqueUsername($username),
+            'password'               => Hash::make($password),
+            'social_security_number' => $values['social_security_number'],
         ];
-        $authorization = request()->header('authorization');
-        $bearerToken = substr($authorization, 7);
-        $headers = [
-            'Authorization' => 'Bearer ' . $bearerToken,
-            'Accept'        => 'application/json',
-        ];
-        $response = microserviceRequest(
-            '/service/identity-manager/create-user',
-            'POST',
-            $values,
-            $headers
-        );
-        if ($response['success']) {
-            return $response['data']['id'];
-        } else {
-            throw new Exception("Error in creating user");
-        }
+        return User::create($saveValues);
     }
 
     public function create($companyId)
@@ -196,7 +208,13 @@ class EmployeeService
 
     public function getLanguageOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.LANGUAGE_OPTIONS');
+        $url = config('app.identity_manager_url') . '/employee/get-language-options';
+        $response = makeApiRequest($url, 'GET');
+        if ($response['success']) {
+            return $response['data'];
+        } else {
+            throw new Exception('Failed to get language options');
+        }
     }
 
     public function getCommuteTypeOptions()
@@ -211,22 +229,28 @@ class EmployeeService
 
     public function getDependentSpouseOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.DEPENDENT_SPOUSE_OPTIONS');
+        $url = config('app.identity_manager_url') . '/employee/get-dependent-spouse-options';
+        $response = makeApiRequest($url, 'GET');
+        if ($response['success']) {
+            return $response['data'];
+        } else {
+            throw new Exception('Failed to get dependent spouse options');
+        }
     }
 
     public function getSubTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.SUB_TYPE_OPTIONS');
+        return config('constants.SUB_TYPE_OPTIONS');
     }
 
     public function getScheduleTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.SCHEDULE_TYPE_OPTIONS');
+        return config('constants.SCHEDULE_TYPE_OPTIONS');
     }
 
     public function getEmploymentTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.EMPLOYMENT_TYPE_OPTIONS');
+        return config('constants.EMPLOYMENT_TYPE_OPTIONS');
     }
 
     public function getEmployeeSalaryTypeOptions()

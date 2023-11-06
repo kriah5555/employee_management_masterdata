@@ -11,6 +11,8 @@ use App\Models\Sector\SectorSalarySteps;
 
 class SectorSalaryConfig extends Model
 {
+    protected $connection = 'master';
+
     use HasFactory, SoftDeletes;
 
     /**

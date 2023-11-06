@@ -8,7 +8,9 @@ use App\Traits\UserAudit;
 class BankAccount extends BaseModel
 {
     use UserAudit;
+
     protected static $sort = ['bank_account_number'];
+    
     protected $columnsToLog = [
         'bank_account_number',
         'verified',
@@ -20,6 +22,7 @@ class BankAccount extends BaseModel
      *
      * @var string
      */
+    protected $connection = 'master';
     protected $table = 'bank_accounts';
 
     /**

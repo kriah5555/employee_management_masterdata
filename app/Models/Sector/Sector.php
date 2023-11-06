@@ -16,6 +16,8 @@ use App\Models\BaseModel;
 
 class Sector extends BaseModel
 {
+    protected $connection = 'master';
+
     use HasFactory, SoftDeletes, LogsActivity;
 
     /**

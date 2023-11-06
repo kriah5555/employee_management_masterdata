@@ -3,11 +3,15 @@
 namespace App\Models\Employee;
 
 use App\Models\BaseModel;
+use App\Models\EmployeeType\EmployeeType;
 use App\Traits\UserAudit;
 
 class EmployeeContractDetails extends BaseModel
 {
     use UserAudit;
+
+    protected $connection = 'tenant';
+
     protected $columnsToLog = [
         'employee_profile_id',
         'employee_type_id',
@@ -55,4 +59,10 @@ class EmployeeContractDetails extends BaseModel
         'from_date',
         'to_date'
     ];
+
+
+    public function employeeType()
+    {
+        return $this->belongsTo(EmployeeType::class);
+    }
 }

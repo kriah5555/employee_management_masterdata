@@ -5,63 +5,42 @@ namespace App\Http\Controllers\Employee;
 use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\Employee\CreateEmployeeRequest;
 use App\Repositories\CommuteTypeRepository;
-use App\Repositories\Company\LocationRepository;
 use App\Repositories\MealVoucherRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Models\Company\Company;
 use App\Services\Employee\EmployeeService;
 use App\Services\CompanyService;
 use Illuminate\Http\Request;
+use App\Services\LocationService;
+use App\Services\Employee\CommuteTypeService;
+use App\Services\MealVoucherService;
 
 class EmployeeController extends Controller
 {
     protected $employeeService;
     protected $companyService;
-    protected $locationRepository;
-    protected $commuteTypeRepository;
-    protected $mealVoucherRepository;
+    protected $locationService;
+    protected $commuteTypeService;
+    protected $mealVoucherService;
 
-    public function __construct(EmployeeService $employeeService, CompanyService $companyService, LocationRepository $locationRepository, CommuteTypeRepository $commuteTypeRepository, MealVoucherRepository $mealVoucherRepository)
+    public function __construct(EmployeeService $employeeService, CompanyService $companyService, LocationService $locationService, CommuteTypeService $commuteTypeService, MealVoucherService $mealVoucherService)
     {
         $this->employeeService = $employeeService;
         $this->companyService = $companyService;
-        $this->locationRepository = $locationRepository;
-        $this->commuteTypeRepository = $commuteTypeRepository;
-        $this->mealVoucherRepository = $mealVoucherRepository;
+        $this->locationService = $locationService;
+        $this->commuteTypeService = $commuteTypeService;
+        $this->mealVoucherService = $mealVoucherService;
     }
 
     /**
      * API to get list of all employee types.
      */
-    public function index(string $companyId)
+    public function index()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeService->index($companyId)
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    public function create(string $companyId)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => [
-                    'commute_type_options'      => $this->commuteTypeRepository->getActiveCommuteTypes(),
-                    'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
-                    'locations'                 => $this->locationRepository->getActiveLocationsOfCompany($companyId),
-                    'sub_types'                 => $this->employeeService->getSubTypeOptions(),
-                    'schedule_types'            => $this->employeeService->getScheduleTypeOptions(),
-                    'meal_vouchers'             => $this->mealVoucherRepository->getActiveMealVouchers(),
-                    'employment_types'          => $this->employeeService->getEmploymentTypeOptions(),
-                    'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
-                    'genders'                   => $this->employeeService->getGenders(),
-                    'marital_statuses'          => $this->employeeService->getMaritalStatus(),
-                ]
+                'data'    => $this->employeeService->index()
             ],
             JsonResponse::HTTP_OK,
         );
@@ -70,13 +49,14 @@ class EmployeeController extends Controller
     /**
      * API to get the details required for creating an employee type.
      */
-    public function store(CreateEmployeeRequest $request, $company_id)
+    public function store(CreateEmployeeRequest $request)
     {
+        $companyId = getCompanyId();
         return returnResponse(
             [
                 'success' => true,
                 'message' => 'Employee created successfully',
-                'data'    => $this->employeeService->createNewEmployee($request->validated(), $company_id)
+                'data'    => $this->employeeService->createNewEmployee($request->validated(), $companyId)
             ],
             JsonResponse::HTTP_OK,
         );
@@ -90,7 +70,7 @@ class EmployeeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->employeeService->show($id),
+                'data'    => $this->employeeService->getEmployeeDetails($id),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -153,37 +133,20 @@ class EmployeeController extends Controller
         );
     }
 
-    public function getOptionsForEmployeeContractCreation(string $companyId)
+    public function createEmployeeContract()
     {
+        $companyId = getCompanyId();
         try {
             return returnResponse(
                 [
                     'success' => true,
                     'data'    => [
                         'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
-                        'sub_types'                 => associativeToDictionaryFormat($this->employeeService->getSubTypeOptions()),
-                        'schedule_types'            => associativeToDictionaryFormat($this->employeeService->getScheduleTypeOptions()),
-                        'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions()),
-                        'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions()),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-    public function getFunctionsForLinkingToEmployee(string $companyId)
-    {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'functions' => collectionToValueLabelFormat($this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId))),
+                        'sub_types'                 => associativeToDictionaryFormat($this->employeeService->getSubTypeOptions(), 'key', 'value'),
+                        'schedule_types'            => associativeToDictionaryFormat($this->employeeService->getScheduleTypeOptions(), 'key', 'value'),
+                        'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions(), 'key', 'value'),
+                        'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions(), 'key', 'value'),
+                        'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
                     ]
                 ],
                 JsonResponse::HTTP_OK,
@@ -196,14 +159,35 @@ class EmployeeController extends Controller
         }
     }
 
-    public function getOptionsToUpdateEmployeeTransportDetails(string $companyId)
+    public function createEmployeeCommute()
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
                     'data'    => [
-                        'locations' => collectionToValueLabelFormat($this->locationRepository->getCompanyLocations($companyId)),
+                        'locations'            => $this->locationService->getActiveLocations(),
+                        'commute_type_options' => $this->commuteTypeService->getActiveCommuteTypes(),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function createEmployeeBenefits()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'meal_vouchers' => $this->mealVoucherService->getActiveMealVouchers(),
                     ]
                 ],
                 JsonResponse::HTTP_OK,

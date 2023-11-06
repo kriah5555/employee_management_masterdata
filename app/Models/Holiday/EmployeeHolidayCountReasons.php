@@ -9,6 +9,8 @@ use App\Models\Holiday\EmployeeHolidayCount;
 
 class EmployeeHolidayCountReasons extends Model
 {
+    protected $connection = 'tenant';
+
     use HasFactory, SoftDeletes;
 
     protected $table = 'employee_holiday_count_reasons';

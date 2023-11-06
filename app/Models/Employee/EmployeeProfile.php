@@ -4,10 +4,14 @@ namespace App\Models\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\User\User;
+use App\Models\Employee\EmployeeContractDetails;
 
 class EmployeeProfile extends BaseModel
 {
     use UserAudit;
+
+    protected $connection = 'tenant';
 
     protected $columnsToLog = [
         'user_id',
@@ -50,7 +54,16 @@ class EmployeeProfile extends BaseModel
      */
     protected $fillable = [
         'user_id',
-        'company_id',
         'status',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class)
+            ->where('status', true);
+    }
+
+    public function employeeContractDetails()
+    {
+        return $this->hasMany(EmployeeContractDetails::class);
+    }
 }

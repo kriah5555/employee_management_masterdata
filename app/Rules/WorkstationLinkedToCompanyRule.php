@@ -3,7 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Workstation;
+use App\Models\Company\Workstation;
 
 class WorkstationLinkedToCompanyRule implements Rule
 {

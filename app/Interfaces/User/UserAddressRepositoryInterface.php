@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Interfaces;
+namespace App\Interfaces\User;
+
+use App\Models\User\UserAddress;
 
 interface UserAddressRepositoryInterface
 {
 
-    public function getUserAddressById(string $id);
+    public function getUserAddressById(string $id): UserAddress;
 
-    public function deleteUserAddress(string $id);
+    public function deleteUserAddress(UserAddress $userAddress): bool;
 
     public function createUserAddress(array $details);
 
-    public function updateUserAddress(string $id, array $updatedDetails);
+    public function updateUserAddress(UserAddress $userAddress, array $updatedDetails): bool;
 }

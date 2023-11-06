@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\User\User;
 
 class UserFamilyDetails extends BaseModel
 {
@@ -12,14 +13,14 @@ class UserFamilyDetails extends BaseModel
     protected $columnsToLog = [
         'user_id',
         'marital_status_id',
-        'dependent_spouse',
-        'status',
+        'dependent_spouse'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
+    protected $connection = 'userdb';
     protected $table = 'user_family_details';
 
     /**
@@ -54,4 +55,8 @@ class UserFamilyDetails extends BaseModel
         'dependent_spouse',
         'status',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

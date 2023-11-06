@@ -2,29 +2,44 @@
 
 namespace App\Models\Company;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Sector\Sector;
 use App\Models\Files;
 use App\Models\Address;
-use App\Models\Location;
+use App\Models\Company\Location;
 use App\Models\Holiday\HolidayCode;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\SocialSecretary\SocialSecretary;
 use App\Models\Interim\InterimAgency;
-use App\Models\Company\CompanyDatabase;
+use App\Models\Company\CompanySocialSecretaryDetails;
+use App\Models\BaseModel;
+use App\Traits\UserAudit;
 use App\Models\Tenant;
 
-
-class Company extends Model
+class Company extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    use UserAudit;
+    protected static $sort = ['company_name'];
+    protected $columnsToLog = [
+        'company_name',
+        'address',
+        'employer_id',
+        'sender_number',
+        'rsz_number',
+        'social_secretary_id',
+        'interim_agency_id',
+        'oauth_key',
+        'username',
+        'email',
+        'phone',
+        'logo',
+        'status',
+    ];
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
+    protected $connection = 'master';
+
     protected $table = 'companies';
 
     protected $hidden = ['pivot'];
@@ -48,9 +63,6 @@ class Company extends Model
         'employer_id',
         'sender_number',
         'rsz_number',
-        'social_secretary_number',
-        'social_secretary_id',
-        'interim_agency_id',
         'oauth_key',
         'username',
         'email',
@@ -76,25 +88,6 @@ class Company extends Model
         return $this->belongsToMany(Sector::class, 'sector_to_company');
     }
 
-    public function companyDatabase()
-    {
-        return $this->hasOne(CompanyDatabase::class);
-    }
-
-    public function createDatabaseTenancy() 
-    {
-        $database_name = 'tenant_'.strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $this->company_name) . '_' . $this->id);
-
-        $tenant = Tenant::create([
-            'tenancy_db_name' => $database_name,
-        ]);
-
-        return $this->companyDatabase()->create([
-            'database_name' => $database_name,
-            'tenant_id'     => $tenant->id,
-        ]);
-    }
-
     public function sectorsValue()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company', 'company_id', 'sector_id')
@@ -112,38 +105,19 @@ class Company extends Model
             ->where('holiday_codes.status', true);
     }
 
-    public function socialSecretary()
+    public function companySocialSecretaryDetails()
     {
-        return $this->belongsTo(SocialSecretary::class, 'social_secretary_id');
+        return $this->hasOne(CompanySocialSecretaryDetails::class);
     }
 
-    public function socialSecretaryValue()
+    public function tenant()
     {
-        if ($this->socialSecretary) {
-            return [
-                'level' => $this->socialSecretary->id,
-                'value' => $this->socialSecretary->name,
-            ];
-        } else {
-            return null;
-        }
+        return $this->hasOne(Tenant::class);
     }
 
-    public function interimAgency()
+    public function interimAgencies()
     {
-        return $this->belongsTo(InterimAgency::class, 'interim_agency_id');
-    }
-
-    public function interimAgencyValue()
-    {
-        if ($this->interimAgency) {
-            return [
-                'level' => $this->interimAgency->id,
-                'value' => $this->interimAgency->name,
-            ];
-        } else {
-            return null;
-        }
+        return $this->belongsToMany(InterimAgency::class, 'company_interim_agency', 'company_id', 'interim_agency_id');
     }
 
     public function logoFile()

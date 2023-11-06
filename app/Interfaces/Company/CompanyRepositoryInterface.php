@@ -2,6 +2,8 @@
 
 namespace App\Interfaces\Company;
 
+use App\Models\Company\Company;
+
 interface CompanyRepositoryInterface
 {
     public function getCompanies();
@@ -10,9 +12,9 @@ interface CompanyRepositoryInterface
 
     public function getCompanyById(string $companyId);
 
-    public function deleteCompany(string $companyId);
+    public function deleteCompany(Company $company);
 
     public function createCompany(array $details);
 
-    public function updateCompany(string $companyId, array $updatedDetails);
+    public function updateCompany(Company $company, array $updatedDetails);
 }

@@ -3,7 +3,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Location;
+use App\Models\Company\Location;
 
 class LocationLinkedToCompanyRule implements Rule
 {

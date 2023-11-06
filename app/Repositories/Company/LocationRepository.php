@@ -3,19 +3,19 @@
 namespace App\Repositories\Company;
 
 use App\Interfaces\Company\LocationRepositoryInterface;
-use App\Models\Location;
+use App\Models\Company\Location;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class LocationRepository implements LocationRepositoryInterface
 {
-    public function getLocationsOfCompany($companyId)
+    public function getLocations()
     {
-        return Location::where('company', '=', $companyId)->get();
+        return Location::all();
     }
-    public function getActiveLocationsOfCompany($companyId)
+    public function getActiveLocations()
     {
-        return Location::where('company', '=', $companyId)->where('status', '=', true)->get();
+        return Location::allActive();
     }
 
     public function getLocationById(string $locationId, array $relations = []): Collection|Builder|Location

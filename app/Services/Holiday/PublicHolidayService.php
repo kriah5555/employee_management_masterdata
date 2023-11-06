@@ -6,23 +6,24 @@ use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
 use App\Models\Holiday\PublicHoliday;
 use App\Services\CompanyService;
+
 class PublicHolidayService extends BaseService
 {
     protected $public_holiday;
-    
+
     protected $company_service;
 
     public function __construct(PublicHoliday $public_holiday)
     {
         parent::__construct($public_holiday);
         $this->company_service = app(CompanyService::class);
-    } 
+    }
 
-    public function getOptionsToCreate() 
+    public function getOptionsToCreate()
     {
         try {
             return [
-                'companies' => $this->company_service->getCompanyOptions()
+                'companies' => $this->company_service->getCompanies()
             ];
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -30,10 +31,10 @@ class PublicHolidayService extends BaseService
         }
     }
 
-    public function getOptionsToEdit($public_holiday_id) 
+    public function getOptionsToEdit($public_holiday_id)
     {
         try {
-            $options            = $this->getOptionsToCreate();
+            $options = $this->getOptionsToCreate();
             $options['details'] = $this->get($public_holiday_id, ['companiesValue']);
             return $options;
         } catch (Exception $e) {
@@ -46,8 +47,8 @@ class PublicHolidayService extends BaseService
     {
         try {
             DB::beginTransaction();
-                $public_holiday = $this->model::create($values);
-                $public_holiday->companies()->sync($values['companies'] ?? []);
+            $public_holiday = $this->model::create($values);
+            $public_holiday->companies()->sync($values['companies'] ?? []);
             DB::commit();
             return $public_holiday;
         } catch (\Exception $e) {
@@ -61,8 +62,8 @@ class PublicHolidayService extends BaseService
     {
         try {
             DB::beginTransaction();
-                $public_holiday_model->update($values);
-                $public_holiday_model->companies()->sync($values['companies'] ?? []);
+            $public_holiday_model->update($values);
+            $public_holiday_model->companies()->sync($values['companies'] ?? []);
             DB::commit();
             return $public_holiday_model;
         } catch (\Exception $e) {

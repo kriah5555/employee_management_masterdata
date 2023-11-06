@@ -4,8 +4,9 @@ namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\User\User;
 
-class User extends BaseModel
+class UserBasicDetails extends BaseModel
 {
     use UserAudit;
     protected static $sort = ['first_name'];
@@ -13,20 +14,20 @@ class User extends BaseModel
         'user_id',
         'first_name',
         'last_name',
-        'social_security_number',
+        'nationality',
         'gender_id',
         'date_of_birth',
         'place_of_birth',
         'license_expiry_date',
         'language',
-        'extra_info',
-        'status',
+        'extra_info'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
+    protected $connection = 'userdb';
     protected $table = 'user_basic_details';
 
     /**
@@ -61,13 +62,16 @@ class User extends BaseModel
         'user_id',
         'first_name',
         'last_name',
-        'social_security_number',
+        'nationality',
         'gender_id',
         'date_of_birth',
         'place_of_birth',
         'license_expiry_date',
         'language',
-        'extra_info',
-        'status',
+        'extra_info'
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

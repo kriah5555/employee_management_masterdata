@@ -13,7 +13,7 @@ class CommuteTypeRepository implements CommuteTypeRepositoryInterface
     }
     public function getActiveCommuteTypes()
     {
-        return CommuteType::where('status', '=', true)->get();
+        return CommuteType::getActive();
     }
 
     public function getCommuteTypeById(string $commuteTypeId): CommuteType

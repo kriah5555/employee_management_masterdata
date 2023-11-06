@@ -9,7 +9,10 @@ use App\Models\Dimona\DimonaType;
 
 class EmployeeTypeConfig extends BaseModel
 {
+    protected $connection = 'master';
+
     protected static $sort = [];
+
     protected $columnsToLog = [
         'employee_type_id',
         'consecutive_days_limit',

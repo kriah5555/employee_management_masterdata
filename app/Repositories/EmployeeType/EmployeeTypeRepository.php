@@ -8,6 +8,7 @@ use App\Interfaces\EmployeeType\EmployeeTypeRepositoryInterface;
 use App\Models\EmployeeType\EmployeeType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Company\Company;
 
 class EmployeeTypeRepository implements EmployeeTypeRepositoryInterface
 {
@@ -51,4 +52,11 @@ class EmployeeTypeRepository implements EmployeeTypeRepositoryInterface
     {
         return $employeeType->contractTypes()->sync($contractTypes ?? []);
     }
+
+    public function getCompanyEmployeeTypes($company_id)
+    {
+        return Company::with('sectors.employeeTypes')
+            ->findOrFail($company_id);
+    }
 }
+    
