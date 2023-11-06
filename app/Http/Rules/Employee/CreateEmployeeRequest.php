@@ -66,6 +66,7 @@ class CreateEmployeeRequest extends ApiRequest
             'postal_code'               => 'required|string|max:50',
             'city'                      => 'required|string|max:50',
             'country'                   => 'required|string|max:50',
+            'nationality'               => 'required|string|max:50',
             'latitude'                  => 'nullable|numeric',
             'longitude'                 => 'nullable|numeric',
             'children'                  => 'nullable|integer',

@@ -142,10 +142,10 @@ class EmployeeController extends Controller
                     'success' => true,
                     'data'    => [
                         'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
-                        'sub_types'                 => $this->employeeService->getSubTypeOptions(),
-                        'schedule_types'            => $this->employeeService->getScheduleTypeOptions(),
-                        'employment_types'          => $this->employeeService->getEmploymentTypeOptions(),
-                        'salary_types'              => $this->employeeService->getEmployeeSalaryTypeOptions(),
+                        'sub_types'                 => associativeToDictionaryFormat($this->employeeService->getSubTypeOptions(), 'key', 'value'),
+                        'schedule_types'            => associativeToDictionaryFormat($this->employeeService->getScheduleTypeOptions(), 'key', 'value'),
+                        'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions(), 'key', 'value'),
+                        'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions(), 'key', 'value'),
                         'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
                     ]
                 ],

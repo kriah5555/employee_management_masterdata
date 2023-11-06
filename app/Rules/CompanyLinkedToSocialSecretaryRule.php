@@ -18,14 +18,15 @@ class CompanyLinkedToSocialSecretaryRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!empty($value) && !empty($this->social_secretary_id)) {
-            $exists = Company::where('id', $value)
-                ->where('social_secretary_id', $this->social_secretary_id)
-                ->exists();
+        $social_secretary_id = $this->social_secretary_id;
+        $exists = Company::where('id', $value)
+        ->whereHas('companySocialSecretaryDetails', function ($query) use ($social_secretary_id) {
+            $query->where('social_secretary_id', $social_secretary_id);
+        })
+        ->exists();
 
-            if (!$exists) {
-                $fail("The :attribute is not linked with the selected social secretary.");
-            }
+        if (!$exists) {
+            $fail("The :attribute is not linked with the selected social secretary.");
         }
     }
 }

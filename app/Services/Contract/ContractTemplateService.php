@@ -59,20 +59,4 @@ class ContractTemplateService extends BaseService
             throw $e;
         }
     }
-
-    public function getCompanyContractTemplates($company_id)
-    {
-        try {
-            return $this->model
-            ->whereHas('company', function ($query) use($company_id) {
-                $query->where('id', $company_id);
-            })
-            ->get();
-
-            return $options;
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
 }

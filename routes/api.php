@@ -26,6 +26,7 @@ use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
+use App\Http\Controllers\Company\CompanyContractTemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,8 +93,6 @@ Route::controller(TranslationController::class)->group(function () {
 Route::controller(ContractTemplateController::class)->group(function () use ($integerRule) {
 
     Route::resource('contract-templates', ContractTemplateController::class)->except(['edit']);
-
-    Route::get('company-contract-templates/{company_id}', 'index');
 
 });
 
@@ -220,10 +219,19 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
         }
+
+        Route::controller(CompanyContractTemplateController::class)->group(function () {
+
+            Route::resource('company-contract-templates', CompanyContractTemplateController::class)->except(['edit']);
+        
+        });
+
+
         Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
         Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
         Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
     });
+
     // Route::controller(EmployeeController::class)->group(function () {
 
     //     Route::get('/employees', 'index');

@@ -16,11 +16,8 @@ class UserAddress extends BaseModel
         'postal_code',
         'city',
         'country',
-        'status',
         'latitude',
-        'longitude',
-        'address_type',
-        'extra_info'
+        'longitude'
     ];
     /**
      * The table associated with the model.
@@ -58,13 +55,16 @@ class UserAddress extends BaseModel
      */
     protected $fillable = [
         'user_id',
-        'address_id',
-        'address_type',
-        'status',
+        'street_house_no',
+        'postal_code',
+        'city',
+        'country',
+        'latitude',
+        'longitude'
     ];
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
 }

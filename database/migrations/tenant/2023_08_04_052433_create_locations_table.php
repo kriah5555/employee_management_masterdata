@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('location_name');
             $table->boolean('status')->default(true);
-            $table->unsignedBigInteger('company'); // Store company_id directly
+            $table->unsignedBigInteger('company')->default(null); // Store company_id directly
             $table->foreignId('address')->references('id')->on('address')->onDelete('cascade');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

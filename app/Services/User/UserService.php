@@ -6,6 +6,9 @@ use App\Repositories\User\UserBankAccountRepository;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserAddressRepository;
 use App\Models\User\User;
+use App\Repositories\User\UserBasicDetailsRepository;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserService
 {
@@ -13,11 +16,13 @@ class UserService
     protected $userRepository;
     protected $userAddressRepository;
     protected $userBankAccountRepository;
+    protected $userBasicDetailsRepository;
 
 
-    public function __construct(UserRepository $userRepository, UserAddressRepository $userAddressRepository, UserBankAccountRepository $userBankAccountRepository)
+    public function __construct(UserRepository $userRepository, UserBasicDetailsRepository $userBasicDetailsRepository, UserAddressRepository $userAddressRepository, UserBankAccountRepository $userBankAccountRepository)
     {
         $this->userRepository = $userRepository;
+        $this->userBasicDetailsRepository = $userBasicDetailsRepository;
         $this->userAddressRepository = $userAddressRepository;
         $this->userBankAccountRepository = $userBankAccountRepository;
     }
@@ -27,48 +32,34 @@ class UserService
         return $this->userRepository->getUserBySocialSecurityNumber($socialSecurityNumber);
     }
 
-    public function createUserAddress($values)
-    {
-        return $this->userAddressRepository->createUserAddress($values);
-    }
     public function createUserBankAccount($values)
     {
         return $this->userBankAccountRepository->createUserBankAccount($values);
     }
-    public function createOrUpdateUserBasicDetails(User $user, $values)
+    public function createUserBasicDetails(User $user, $values)
     {
-        $updateValues = [
-            'first_name'          => $values['first_name'],
-            'last_name'           => $values['last_name'],
-            'gender_id'           => $values['gender_id'],
-            'date_of_birth'       => $values['date_of_birth'],
-            'license_expiry_date' => $values['license_expiry_date'],
-            'language'            => $values['language']
-        ];
-        if (array_key_exists('place_of_birth', $values) && $values['place_of_birth'] != '') {
-            $updateValues['place_of_birth'] = $values['place_of_birth'];
-        }
-        if (array_key_exists('extra_info', $values) && $values['extra_info'] != '') {
-            $updateValues['extra_info'] = $values['extra_info'];
-        }
-        $user->userBasicDetails()->updateOrCreate($updateValues);
+        $values['user_id'] = $user->id;
+        return $this->userBasicDetailsRepository->createUserBasicDetails($values);
     }
-    public function createOrUpdateUserAddress(User $user, $values)
+    public function createUserAddress(User $user, $values)
     {
-        $updateValues = [
-            'first_name'          => $values['first_name'],
-            'last_name'           => $values['last_name'],
-            'gender_id'           => $values['gender_id'],
-            'date_of_birth'       => $values['date_of_birth'],
-            'license_expiry_date' => $values['license_expiry_date'],
-            'language'            => $values['language']
+        $values['user_id'] = $user->id;
+        return $this->userAddressRepository->createUserAddress($values);
+    }
+
+    public function createNewUser($values)
+    {
+        $username = $values['first_name'] . $values['last_name'];
+        $username = strtolower(str_replace(' ', '', $username));
+        $password = ucfirst($username) . '$';
+        $saveValues = [
+            'username'               => generateUniqueUsername($username),
+            'password'               => Hash::make($password),
+            'social_security_number' => $values['social_security_number'],
         ];
-        if (array_key_exists('place_of_birth', $values) && $values['place_of_birth'] != '') {
-            $updateValues['place_of_birth'] = $values['place_of_birth'];
-        }
-        if (array_key_exists('extra_info', $values) && $values['extra_info'] != '') {
-            $updateValues['extra_info'] = $values['extra_info'];
-        }
-        $user->userAddress()->updateOrCreate($updateValues);
+        $user = User::create($saveValues);
+        $this->createUserBasicDetails($user, $values);
+        $this->createUserAddress($user, $values);
+        return $user;
     }
 }

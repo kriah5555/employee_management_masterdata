@@ -52,8 +52,7 @@ class UserBankAccount extends BaseModel
     protected $fillable = [
         'user_id',
         'account_number',
-        'bank_card_file_id',
-        'status',
+        'bank_card_file_id'
     ];
     public function user()
     {

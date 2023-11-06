@@ -45,47 +45,25 @@ return [
     ],
 
     'SUB_TYPE_OPTIONS'                  => [
-        [
-            'key'   => 'servant',
-            'value' => 'Servant',
-        ],
-        [
-            'key'   => 'worker',
-            'value' => 'Worker',
-        ],
+        'servant' => 'Servant',
+        'worker'  => 'Worker'
     ],
 
     'SCHEDULE_TYPE_OPTIONS'             => [
-        [
-            'key'   => 'part_time',
-            'value' => 'Part time',
-        ],
-        [
-            'key'   => 'full_time',
-            'value' => 'Full time',
-        ],
+        'part_time' => 'Part time',
+        'full_time' => 'Full time'
     ],
+
 
     'EMPLOYMENT_TYPE_OPTIONS'           => [
-        [
-            'key'   => 'fixed',
-            'value' => 'Fixed',
-        ],
-        [
-            'key'   => 'flexible',
-            'value' => 'Flexible',
-        ],
+        'fixed'    => 'Fixed',
+        'flexible' => 'Flexible'
     ],
 
+
     'EMPLOYEE_SALARY_TYPE_OPTIONS'      => [
-        [
-            'key'   => 'hourly',
-            'value' => 'Hourly',
-        ],
-        [
-            'key'   => 'monthly',
-            'value' => 'Monthly',
-        ],
+        'hourly'  => 'Hourly',
+        'monthly' => 'Monthly'
     ],
 
     'DEFAULT_DATE_FORMAT'               => 'd-m-Y',

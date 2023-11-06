@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('body')->nullable();
             $table->string('language')->default('en');
             $table->boolean('status')->default(true);
-            $table->foreignId('employee_type_id')->nullable()->references('id')->on('employee_types')->onDelete('cascade');
+            $table->unsignedBigInteger('employee_type_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
