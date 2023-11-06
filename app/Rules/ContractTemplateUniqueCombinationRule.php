@@ -23,7 +23,6 @@ class ContractTemplateUniqueCombinationRule implements ValidationRule
          $query->where([
             'employee_type_id'    => request()->input('employee_type_id'),
             'social_secretary_id' => request()->input('social_secretary_id', null),
-            'company_id'          => request()->input('company_id', null),
             'language'            => request()->input('language'),
         ]);
 

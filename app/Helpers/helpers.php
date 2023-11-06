@@ -212,7 +212,7 @@ if (!function_exists('formatModelName')) {
 if (!function_exists('setTenantDB')) {
     function setTenantDB($tenant_id)
     {
-        $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to det tenant id from header
+        $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to get tenant id from header
         $tenant = Tenant::find($tenant_id);
         if ($tenant) {
             tenancy()->initialize($tenant);
