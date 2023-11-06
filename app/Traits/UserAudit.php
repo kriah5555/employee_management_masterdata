@@ -3,7 +3,7 @@ namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\User\User;
 
 trait UserAudit
 {

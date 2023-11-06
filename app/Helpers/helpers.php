@@ -1,6 +1,6 @@
 <?php
 use Spatie\TranslationLoader\LanguageLine;
-use App\Models\User;
+use App\Models\User\User;
 use Illuminate\Support\Facades\Http;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Request;

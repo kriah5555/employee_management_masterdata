@@ -49,4 +49,9 @@ class MealVoucherService
     {
         return $this->mealVoucherRepository->deleteMealVoucher($mealVoucher->id);
     }
+
+    public function getActiveMealVouchers()
+    {
+        return $this->mealVoucherRepository->getActiveMealVouchers();
+    }
 }

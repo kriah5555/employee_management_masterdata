@@ -45,4 +45,13 @@ class BaseModel extends Model
             }
         });
     }
+    protected static function allActive()
+    {
+        return parent::where('status', '=', true)->get();
+    }
+
+    protected function getActive()
+    {
+        return parent::where('status', true)->get();
+    }
 }

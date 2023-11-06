@@ -2,22 +2,36 @@
 
 namespace App\Models\Company;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Sector\Sector;
 use App\Models\Files;
 use App\Models\Address;
 use App\Models\Company\Location;
 use App\Models\Holiday\HolidayCode;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\SocialSecretary\SocialSecretary;
 use App\Models\Interim\InterimAgency;
 use App\Models\Company\CompanySocialSecretaryDetails;
+use App\Models\BaseModel;
+use App\Traits\UserAudit;
 use App\Models\Tenant;
 
-class Company extends Model
+class Company extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    use UserAudit;
+    protected static $sort = ['company_name'];
+    protected $columnsToLog = [
+        'company_name',
+        'address',
+        'employer_id',
+        'sender_number',
+        'rsz_number',
+        'social_secretary_id',
+        'interim_agency_id',
+        'oauth_key',
+        'username',
+        'email',
+        'phone',
+        'logo',
+        'status',
+    ];
 
     /**
      * The table associated with the model.
@@ -25,7 +39,7 @@ class Company extends Model
      * @var string
      */
     protected $connection = 'master';
-    
+
     protected $table = 'companies';
 
     protected $hidden = ['pivot'];

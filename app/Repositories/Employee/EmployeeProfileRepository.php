@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Employee;
 
-use App\Interfaces\EmployeeProfileRepositoryInterface;
+use App\Interfaces\Employee\EmployeeProfileRepositoryInterface;
 use App\Models\Employee\EmployeeProfile;
-use App\Models\User;
+use App\Models\User\User;
 
 class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 {

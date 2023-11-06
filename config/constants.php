@@ -44,13 +44,49 @@ return [
         'na'   => 'Not applicable',
     ],
 
-    'SUB_TYPE_OPTIONS'                  => ['servant' => 'Servant', 'worker' => 'Worker'],
+    'SUB_TYPE_OPTIONS'                  => [
+        [
+            'key'   => 'servant',
+            'value' => 'Servant',
+        ],
+        [
+            'key'   => 'worker',
+            'value' => 'Worker',
+        ],
+    ],
 
-    'SCHEDULE_TYPE_OPTIONS'             => ['part_time' => 'Part time', 'full_time' => 'Full time'],
+    'SCHEDULE_TYPE_OPTIONS'             => [
+        [
+            'key'   => 'part_time',
+            'value' => 'Part time',
+        ],
+        [
+            'key'   => 'full_time',
+            'value' => 'Full time',
+        ],
+    ],
 
-    'EMPLOYMENT_TYPE_OPTIONS'           => ['fixed' => 'Fixed', 'flexible' => 'Flexible'],
+    'EMPLOYMENT_TYPE_OPTIONS'           => [
+        [
+            'key'   => 'fixed',
+            'value' => 'Fixed',
+        ],
+        [
+            'key'   => 'flexible',
+            'value' => 'Flexible',
+        ],
+    ],
 
-    'EMPLOYEE_SALARY_TYPE_OPTIONS'      => ['hourly' => 'Hourly', 'monthly' => 'Monthly'],
+    'EMPLOYEE_SALARY_TYPE_OPTIONS'      => [
+        [
+            'key'   => 'hourly',
+            'value' => 'Hourly',
+        ],
+        [
+            'key'   => 'monthly',
+            'value' => 'Monthly',
+        ],
+    ],
 
     'DEFAULT_DATE_FORMAT'               => 'd-m-Y',
 
@@ -69,9 +105,9 @@ return [
 
     'CONTRACT_TEMPLATE_TYPE'            => ['company' => 'Company', 'default' => 'Default'],
 
-    'TOKENS'  => [
-        '{first_name}'    => 'First name', 
-        '{last_name}'     => 'Last name', 
+    'TOKENS'                            => [
+        '{first_name}'    => 'First name',
+        '{last_name}'     => 'Last name',
         '{uid}'           => 'User id',
         '{date_of_birth}' => 'DOB',
         '{gender}'        => 'Gender',

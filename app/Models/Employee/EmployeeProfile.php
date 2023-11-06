@@ -4,7 +4,7 @@ namespace App\Models\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
-use App\Models\User;
+use App\Models\User\User;
 use App\Models\Employee\EmployeeContractDetails;
 
 class EmployeeProfile extends BaseModel

@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Repositories\EmployeeProfileRepository;
+use App\Repositories\Employee\EmployeeProfileRepository;
 
 class SocialSecurityNumberRule implements ValidationRule
 {
