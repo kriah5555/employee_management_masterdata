@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Contract;
+namespace App\Http\Controllers\Company;
 
 use App\Models\Contract\ContractTemplate;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Rules\Contract\ContractTemplateRequest;
-use App\Services\Contract\ContractTemplateService;
+use App\Services\Company\CompanyContractTemplateService;
 
-class ContractTemplateController extends Controller
+class CompanyContractTemplateController extends Controller
 {
-    public function __construct(protected ContractTemplateService $contractTemplateService)
+    public function __construct(protected CompanyContractTemplateService $contractTemplateService)
     {
     }
 
@@ -22,7 +22,7 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getAll(['with' => 'employeeType']),
+                'data'    => $this->contractTemplateService->getAll(['with' => ['employeeType']]),
             ],
             JsonResponse::HTTP_OK,
         );

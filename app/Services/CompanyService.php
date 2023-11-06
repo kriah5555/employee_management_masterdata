@@ -235,8 +235,8 @@ class CompanyService
     {
         return $this->companyRepository->getCompanyById($companyId);
     }
-    public function getTenantByCompanyId($companyId): Tenant
+    public function getTenantByCompanyId($companyId)
     {
-        return Tenant::where('company_id', $companyId)->get()[0];
+        return Tenant::where('company_id', $companyId)->first();
     }
 }

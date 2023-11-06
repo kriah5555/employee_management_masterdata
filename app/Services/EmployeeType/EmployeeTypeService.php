@@ -115,8 +115,15 @@ class EmployeeTypeService
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS');
     }
+
     public function getEmployeeContractTypeOptions()
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS');
     }
+
+    public function getCompanyEmployeeTypes($company_id) 
+    {
+        return $this->employeeTypeRepository->getCompanyEmployeeTypes($company_id);
+    }
+    
 }

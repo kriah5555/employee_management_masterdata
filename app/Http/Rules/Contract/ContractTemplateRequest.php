@@ -8,6 +8,10 @@ use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\SectorLinkedToEmployeeTypeRule;
 use App\Rules\CompanyLinkedToSocialSecretaryRule;
 use App\Rules\ContractTemplateUniqueCombinationRule;
+use App\Rules\ExistsInMasterDatabaseRule;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\SocialSecretary\SocialSecretary;
+use App\Models\Company\Company;
 
 class ContractTemplateRequest extends ApiRequest
 {
@@ -29,19 +33,19 @@ class ContractTemplateRequest extends ApiRequest
                 'bail',
                 'required',
                 'integer',
-                Rule::exists('employee_types', 'id'),
+                new ExistsInMasterDatabaseRule('employee_types'),
             ],
             'social_secretary_id' => [
                 'bail',
                 'nullable',
                 'integer',
-                Rule::exists('social_secretaries', 'id'),
+                new ExistsInMasterDatabaseRule('social_secretaries'),
             ],
             'company_id' => [
                 'bail',
                 'nullable',
                 'integer',
-                Rule::exists('companies', 'id'),
+                new ExistsInMasterDatabaseRule('companies'),
                 new CompanyLinkedToSocialSecretaryRule($this->input('social_secretary_id')),
             ],
             'language' => [
