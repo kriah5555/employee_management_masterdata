@@ -2,31 +2,23 @@
 
 namespace App\Services\Employee;
 
-use App\Models\Company\Company;
-use App\Models\Employee\EmployeeContractDetails;
+use App\Models\Employee\EmployeeContract;
 use App\Models\Employee\EmployeeProfile;
-use App\Models\Employee\LongTermEmployeeContractDetails;
+use App\Models\Employee\LongTermEmployeeContract;
 use App\Models\EmployeeType\EmployeeType;
-use App\Models\MealVoucher;
+use App\Models\User\CompanyUser;
 use App\Models\User\UserBasicDetails;
-use App\Services\CompanyService;
+use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
+use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use App\Services\User\UserService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Repositories\Employee\EmployeeProfileRepository;
-use App\Repositories\AddressRepository;
-use App\Repositories\BankAccountRepository;
 use App\Models\User\User;
-use App\Models\Employee\Gender;
-use App\Models\Employee\MaritalStatus;
-use App\Services\EmployeeType\EmployeeTypeService;
-use App\Models\EmployeeType\EmployeeTypeCategory;
-use App\Models\CommuteType;
 use App\Repositories\Employee\EmployeeBenefitsRepository;
 use App\Repositories\Company\LocationRepository;
 
 use App\Models\EmployeeFunction\FunctionTitle;
-use App\Models\Sector\SectorSalarySteps;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -36,9 +28,9 @@ class EmployeeService
 
     public function __construct(
         protected EmployeeProfileRepository $employeeProfileRepository,
-        protected EmployeeTypeService $employeeTypeService,
-        protected CompanyService $companyService,
         protected EmployeeBenefitsRepository $employeeBenefitsRepository,
+        protected EmployeeSocialSecretaryDetailsRepository $employeeSocialDetailsRepository,
+        protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
         protected LocationRepository $locationRepository,
         protected UserService $userService,
     ) {
@@ -54,8 +46,6 @@ class EmployeeService
             $employee->user;
             $employee->user->userBasicDetails;
             $employee->user_basic_details = UserBasicDetails::where("user_id", $employee->user->id)->first();
-            // print_r($employee->user->id);
-            // exit;
             print_r(UserBasicDetails::where("user_id", $employee->user->id)->first());
             exit;
             $currentDate = Carbon::now();
@@ -103,21 +93,14 @@ class EmployeeService
             } else {
                 $user = $existingEmpProfile->last();
             }
-            print_r($user);
-            exit;
-            $values['company_id'] = $company_id;
-            $empProfile = $this->employeeProfileRepository->createEmployeeProfile($values);
-            print_r($values);
-            exit;
-            if (array_key_exists('social_secretory_number', $values) || array_key_exists('contract_number', $values)) {
-                $bankAccount = $this->createEmployeeSocialSecretaryDetails($empProfile, $values);
-                $values['bank_accountid'] = $bankAccount->id;
-            }
-            $this->createEmployeeContract($empProfile, $values['employee_contract_details']);
-            $user->assignRole('employee');
+            $this->createCompanyUser($user, $company_id);
+            $employeeProfile = $this->createEmployeeProfile($user, $values);
+            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+            $this->createEmployeeContract($employeeProfile, $values);
+            // $user->assignRole('employee');
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
-            return $empProfile;
+            return $employeeProfile;
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();
@@ -126,42 +109,47 @@ class EmployeeService
         }
     }
 
-
-    public function createEmployeeContract($empProfile, $contractDetails)
+    public function createCompanyUser(User $user, $company_id)
     {
-        $contractDetails['employee_profile_id'] = $empProfile->id;
-        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
-        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
-        $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
-        if ($employeeType->employeeTypeCategory->id == 1) {
-            $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
-            LongTermEmployeeContractDetails::create($contractDetails);
-        }
+        CompanyUser::create([
+            'user_id'    => $user->id,
+            'company_id' => $company_id
+        ]);
     }
 
-    public function createEmployeeSocialSecretaryDetails($empProfile, $contractDetails)
+    public function createEmployeeProfile(User $user, $values)
     {
-        $contractDetails['employee_profile_id'] = $empProfile->id;
-        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
-        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
-        $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
-        if ($employeeType->employeeTypeCategory->id == 1) {
-            $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
-            LongTermEmployeeContractDetails::create($contractDetails);
-        }
+        $values['user_id'] = $user->id;
+        return $this->employeeProfileRepository->createEmployeeProfile($values);
+    }
+    public function createEmployeeSocialSecretaryDetails(EmployeeProfile $employeeProfile, $values)
+    {
+        $values['employee_profile_id'] = $employeeProfile->id;
+        return $this->employeeSocialDetailsRepository->createEmployeeSocialSecretaryDetails($values);
     }
 
-    // public function createEmployeeFunction($empProfile, $contractDetails)
-    // {
-    //     $contractDetails['employee_profile_id'] = $empProfile->id;
-    //     $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
-    //     $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
-    //     $employeeContractDetails = EmployeeContractDetails::create($contractDetails);
-    //     if ($employeeType->employeeTypeCategory->id == 1) {
-    //         $contractDetails['employee_contract_details_id'] = $employeeContractDetails->id;
-    //         LongTermEmployeeContractDetails::create($contractDetails);
-    //     }
-    // }
+    public function createEmployeeContract($employeeProfile, $values)
+    {
+        $contractDetails = $values['employee_contract_details'];
+        $functionDetails = $values['employee_function_details'];
+        $contractDetails['employee_profile_id'] = $employeeProfile->id;
+        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
+        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+        $employeeContract = EmployeeContract::create($contractDetails);
+        if ($employeeType->employeeTypeCategory->id == 1) {
+            $contractDetails['employee_contract_details_id'] = $employeeContract->id;
+            LongTermEmployeeContract::create($contractDetails);
+        }
+
+        foreach ($functionDetails as $function) {
+            $this->createEmployeeFunctionDetails($employeeContract, $function);
+        }
+    }
+    public function createEmployeeFunctionDetails(EmployeeContract $employeeContract, $values)
+    {
+        $values['employee_contract_id'] = $employeeContract->id;
+        return $this->employeeFunctionDetailsRepository->createEmployeeFunctionDetails($values);
+    }
 
     public function createUser($values)
     {
@@ -174,68 +162,6 @@ class EmployeeService
             'social_security_number' => $values['social_security_number'],
         ];
         return User::create($saveValues);
-    }
-
-    public function create($companyId)
-    {
-        $options = [];
-        $options['commute_type_options'] = $this->getCommuteTypeOptions();
-        $options['employee_contract_options'] = $this->companyService->getEmployeeContractOptionsForCreation($companyId);
-        $companyLocations = $this->locationRepository->getCompanyLocations($companyId);
-        $options['locations'] = collectionToValueLabelFormat($companyLocations, 'id', 'location_name');
-        $options['sub_types'] = $this->getSubTypeOptions();
-        $options['schedule_types'] = $this->getScheduleTypeOptions();
-        $options['meal_voucher_options'] = $this->getMealVoucherOptions();
-        $options['employment_types'] = $this->getEmploymentTypeOptions();
-        $options['functions'] = $this->companyService->getFunctionOptionsForCompany($this->companyService->getCompanyDetails($companyId));
-        return $options;
-    }
-
-    public function getEmployeesOptionsForCompany($company_id)
-    {
-
-    }
-
-    public function getGenderOptions()
-    {
-        return Gender::where('status', '=', true)->select(['id as value', 'name as label'])->get();
-    }
-
-    public function getMaritalStatusOptions()
-    {
-        return MaritalStatus::where('status', '=', true)->select(['id as value', 'name as label'])->get();
-    }
-
-    public function getLanguageOptions()
-    {
-        $url = config('app.identity_manager_url') . '/employee/get-language-options';
-        $response = makeApiRequest($url, 'GET');
-        if ($response['success']) {
-            return $response['data'];
-        } else {
-            throw new Exception('Failed to get language options');
-        }
-    }
-
-    public function getCommuteTypeOptions()
-    {
-        return CommuteType::where('status', '=', true)->select(['id as value', 'name as label'])->get();
-    }
-
-    public function getMealVoucherOptions()
-    {
-        return MealVoucher::where('status', '=', true)->select(['id as value', 'name as label'])->get();
-    }
-
-    public function getDependentSpouseOptions()
-    {
-        $url = config('app.identity_manager_url') . '/employee/get-dependent-spouse-options';
-        $response = makeApiRequest($url, 'GET');
-        if ($response['success']) {
-            return $response['data'];
-        } else {
-            throw new Exception('Failed to get dependent spouse options');
-        }
     }
 
     public function getSubTypeOptions()
@@ -313,28 +239,6 @@ class EmployeeService
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
-        }
-    }
-
-    public function getGenders()
-    {
-        $url = config('app.identity_manager_url') . '/genders';
-        $response = makeApiRequest($url, 'GET');
-        if ($response['success']) {
-            return $response['data'];
-        } else {
-            throw new Exception('Failed to get genders');
-        }
-    }
-
-    public function getMaritalStatus()
-    {
-        $url = config('app.identity_manager_url') . '/marital-statuses';
-        $response = makeApiRequest($url, 'GET');
-        if ($response['success']) {
-            return $response['data'];
-        } else {
-            throw new Exception('Failed to get marital statuses');
         }
     }
 }

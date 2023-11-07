@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Interfaces;
+namespace App\Interfaces\Employee;
 
-interface EmployeeCommuteRepositoryInterface
+interface EmployeeContractRepositoryInterface
 {
 
-    public function getEmployeeCommuteById(string $id);
+    public function getEmployeeContractById(string $id);
 
-    public function deleteEmployeeCommute(string $id);
+    public function deleteEmployeeContract(string $id);
 
-    public function createEmployeeCommute(array $details);
+    public function createEmployeeContract(array $details);
 
-    public function updateEmployeeCommute(string $id, array $updatedDetails);
+    public function updateEmployeeContract(string $id, array $updatedDetails);
 }

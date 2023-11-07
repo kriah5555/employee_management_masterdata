@@ -19,18 +19,18 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('employee_contact_details', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
-            $table->string('email');
-            $table->string('secondary_email');
-            $table->string('phone_number');
-            $table->boolean('status')->default(true);
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        // Schema::create('employee_contact_details', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
+        //     $table->string('email');
+        //     $table->string('secondary_email');
+        //     $table->string('phone_number');
+        //     $table->boolean('status')->default(true);
+        //     $table->unsignedBigInteger('created_by')->nullable();
+        //     $table->unsignedBigInteger('updated_by')->nullable();
+        //     $table->timestamps();
+        //     $table->softDeletes();
+        // });
         Schema::create('employee_benefits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
@@ -47,15 +47,15 @@ return new class extends Migration {
         Schema::create('employee_social_secretary_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
-            $table->string('social_secretary_number');
-            $table->string('contract_number');
+            $table->string('social_secretary_number')->nullable();
+            $table->string('contract_number')->nullable();
             $table->boolean('status')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('employee_contract_details', function (Blueprint $table) {
+        Schema::create('employee_contract', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->references('id')->on('employee_profiles')->onDelete('cascade');
             $table->unsignedBigInteger('employee_type_id');
@@ -67,9 +67,9 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('long_term_employee_contract_details', function (Blueprint $table) {
+        Schema::create('long_term_employee_contract', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_contract_details_id')->references('id')->on('employee_contract_details')->onDelete('cascade');
+            $table->foreignId('employee_contract_id')->references('id')->on('employee_contract')->onDelete('cascade');
             $table->string('sub_type');
             $table->string('schedule_type');
             $table->string('employement_type');
@@ -133,12 +133,12 @@ return new class extends Migration {
             $table->dropForeign(['location_id']);
         });
 
-        Schema::table('employee_contract_details', function (Blueprint $table) {
+        Schema::table('employee_contract', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
             $table->dropForeign(['employee_type_id']);
         });
 
-        Schema::table('long_term_employee_contract_details', function (Blueprint $table) {
+        Schema::table('long_term_employee_contract', function (Blueprint $table) {
             $table->dropForeign(['employee_contract_details_id']);
         });
 
@@ -150,9 +150,9 @@ return new class extends Migration {
             $table->dropForeign(['employee_profile_id']);
         });
 
-        Schema::table('employee_contact_details', function (Blueprint $table) {
-            $table->dropForeign(['employee_profile_id']);
-        });
+        // Schema::table('employee_contact_details', function (Blueprint $table) {
+        //     $table->dropForeign(['employee_profile_id']);
+        // });
 
         Schema::table('employee_salary_details', function (Blueprint $table) {
             $table->dropForeign(['employee_profile_id']);
@@ -160,11 +160,11 @@ return new class extends Migration {
 
         Schema::dropIfExists('employee_function_details');
         Schema::dropIfExists('employee_commute');
-        Schema::dropIfExists('long_term_employee_contract_details');
-        Schema::dropIfExists('employee_contract_details');
+        Schema::dropIfExists('long_term_employee_contract');
+        Schema::dropIfExists('employee_contract');
         Schema::dropIfExists('employee_benefits');
         Schema::dropIfExists('employee_social_secretary_details');
-        Schema::dropIfExists('employee_contact_details');
+        // Schema::dropIfExists('employee_contact_details');
         Schema::dropIfExists('employee_salary_details');
         Schema::dropIfExists('employee_profiles');
     }
