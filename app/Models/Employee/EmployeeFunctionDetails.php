@@ -14,7 +14,7 @@ class EmployeeFunctionDetails extends BaseModel
     protected $columnsToLog = [
         'employee_contract_id',
         'function_id',
-        'salary'
+        'salary_id'
     ];
     /**
      * The table associated with the model.
@@ -52,6 +52,6 @@ class EmployeeFunctionDetails extends BaseModel
     protected $fillable = [
         'employee_contract_id',
         'function_id',
-        'salary'
+        'salary_id'
     ];
 }
