@@ -72,7 +72,7 @@ return new class extends Migration {
             $table->foreignId('employee_contract_id')->references('id')->on('employee_contract')->onDelete('cascade');
             $table->string('sub_type');
             $table->string('schedule_type');
-            $table->string('employement_type');
+            $table->string('employment_type');
             $table->float('weekly_contract_hours')->nullable();
             $table->smallInteger('work_days_per_week')->nullable();
             $table->boolean('status')->default(true);

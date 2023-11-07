@@ -15,7 +15,7 @@ class LongTermEmployeeContract extends BaseModel
         'employee_contract_id',
         'sub_type',
         'schedule_type',
-        'employement_type',
+        'employment_type',
         'weekly_contract_hours',
         'work_days_per_week',
         'status'
@@ -57,7 +57,7 @@ class LongTermEmployeeContract extends BaseModel
         'employee_contract_id',
         'sub_type',
         'schedule_type',
-        'employement_type',
+        'employment_type',
         'weekly_contract_hours',
         'work_days_per_week',
         'status'

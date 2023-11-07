@@ -77,15 +77,14 @@ class EmployeeService
 
     public function getEmployeeDetails(string $employeeProfileId)
     {
-        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
-    }
-
-    public function edit(string $employeeProfileId)
-    {
-        $options = $this->create();
-        $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
-        $options['details'] = $employeeProfile;
-        return $options;
+        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
+            'user',
+            'user.userBasicDetails',
+            'user.userContactDetails',
+            'user.userFamilyDetails',
+            'user.userBankAccount',
+            'employeeSocialSecretaryDetails'
+        ]);
     }
 
     public function createNewEmployee($values, $company_id)
@@ -246,5 +245,9 @@ class EmployeeService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+    public function updatePersonalDetails()
+    {
+        return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
     }
 }

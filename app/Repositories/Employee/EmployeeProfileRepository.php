@@ -4,7 +4,8 @@ namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\EmployeeProfileRepositoryInterface;
 use App\Models\Employee\EmployeeProfile;
-use App\Models\User\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 {
@@ -13,9 +14,9 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         return EmployeeProfile::all();
     }
 
-    public function getEmployeeProfileById(string $employeeProfileId): EmployeeProfile
+    public function getEmployeeProfileById(string $id, array $relations = []): Collection|Builder|EmployeeProfile
     {
-        return EmployeeProfile::findOrFail($employeeProfileId);
+        return EmployeeProfile::with($relations)->findOrFail($id);
     }
 
     public function deleteEmployeeProfile(string $employeeProfileId)
