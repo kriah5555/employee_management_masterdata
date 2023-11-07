@@ -9,7 +9,6 @@ use App\Models\User\User;
 class UserFamilyDetails extends BaseModel
 {
     use UserAudit;
-    protected static $sort = ['first_name'];
     protected $columnsToLog = [
         'user_id',
         'marital_status_id',

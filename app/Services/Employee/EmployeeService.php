@@ -77,15 +77,14 @@ class EmployeeService
 
     public function getEmployeeDetails(string $employeeProfileId)
     {
-        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
-    }
-
-    public function edit(string $employeeProfileId)
-    {
-        $options = $this->create();
-        $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
-        $options['details'] = $employeeProfile;
-        return $options;
+        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
+            'user',
+            'user.userBasicDetails',
+            'user.userContactDetails',
+            'user.userFamilyDetails',
+            'user.userBankAccount',
+            'employeeSocialSecretaryDetails'
+        ]);
     }
 
     public function createNewEmployee($values, $company_id)

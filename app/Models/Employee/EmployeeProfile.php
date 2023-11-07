@@ -66,4 +66,8 @@ class EmployeeProfile extends BaseModel
     {
         return $this->hasMany(EmployeeContract::class);
     }
+    public function employeeSocialSecretaryDetails()
+    {
+        return $this->hasOne(EmployeeSocialSecretaryDetails::class);
+    }
 }
