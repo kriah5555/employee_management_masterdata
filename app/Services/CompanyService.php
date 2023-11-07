@@ -72,7 +72,7 @@ class CompanyService
             return $company;
         });
     }
-    
+
     public function createTenant($company)
     {
         $database_name = 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $company->company_name) . '_' . $company->id);
