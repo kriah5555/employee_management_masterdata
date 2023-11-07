@@ -8,6 +8,7 @@ use App\Models\Employee\LongTermEmployeeContract;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\User\CompanyUser;
 use App\Models\User\UserBasicDetails;
+use App\Models\User\UserContactDetails;
 use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
 use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use App\Services\User\UserService;
@@ -45,26 +46,31 @@ class EmployeeService
         foreach ($employees as $employee) {
             $employee->user;
             $employee->user->userBasicDetails;
-            $employee->user_basic_details = UserBasicDetails::where("user_id", $employee->user->id)->first();
-            print_r(UserBasicDetails::where("user_id", $employee->user->id)->first());
-            exit;
+            $employee->user->UserContactDetails;
             $currentDate = Carbon::now();
 
-            $employeeContracts = $employee->employeeContractDetails->filter(function ($employeeContractDetails) use ($currentDate) {
-                // Check if 'to_date' is greater than or equal to today or if it's null
-                return (
-                    Carbon::parse($employeeContractDetails->start_date)->lessThanOrEqualTo($currentDate) &&
-                    (is_null($employeeContractDetails->start_date) || Carbon::parse($employeeContractDetails->end_date)->greaterThanOrEqualTo($currentDate))
-                );
+            $employeeContracts = $employee->employeeContracts->filter(function ($employeeContract) use ($currentDate) {
+                return Carbon::parse($employeeContract->start_date)->lessThanOrEqualTo($currentDate) &&
+                    (is_null($employeeContract->start_date) || Carbon::parse($employeeContract->end_date)->greaterThanOrEqualTo($currentDate));
             });
-            $currentContract = $employeeContracts[0];
-            if (!array_key_exists($currentContract->employeeType->id, $response)) {
-                $response[$currentContract->employeeType->id] = [
-                    'employee_type' => $currentContract->employeeType->name,
-                    'employees'     => []
-                ];
+            if ($employeeContracts->isNotEmpty()) {
+                $currentContract = $employeeContracts->first();
+                if (!array_key_exists($currentContract->employeeType->id, $response)) {
+                    $response[$currentContract->employeeType->id] = [
+                        'employee_type' => $currentContract->employeeType->name,
+                        'employees'     => []
+                    ];
+                }
+                $response[$currentContract->employeeType->id]['employees'][] = $employee;
+            } else {
+                if (!array_key_exists(999, $response)) {
+                    $response[999] = [
+                        'employee_type' => 'No contracts',
+                        'employees'     => []
+                    ];
+                }
+                $response[999]['employees'][] = $employee;
             }
-            $response[$currentContract->employeeType->id]['employees'][] = $employee;
         }
         return array_values($response);
     }
@@ -137,7 +143,7 @@ class EmployeeService
         $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
         $employeeContract = EmployeeContract::create($contractDetails);
         if ($employeeType->employeeTypeCategory->id == 1) {
-            $contractDetails['employee_contract_details_id'] = $employeeContract->id;
+            $contractDetails['employee_contract_id'] = $employeeContract->id;
             LongTermEmployeeContract::create($contractDetails);
         }
 

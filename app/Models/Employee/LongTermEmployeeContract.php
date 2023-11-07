@@ -12,7 +12,7 @@ class LongTermEmployeeContract extends BaseModel
     protected $connection = 'tenant';
 
     protected $columnsToLog = [
-        'employee_contract_details_id',
+        'employee_contract_id',
         'sub_type',
         'schedule_type',
         'employement_type',
@@ -54,7 +54,7 @@ class LongTermEmployeeContract extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_contract_details_id',
+        'employee_contract_id',
         'sub_type',
         'schedule_type',
         'employement_type',

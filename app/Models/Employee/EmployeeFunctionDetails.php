@@ -12,8 +12,8 @@ class EmployeeFunctionDetails extends BaseModel
     protected $connection = 'tenant';
 
     protected $columnsToLog = [
-        'employee_contract_details_id',
-        'function_title_id',
+        'employee_contract_id',
+        'function_id',
         'salary'
     ];
     /**
@@ -50,8 +50,8 @@ class EmployeeFunctionDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_contract_details_id',
-        'function_title_id',
+        'employee_contract_id',
+        'function_id',
         'salary'
     ];
 }

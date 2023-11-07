@@ -5,7 +5,7 @@ namespace App\Models\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\User\User;
-use App\Models\Employee\EmployeeContractDetails;
+use App\Models\Employee\EmployeeContract;
 
 class EmployeeProfile extends BaseModel
 {
@@ -62,8 +62,8 @@ class EmployeeProfile extends BaseModel
             ->where('status', true);
     }
 
-    public function employeeContractDetails()
+    public function employeeContracts()
     {
-        return $this->hasMany(EmployeeContractDetails::class);
+        return $this->hasMany(EmployeeContract::class);
     }
 }
