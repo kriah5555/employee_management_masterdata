@@ -48,6 +48,9 @@ class UserService
     public function createUserBasicDetails(User $user, $values)
     {
         $values['user_id'] = $user->id;
+        $values['date_of_birth'] = date('Y-m-d', strtotime($values['date_of_birth']));
+        $values['license_expiry_date'] = date('Y-m-d', strtotime($values['license_expiry_date']));
+
         return $this->userBasicDetailsRepository->createUserBasicDetails($values);
     }
     public function createUserAddress(User $user, $values)
