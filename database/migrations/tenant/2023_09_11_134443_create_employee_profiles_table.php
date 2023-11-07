@@ -105,9 +105,9 @@ return new class extends Migration {
         });
         Schema::create('employee_function_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_contract_details_id')->references('id')->on('employee_contract_details')->onDelete('cascade');
+            $table->foreignId('employee_contract_details_id')->references('id')->on('employee_contract')->onDelete('cascade');
             $table->unsignedBigInteger('function_title_id');
-            $table->foreignId('salary_id')->nullable()->references('id')->on('employee_salary_details')->onDelete('cascade');
+            $table->foreignId('salary')->nullable()->references('id')->on('employee_salary_details')->onDelete('cascade');
             $table->boolean('status')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
