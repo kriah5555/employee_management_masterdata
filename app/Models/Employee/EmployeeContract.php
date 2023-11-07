@@ -56,8 +56,8 @@ class EmployeeContract extends BaseModel
     protected $fillable = [
         'employee_profile_id',
         'employee_type_id',
-        'from_date',
-        'to_date'
+        'start_date',
+        'end_date'
     ];
 
 
