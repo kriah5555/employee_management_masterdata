@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Employee;
 
+use App\Http\Rules\Employee\UpdateEmployeePersonalDetailsRequest;
 use App\Models\EmployeeType\EmployeeType;
 use App\Http\Rules\Employee\CreateEmployeeRequest;
 use App\Repositories\CommuteTypeRepository;
@@ -200,4 +201,22 @@ class EmployeeController extends Controller
         }
     }
 
+    public function updatePersonalDetails(UpdateEmployeePersonalDetailsRequest $request)
+    {
+        try {
+            $this->employeeService->updatePersonalDetails($request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee personal details updated successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

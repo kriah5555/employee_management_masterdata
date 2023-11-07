@@ -246,4 +246,8 @@ class EmployeeService
             throw $e;
         }
     }
+    public function updatePersonalDetails()
+    {
+        return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
+    }
 }
