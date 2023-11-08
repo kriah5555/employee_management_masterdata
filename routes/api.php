@@ -222,13 +222,14 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::controller(CompanyContractTemplateController::class)->group(function () {
 
             Route::resource('company-contract-templates', CompanyContractTemplateController::class)->except(['edit']);
-        
+
         });
 
 
         Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
         Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
         Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
+        Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
     });
 
     // Route::controller(EmployeeController::class)->group(function () {

@@ -1,29 +1,27 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeContactDetails extends BaseModel
+class UserContactDetails extends BaseModel
 {
     use UserAudit;
 
-    protected $connection = 'tenant';
+    protected $connection = 'userdb';
 
     protected $columnsToLog = [
-        'employee_profile_id',
+        'user_id',
         'email',
-        'secondary_email',
-        'phone_number',
-        'status',
+        'phone_number'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_contact_details';
+    protected $table = 'user_contact_details';
 
     /**
      * The primary key associated with the table.
@@ -43,6 +41,7 @@ class EmployeeContactDetails extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
+        'deleted_at',
         'deleted_at'
     ];
 
@@ -52,10 +51,8 @@ class EmployeeContactDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_profile_id',
+        'user_id',
         'email',
-        'secondary_email',
-        'phone_number',
-        'status',
+        'phone_number'
     ];
 }

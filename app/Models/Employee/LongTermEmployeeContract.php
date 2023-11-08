@@ -5,22 +5,27 @@ namespace App\Models\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeAddress extends BaseModel
+class LongTermEmployeeContract extends BaseModel
 {
     use UserAudit;
 
     protected $connection = 'tenant';
 
     protected $columnsToLog = [
-        'employee_profile_id',
-        'account_number',
+        'employee_contract_id',
+        'sub_type',
+        'schedule_type',
+        'employment_type',
+        'weekly_contract_hours',
+        'work_days_per_week',
+        'status'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_bank_account_details';
+    protected $table = 'long_term_employee_contract';
 
     /**
      * The primary key associated with the table.
@@ -40,7 +45,7 @@ class EmployeeAddress extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -49,7 +54,12 @@ class EmployeeAddress extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_profile_id',
-        'account_number',
+        'employee_contract_id',
+        'sub_type',
+        'schedule_type',
+        'employment_type',
+        'weekly_contract_hours',
+        'work_days_per_week',
+        'status'
     ];
 }

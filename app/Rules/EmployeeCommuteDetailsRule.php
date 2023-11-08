@@ -24,7 +24,7 @@ class EmployeeCommuteDetailsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $employeeContractDetails = request()->input('employee_contract_details');
+        $employeeContractDetails = request()->input('employee_contract');
         if (is_array($employeeContractDetails) && isset($employeeContractDetails['employee_type_id'])) {
             $usedFunction = [];
             foreach ($value as $data) {

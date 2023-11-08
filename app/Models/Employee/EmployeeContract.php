@@ -3,9 +3,10 @@
 namespace App\Models\Employee;
 
 use App\Models\BaseModel;
+use App\Models\EmployeeType\EmployeeType;
 use App\Traits\UserAudit;
 
-class EmployeeBasicDetails extends BaseModel
+class EmployeeContract extends BaseModel
 {
     use UserAudit;
 
@@ -13,23 +14,16 @@ class EmployeeBasicDetails extends BaseModel
 
     protected $columnsToLog = [
         'employee_profile_id',
-        'first_name',
-        'last_name',
-        'social_security_number',
-        'gender_id',
-        'date_of_birth',
-        'place_of_birth',
-        'license_expiry_date',
-        'language',
-        'extra_info',
-        'status',
+        'employee_type_id',
+        'start_date',
+        'end_date'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_basic_details';
+    protected $table = 'employee_contract';
 
     /**
      * The primary key associated with the table.
@@ -47,11 +41,11 @@ class EmployeeBasicDetails extends BaseModel
 
 
     protected $dates = [
-        'date_of_birth',
-        'license_expiry_date',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'start_date',
+        'end_date'
     ];
 
     /**
@@ -61,15 +55,14 @@ class EmployeeBasicDetails extends BaseModel
      */
     protected $fillable = [
         'employee_profile_id',
-        'first_name',
-        'last_name',
-        'social_security_number',
-        'gender_id',
-        'date_of_birth',
-        'place_of_birth',
-        'license_expiry_date',
-        'language',
-        'extra_info',
-        'status',
+        'employee_type_id',
+        'start_date',
+        'end_date'
     ];
+
+
+    public function employeeType()
+    {
+        return $this->belongsTo(EmployeeType::class);
+    }
 }

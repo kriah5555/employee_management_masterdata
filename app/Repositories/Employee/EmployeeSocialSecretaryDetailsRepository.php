@@ -3,28 +3,30 @@
 namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\EmployeeSocialSecretaryDetailsRepositoryInterface;
-use App\Models\Employee\EmployeeBenefits;
+use App\Models\Employee\EmployeeSocialSecretaryDetails;
 
 class EmployeeSocialSecretaryDetailsRepository implements EmployeeSocialSecretaryDetailsRepositoryInterface
 {
 
-    public function getEmployeeSocialSecretaryDetailsById(string $employeeSocialSecretaryDetailsId): EmployeeBenefits
+    public function getEmployeeSocialSecretaryDetailsById(string $employeeSocialSecretaryDetailsId): EmployeeSocialSecretaryDetails
     {
-        return EmployeeBenefits::findOrFail($employeeSocialSecretaryDetailsId);
+        return EmployeeSocialSecretaryDetails::findOrFail($employeeSocialSecretaryDetailsId);
     }
 
     public function deleteEmployeeSocialSecretaryDetails(string $employeeSocialSecretaryDetailsId)
     {
-        EmployeeBenefits::destroy($employeeSocialSecretaryDetailsId);
+        EmployeeSocialSecretaryDetails::destroy($employeeSocialSecretaryDetailsId);
     }
 
-    public function createEmployeeSocialSecretaryDetails(array $employeeSocialSecretaryDetailsDetails): EmployeeBenefits
+    public function createEmployeeSocialSecretaryDetails(array $employeeSocialSecretaryDetailsDetails): EmployeeSocialSecretaryDetails
     {
-        return EmployeeBenefits::create($employeeSocialSecretaryDetailsDetails);
+
+        // dd($employeeSocialSecretaryDetailsDetails);
+        return EmployeeSocialSecretaryDetails::create($employeeSocialSecretaryDetailsDetails);
     }
 
     public function updateEmployeeSocialSecretaryDetails(string $employeeSocialSecretaryDetailsId, array $newDetails)
     {
-        return EmployeeBenefits::whereId($employeeSocialSecretaryDetailsId)->update($newDetails);
+        return EmployeeSocialSecretaryDetails::whereId($employeeSocialSecretaryDetailsId)->update($newDetails);
     }
 }

@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Interfaces;
+namespace App\Interfaces\Employee;
+
+use App\Models\Employee\EmployeeCommute;
 
 interface EmployeeCommuteRepositoryInterface
 {
 
-    public function getEmployeeCommuteById(string $id);
+    public function getEmployeeCommuteById(string $employeeSocialSecretaryDetailsId): EmployeeCommute;
 
-    public function deleteEmployeeCommute(string $id);
+    public function deleteEmployeeCommute(string $employeeSocialSecretaryDetailsId): bool;
 
-    public function createEmployeeCommute(array $details);
+    public function createEmployeeCommute(array $employeeSocialSecretaryDetailsDetails): EmployeeCommute;
 
-    public function updateEmployeeCommute(string $id, array $updatedDetails);
+    public function updateEmployeeCommute(string $employeeSocialSecretaryDetailsId, array $newDetails): bool;
 }
