@@ -26,12 +26,12 @@ class CompanyRequest extends ApiRequest
             'locations'                => ['nullable', 'array', new LocationRule()],
             'workstations'             => ['nullable', 'array', new WorkstationRule()],
             'social_Secretary_details' => ['nullable', 'array', new CompanySocialSecretaryRule()],
-            'sectors.*'               => [
+            'sectors.*'                => [
                 'bail',
                 'integer',
                 Rule::exists('sectors', 'id'),
             ],
-            'interim_agencies.*'               => [
+            'interim_agencies.*' => [
                 'bail',
                 'integer',
                 Rule::exists('interim_agencies', 'id'),

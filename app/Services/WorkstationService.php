@@ -7,39 +7,40 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Rules\FunctionTitlesLinkedToSectorRule;
 use App\Rules\FunctionTitlesLinkedToCompany;
-use App\Rules\LocationLinkedToCompanyRule;
-use App\Services\BaseService;
 use Illuminate\Database\Eloquent\Builder;
 use App\Repositories\Company\WorkstationRepository;
+use App\Services\Company\LocationService;
+use App\Services\EmployeeFunction\FunctionService;
+use App\Rules\ExistsInMasterDatabaseRule;
 
 class WorkstationService
 {
-    protected $workstationRepository;
-
-    public function __construct(WorkstationRepository $workstationRepository)
+    public function __construct(
+        protected WorkstationRepository $workstationRepository, 
+        protected LocationService $locationService, 
+        protected FunctionService $functionService
+        )
     {
-        $this->workstationRepository = $workstationRepository;
     }
 
-
-    public function getAll(array $args = [])
+    public function getWorkstationsOfCompany()
     {
-        return $this->model
-            ->when(isset($args['status']) && $args['status'] !== 'all', function (Builder $q) use ($args) {
-                $q->where('status', $args['status']);
-            })
-            ->when(isset($args['company_id']), function (Builder $q) use ($args) {
-                $q->where('company', $args['company_id']);
-            })
-            ->when(isset($args['with']), function (Builder $q) use ($args) {
-                $q->with($args['with']);
-            })
-            ->when(isset($args['location_id']), function (Builder $q) use ($args) {
-                $q->whereHas('locations', function (Builder $subQ) use ($args) {
-                    $subQ->where('locations.id', $args['location_id']);
-                });
-            })
-            ->get();
+        return $this->workstationRepository->getWorkstationsOfCompany();
+    }
+
+    public function getWorkstationById($workstation_id)
+    {
+        return $this->workstationRepository->getWorkstationById($workstation_id);
+    }
+
+    public function getActiveWorkstationsOfCompany($workstation_id)
+    {
+        return $this->workstationRepository->getActiveWorkstationsOfCompany($workstation_id);
+    }
+
+    public function deleteWorkstation($workstation_id)
+    {
+        return $this->workstationRepository->deleteWorkstation($workstation_id);
     }
 
     public static function getWorkstationRules($for_company_creation = true)
@@ -52,11 +53,11 @@ class WorkstationService
             'function_titles.*' => [
                 'bail',
                 'integer',
-                Rule::exists('function_titles', 'id'),
+                new ExistsInMasterDatabaseRule('function_titles'),
             ],
         ];
 
-        if ($for_company_creation) { # company creation has multi step form with location and workstation inclued so this condition
+        if ($for_company_creation) { # company creation has multi step form with location and workstation include so this condition
             $rules = self::addCompanyCreationRules($rules);
         } else {
             $rules = self::addWorkstationCreationRules($rules);
@@ -79,64 +80,56 @@ class WorkstationService
         $rules['locations.*'] = [
             'integer',
             Rule::exists('locations', 'id'),
-            new LocationLinkedToCompanyRule(request()->input('company'))
         ];
-
-        $rules['company'] = [
-            'bail',
-            'required',
-            'integer',
-            Rule::exists('companies', 'id')
-        ];
-        $rules['function_titles.*'][] = new FunctionTitlesLinkedToCompany(request()->input('company')); # to validate if the selected function title is linked to the sector selected
+        $rules['function_titles.*'][] = new FunctionTitlesLinkedToCompany(request()->header('Company-Id')); # to validate if the selected function title is linked to the sector selected
         return $rules;
     }
 
     public function create($values)
     {
-        DB::beginTransaction();
-
-        $locations = $values['locations'] ?? [];
-        $function_titles = $values['function_titles'] ?? [];
-
-        unset($values['locations']);
-        unset($values['locations_index']);
-        unset($values['company']);
-
-        $workstation = $this->workstationRepository->createWorkstation($values);
-
-        // Attach locations and function titles
-        // if ($add_locations) { # in company creation flow we are linking locations in workstations but not workstation creation
-        $workstation->locations()->sync($locations);
-        // }
-        $workstation->functionTitles()->sync($function_titles);
-
-        // Save the workstation
-        $workstation->save();
-
-        DB::commit();
-
-        return $workstation;
-    }
-
-    public function updateWorkstation(Workstation $workstation, $values)
-    {
         try {
-            DB::beginTransaction();
+            DB::connection('tenant')->beginTransaction();
 
-            $function_titles = $values['function_titles'] ?? [];
-            $locations = $values['locations'] ?? [];
+                $locations       = $values['locations'] ?? [];
+                $function_titles = $values['function_titles'] ?? [];
+                
+                unset($values['locations'], $values['locations_index']);
 
-            $workstation->functionTitles()->sync($function_titles);
-            $workstation->locations()->sync($locations);
+                $workstation = $this->workstationRepository->createWorkstation($values);
 
-            unset($values['function_titles']);
-            $workstation->update($values);
+                $workstation->locations()->sync($locations);
+                $workstation->functionTitles()->sync($function_titles);
 
-            DB::commit();
+                $workstation->save();
+
+            DB::connection('tenant')->commit();
+
             return $workstation;
         } catch (Exception $e) {
-            DB::rollback();
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateWorkstation($workstation_id, $values)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+
+                $function_titles = $values['function_titles'] ?? [];
+                $locations       = $values['locations'] ?? [];
+
+                $workstation->functionTitles()->sync($function_titles);
+                $workstation->locations()->sync($locations);
+
+                unset($values['function_titles']);
+                $workstation->update($values);
+
+            DB::connection('tenant')->commit();
+            return $workstation;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -145,24 +138,23 @@ class WorkstationService
     public function getOptionsToCreate($company_id)
     {
         $function_titles = $this->functionService->getCompanyFunctionTitlesOptions($company_id);
-
-        $locations = $this->locationService->getALL(['company_id' => $company_id]);
-        $modifiedLocations = $locations->map(function ($location) {
-            return [
-                'value' => $location->id,
-                'label' => $location->location_name,
-            ];
-        });
+        $locations       = $this->locationService->getActiveLocations();
+        // $modifiedLocations = $locations->map(function ($location) {
+        //     return [
+        //         'value' => $location->id,
+        //         'label' => $location->location_name,
+        //     ];
+        // });
 
         return [
-            'locations'       => $modifiedLocations,
+            'locations'       => $locations,
             'function_titles' => $function_titles,
         ];
     }
 
     public function getOptionsToEdit($workstation_id)
     {
-        $workstation_details = $this->get($workstation_id, ['locationsValue', 'functionTitlesValue']);
+        $workstation_details = $this->get($workstation_id, ['locations', 'functionTitles']);
         $options = $this->getOptionsToCreate($workstation_details->company);
         $options['details'] = $workstation_details;
         return $options;

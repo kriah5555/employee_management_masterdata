@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Rules\AddressRule;
 use Illuminate\Validation\Rule;
-use App\Services\LocationService;
+use App\Services\Company\LocationService;
 
 class LocationRule implements ValidationRule
 {

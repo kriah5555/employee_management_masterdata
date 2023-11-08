@@ -4,16 +4,13 @@ namespace App\Http\Rules;
 
 use App\Services\WorkstationService;
 use Illuminate\Validation\Rule;
+use App\Rules\ExistsInMasterDatabaseRule;
 
 class WorkstationRequest extends ApiRequest
 {
     public function rules() :array
     {
-        $workstation_rules = WorkstationService::getWorkstationRules(false);
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            unset($workstation_rules['company']);
-        }
-        return $workstation_rules;
+        return WorkstationService::getWorkstationRules(false);
     }
 
     public function messages()
@@ -30,7 +27,6 @@ class WorkstationRequest extends ApiRequest
             'status.boolean'  => 'The status field must be a boolean.',
 
             'function_titles.required' => 'At least one function title is required.',
-            'function_titles.array'    => 'Function titles must be provided in an array.',
             'function_titles.*.exists' => 'One or more selected function titles are invalid.',
         ];
     }

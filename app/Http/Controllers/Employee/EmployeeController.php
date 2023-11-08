@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Employee\EmployeeService;
 use App\Services\CompanyService;
 use Illuminate\Http\Request;
-use App\Services\LocationService;
+use App\Services\Company\LocationService;
 use App\Services\Employee\CommuteTypeService;
 use App\Services\MealVoucherService;
 

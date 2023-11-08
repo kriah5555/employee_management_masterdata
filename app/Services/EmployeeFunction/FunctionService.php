@@ -95,14 +95,14 @@ class FunctionService
 
     public function getCompanyFunctionTitlesOptions($company_id)
     {
-        $functionTitles = self::getCompanyFunctionTitles($company_id);
+        return $functionTitles = self::getCompanyFunctionTitles($company_id);
 
-        return array_map(function ($title) {
-            return [
-                'value' => $title['id'],
-                'label' => $title['name'],
-            ];
-        }, $functionTitles);
+        // return array_map(function ($title) {
+        //     return [
+        //         'value' => $title['id'],
+        //         'label' => $title['name'],
+        //     ];
+        // }, $functionTitles);
     }
 
     public function createFunctionTitle()

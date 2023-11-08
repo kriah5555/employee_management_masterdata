@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Rules\Contract\ContractTemplateRequest;
 use App\Services\Contract\ContractTemplateService;
+use Illuminate\Http\Request;
 
 class ContractTemplateController extends Controller
 {
@@ -47,15 +48,6 @@ class ContractTemplateController extends Controller
      */
     public function store(ContractTemplateRequest $request)
     {
-        // $pdfFilePath = $request->file('pdf_file')->getPathname();
-        // $htmlOutput = shell_exec("pdftohtml -i -noframes -stdout '$pdfFilePath'");
-
-        // $htmlOutput = shell_exec("pdftohtml -i -noframes -p -c -nodrm '$pdfFilePath' -");
-
-        // $htmlOutput = shell_exec("pdftohtml -i -noframes -p -c -nodrm '$pdfFilePath' ");
-
-
-        // dd($pdfFilePath, $htmlOutput);
         return returnResponse(
             [
                 'success' => true,
@@ -109,5 +101,35 @@ class ContractTemplateController extends Controller
             ],
             JsonResponse::HTTP_OK,
         );
+    }
+
+    function convertPDFHtml(Request $request)
+    {
+        try{
+            $pdfFilePath = $request->file('pdf_file')->getPathname();
+            $file_name = storage_path('app/pdf_output.html');
+            // $htmlOutput = shell_exec("pdftohtml -i -noframes -stdout '$pdfFilePath'");
+            $htmlOutput = shell_exec("pdftohtml -i -noframes -p -c -nodrm '$pdfFilePath' $file_name");
+
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'PDF data received successfully',
+                    'data'    => $htmlOutput
+                ],
+                JsonResponse::HTTP_OK,
+            );
+
+            dd($pdfFilePath, $htmlOutput);
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

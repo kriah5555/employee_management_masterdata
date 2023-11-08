@@ -18,7 +18,7 @@ class LocationRepository implements LocationRepositoryInterface
         return Location::allActive();
     }
 
-    public function getLocationById(string $locationId, array $relations = []): Collection|Builder|Location
+    public function getLocationById(string $locationId, array $relations = ['address']): Collection|Builder|Location
     {
         return Location::with($relations)->findOrFail($locationId);
     }
@@ -36,5 +36,10 @@ class LocationRepository implements LocationRepositoryInterface
     public function updateLocation(string $locationId, array $updatedDetails)
     {
         return Location::whereId($locationId)->update($updatedDetails);
+    }
+
+    public function getLocationWorkstations(string $locationId)
+    {
+        return Location::findOrFail($locationId)->workstations;
     }
 }

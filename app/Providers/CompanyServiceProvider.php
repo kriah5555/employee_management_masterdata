@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Services\CompanyService;
 use App\Services\AddressService;
 use App\Repositories\Company\CompanyRepository;
-use App\Services\LocationService;
+use App\Services\Company\LocationService;
 use App\Services\WorkstationService;
 use App\Repositories\Company\CompanySocialSecretaryDetailsRepository;
 

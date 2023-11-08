@@ -7,18 +7,18 @@ use App\Models\Company\Workstation;
 
 class WorkstationRepository implements WorkstationRepositoryInterface
 {
-    public function getWorkstationsOfCompany($companyId)
+    public function getWorkstationsOfCompany()
     {
-        return Workstation::where('company_id', '=', $companyId)->get();
+        return Workstation::all();
     }
-    public function getActiveWorkstationsOfCompany($companyId)
+    public function getActiveWorkstationsOfCompany()
     {
-        return Workstation::where('company_id', '=', $companyId)->where('status', '=', true)->get();
+        return Workstation::where('status', '=', true)->get();
     }
 
     public function getWorkstationById(string $workstationId): Workstation
     {
-        return Workstation::findOrFail($workstationId);
+        return Workstation::with(['locations', 'functionTitles'])->findOrFail($workstationId);
     }
 
     public function deleteWorkstation(string $workstationId)
@@ -34,5 +34,10 @@ class WorkstationRepository implements WorkstationRepositoryInterface
     public function updateWorkstation(string $workstationId, array $updatedDetails)
     {
         return Workstation::whereId($workstationId)->update($updatedDetails);
+    }
+
+    public function getWorkstationsOfLocation(string $location_id)
+    {
+        return Workstation::WhereHA($workstationId)->update($updatedDetails);
     }
 }

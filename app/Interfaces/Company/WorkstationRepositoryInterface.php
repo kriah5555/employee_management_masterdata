@@ -4,9 +4,9 @@ namespace App\Interfaces\Company;
 
 interface WorkstationRepositoryInterface
 {
-    public function getWorkstationsOfCompany($companyId);
+    public function getWorkstationsOfCompany();
 
-    public function getActiveWorkstationsOfCompany($companyId);
+    public function getActiveWorkstationsOfCompany();
 
     public function getWorkstationById(string $workstationId);
 

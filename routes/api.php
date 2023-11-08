@@ -70,7 +70,6 @@ Route::group(['middleware' => 'service-registry'], function () {
 Route::resources([
     'companies'       => CompanyController::class,
     'email-templates' => EmailTemplateApiController::class,
-    'workstations'    => WorkstationController::class,
     'public-holidays' => PublicHolidayController::class,
 ]);
 
@@ -94,19 +93,8 @@ Route::controller(ContractTemplateController::class)->group(function () use ($in
 
     Route::resource('contract-templates', ContractTemplateController::class)->except(['edit']);
 
-});
+    Route::post('convert-pdf-to-html', 'convertPDFHtml');
 
-
-
-Route::controller(WorkstationController::class)->group(function () use ($statusRule, $integerRule) {
-
-    Route::get('company-workstations/{company_id}/{status}', 'companyWorkstations')->where(['status' => $statusRule, 'company_id' => $integerRule]);
-
-    Route::get('location-workstations/{location_id}/{status}', 'locationWorkstations')->where(['status' => $statusRule, 'location_id' => $integerRule]);
-
-    Route::get('company/workstations/{company_id}/{status}', 'companyWorkstations')->where('status', $statusRule);
-
-    Route::get('workstations/create/{company_id}', 'create');
 });
 
 Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
@@ -155,7 +143,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         ],
         'social-secretary'    => [
             'controller' => SocialSecretaryController::class,
-            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            'methods'    => ['index', 'show', 'store', 'update', 'destroy']
         ],
         'interim-agencies'    => [
             'controller' => InterimAgencyController::class,
@@ -205,10 +193,21 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
 
     Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
-    Route::group(['middleware' => 'initialize-tenancy'], function () {
+    Route::group(['middleware' => 'initialize-tenancy'], function () use ($statusRule, $integerRule) {
+
+        Route::controller(LocationController::class)->group(function () use ($statusRule, $integerRule) {
+
+            Route::get('location-workstations/{location_id}', 'locationWorkstations')->where(['location_id' => $integerRule]);
+            
+        });
+
         $resources = [
             'locations' => [
                 'controller' => LocationController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            ],
+            'workstations' => [
+                'controller' => WorkstationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
             'employees' => [

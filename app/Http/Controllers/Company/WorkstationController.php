@@ -6,6 +6,7 @@ use App\Services\WorkstationService;
 use App\Http\Rules\WorkstationRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\Company\Workstation;
+use App\Http\Controllers\Controller;
 
 class WorkstationController extends Controller
 {
@@ -13,32 +14,12 @@ class WorkstationController extends Controller
     {
     }
 
-    public function companyWorkstations($company_id, $status)
+    public function index()
     {
         try {
-            $data = $this->workstation_service->getAll(['company_id' => $company_id, 'status' => $status]);
             return response()->json([
                 'success' => true,
-                'data'    => $data,
-            ]);
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
-    }
-
-    public function locationWorkstations($location_id, $status)
-    {
-        try {
-            $data = $this->workstation_service->getAll(['location_id' => $location_id, 'status' => $status]);
-            return response()->json([
-                'success' => true,
-                'data'    => $data,
+                'data'    => $this->workstation_service->getWorkstationsOfCompany(),
             ]);
         } catch (Exception $e) {
             return returnResponse(
@@ -54,11 +35,10 @@ class WorkstationController extends Controller
     public function store(WorkstationRequest $request)
     {
         try {
-            $location = $this->workstation_service->create($request->validated());
             return response()->json([
                 'success' => true,
                 'message' => 'Workstation created successfully',
-                'data'    => $location,
+                'data'    => $this->workstation_service->create($request->validated()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return returnResponse(
@@ -71,46 +51,49 @@ class WorkstationController extends Controller
         }
     }
 
-    public function show(Workstation $workstation)
-    {
-        return response()->json([
-            'success' => true,
-            'data'    => $workstation,
-        ]);
-    }
-
-    public function create($company_id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->workstation_service->getOptionsToCreate($company_id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->workstation_service->getOptionsToEdit($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    public function update(WorkstationRequest $request, Workstation $workstation)
+    public function show($id)
     {
         try {
-            $this->workstation_service->updateWorkstation($workstation, $request->validated());
-            $workstation->refresh();
+            return response()->json([
+                'success' => true,
+                'data'    => $this->workstation_service->getWorkstationById($id),
+            ], JsonResponse::HTTP_CREATED);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 
+    public function create()
+    {
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->workstation_service->getOptionsToCreate(request()->header('Company-Id')),
+            ], JsonResponse::HTTP_CREATED);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function update(WorkstationRequest $request, $id)
+    {
+        try {
             return response()->json([
                 'success' => true,
                 'message' => 'Workstation updated successfully',
-                'data'    => $workstation,
+                'data'    => $this->workstation_service->updateWorkstation($id, $request->validated()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return returnResponse(

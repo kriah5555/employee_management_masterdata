@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\LocationService;
+use App\Services\Company\LocationService;
 use App\Services\Sector\SectorService;
 use App\Models\Company\Location;
 

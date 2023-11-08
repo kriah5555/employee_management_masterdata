@@ -4,22 +4,24 @@ namespace App\Models\Company;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
-use App\Models\Company\AddressCompany;
+use App\Models\Company\CompanyAddress;
 use App\Models\Company\Company;
 use App\Models\Company\Workstation;
 
 class Location extends BaseModel
 {
     use UserAudit;
+
+    protected $connection = 'tenant';
+
     protected static $sort = ['location_name'];
+    
     protected $columnsToLog = [
         'location_name',
         'status',
-        'company',
         'address'
     ];
 
-    protected $connection = 'tenant';
 
     protected $table = "locations";
 
@@ -30,7 +32,6 @@ class Location extends BaseModel
     protected $fillable = [
         'location_name',
         'status',
-        'company',
         'address'
     ];
 
@@ -48,11 +49,6 @@ class Location extends BaseModel
 
     public function address()
     {
-        return $this->belongsTo(AddressCompany::class, 'address');
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(company::class, 'company');
+        return $this->belongsTo(CompanyAddress::class, 'address');
     }
 }

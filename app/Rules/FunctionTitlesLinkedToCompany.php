@@ -24,10 +24,8 @@ class FunctionTitlesLinkedToCompany implements Rule
             ->pluck('sectors.id')
             ->toArray();
 
-            // Check if the provided function title is associated with the same sectors as the company's sectors
-            $functionTitle = FunctionTitle::find($value);
-
-            return $functionTitle && $functionTitle->functionCategory && in_array($functionTitle->functionCategory->sector->id, $sectorIds);
+        $functionTitle = FunctionTitle::find($value);
+        return $functionTitle && $functionTitle->functionCategory && in_array($functionTitle->functionCategory->sector->id, $sectorIds);
     }
 
     public function message()

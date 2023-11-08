@@ -2,7 +2,7 @@
 
 namespace App\Http\Rules;
 
-use App\Services\LocationService;
+use App\Services\Company\LocationService;
 
 class LocationRequest extends ApiRequest
 {
@@ -18,11 +18,7 @@ class LocationRequest extends ApiRequest
     public function messages()
     {
         return [
-            'status.boolean' => 'The address status field must be a boolean value.',
-
-            'company.required' => 'The company field is required.',
-            'company.exists'   => 'The selected company does not exist.',
-
+            'status.boolean'   => 'The address status field must be a boolean value.',
             'address.required' => 'The address field is required.',
         ];
     }

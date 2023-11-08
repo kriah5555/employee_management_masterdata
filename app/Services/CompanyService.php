@@ -12,7 +12,7 @@ use App\Models\Company\Workstation;
 use App\Models\LocationRequest;
 use App\Models\Files;
 use App\Services\AddressService;
-use App\Services\LocationService;
+use App\Services\Company\LocationService;
 use App\Services\WorkstationService;
 use App\Repositories\Company\CompanyRepository;
 use App\Models\Tenant;
@@ -40,15 +40,21 @@ class CompanyService
     public function createNewCompany($values)
     {
         try {
-            DB::beginTransaction();
+            DB::connection('master')->beginTransaction();
                 $company      = $this->createCompany($values);
                 // $location_ids = $this->createCompanyLocations($company, $values); # add company locations
                 // $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
-            DB::commit();
-            $tenant       = $this->createTenant($company);
+            DB::connection('master')->commit();
+            $tenant = $this->createTenant($company);
+            setTenantDB($tenant->id);
+            DB::connection('tenant')->beginTransaction();
+                $location_ids = $this->createCompanyLocations($company, $values); # add company locations
+                $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
+            DB::connection('tenant')->commit();
             return $company;
         } catch (Exception $e) {
-            DB::rollback();
+            DB::connection('master')->rollback();
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }

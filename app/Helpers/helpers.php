@@ -221,6 +221,14 @@ if (!function_exists('setTenantDB')) {
     }
 }
 
+if (!function_exists('getActiveTenantId')) {
+    function getActiveTenantId()
+    {
+        return tenancy()->tenant->id;
+    }
+}
+
+
 if (!function_exists('getCompanyId')) {
     function getCompanyId()
     {

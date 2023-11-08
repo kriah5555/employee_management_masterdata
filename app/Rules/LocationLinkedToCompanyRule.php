@@ -17,7 +17,7 @@ class LocationLinkedToCompanyRule implements Rule
     public function passes($attribute, $value)
     {
         $location = Location::find($value);
-        return $location && $location->company == $this->company_id;
+        return $location !== null && $location->exists();    
     }
 
     public function message()

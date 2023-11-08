@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Company;
 
-use App\Services\LocationService;
+use App\Services\Company\LocationService;
 use App\Http\Rules\LocationRequest;
 use App\Models\Company\Location;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class LocationController extends Controller
 {
@@ -17,13 +18,41 @@ class LocationController extends Controller
 
     public function index()
     {
-        return returnResponse(
-            [
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->locationService->getLocations(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function locationWorkstations($location_id)
+    {
+        try {
+            return response()->json([
                 'success' => true,
-                'data'    => $this->locationService->getLocations(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+                'data'    => $this->locationService->getLocationWorkstations($location_id),
+            ]);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -31,15 +60,24 @@ class LocationController extends Controller
      */
     public function store(LocationRequest $request)
     {
-        $location = $this->locationService->create($request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => t('Location created successfully'),
-                'data'    => $location
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Location created successfully'),
+                    'data'    => $this->locationService->create($request->validated())
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -47,43 +85,63 @@ class LocationController extends Controller
      */
     public function show(string $locationId)
     {
-        return response()->json([
-            'success' => true,
-            'data'    => $this->locationService->getLocationById($locationId),
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->locationService->getLocationById($locationId),
+            ]);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
-    public function create($company_id)
+    public function create()
     {
-        return response()->json([
-            'success' => true,
-            'data'    => $this->locationService->getOptionsToCreate($company_id),
-        ]);
-    }
-
-    public function edit($location_id)
-    {
-        return response()->json([
-            'success' => true,
-            'data'    => $this->locationService->getOptionsToEdit($location_id),
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->locationService->getOptionsToCreate(),
+            ]);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(LocationRequest $request, Location $location)
+    public function update(LocationRequest $request, $id)
     {
-        $this->locationService->update($location, $request->validated());
-        $location->refresh();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => t('Location updated successfully'),
-                'data'    => $location,
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Location updated successfully'),
+                    'data'    => $this->locationService->update($id, $request->validated()),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function destroy(string $locationId)
