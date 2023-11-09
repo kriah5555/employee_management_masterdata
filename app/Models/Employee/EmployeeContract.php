@@ -5,11 +5,13 @@ namespace App\Models\Employee;
 use App\Models\BaseModel;
 use App\Models\EmployeeType\EmployeeType;
 use App\Traits\UserAudit;
+use App\Models\Employee\LongTermEmployeeContract;
 
 class EmployeeContract extends BaseModel
 {
     use UserAudit;
 
+    protected static $sort = ['start_date', 'end_date'];
     protected $connection = 'tenant';
 
     protected $columnsToLog = [
@@ -59,10 +61,20 @@ class EmployeeContract extends BaseModel
         'start_date',
         'end_date'
     ];
+    protected $apiValues = [
+        'employee_profile_id',
+        'employee_type_id',
+        'start_date',
+        'end_date'
+    ];
 
 
     public function employeeType()
     {
         return $this->belongsTo(EmployeeType::class);
+    }
+    public function longTermEmployeeContract()
+    {
+        return $this->hasOne(LongTermEmployeeContract::class);
     }
 }

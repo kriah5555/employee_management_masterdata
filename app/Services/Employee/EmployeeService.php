@@ -109,7 +109,7 @@ class EmployeeService
     public function formatEmployeeData($employee)
     {
         $userBasicDetails = $employee->user->userBasicDetails->toApiReponseFormat();
-        $userBasicDetails['social_secretary_number'] = $employee->user->social_security_number;
+        $userBasicDetails['social_security_number'] = $employee->user->social_security_number;
         $userBasicDetails['date_of_birth'] = date('d-m-Y', strtotime($userBasicDetails['date_of_birth']));
         $userBasicDetails['gender'] = $employee->user->userBasicDetails->gender->toApiReponseFormat();
         $userBasicDetails['language'] = [
@@ -302,5 +302,47 @@ class EmployeeService
     public function checkEmployeeExistsInCompany($company_id, string $socialSecurityNumber)
     {
         return $this->employeeProfileRepository->checkEmployeeExistsInCompany($company_id, $socialSecurityNumber);
+    }
+
+    public function getEmployeeContracts($employeeId)
+    {
+        $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeId);
+        $employeeContracts = [
+            'active'  => [],
+            'expired' => []
+        ];
+        foreach ($employeeProfile->employeeContracts as $employeeContract) {
+            $employeeContract->employeeType;
+            $employeeContract->longTermEmployeeContract;
+            $contractDetails = $this->formatEmployeeContract($employeeContract);
+
+            if ($employeeContract->end_date == null || strtotime($employeeContract->end_date) > strtotime(date('Y-m-d'))) {
+                $employeeContracts['active'][] = $contractDetails;
+            } else {
+                $employeeContracts['expired'][] = $contractDetails;
+            }
+        }
+        return $employeeContracts;
+    }
+
+    public function formatEmployeeContract($employeeContract)
+    {
+        $contractDetails = [
+            'id'            => $employeeContract->id,
+            'start_date'    => $employeeContract->start_date,
+            'end_date'      => $employeeContract->end_date,
+            'employee_type' => $employeeContract->employeeType->name,
+            'long_term'     => false,
+        ];
+        if ($employeeContract->longTermEmployeeContract->exists()) {
+            $contractDetails['long_term'] = true;
+            $longTermEmployeeContract = $employeeContract->longTermEmployeeContract;
+            $contractDetails['sub_type'] = config('constants.SUB_TYPE_OPTIONS')[$longTermEmployeeContract->sub_type];
+            $contractDetails['schedule_type'] = config('constants.SCHEDULE_TYPE_OPTIONS')[$longTermEmployeeContract->schedule_type];
+            $contractDetails['employment_type'] = config('constants.EMPLOYMENT_TYPE_OPTIONS')[$longTermEmployeeContract->employment_type];
+            $contractDetails['weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
+            $contractDetails['work_days_per_week'] = $longTermEmployeeContract->work_days_per_week;
+        }
+        return $contractDetails;
     }
 }

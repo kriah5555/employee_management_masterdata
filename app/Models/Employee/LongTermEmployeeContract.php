@@ -4,6 +4,7 @@ namespace App\Models\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\Employee\EmployeeContract;
 
 class LongTermEmployeeContract extends BaseModel
 {
@@ -62,4 +63,10 @@ class LongTermEmployeeContract extends BaseModel
         'work_days_per_week',
         'status'
     ];
+
+
+    public function employeeContract()
+    {
+        return $this->belongsTo(EmployeeContract::class);
+    }
 }

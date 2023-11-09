@@ -198,11 +198,11 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::controller(LocationController::class)->group(function () use ($statusRule, $integerRule) {
 
             Route::get('location-workstations/{location_id}', 'locationWorkstations')->where(['location_id' => $integerRule]);
-            
+
         });
 
         $resources = [
-            'locations' => [
+            'locations'    => [
                 'controller' => LocationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
@@ -210,7 +210,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
                 'controller' => WorkstationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
-            'employees' => [
+            'employees'    => [
                 'controller' => EmployeeController::class,
                 'methods'    => ['index', 'show', 'store', 'update', 'destroy']
             ],
@@ -230,6 +230,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
         Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
         Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
+        Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
     });
 
     // Route::controller(EmployeeController::class)->group(function () {
