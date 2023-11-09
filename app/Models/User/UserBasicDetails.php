@@ -70,8 +70,23 @@ class UserBasicDetails extends BaseModel
         'language',
         'extra_info'
     ];
+
+    protected $apiValues = [
+        'first_name',
+        'last_name',
+        'nationality',
+        'date_of_birth',
+        'place_of_birth',
+        'license_expiry_date',
+        'language',
+        'extra_info'
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function gender()
+    {
+        return $this->belongsTo(Gender::class);
     }
 }

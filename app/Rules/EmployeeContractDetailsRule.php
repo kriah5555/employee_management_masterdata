@@ -48,8 +48,5 @@ class EmployeeContractDetailsRule implements ValidationRule
         if (!array_key_exists('start_date', $value) || strtotime($value['start_date']) === false) {
             $fail('Please select correct contract start date');
         }
-        if (array_key_exists('end_date', $value) && strtotime($value['end_date']) === false) {
-            $fail('Please select correct contract end date');
-        }
     }
 }

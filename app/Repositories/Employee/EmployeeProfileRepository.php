@@ -4,14 +4,16 @@ namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\EmployeeProfileRepositoryInterface;
 use App\Models\Employee\EmployeeProfile;
+use App\Models\User\CompanyUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\User\User;
 
 class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 {
-    public function getAllEmployeeProfiles()
+    public function getAllEmployeeProfiles(array $relations = [])
     {
-        return EmployeeProfile::all();
+        return EmployeeProfile::with($relations)->get();
     }
 
     public function getEmployeeProfileById(string $id, array $relations = []): Collection|Builder|EmployeeProfile
@@ -45,21 +47,16 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             ->where('social_security_number', '=', $socialSecurityNumber)->get();
     }
 
-    public function checkEmployeeExistsInCompany(string $companyId, string $socialSecurityNumber)
+    public function checkEmployeeExistsInCompany($company_id, string $socialSecurityNumber)
     {
-        // return User::where('social_security_number', $socialSecurityNumber)->whereHas('employeeProfiles', function ($query) use ($companyId) {
-        //     $query->on('master')->where('company_id', $companyId);
-        // })->exists();
-        // return User::where('id', $userId)
-        //     ->whereHas('employees', function ($query) use ($employeeId) {
-        //         $query->where('id', $employeeId);
-        //     })
-        //     ->exists();
-        return EmployeeProfile::whereHas('user', function ($query) use ($socialSecurityNumber) {
-            $query->where('social_security_number', $socialSecurityNumber);
-        })->exists();
-        // return EmployeeProfile::where('company_id', '=', $companyId)
-        //     ->where('social_security_number', '=', $socialSecurityNumber)->exists();
+        $user = User::where('social_security_number', '=', $socialSecurityNumber)->get();
+        if ($user->isNotEmpty()) {
+            $userIds = $user->pluck('id')->toArray();
+            if (EmployeeProfile::whereIn('user_id', $userIds)->get()->isNotEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getEmployeeProfileBySsn(string $socialSecurityNumber)

@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Models\BaseModel;
+use App\Models\Company\Company;
 use App\Traits\UserAudit;
 
 class CompanyUser extends BaseModel
@@ -50,4 +51,13 @@ class CompanyUser extends BaseModel
         'company_id',
         'user_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

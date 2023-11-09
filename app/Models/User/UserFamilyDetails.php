@@ -5,6 +5,7 @@ namespace App\Models\User;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\User\User;
+use App\Models\User\MaritalStatus;
 
 class UserFamilyDetails extends BaseModel
 {
@@ -54,8 +55,16 @@ class UserFamilyDetails extends BaseModel
         'dependent_spouse',
         'status',
     ];
+    protected $apiValues = [
+        'dependent_spouse'
+    ];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function maritalStatus()
+    {
+        return $this->belongsTo(MaritalStatus::class);
     }
 }

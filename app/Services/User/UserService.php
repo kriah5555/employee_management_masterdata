@@ -9,6 +9,7 @@ use App\Repositories\User\UserAddressRepository;
 use App\Models\User\User;
 use App\Repositories\User\UserBasicDetailsRepository;
 use Illuminate\Support\Facades\Hash;
+use App\Repositories\User\UserFamilyDetailsRepository;
 
 
 class UserService
@@ -19,6 +20,7 @@ class UserService
     protected $userBankAccountRepository;
     protected $userBasicDetailsRepository;
     protected $userContactDetailsRepository;
+    protected $userFamilyDetailsRepository;
 
 
     public function __construct(
@@ -26,13 +28,15 @@ class UserService
         UserBasicDetailsRepository $userBasicDetailsRepository,
         UserAddressRepository $userAddressRepository,
         UserBankAccountRepository $userBankAccountRepository,
-        UserContactDetailsRepository $userContactDetailsRepository
+        UserContactDetailsRepository $userContactDetailsRepository,
+        UserFamilyDetailsRepository $userFamilyDetailsRepository
     ) {
         $this->userRepository = $userRepository;
         $this->userBasicDetailsRepository = $userBasicDetailsRepository;
         $this->userAddressRepository = $userAddressRepository;
         $this->userBankAccountRepository = $userBankAccountRepository;
         $this->userContactDetailsRepository = $userContactDetailsRepository;
+        $this->userFamilyDetailsuserFamilyDetailsRepositoryRepository = $userFamilyDetailsRepository;
     }
 
     public function getUserBySocialSecurityNumber($socialSecurityNumber)
@@ -49,8 +53,8 @@ class UserService
     {
         $values['user_id'] = $user->id;
         $values['date_of_birth'] = date('Y-m-d', strtotime($values['date_of_birth']));
-        $values['license_expiry_date'] = date('Y-m-d', strtotime($values['license_expiry_date']));
-
+        $values['license_expiry_date'] = (isset($values['license_expiry_date']) && $values['license_expiry_date'] != '')
+            ? date('Y-m-d', strtotime($values['license_expiry_date'])) : '';
         return $this->userBasicDetailsRepository->createUserBasicDetails($values);
     }
     public function createUserAddress(User $user, $values)
@@ -62,6 +66,11 @@ class UserService
     {
         $values['user_id'] = $user->id;
         return $this->userContactDetailsRepository->createUserContactDetails($values);
+    }
+    public function createUserFamilyDetails(User $user, $values)
+    {
+        $values['user_id'] = $user->id;
+        return $this->userFamilyDetailsRepository->createUserFamilyDetails($values);
     }
 
     public function createNewUser($values)
@@ -78,6 +87,7 @@ class UserService
         $this->createUserBasicDetails($user, $values);
         $this->createUserAddress($user, $values);
         $this->createUserContactDetails($user, $values);
+        $this->createUserFamilyDetails($user, $values);
         if (array_key_exists('bank_account_number', $values)) {
             $this->createUserBankAccount($user, $values);
         }

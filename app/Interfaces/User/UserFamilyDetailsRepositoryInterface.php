@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Interfaces;
+namespace App\Interfaces\User;
+
+use App\Models\User\UserFamilyDetails;
 
 interface UserFamilyDetailsRepositoryInterface
 {
@@ -11,5 +13,5 @@ interface UserFamilyDetailsRepositoryInterface
 
     public function createUserFamilyDetails(array $details);
 
-    public function updateUserFamilyDetails(string $id, array $updatedDetails);
+    public function updateUserFamilyDetails(UserFamilyDetails $userFamilyDetails, array $updatedDetails);
 }

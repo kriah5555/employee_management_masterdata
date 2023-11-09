@@ -54,4 +54,8 @@ class MaritalStatus extends BaseModel
         'name',
         'status'
     ];
+    protected $apiValues = [
+        'id',
+        'name',
+    ];
 }

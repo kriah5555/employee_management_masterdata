@@ -42,7 +42,11 @@ class EmployeeService
     public function index()
     {
         $response = [];
-        $employees = $this->employeeProfileRepository->getAllEmployeeProfiles();
+        $employees = $this->employeeProfileRepository->getAllEmployeeProfiles([
+            'user',
+            'user.userBasicDetails',
+            'user.userContactDetails',
+        ]);
         foreach ($employees as $employee) {
             $employee->user;
             $employee->user->userBasicDetails;
@@ -53,6 +57,7 @@ class EmployeeService
                 return Carbon::parse($employeeContract->start_date)->lessThanOrEqualTo($currentDate) &&
                     (is_null($employeeContract->start_date) || Carbon::parse($employeeContract->end_date)->greaterThanOrEqualTo($currentDate));
             });
+            $employeeDetails = $this->formatEmployeeListData($employee);
             if ($employeeContracts->isNotEmpty()) {
                 $currentContract = $employeeContracts->first();
                 if (!array_key_exists($currentContract->employeeType->id, $response)) {
@@ -61,7 +66,7 @@ class EmployeeService
                         'employees'     => []
                     ];
                 }
-                $response[$currentContract->employeeType->id]['employees'][] = $employee;
+                $response[$currentContract->employeeType->id]['employees'][] = $employeeDetails;
             } else {
                 if (!array_key_exists(999, $response)) {
                     $response[999] = [
@@ -69,23 +74,62 @@ class EmployeeService
                         'employees'     => []
                     ];
                 }
-                $response[999]['employees'][] = $employee;
+                $response[999]['employees'][] = $employeeDetails;
             }
         }
         return array_values($response);
     }
 
+    public function formatEmployeeListData($employee)
+    {
+        return $employee;
+        $employeeDetails = [];
+        $employeeDetails['employee_profile_id'] = $employee->id;
+        $employeeDetails['first_name'] = $employee->user->userBasicDetails->first_name;
+        $employeeDetails['last_name'] = $employee->user->userBasicDetails->last_name;
+        $employeeDetails['phone_number'] = $employee->user->userContactDetails->phone_number;
+        $employeeDetails['email'] = $employee->user->userContactDetails->email;
+        $employeeDetails['social_security_number'] = $employee->user->social_security_number;
+        // $employeeDetails['test'] = $employee;
+        return $employeeDetails;
+    }
+
     public function getEmployeeDetails(string $employeeProfileId)
     {
-        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
+        return $this->formatEmployeeData($this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
             'user',
             'user.userBasicDetails',
             'user.userContactDetails',
             'user.userFamilyDetails',
             'user.userBankAccount',
             'employeeSocialSecretaryDetails'
-        ]);
+        ]));
     }
+
+    public function formatEmployeeData($employee)
+    {
+        $userBasicDetails = $employee->user->userBasicDetails->toApiReponseFormat();
+        $userBasicDetails['social_secretary_number'] = $employee->user->social_security_number;
+        $userBasicDetails['date_of_birth'] = date('d-m-Y', strtotime($userBasicDetails['date_of_birth']));
+        $userBasicDetails['gender'] = $employee->user->userBasicDetails->gender->toApiReponseFormat();
+        $userBasicDetails['language'] = [
+            'id'   => $userBasicDetails['language'],
+            'name' => config('constants.LANGUAGE_OPTIONS')[$userBasicDetails['language']]
+        ];
+        $userAddressDetails = $employee->user->userAddress->toApiReponseFormat();
+        $userContactDetails = $employee->user->userContactDetails->toApiReponseFormat();
+        $userBankAccountDetails = $employee->user->userBankAccount->toApiReponseFormat();
+        $userFamilyDetails = [
+            'dependent_spouse' => [
+                'id'   => $employee->user->userFamilyDetails->dependent_spouse,
+                'name' => config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse]
+            ],
+            'marital_status'   => $employee->user->userFamilyDetails->maritalStatus->toApiReponseFormat(),
+            'children'         => 0
+        ];
+        return array_merge($userBasicDetails, $userAddressDetails, $userContactDetails, $userBankAccountDetails, $userFamilyDetails);
+    }
+
 
     public function createNewEmployee($values, $company_id)
     {
@@ -140,6 +184,10 @@ class EmployeeService
         $contractDetails['employee_profile_id'] = $employeeProfile->id;
         $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
         $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+        $contractDetails['start_date'] = date('Y-m-d', strtotime($contractDetails['start_date']));
+        if (array_key_exists('end_date', $contractDetails) && $contractDetails['end_date'] != '') {
+            $contractDetails['end_date'] = date('Y-m-d', strtotime($contractDetails['end_date']));
+        }
         $employeeContract = EmployeeContract::create($contractDetails);
         if ($employeeType->employeeTypeCategory->id == 1) {
             $contractDetails['employee_contract_id'] = $employeeContract->id;
@@ -249,5 +297,10 @@ class EmployeeService
     public function updatePersonalDetails()
     {
         return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
+    }
+
+    public function checkEmployeeExistsInCompany($company_id, string $socialSecurityNumber)
+    {
+        return $this->employeeProfileRepository->checkEmployeeExistsInCompany($company_id, $socialSecurityNumber);
     }
 }

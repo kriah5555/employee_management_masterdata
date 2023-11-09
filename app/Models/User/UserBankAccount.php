@@ -53,8 +53,11 @@ class UserBankAccount extends BaseModel
         'account_number',
         'bank_card_file_id'
     ];
+    protected $apiValues = [
+        'account_number',
+    ];
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 }

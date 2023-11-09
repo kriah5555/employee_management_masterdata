@@ -54,4 +54,18 @@ class BaseModel extends Model
     {
         return parent::where('status', true)->get();
     }
+
+    protected $apiValues = [];
+
+    public function toApiReponseFormat()
+    {
+        $data = $this->toArray();
+        $values = [];
+        foreach ($this->apiValues as $key) {
+            if (array_key_exists($key, $data)) {
+                $values[$key] = $data[$key];
+            }
+        }
+        return $values;
+    }
 }
