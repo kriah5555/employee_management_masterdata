@@ -54,4 +54,9 @@ class Gender extends BaseModel
         'name',
         'status'
     ];
+
+    protected $apiValues = [
+        'id',
+        'name'
+    ];
 }

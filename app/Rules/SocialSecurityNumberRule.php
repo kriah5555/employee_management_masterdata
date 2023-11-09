@@ -4,15 +4,15 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Repositories\Employee\EmployeeProfileRepository;
+use App\Services\Employee\EmployeeService;
 
 class SocialSecurityNumberRule implements ValidationRule
 {
-    protected $employeeProfileRepository;
+    protected $employeeService;
 
-    public function __construct(EmployeeProfileRepository $employeeProfileRepository)
+    public function __construct()
     {
-        $this->employeeProfileRepository = $employeeProfileRepository;
+        $this->employeeService = app(EmployeeService::class);
     }
     /**
      * Run the validation rule.
@@ -22,7 +22,7 @@ class SocialSecurityNumberRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $companyId = getCompanyId();
-        if ($this->employeeProfileRepository->checkEmployeeExistsInCompany($companyId, $value)) {
+        if ($this->employeeService->checkEmployeeExistsInCompany($companyId, $value)) {
             $fail("Employee already present in company");
         }
     }

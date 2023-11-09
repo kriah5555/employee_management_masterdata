@@ -9,7 +9,6 @@ use App\Models\User\User;
 class UserAddress extends BaseModel
 {
     use UserAudit;
-    protected static $sort = ['first_name'];
     protected $columnsToLog = [
         'user_id',
         'street_house_no',
@@ -55,6 +54,16 @@ class UserAddress extends BaseModel
      */
     protected $fillable = [
         'user_id',
+        'street_house_no',
+        'postal_code',
+        'city',
+        'country',
+        'latitude',
+        'longitude'
+    ];
+
+
+    protected $apiValues = [
         'street_house_no',
         'postal_code',
         'city',

@@ -42,7 +42,7 @@ class CreateEmployeeRequest extends ApiRequest
                 'required',
                 'string',
                 new ValidateLengthIgnoringSymbols(11, 11, [',', '.', '-']),
-                // new SocialSecurityNumberRule(new EmployeeProfileRepository)
+                new SocialSecurityNumberRule()
             ],
             'place_of_birth'            => 'string|max:255',
             'license_expiry_date'       => 'nullable|date',

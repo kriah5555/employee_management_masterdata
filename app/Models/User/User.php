@@ -10,6 +10,7 @@ use Spatie\Permission\Traits\HasPermissions;
 use App\Models\User\UserBasicDetails;
 use App\Models\User\UserBankAccount;
 use App\Models\User\UserFamilyDetails;
+use App\Models\Employee\EmployeeProfile;
 
 class User extends Authenticatable
 {
@@ -75,9 +76,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserFamilyDetails::class);
     }
-    // public function employeeProfiles()
-    // {
-    //     return $this->hasMany(EmployeeProfile::class)
-    //         ->where('status', true);
-    // }
+    public function employeeProfiles()
+    {
+        return $this->hasMany(EmployeeProfile::class)
+            ->where('status', true);
+    }
 }

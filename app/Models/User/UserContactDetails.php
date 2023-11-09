@@ -55,4 +55,8 @@ class UserContactDetails extends BaseModel
         'email',
         'phone_number'
     ];
+    protected $apiValues = [
+        'email',
+        'phone_number'
+    ];
 }
