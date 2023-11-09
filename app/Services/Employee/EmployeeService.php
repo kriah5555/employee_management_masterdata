@@ -111,6 +111,7 @@ class EmployeeService
         $userBasicDetails = $employee->user->userBasicDetails->toApiReponseFormat();
         $userBasicDetails['social_security_number'] = $employee->user->social_security_number;
         $userBasicDetails['date_of_birth'] = date('d-m-Y', strtotime($userBasicDetails['date_of_birth']));
+        $userBasicDetails['license_expiry_date'] = $userBasicDetails['license_expiry_date'] != null ? date('d-m-Y', strtotime($userBasicDetails['license_expiry_date'])) : null;
         $userBasicDetails['gender'] = $employee->user->userBasicDetails->gender->toApiReponseFormat();
         $userBasicDetails['language'] = [
             'id'   => $userBasicDetails['language'],
