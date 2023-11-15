@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\Holiday\HolidayCodes;
+use App\Models\Holiday\HolidayCode;
 use Illuminate\Validation\Rule;
 
 class HolidayCountFieldRule implements ValidationRule

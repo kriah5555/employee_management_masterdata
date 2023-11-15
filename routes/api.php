@@ -75,8 +75,6 @@ Route::resources([
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
 
-Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
-
 Route::controller(TranslationController::class)->group(function () {
 
     Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
@@ -227,6 +225,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
 
         });
 
+        Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
         Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
         Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);

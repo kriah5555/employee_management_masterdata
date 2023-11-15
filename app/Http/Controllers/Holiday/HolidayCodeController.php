@@ -12,17 +12,8 @@ use App\Services\CompanyService;
 
 class HolidayCodeController extends Controller
 {
-    protected $holidayCodeService;
-
-    protected $employeeTypeService;
-
-    protected $companyService;
-
-    public function __construct(HolidayCodeService $holidayCodeService, EmployeeTypeService $employeeTypeService, CompanyService $companyService)
+    public function __construct(protected HolidayCodeService $holidayCodeService, protected EmployeeTypeService $employeeTypeService, protected CompanyService $companyService)
     {
-        $this->holidayCodeService = $holidayCodeService;
-        $this->employeeTypeService = $employeeTypeService;
-        $this->companyService = $companyService;
     }
     /**
      * Display a listing of the resource.

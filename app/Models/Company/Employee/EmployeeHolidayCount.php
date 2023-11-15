@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Holiday;
+namespace App\Models\Company\Employee;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,9 +12,10 @@ class EmployeeHolidayCount extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $connection = 'tenant';
+
     protected $casts = [
-        'count' => 'float',
-        // Cast the 'count' attribute to a float
+        'count' => 'float', // Cast the 'count' attribute to a float
     ];
 
 

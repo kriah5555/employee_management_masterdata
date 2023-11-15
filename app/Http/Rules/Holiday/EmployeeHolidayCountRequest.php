@@ -27,25 +27,17 @@ class EmployeeHolidayCountRequest extends ApiRequest
     public function rules()
     {
         return [
-            'company_id' => [
-                'bail',
-                'required',
-                'integer',
-                Rule::exists('companies', 'id'),
-            ],
-
             'employee_id' => [
                 'bail',
                 'required',
                 'integer',
-                Rule::exists('employee_profiles', 'id'),
-                new EmployeeLinkedToCompanyRule(request()->input('company_id')),
+                new EmployeeLinkedToCompanyRule(request()->header('Company-Id')),
             ],
             "holiday_code_counts" => [
                 'bail',
                 'array',
                 'nullable',
-                new EmployeeHolidayCountRule(request()->input('company_id')),
+                new EmployeeHolidayCountRule(request()->header('Company-Id')),
             ],
             
             // "holiday_code_counts.*.holiday_code_id" => [

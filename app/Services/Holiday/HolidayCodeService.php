@@ -9,13 +9,8 @@ use App\Repositories\Holiday\HolidayCodeRepository;
 
 class HolidayCodeService
 {
-    protected $holidayCodeRepository;
-
-    protected $companyService;
-
-    public function __construct(HolidayCodeRepository $holidayCodeRepository)
+    public function __construct(protected HolidayCodeRepository $holidayCodeRepository, public HolidayCode $model)
     {
-        $this->holidayCodeRepository = $holidayCodeRepository;
     }
 
     public function getHolidayCodes()

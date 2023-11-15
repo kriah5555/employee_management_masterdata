@@ -3,7 +3,7 @@
 namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\Holiday\EmployeeHolidayCount;
+use App\Models\Company\Employee\EmployeeHolidayCount;
 use App\Models\Holiday\EmployeeHolidayCountReasons;
 use App\Services\BaseService;
 use App\Services\Holiday\HolidayCodeService;
@@ -20,8 +20,8 @@ class EmployeeHolidayCountService extends BaseService
     public function __construct(EmployeeHolidayCount $employeeHolidayCount)
     {
         parent::__construct($employeeHolidayCount);
-        $this->holiday_code_service = app(HolidayCodeService::class);
-        $this->employeeProfileRepository = app(EmployeeProfileRepository::class);
+        $this->holiday_code_service        = app(HolidayCodeService::class);
+        $this->employeeProfileRepository   = app(EmployeeProfileRepository::class);
         $this->employeeHolidayCountReasons = app(EmployeeHolidayCountReasons::class);
     }
 
@@ -34,9 +34,10 @@ class EmployeeHolidayCountService extends BaseService
             ->get();
     }
 
-    public function getEmployeeHolidayCounts($employee_id, $company_id)
+    public function getEmployeeHolidayCounts($employee_id)
     {
         try {
+            $company_id          = request()->header('Company-Id');
             $companyHolidayCodes = $this->holiday_code_service->model::whereHas('companies', function ($query) use ($company_id) {
                 $query->where('company_id', $company_id);
             })
@@ -99,55 +100,53 @@ class EmployeeHolidayCountService extends BaseService
     public function create($data)
     {
         try {
-            DB::beginTransaction();
+            DB::connection('tenant')->beginTransaction();
+                $companyId         = $data['company_id'];
+                $employeeId        = $data['employee_id'];
+                $holidayCodeCounts = $data['holiday_code_counts'];
+                $existingCodes     = $this->getExistingHolidayCodes($companyId)->pluck('id')->toArray();
 
-            $companyId = $data['company_id'];
-            $employeeId = $data['employee_id'];
-            $holidayCodeCounts = $data['holiday_code_counts'];
-            $existingCodes = $this->getExistingHolidayCodes($companyId)->pluck('id')->toArray();
+                foreach ($holidayCodeCounts as $holidayCodeData) {
+                    $holidayCodeId  = $holidayCodeData['holiday_code_id'];
+                    $holidayCode    = $this->holiday_code_service->model::find($holidayCodeId);
+                    $count_type     = $holidayCode->count_type;
+                    $count          = $count_type == 2 ? $holidayCodeData['count'] * config('constants.DAY_HOURS') : $holidayCodeData['count'];
+                    $reason         = $holidayCodeData['reason'];
+                    $existingRecord = $this->model::where('employee_id', $employeeId)
+                        ->where('holiday_code_id', $holidayCodeId)
+                        ->first();
 
-            foreach ($holidayCodeCounts as $holidayCodeData) {
-                $holidayCodeId = $holidayCodeData['holiday_code_id'];
-                $holidayCode = $this->holiday_code_service->model::find($holidayCodeId);
-                $count_type = $holidayCode->count_type;
-                $count = $count_type == 2 ? $holidayCodeData['count'] * config('constants.DAY_HOURS') : $holidayCodeData['count'];
-                $reason = $holidayCodeData['reason'];
-
-                $existingRecord = $this->model::where('employee_id', $employeeId)
-                    ->where('holiday_code_id', $holidayCodeId)
-                    ->first();
-
-                if ($existingRecord) {
-                    if ($existingRecord->count != $count) {
+                    if ($existingRecord) {
+                        if ($existingRecord->count != $count) {
+                            $newRecord = $this->createNewRecord($employeeId, $holidayCodeId, $count, 1);
+                            $this->createReasonEntry($newRecord->id, $count, $reason, 1, $count_type);
+                        }
+                    } else {
                         $newRecord = $this->createNewRecord($employeeId, $holidayCodeId, $count, 1);
                         $this->createReasonEntry($newRecord->id, $count, $reason, 1, $count_type);
                     }
-                } else {
-                    $newRecord = $this->createNewRecord($employeeId, $holidayCodeId, $count, 1);
-                    $this->createReasonEntry($newRecord->id, $count, $reason, 1, $count_type);
+
+                    // Remove the processed code from the existing codes array
+                    $key = array_search($holidayCodeId, $existingCodes);
+                    if ($key !== false) {
+                        unset($existingCodes[$key]);
+                    }
                 }
 
-                // Remove the processed code from the existing codes array
-                $key = array_search($holidayCodeId, $existingCodes);
-                if ($key !== false) {
-                    unset($existingCodes[$key]);
+                // Set status to 0 for any remaining codes in existingCodes array
+                foreach ($existingCodes as $missingCodeId) {
+                    $existingRecord = $this->model::where('employee_id', $employeeId)
+                        ->where('holiday_code_id', $missingCodeId)
+                        ->first();
+
+                    if (!$existingRecord) {
+                        $this->createNewRecord($employeeId, $missingCodeId, 0, 1);
+                    }
                 }
-            }
 
-            // Set status to 0 for any remaining codes in existingCodes array
-            foreach ($existingCodes as $missingCodeId) {
-                $existingRecord = $this->model::where('employee_id', $employeeId)
-                    ->where('holiday_code_id', $missingCodeId)
-                    ->first();
-
-                if (!$existingRecord) {
-                    $this->createNewRecord($employeeId, $missingCodeId, 0, 1);
-                }
-            }
-
-            DB::commit();
+            DB::connection('tenant')->commit();
         } catch (Exception $e) {
-            DB::rollback();
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
