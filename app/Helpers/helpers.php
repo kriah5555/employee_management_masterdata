@@ -235,3 +235,34 @@ if (!function_exists('getCompanyId')) {
         return Request::header('Company-Id');
     }
 }
+
+if (!function_exists('makeTenantFolderPath')) {
+    function makeTenantFolderPath($tenantName)
+    {
+        $tenantPath = storage_path() . '/company/' . $tenantName;
+        if (!is_dir($tenantPath)) {
+            mkdir($tenantPath, 0777, true);
+        }
+        return $tenantPath;
+    }
+}
+
+if (!function_exists('makeTenantDatabaseName')) {
+    function makeTenantDatabaseName($companyName, $companyId)
+    {
+        return 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $companyName) . '_' . $companyId);
+    }
+}
+
+if (!function_exists('getTenantFolderPath')) {
+    function getTenantFolderPath($tenantName)
+    {
+        $tenantPath = storage_path() . '/company/' . $tenantName;
+        if (!is_dir($tenantPath)) {
+        mkdir($tenantPath, 0777, true);
+        }
+        return $tenantPath;
+    }
+}
+
+

@@ -19,6 +19,7 @@ return [
     'central_domains'      => [
         '127.0.0.1',
         'localhost',
+        env('APP_URL'),
     ],
 
     /**
@@ -197,7 +198,7 @@ return [
      * Parameters used by the tenants:seed command.
      */
     'seeder_parameters'    => [
-        '--class' => 'DatabaseSeeder',
+        '--class' => 'TenantDatabaseSeeder',
         // root seeder class
         // '--force' => true,
     ],

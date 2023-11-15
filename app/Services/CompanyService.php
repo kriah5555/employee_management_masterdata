@@ -47,6 +47,7 @@ class CompanyService
             DB::connection('master')->commit();
             $tenant = $this->createTenant($company);
             setTenantDB($tenant->id);
+
             DB::connection('tenant')->beginTransaction();
                 $location_ids = $this->createCompanyLocations($company, $values); # add company locations
                 $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
@@ -82,7 +83,7 @@ class CompanyService
     public function createTenant($company)
     {
         $database_name = 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $company->company_name) . '_' . $company->id);
-
+        makeTenantFolderPath($database_name);
         return Tenant::create([
             'tenancy_db_name' => $database_name,
             'database_name'   => $database_name,
