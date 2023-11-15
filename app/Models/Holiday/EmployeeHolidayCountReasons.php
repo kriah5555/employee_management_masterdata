@@ -5,7 +5,7 @@ namespace App\Models\Holiday;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Holiday\EmployeeHolidayCount;
+use App\Models\Company\Employee\EmployeeHolidayCount;
 
 class EmployeeHolidayCountReasons extends Model
 {

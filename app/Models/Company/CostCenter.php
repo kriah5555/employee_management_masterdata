@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\Location;
 use App\Traits\UserAudit;
 use App\Models\BaseModel;
-use App\Models\Employee\EmployeeProfile;
+use App\Models\Company\Employee\EmployeeProfile;
 
 class CostCenter extends BaseModel
 {

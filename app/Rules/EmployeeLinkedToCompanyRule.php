@@ -4,15 +4,14 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Employee\EmployeeProfile;
+use App\Models\Company\Employee\EmployeeProfile;
 
 class EmployeeLinkedToCompanyRule implements Rule
 {
     protected $company_id;
 
-    public function __construct($company_id)
+    public function __construct()
     {
-        $this->company_id = $company_id;
     }
 
     public function passes($attribute, $value)

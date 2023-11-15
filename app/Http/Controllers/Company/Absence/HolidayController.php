@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers\Company\Absence;
 
-use App\Services\Company\LocationService;
-use App\Http\Rules\LocationRequest;
-use App\Models\Company\Location;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use App\Services\Company\Absence\HolidayService;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
-class LocationController extends Controller
+class HolidayController extends Controller
 {
-    public function __construct(protected LocationService $locationService)
+    public function __construct(protected HolidayService $holidayService)
     {
     }
-
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->locationService->getLocations(),
+                    'data'    => $this->holidayService->getHolidays(request()->input('status')),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -35,13 +36,19 @@ class LocationController extends Controller
         }
     }
 
-    public function locationWorkstations($location_id)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
         try {
-            return response()->json([
-                'success' => true,
-                'data'    => $this->locationService->getLocationWorkstations($location_id),
-            ]);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->holidayService->getOptionsToCreate()
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
         } catch (Exception $e) {
             return returnResponse(
                 [
@@ -56,14 +63,14 @@ class LocationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(LocationRequest $request)
+    public function store(Request $request)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Location created successfully'),
-                    'data'    => $this->locationService->create($request->validated())
+                    'message' => t('Holiday created successfully'),
+                    'data'    => $this->holidayService->createHoliday($request->all())
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -81,31 +88,16 @@ class LocationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $locationId)
+    public function show($holidayId)
     {
         try {
-            return response()->json([
-                'success' => true,
-                'data'    => $this->locationService->getLocationById($locationId),
-            ]);
-        } catch (Exception $e) {
             return returnResponse(
                 [
-                    'success' => false,
-                    'message' => $e->getMessage(),
+                    'success' => true,
+                    'data'    => $this->holidayService->getHolidayById($holidayId)
                 ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+                JsonResponse::HTTP_CREATED,
             );
-        }
-    }
-
-    public function create()
-    {
-        try {
-            return response()->json([
-                'success' => true,
-                'data'    => $this->locationService->getOptionsToCreate(),
-            ]);
         } catch (Exception $e) {
             return returnResponse(
                 [
@@ -120,16 +112,16 @@ class LocationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(LocationRequest $request, $id)
+    public function update(Request $request, $holidayId)
     {
         try {
+            $this->holidayService->updateHoliday($holidayId, $request->all());
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Location updated successfully'),
-                    'data'    => $this->locationService->update($id, $request->validated()),
                 ],
-                JsonResponse::HTTP_OK,
+                JsonResponse::HTTP_CREATED,
             );
         } catch (Exception $e) {
             return returnResponse(
@@ -142,9 +134,12 @@ class LocationController extends Controller
         }
     }
 
-    public function destroy(string $locationId)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($holidayId)
     {
-        $this->locationService->deleteLocation($locationId);
+        $this->holidayService->deleteHoliday($holidayId);
         return response()->json([
             'success' => true,
             'message' => t('Location deleted successfully')

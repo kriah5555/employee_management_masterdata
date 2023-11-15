@@ -2,7 +2,7 @@
 
 namespace App\Interfaces\Employee;
 
-use App\Models\Employee\EmployeeCommute;
+use App\Models\Company\Employee\EmployeeCommute;
 
 interface EmployeeCommuteRepositoryInterface
 {

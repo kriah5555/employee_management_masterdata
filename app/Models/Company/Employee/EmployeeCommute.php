@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeSocialSecretaryDetails extends BaseModel
+class EmployeeCommute extends BaseModel
 {
     use UserAudit;
 
@@ -13,15 +13,17 @@ class EmployeeSocialSecretaryDetails extends BaseModel
 
     protected $columnsToLog = [
         'employee_profile_id',
-        'social_secretary_number',
-        'contract_number',
+        'commute_type_id',
+        'location_id',
+        'distance',
+        'status',
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_social_secretary_details';
+    protected $table = 'employee_commute';
 
     /**
      * The primary key associated with the table.
@@ -51,7 +53,9 @@ class EmployeeSocialSecretaryDetails extends BaseModel
      */
     protected $fillable = [
         'employee_profile_id',
-        'social_secretary_number',
-        'contract_number',
+        'commute_type_id',
+        'location_id',
+        'distance',
+        'status',
     ];
 }

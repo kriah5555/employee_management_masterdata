@@ -9,13 +9,8 @@ use App\Repositories\Holiday\HolidayCodeRepository;
 
 class HolidayCodeService
 {
-    protected $holidayCodeRepository;
-
-    protected $companyService;
-
-    public function __construct(HolidayCodeRepository $holidayCodeRepository)
+    public function __construct(protected HolidayCodeRepository $holidayCodeRepository, public HolidayCode $model)
     {
-        $this->holidayCodeRepository = $holidayCodeRepository;
     }
 
     public function getHolidayCodes()
@@ -59,10 +54,12 @@ class HolidayCodeService
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_TYPE_OPTIONS');
     }
+    
     public function getHolidayCodeCountTypeOptions()
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_COUNT_TYPE_OPTIONS');
     }
+
     public function getHolidayCodeIconTypeOptions()
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_ICON_TYPE_OPTIONS');

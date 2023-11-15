@@ -33,7 +33,11 @@ class EmployeeHolidayCountController extends Controller
      */
     public function store(EmployeeHolidayCountRequest $request)
     {
-        $this->employeeHolidayCountService->create($request->validated());
+        $validatedData = $request->validated();
+
+        $validatedData['company_id'] = request()->header('Company-Id');
+
+        $this->employeeHolidayCountService->create($validatedData);
         return returnResponse(
             [
                 'success' => true,

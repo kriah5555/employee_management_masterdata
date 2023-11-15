@@ -3,7 +3,7 @@
 namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\LongTermEmployeeContractRepositoryInterface;
-use App\Models\Employee\LongTermEmployeeContract;
+use App\Models\Company\Employee\LongTermEmployeeContract;
 
 class LongTermEmployeeContractRepository implements LongTermEmployeeContractRepositoryInterface
 {

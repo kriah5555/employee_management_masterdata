@@ -27,7 +27,7 @@ class PublicHolidayRequest extends ApiRequest
             'date' => [
                 'bail',
                 'required',
-                'date_format:d-m-Y',
+                'date_format:'.config('constants.DEFAULT_DATE_FORMAT'),
                 Rule::unique('public_holidays', 'date')->ignore($this->route('public_holiday')), # check if the date is unique or not
             ],
 

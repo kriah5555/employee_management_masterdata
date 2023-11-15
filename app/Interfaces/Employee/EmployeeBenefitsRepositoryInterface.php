@@ -2,7 +2,7 @@
 
 namespace App\Interfaces\Employee;
 
-use App\Models\Employee\EmployeeBenefits;
+use App\Models\Company\Employee\EmployeeBenefits;
 
 interface EmployeeBenefitsRepositoryInterface
 {

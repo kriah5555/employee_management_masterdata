@@ -3,7 +3,7 @@
 namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\EmployeeSocialSecretaryDetailsRepositoryInterface;
-use App\Models\Employee\EmployeeSocialSecretaryDetails;
+use App\Models\Company\Employee\EmployeeSocialSecretaryDetails;
 
 class EmployeeSocialSecretaryDetailsRepository implements EmployeeSocialSecretaryDetailsRepositoryInterface
 {

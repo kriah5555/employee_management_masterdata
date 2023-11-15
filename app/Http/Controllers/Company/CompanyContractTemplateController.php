@@ -65,7 +65,7 @@ class CompanyContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->get($id, ['company', 'employeeType', 'company', 'socialSecretary'])
+                'data'    => $this->contractTemplateService->get($id, ['employeeType'])
             ],
             JsonResponse::HTTP_OK,
         );

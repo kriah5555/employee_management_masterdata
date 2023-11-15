@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Interfaces\CommuteTypeRepositoryInterface;
-use App\Models\Employee\CommuteType;
+use App\Models\Company\Employee\CommuteType;
 
 class CommuteTypeRepository implements CommuteTypeRepositoryInterface
 {

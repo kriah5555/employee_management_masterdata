@@ -27,7 +27,7 @@ use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
 use App\Http\Controllers\Company\CompanyContractTemplateController;
-
+use App\Http\Controllers\Company\Absence\HolidayController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -74,8 +74,6 @@ Route::resources([
 ]);
 
 Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
-
-Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
 Route::controller(TranslationController::class)->group(function () {
 
@@ -195,6 +193,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
 
     Route::group(['middleware' => 'initialize-tenancy'], function () use ($statusRule, $integerRule) {
 
+        Route::resource('holidays', HolidayController::class)->except(['edit']);
+
         Route::controller(LocationController::class)->group(function () use ($statusRule, $integerRule) {
 
             Route::get('location-workstations/{location_id}', 'locationWorkstations')->where(['location_id' => $integerRule]);
@@ -225,6 +225,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
 
         });
 
+        Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
         Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
         Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
