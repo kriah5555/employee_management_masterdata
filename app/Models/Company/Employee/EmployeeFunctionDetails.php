@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class LongTermEmployeeContract extends BaseModel
+class EmployeeFunctionDetails extends BaseModel
 {
     use UserAudit;
 
@@ -13,19 +13,15 @@ class LongTermEmployeeContract extends BaseModel
 
     protected $columnsToLog = [
         'employee_contract_id',
-        'sub_type',
-        'schedule_type',
-        'employment_type',
-        'weekly_contract_hours',
-        'work_days_per_week',
-        'status'
+        'function_id',
+        'salary_id'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'long_term_employee_contract';
+    protected $table = 'employee_function_details';
 
     /**
      * The primary key associated with the table.
@@ -45,7 +41,7 @@ class LongTermEmployeeContract extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at',
+        'deleted_at'
     ];
 
     /**
@@ -55,11 +51,7 @@ class LongTermEmployeeContract extends BaseModel
      */
     protected $fillable = [
         'employee_contract_id',
-        'sub_type',
-        'schedule_type',
-        'employment_type',
-        'weekly_contract_hours',
-        'work_days_per_week',
-        'status'
+        'function_id',
+        'salary_id'
     ];
 }

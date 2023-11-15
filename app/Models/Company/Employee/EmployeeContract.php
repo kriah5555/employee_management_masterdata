@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
+use App\Models\EmployeeType\EmployeeType;
 use App\Traits\UserAudit;
 
-class EmployeeCommute extends BaseModel
+class EmployeeContract extends BaseModel
 {
     use UserAudit;
 
@@ -13,17 +14,16 @@ class EmployeeCommute extends BaseModel
 
     protected $columnsToLog = [
         'employee_profile_id',
-        'commute_type_id',
-        'location_id',
-        'distance',
-        'status',
+        'employee_type_id',
+        'start_date',
+        'end_date'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_commute';
+    protected $table = 'employee_contract';
 
     /**
      * The primary key associated with the table.
@@ -43,7 +43,9 @@ class EmployeeCommute extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'start_date',
+        'end_date'
     ];
 
     /**
@@ -53,9 +55,14 @@ class EmployeeCommute extends BaseModel
      */
     protected $fillable = [
         'employee_profile_id',
-        'commute_type_id',
-        'location_id',
-        'distance',
-        'status',
+        'employee_type_id',
+        'start_date',
+        'end_date'
     ];
+
+
+    public function employeeType()
+    {
+        return $this->belongsTo(EmployeeType::class);
+    }
 }

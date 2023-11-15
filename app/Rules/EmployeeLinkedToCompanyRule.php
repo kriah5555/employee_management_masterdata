@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\Employee\EmployeeProfile;
+use App\Models\Company\Employee\EmployeeProfile;
 
 class EmployeeLinkedToCompanyRule implements Rule
 {

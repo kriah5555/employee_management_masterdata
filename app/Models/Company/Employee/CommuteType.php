@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class EmployeeFunctionDetails extends BaseModel
+class CommuteType extends BaseModel
 {
     use UserAudit;
 
-    protected $connection = 'tenant';
+    protected $connection = 'master';
 
+    protected static $sort = ['sort_order', 'name'];
     protected $columnsToLog = [
-        'employee_contract_id',
-        'function_id',
-        'salary_id'
+        'sort_order',
+        'name',
+        'status'
     ];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_function_details';
+    protected $table = 'commute_types';
 
     /**
      * The primary key associated with the table.
@@ -50,8 +51,8 @@ class EmployeeFunctionDetails extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'employee_contract_id',
-        'function_id',
-        'salary_id'
+        'sort_order',
+        'name',
+        'status'
     ];
 }

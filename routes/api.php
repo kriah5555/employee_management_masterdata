@@ -27,7 +27,7 @@ use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
 use App\Http\Controllers\Company\CompanyContractTemplateController;
-
+use App\Http\Controllers\Company\Absence\HolidayController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -194,6 +194,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
     Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
 
     Route::group(['middleware' => 'initialize-tenancy'], function () use ($statusRule, $integerRule) {
+
+        Route::resource('holidays', HolidayController::class)->except(['edit']);
 
         Route::controller(LocationController::class)->group(function () use ($statusRule, $integerRule) {
 

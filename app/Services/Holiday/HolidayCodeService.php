@@ -59,10 +59,12 @@ class HolidayCodeService
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_TYPE_OPTIONS');
     }
+    
     public function getHolidayCodeCountTypeOptions()
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_COUNT_TYPE_OPTIONS');
     }
+
     public function getHolidayCodeIconTypeOptions()
     {
         return getValueLabelOptionsFromConfig('constants.HOLIDAY_ICON_TYPE_OPTIONS');

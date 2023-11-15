@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\User\User;
-use App\Models\Employee\EmployeeContract;
-
+use App\Models\Company\Employee\EmployeeContract;
+use App\Models\Company\Absence\Absence;
 class EmployeeProfile extends BaseModel
 {
     use UserAudit;
@@ -69,5 +69,10 @@ class EmployeeProfile extends BaseModel
     public function employeeSocialSecretaryDetails()
     {
         return $this->hasOne(EmployeeSocialSecretaryDetails::class);
+    }
+
+    public function absences()
+    {
+        return $this->hasMany(Absence::class);
     }
 }

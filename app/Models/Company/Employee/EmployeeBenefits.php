@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
@@ -11,6 +11,8 @@ class EmployeeBenefits extends BaseModel
 
     protected $connection = 'tenant';
 
+    protected $table = 'employee_benefits';
+
     protected $columnsToLog = [
         'employee_profile_id',
         'fuel_card',
@@ -19,12 +21,6 @@ class EmployeeBenefits extends BaseModel
         'clothing_size',
         'status',
     ];
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'employee_benefits';
 
     /**
      * The primary key associated with the table.

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
 use App\Models\Company\CostCenter;
 use App\Services\WorkstationService;
-use App\Models\Employee\EmployeeProfile;
+use App\Models\Company\Employee\EmployeeProfile;
 class CostCenterService extends BaseService
 {
     protected $workstationService;

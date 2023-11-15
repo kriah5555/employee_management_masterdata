@@ -1,20 +1,23 @@
 <?php
 
-namespace App\Models\Employee;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class CommuteType extends BaseModel
+class LongTermEmployeeContract extends BaseModel
 {
     use UserAudit;
 
-    protected $connection = 'master';
+    protected $connection = 'tenant';
 
-    protected static $sort = ['sort_order', 'name'];
     protected $columnsToLog = [
-        'sort_order',
-        'name',
+        'employee_contract_id',
+        'sub_type',
+        'schedule_type',
+        'employment_type',
+        'weekly_contract_hours',
+        'work_days_per_week',
         'status'
     ];
     /**
@@ -22,7 +25,7 @@ class CommuteType extends BaseModel
      *
      * @var string
      */
-    protected $table = 'commute_types';
+    protected $table = 'long_term_employee_contract';
 
     /**
      * The primary key associated with the table.
@@ -42,7 +45,7 @@ class CommuteType extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -51,8 +54,12 @@ class CommuteType extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'sort_order',
-        'name',
+        'employee_contract_id',
+        'sub_type',
+        'schedule_type',
+        'employment_type',
+        'weekly_contract_hours',
+        'work_days_per_week',
         'status'
     ];
 }

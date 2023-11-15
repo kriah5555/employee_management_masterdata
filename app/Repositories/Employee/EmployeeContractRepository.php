@@ -3,7 +3,7 @@
 namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\EmployeeContractRepositoryInterface;
-use App\Models\Employee\EmployeeContract;
+use App\Models\Company\Employee\EmployeeContract;
 
 class EmployeeContractRepository implements EmployeeContractRepositoryInterface
 {

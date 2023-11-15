@@ -4,7 +4,7 @@ namespace App\Interfaces\Employee;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Models\Employee\EmployeeProfile;
+use App\Models\Company\Employee\EmployeeProfile;
 
 interface EmployeeProfileRepositoryInterface
 {

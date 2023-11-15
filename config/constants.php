@@ -94,4 +94,25 @@ return [
         '{company_name}'  => "Company name",
     ],
 
+    // Holiday Leave
+
+    'HOLIDAY'          => 1,
+    'LEAVE'            => 2,
+    'PENDING_STATUS'   => 1,
+    'APPROVED_STATUS'  => 2,
+    'REJECTED_STATUS'  => 3,
+    'CANCELLED_STATUS' => 4,
+    'ABSENCE_STATUS'   => [
+        1 => 'Pending',
+        2 => 'Approved',
+        3 => 'Rejected',
+        4 => 'Cancelled',
+    ],
+
+    'ABSENCE_DURATION_TYPE'   => [
+        1 => 'First half',
+        2 => 'Second half',
+        3 => 'Full day',
+        4 => 'Multiple codes or combination',
+    ],
 ];
