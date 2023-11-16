@@ -7,7 +7,6 @@ use App\Traits\UserAudit;
 use App\Models\Company\CompanyAddress;
 use App\Models\Company\Company;
 use App\Models\Company\Workstation;
-
 class Location extends BaseModel
 {
     use UserAudit;

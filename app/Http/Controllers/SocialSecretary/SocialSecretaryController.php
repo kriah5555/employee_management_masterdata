@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SocialSecretary;
 
-use App\Http\Rules\Holiday\HolidayCodesOfSocialSecretaryRequest;
-use App\Http\Rules\SocialSecretary\SocialSecretaryRequest;
+use App\Http\Requests\Holiday\HolidayCodesOfSocialSecretaryRequest;
+use App\Http\Requests\SocialSecretary\SocialSecretaryRequest;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Models\SocialSecretary\SocialSecretary;
 use App\Http\Controllers\Controller;

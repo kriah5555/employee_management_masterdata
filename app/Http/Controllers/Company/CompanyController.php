@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Models\Company\Company;
-use App\Http\Rules\CompanyRequest;
+use App\Http\Requests\Company\CompanyRequest;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;

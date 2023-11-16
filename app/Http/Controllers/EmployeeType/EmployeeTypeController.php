@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\EmployeeType;
 
 use App\Models\EmployeeType\EmployeeType;
-use App\Http\Rules\EmployeeType\EmployeeTypeRequest;
+use App\Http\Requests\EmployeeType\EmployeeTypeRequest;
 use App\Services\EmployeeType\EmployeeTypeService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;

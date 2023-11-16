@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Holiday;
 use App\Models\Holiday\HolidayCode;
 use App\Services\Holiday\HolidayCodeService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\Holiday\HolidayCodeRequest;
+use App\Http\Requests\Holiday\HolidayCodeRequest;
 use App\Http\Controllers\Controller;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\CompanyService;

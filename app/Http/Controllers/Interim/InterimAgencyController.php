@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Interim;
 use App\Models\Interim\InterimAgency;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\Interim\InterimAgencyRequest;
+use App\Http\Requests\Interim\InterimAgencyRequest;
 use App\Services\Interim\InterimAgencyService;
 use App\Http\Controllers\Controller;
 

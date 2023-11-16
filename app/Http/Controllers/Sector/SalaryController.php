@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Sector;
 
 use App\Services\Sector\SectorSalaryService;
 use App\Services\Sector\SectorService;
-use App\Http\Rules\UpdateMinimumSalariesRequest;
+use App\Http\Requests\UpdateMinimumSalariesRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Models\Company\CostCenter;
 use App\Services\CostCenterService;
-use App\Http\Rules\CostCenterRequest;
+use App\Http\Requests\Company\CostCenterRequest;
 use Illuminate\Http\JsonResponse;
 
 class CostCenterController extends Controller

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Holiday;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\Holiday\PublicHolidayRequest;
+use App\Http\Requests\Holiday\PublicHolidayRequest;
 use App\Services\Holiday\PublicHolidayService;
 use App\Models\Holiday\PublicHoliday;
 

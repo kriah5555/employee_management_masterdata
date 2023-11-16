@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Sector;
 
 use App\Models\Sector\Sector;
-use App\Http\Rules\Sector\SectorRequest;
+use App\Http\Requests\Sector\SectorRequest;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\Sector\SectorService;
 use App\Http\Controllers\Controller;

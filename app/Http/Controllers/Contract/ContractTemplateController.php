@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Contract;
 use App\Models\Contract\ContractTemplate;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Rules\Contract\ContractTemplateRequest;
+use App\Http\Requests\Contract\ContractTemplateRequest;
 use App\Services\Contract\ContractTemplateService;
 use Illuminate\Http\Request;
 

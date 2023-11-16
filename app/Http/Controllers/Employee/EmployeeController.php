@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Http\Rules\Employee\UpdateEmployeePersonalDetailsRequest;
+use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
 use App\Models\EmployeeType\EmployeeType;
-use App\Http\Rules\Employee\CreateEmployeeRequest;
+use App\Http\Requests\Employee\CreateEmployeeRequest;
 use App\Repositories\CommuteTypeRepository;
 use App\Repositories\MealVoucherRepository;
 use Illuminate\Http\JsonResponse;

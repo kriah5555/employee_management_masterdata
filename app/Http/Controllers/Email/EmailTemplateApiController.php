@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Email;
 use App\Models\Email\EmailTemplate;
 use Illuminate\Http\JsonResponse;
 use App\Services\Email\EmailTemplateService;
-use App\Http\Rules\Email\EmailTemplateRequest;
+use App\Http\Requests\Email\EmailTemplateRequest;
 use App\Http\Controllers\Controller;
 
 class EmailTemplateApiController extends Controller

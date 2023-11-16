@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\EmployeeFunction;
 
 use App\Models\EmployeeFunction\FunctionCategory;
-use App\Http\Rules\FunctionCategoryRequest;
+use App\Http\Requests\FunctionCategoryRequest;
 use Illuminate\Http\JsonResponse;
 use App\Services\EmployeeFunction\FunctionService;
 use App\Http\Controllers\Controller;

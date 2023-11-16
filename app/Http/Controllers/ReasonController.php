@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reason;
 use App\Services\ReasonService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\ReasonRequest;
+use App\Http\Requests\ReasonRequest;
 
 class ReasonController extends Controller
 {

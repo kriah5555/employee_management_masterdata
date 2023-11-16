@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Employee;
 use App\Http\Controllers\Controller;
 use App\Services\Employee\CommuteTypeService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\Employee\CommuteTypeRequest;
+use App\Http\Requests\Employee\CommuteTypeRequest;
 use App\Models\CommuteType;
 
 

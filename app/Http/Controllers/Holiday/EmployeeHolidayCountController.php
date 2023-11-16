@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Holiday;
 use App\Services\Holiday\EmployeeHolidayCountService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\Holiday\EmployeeHolidayCountRequest;
+use App\Http\Requests\Holiday\EmployeeHolidayCountRequest;
 
 class EmployeeHolidayCountController extends Controller
 {

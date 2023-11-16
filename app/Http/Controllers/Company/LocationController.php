@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Company\Absence;
+namespace App\Http\Controllers\Company;
 
 use App\Services\Company\LocationService;
-use App\Http\Rules\LocationRequest;
+use App\Http\Requests\Company\LocationRequest;
 use App\Models\Company\Location;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;

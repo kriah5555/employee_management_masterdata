@@ -26,8 +26,9 @@ use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
-use App\Http\Controllers\Company\CompanyContractTemplateController;
+use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 use App\Http\Controllers\Company\Absence\HolidayController;
+use App\Http\Controllers\Company\Contract\ContractConfigurationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -226,6 +227,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         });
 
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
+
+        Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
         Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
         Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);

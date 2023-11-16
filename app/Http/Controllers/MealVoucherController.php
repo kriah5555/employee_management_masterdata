@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Services\MealVoucherService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\MealVoucherRequest;
+use App\Http\Requests\MealVoucherRequest;
 use App\Models\MealVoucher;
 
 

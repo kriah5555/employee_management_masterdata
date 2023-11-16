@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Contract;
 use App\Services\Contract\ContractTypeService;
 use App\Services\Contract\ContractRenewalTypeService;
 use App\Models\Contract\ContractType;
-use App\Http\Rules\Contract\ContractTypeRequest;
+use App\Http\Requests\Contract\ContractTypeRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Rule\Rule;
 use App\Services\Rule\RuleService;
 use Illuminate\Http\JsonResponse;
-use App\Http\Rules\Rule\RuleRequest;
+use App\Http\Requests\Rule\RuleRequest;
 
 class RuleController extends Controller
 {
