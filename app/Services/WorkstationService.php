@@ -139,16 +139,10 @@ class WorkstationService
     {
         $function_titles = $this->functionService->getCompanyFunctionTitlesOptions($company_id);
         $locations       = $this->locationService->getActiveLocations();
-        // $modifiedLocations = $locations->map(function ($location) {
-        //     return [
-        //         'value' => $location->id,
-        //         'label' => $location->location_name,
-        //     ];
-        // });
 
         return [
             'locations'       => $locations,
-            'function_titles' => $function_titles,
+            'function_titles' => $this->functionService->getCompanyFunctionTitles($company_id),
         ];
     }
 

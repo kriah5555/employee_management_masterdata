@@ -17,12 +17,12 @@ class CostCenterController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($company_id, $status = '')
+    public function index()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getAll(['with' => ['workstationsValue', 'location']]),
+                'data'    => $this->costCenterService->getAll(['with' => ['workstations', 'location']]),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -31,12 +31,12 @@ class CostCenterController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create($company_id)
+    public function create()
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getOptionsToCreate($company_id),
+                'data'    => $this->costCenterService->getOptionsToCreate(request()->header('Company-Id')),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -61,37 +61,23 @@ class CostCenterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CostCenter $costCenter)
+    public function show($id)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $costCenter
+                'data'    => $this->costCenterService->get($id, ['location', 'workstations'] ),
             ],
             JsonResponse::HTTP_CREATED,
         );
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($costCenter_id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->costCenterService->getOptionsToEdit($costCenter_id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(CostCenterRequest $request, CostCenter $costCenter)
+    public function update(CostCenterRequest $request, $id)
     {
-        $this->costCenterService->update($costCenter, $request->validated());
+        $this->costCenterService->update($id, $request->validated());
         return returnResponse(
             [
                 'success' => true,
@@ -104,9 +90,9 @@ class CostCenterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CostCenter $costCenter)
+    public function destroy($id)
     {
-        $costCenter->delete();
+        $this->costCenterService->deleteCostCenter($id);
         return returnResponse(
             [
                 'success' => true,

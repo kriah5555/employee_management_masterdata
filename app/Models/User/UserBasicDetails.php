@@ -9,7 +9,9 @@ use App\Models\User\User;
 class UserBasicDetails extends BaseModel
 {
     use UserAudit;
+    
     protected static $sort = ['first_name'];
+
     protected $columnsToLog = [
         'user_id',
         'first_name',
@@ -28,6 +30,7 @@ class UserBasicDetails extends BaseModel
      * @var string
      */
     protected $connection = 'userdb';
+
     protected $table = 'user_basic_details';
 
     /**

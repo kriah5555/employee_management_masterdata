@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Company\Contract\ContractConfigurationService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Company\Contract\ContractConfigurationRequest;
 
 class ContractConfigurationController extends Controller
 {
@@ -49,10 +50,10 @@ class ContractConfigurationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ContractConfigurationRequest $request)
     {
         try {
-            $this->contractConfigurationService->updateContractConfigurations($request->all());
+            $this->contractConfigurationService->updateContractConfigurations($request->validated());
             return returnResponse(
                 [
                     'success' => true,

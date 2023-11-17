@@ -8,6 +8,7 @@ use App\Models\BaseModel;
 use App\Models\EmployeeType\EmployeeTypeConfig;
 use App\Models\EmployeeType\EmployeeTypeDimonaConfig;
 use App\Traits\UserAudit;
+use App\Models\Sector\Sector;
 
 class EmployeeType extends BaseModel
 {
@@ -83,5 +84,10 @@ class EmployeeType extends BaseModel
     public function dimonaConfig()
     {
         return $this->hasOne(EmployeeTypeDimonaConfig::class);
+    }
+
+    public function sectors()
+    {
+        return $this->belongsToMany(Sector::class, 'sector_to_employee_types');
     }
 }

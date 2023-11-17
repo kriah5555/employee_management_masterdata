@@ -13,6 +13,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use App\Models\Sector\SectorSalarySteps;
 use App\Models\BaseModel;
+use App\Models\Company\Company;
 
 class Sector extends BaseModel
 {
@@ -90,11 +91,6 @@ class Sector extends BaseModel
         return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types');
     }
 
-    public function employeeTypesValue()
-    {
-        return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types')->select(['employee_type_id as value', 'name as label']);
-    }
-
     public function salaryConfig()
     {
         return $this->hasOne(SectorSalaryConfig::class);
@@ -124,5 +120,10 @@ class Sector extends BaseModel
     public function functionCategories()
     {
         return $this->hasMany(FunctionCategory::class)->where('status', true);
+    }
+
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'sector_to_company');
     }
 }

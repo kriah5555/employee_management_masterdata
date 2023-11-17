@@ -27,12 +27,6 @@ class CostCenterRequest extends ApiRequest
                 'max:255',
                 'regex:/^[a-zA-Z0-9 ]+$/',
             ],
-            'company_id' => [
-                'bail',
-                'required',
-                'integer',
-                Rule::exists('companies', 'id'),
-            ],
             'cost_center_number' => [
                 'required',
                 'string',
@@ -64,33 +58,24 @@ class CostCenterRequest extends ApiRequest
                 new EmployeeLinkedToCompanyRule(request()->header('Company-Id')),
             ],
         ];
-
-        if ($this->isMethod('put') || $this->isMethod('patch')) {
-            $rules['cost_center_id'] = [
-                'bail',
-                'integer',
-                'required',
-                Rule::exists('cost_centers', 'id'),
-            ];
-        }
         return $rules;
     }
 
-    public function prepareForValidation()
-    {
-        // Check if the request method is "PUT" or "PATCH" (update request)
-        if ($this->isMethod('put') || $this->isMethod('patch')) {
-            // Access the cost_center_id from the request data
-            if ($this->input('cost_center_id')) {
-                $costCenterId = $this->input('cost_center_id');
-                // Retrieve the associated CostCenter model
-                $costCenter = CostCenter::findOrFail($costCenterId);
+    // public function prepareForValidation()
+    // {
+    //     // Check if the request method is "PUT" or "PATCH" (update request)
+    //     if ($this->isMethod('put') || $this->isMethod('patch')) {
+    //         // Access the cost_center_id from the request data
+    //         if ($this->input('cost_center_id')) {
+    //             $costCenterId = $this->input('cost_center_id');
+    //             // Retrieve the associated CostCenter model
+    //             $costCenter = CostCenter::findOrFail($costCenterId);
 
-                // Set the company_id in the request data based on the cost_center's company_id
-                $this->merge(['company_id' => $costCenter->location->company]);
-            }
-        }
-    }
+    //             // Set the company_id in the request data based on the cost_center's company_id
+    //             $this->merge(['company_id' => $costCenter->location->company]);
+    //         }
+    //     }
+    // }
 
     public function messages()
     {

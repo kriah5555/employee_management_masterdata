@@ -39,6 +39,16 @@ class EmployeeService
     /**
      * Function to get all the employee types
      */
+
+    public function getAllEmployees()
+    {
+        try {
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
     public function index()
     {
         $response = [];

@@ -90,11 +90,6 @@ class HolidayCode extends Model
         return $this->belongsToMany(EmployeeType::class, 'employee_type_holiday_codes', 'holiday_code_id', 'employee_type_id');
     }
 
-    public function employeeTypesValue()
-    {
-        return $this->belongsToMany(EmployeeType::class, 'employee_type_holiday_codes', 'holiday_code_id', 'employee_type_id')->select(['employee_type_id as value', 'name as label']);
-    }
-
     # link the holiday codes with company
     public function linkCompanies($link, $company_ids)
     {

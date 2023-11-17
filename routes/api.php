@@ -229,7 +229,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
 
         Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
 
-            Route::resource('cost-center', CostCenterController::class)->where(['status' => $statusRule, 'company_id' => $integerRule]);
+            Route::resource('cost-centers', CostCenterController::class)->except(['edit']);
         
             // Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
         
