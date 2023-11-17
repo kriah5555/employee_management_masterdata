@@ -20,6 +20,7 @@ class EmployeeTypeRequest extends ApiRequest
             'name'                      => 'required|string|max:255',
             'description'               => 'nullable|string',
             'status'                    => 'required|boolean',
+            'dimona_code'               => '',
             'employee_type_category_id' => [
                 'required',
                 'integer',

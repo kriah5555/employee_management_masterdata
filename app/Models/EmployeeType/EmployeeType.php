@@ -62,6 +62,7 @@ class EmployeeType extends BaseModel
         'status',
         'created_by',
         'updated_by',
+        'dimona_code',
     ];
 
     public function employeeTypeCategory()

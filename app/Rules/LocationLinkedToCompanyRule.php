@@ -9,9 +9,8 @@ class LocationLinkedToCompanyRule implements Rule
 {
     protected $company_id;
 
-    public function __construct($company_id)
+    public function __construct()
     {
-        $this->company_id = $company_id;
     }
 
     public function passes($attribute, $value)

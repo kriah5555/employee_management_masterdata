@@ -96,15 +96,6 @@ Route::controller(ContractTemplateController::class)->group(function () use ($in
 
 });
 
-Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
-
-    Route::resource('cost-center', CostCenterController::class)->where(['status' => $statusRule, 'company_id' => $integerRule])->except(['index', 'create']);
-
-    Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
-
-    Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
-});
-
 
 Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $statusRule) {
     $resources = [
@@ -235,6 +226,15 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
         Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
         Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+
+        Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
+
+            Route::resource('cost-center', CostCenterController::class)->where(['status' => $statusRule, 'company_id' => $integerRule]);
+        
+            // Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
+        
+            // Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
+        });
     });
 
     // Route::controller(EmployeeController::class)->group(function () {

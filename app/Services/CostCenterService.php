@@ -24,11 +24,6 @@ class CostCenterService extends BaseService
     {
         return $this->model
             ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
-            ->when(isset($args['company_id']), function ($q) use ($args) {
-                $q->whereHas('location', function ($locationSubQuery) use ($args) {
-                    $locationSubQuery->where('company', $args['company_id']);
-                });
-            })
             ->when(isset($args['with']), fn($q) => $q->with($args['with']))
             ->get();
     }
@@ -37,17 +32,17 @@ class CostCenterService extends BaseService
     public function create($values)
     {
         try {
-            DB::beginTransaction();
+            DB::connection('tenant')->beginTransaction();
                 unset($values['company_id']);
                 $costCenter   = $this->model->create($values);
                 $workstations = $values['workstations'] ?? [];
                 $employees    = $values['employees'] ?? [];
                 $costCenter->workstations()->sync($workstations);
                 $costCenter->employees()->sync($employees);
-            DB::commit();
+            DB::connection('tenant')->commit();
             return $costCenter;
         } catch (Exception $e) {
-            DB::rollback();
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -56,17 +51,17 @@ class CostCenterService extends BaseService
     public function update($costCenter, $values)
     {
         try {
-            DB::beginTransaction();
+            DB::connection('tenant')->beginTransaction();
                 unset($values['company_id']);
                 $workstations = $values['workstations'] ?? [];
                 $employees    = $values['employees'] ?? [];
                 $costCenter->workstations()->sync($workstations);
                 $costCenter->employees()->sync($employees);
                 $costCenter   = $costCenter->update($values);
-            DB::commit();
+            DB::connection('tenant')->commit();
             return $costCenter;
         } catch (Exception $e) {
-            DB::rollback();
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }

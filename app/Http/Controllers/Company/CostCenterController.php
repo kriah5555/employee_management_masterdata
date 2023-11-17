@@ -6,6 +6,7 @@ use App\Models\Company\CostCenter;
 use App\Services\CostCenterService;
 use App\Http\Requests\Company\CostCenterRequest;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class CostCenterController extends Controller
 {    
@@ -21,7 +22,7 @@ class CostCenterController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getAll(['company_id' => $company_id, 'status' => $status, 'with' => ['workstationsValue', 'location']]),
+                'data'    => $this->costCenterService->getAll(['with' => ['workstationsValue', 'location']]),
             ],
             JsonResponse::HTTP_OK,
         );

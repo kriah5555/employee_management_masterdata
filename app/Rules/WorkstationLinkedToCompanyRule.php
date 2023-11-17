@@ -9,15 +9,14 @@ class WorkstationLinkedToCompanyRule implements Rule
 {
     protected $company_id;
 
-    public function __construct($company_id)
+    public function __construct()
     {
-        $this->company_id = $company_id;
     }
 
     public function passes($attribute, $value)
     {
-        $workstation = Workstation::findOrFail($value);
-        return $workstation && $workstation->company == $this->company_id;
+        $workstation = Workstation::find($value);
+        return $workstation !== null && $workstation->exists();
     }
 
     public function message()

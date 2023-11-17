@@ -10,8 +10,9 @@ class EmployeeLinkedToCompanyRule implements Rule
 {
     protected $company_id;
 
-    public function __construct()
+    public function __construct($company_id)
     {
+        $this->company_id = $company_id;
     }
 
     public function passes($attribute, $value)
