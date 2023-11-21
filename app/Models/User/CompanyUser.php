@@ -5,10 +5,18 @@ namespace App\Models\User;
 use App\Models\BaseModel;
 use App\Models\Company\Company;
 use App\Traits\UserAudit;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Traits\HasPermissions;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 
 class CompanyUser extends BaseModel
 {
-    use UserAudit;
+    use HasFactory, Notifiable, HasRoles, HasPermissions, UserAudit, SoftDeletes;
+    protected $guard_name = 'api';
+
     protected $columnsToLog = [
         'company_id',
         'user_id'
