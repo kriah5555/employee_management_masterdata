@@ -56,14 +56,7 @@ class FunctionCategory extends BaseModel
 
     public function sector()
     {
-        return $this->belongsTo(Sector::class)->withTrashed();
-    }
-    
-    public function sectorValue()
-    {
-        return $this->belongsTo(Sector::class, 'sector_id')
-            ->select('id as value', 'name as label')
-            ->where('status', true);
+        return $this->belongsTo(Sector::class);
     }
 
     public function functionTitles()
