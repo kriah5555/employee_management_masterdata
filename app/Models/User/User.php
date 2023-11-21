@@ -10,12 +10,13 @@ use Spatie\Permission\Traits\HasPermissions;
 use App\Models\User\UserBasicDetails;
 use App\Models\User\UserBankAccount;
 use App\Models\User\UserFamilyDetails;
-use App\Models\Employee\EmployeeProfile;
+use App\Models\Company\Employee\EmployeeProfile;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles, HasPermissions;
 
+    protected $guard_name = 'api';
     protected $table = 'users';
     protected $connection = 'userdb';
     /**

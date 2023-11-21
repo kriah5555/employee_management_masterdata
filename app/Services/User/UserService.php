@@ -36,7 +36,7 @@ class UserService
         $this->userAddressRepository = $userAddressRepository;
         $this->userBankAccountRepository = $userBankAccountRepository;
         $this->userContactDetailsRepository = $userContactDetailsRepository;
-        $this->userFamilyDetailsuserFamilyDetailsRepositoryRepository = $userFamilyDetailsRepository;
+        $this->userFamilyDetailsRepository = $userFamilyDetailsRepository;
     }
 
     public function getUserBySocialSecurityNumber($socialSecurityNumber)
@@ -52,9 +52,10 @@ class UserService
     public function createUserBasicDetails(User $user, $values)
     {
         $values['user_id'] = $user->id;
-        $values['date_of_birth'] = date('Y-m-d', strtotime($values['date_of_birth']));
+        $values['date_of_birth'] = (isset($values['date_of_birth']) && $values['date_of_birth'] != '')
+            ? date('Y-m-d', strtotime($values['date_of_birth'])) : null;
         $values['license_expiry_date'] = (isset($values['license_expiry_date']) && $values['license_expiry_date'] != '')
-            ? date('Y-m-d', strtotime($values['license_expiry_date'])) : '';
+            ? date('Y-m-d', strtotime($values['license_expiry_date'])) : null;
         return $this->userBasicDetailsRepository->createUserBasicDetails($values);
     }
     public function createUserAddress(User $user, $values)

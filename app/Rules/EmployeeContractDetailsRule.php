@@ -35,9 +35,9 @@ class EmployeeContractDetailsRule implements ValidationRule
                 $fail('Incorrect schedule type');
             }
             if ($employeeType->employeeTypeCategory->employment_types && !array_key_exists('employment_type', $value)) {
-                $fail('Please select employement type');
+                $fail('Please select employment type');
             } elseif (!in_array($value['employment_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
-                $fail('Incorrect employement type');
+                $fail('Incorrect employment type');
             }
             if ($employeeType->id == 1 && !array_key_exists('weekly_contract_hours', $value)) {
                 $fail('Please enter weekly contract hours');

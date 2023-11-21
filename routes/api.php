@@ -29,6 +29,7 @@ use App\Http\Controllers\Interim\InterimAgencyController;
 use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 use App\Http\Controllers\Company\Absence\HolidayController;
 use App\Http\Controllers\Company\Contract\ContractConfigurationController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -230,11 +231,12 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
 
             Route::resource('cost-centers', CostCenterController::class)->except(['edit']);
-        
+
             // Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
-        
+
             // Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
         });
+        Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
     });
 
     // Route::controller(EmployeeController::class)->group(function () {

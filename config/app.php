@@ -203,9 +203,8 @@ return [
         App\Providers\SectorServiceProvider::class,
         App\Providers\EmployeeTypeServiceProvider::class,
         App\Providers\FunctionServiceProvider::class,
-        App\Providers\CompanyServiceProvider::class,
         App\Providers\ContractServiceProvider::class,
-        App\Providers\TenancyServiceProvider::class, 
+        App\Providers\TenancyServiceProvider::class,
 
     ],
 

@@ -11,6 +11,7 @@ use App\Models\User\UserBasicDetails;
 use App\Models\User\UserContactDetails;
 use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
 use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
+use App\Services\CompanyService;
 use App\Services\User\UserService;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -22,6 +23,7 @@ use App\Repositories\Company\LocationRepository;
 use App\Models\EmployeeFunction\FunctionTitle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 
 class EmployeeService
@@ -34,6 +36,7 @@ class EmployeeService
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
         protected LocationRepository $locationRepository,
         protected UserService $userService,
+        protected CompanyService $companyService,
     ) {
     }
     /**
@@ -153,11 +156,11 @@ class EmployeeService
             } else {
                 $user = $existingEmpProfile->last();
             }
-            $this->createCompanyUser($user, $company_id);
+            $user->assignRole('employee');
+            $this->createCompanyUser($user, $company_id, 'employee');
             $employeeProfile = $this->createEmployeeProfile($user, $values);
             $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             $this->createEmployeeContract($employeeProfile, $values);
-            // $user->assignRole('employee');
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;
@@ -169,12 +172,39 @@ class EmployeeService
         }
     }
 
-    public function createCompanyUser(User $user, $company_id)
+    public function createNewResponsiblePerson($values, $company_id)
     {
-        CompanyUser::create([
+        try {
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+            if ($existingEmpProfile->isEmpty()) {
+                $user = $this->userService->createNewUser($values);
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+            $user->assignRole($values['role']);
+            $this->createCompanyUser($user, $company_id, $values['role']);
+            $employeeProfile = $this->createEmployeeProfile($user, $values);
+            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+            return $employeeProfile;
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function createCompanyUser(User $user, $company_id, $role)
+    {
+        $companyUser = CompanyUser::create([
             'user_id'    => $user->id,
             'company_id' => $company_id
         ]);
+        $companyUser->assignRole($role);
     }
 
     public function createEmployeeProfile(User $user, $values)
@@ -355,5 +385,13 @@ class EmployeeService
             $contractDetails['work_days_per_week'] = $longTermEmployeeContract->work_days_per_week;
         }
         return $contractDetails;
+    }
+
+    public function getResponsibleCompaniesForUser($user)
+    {
+        if ($user->hasPermissionTo('Access all companies')) {
+            return $this->companyService->getActiveCompanies();
+        }
+        return $user;
     }
 }

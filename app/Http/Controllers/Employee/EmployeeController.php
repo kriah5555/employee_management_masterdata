@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Services\Company\LocationService;
 use App\Services\Employee\CommuteTypeService;
 use App\Services\MealVoucherService;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
@@ -237,5 +238,13 @@ class EmployeeController extends Controller
                 'message' => $e->getMessage(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function getUserResponsibleCompanies()
+    {
+        return response()->json([
+            'success' => true,
+            'data'    => $this->employeeService->getResponsibleCompaniesForUser(Auth::user())
+        ], 200);
     }
 }
