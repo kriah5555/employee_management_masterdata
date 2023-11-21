@@ -236,8 +236,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
 
             // Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
         });
-        Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
     });
+    Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
     // Route::controller(EmployeeController::class)->group(function () {
 
