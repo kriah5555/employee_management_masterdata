@@ -7,6 +7,7 @@ use Database\Seeders\EmployeeTypeCategorySeeder;
 use Database\Seeders\DimonaTypesSeeder;
 use Database\Seeders\ContractRenewalTypesSeeder;
 use Database\Seeders\TestDataSeeder;
+use Database\Seeders\EmailTemplatesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
             DimonaTypesSeeder::class,
             ContractRenewalTypesSeeder::class,
             TestDataSeeder::class,
+            EmailTemplatesSeeder::class,
         ]);
     }
 }
