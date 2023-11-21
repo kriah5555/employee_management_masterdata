@@ -27,7 +27,13 @@ class CompanyContractTemplateService extends BaseService
         try {
             return [
                 'employee_types'     => $this->employee_type_service->getCompanyEmployeeTypes($company_id),
-                'tokens'             => config('constants.TOKENS'),
+                'tokens'             => array_merge(
+                    config('constants.EMPLOYEE_TOKENS'),
+                    config('constants.COMPANY_TOKENS'),
+                    config('constants.CONTRACT_TOKENS'),
+                    config('constants.ATTACHMENT_TOKENS'),
+                    config('constants.SIGNATURE')
+                ),
             ];
         } catch (Exception $e) {
             error_log($e->getMessage());
