@@ -10,23 +10,18 @@ class DashboardAccess extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'unique_key',
         'type',
         'validity',
-        'company_location_id',
+        'location_id',
         'status',
     ];
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'company_location_id')
-            ->where('type', 'locations');
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'company_location_id')
-            ->where('type', 'companies');
+        return $this->belongsTo(Location::class, 'location_id');
     }
 }
