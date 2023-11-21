@@ -13,7 +13,7 @@ class FunctionCategoryRepository implements FunctionCategoryRepositoryInterface
 {
     public function getFunctionCategories(): Collection
     {
-        return FunctionCategory::all();
+        return FunctionCategory::with(['sector'])->get();
     }
     public function getActiveFunctionCategories(): Collection
     {

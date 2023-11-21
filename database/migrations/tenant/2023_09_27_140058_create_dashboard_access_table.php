@@ -15,16 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('unique_key');
             $table->string('type'); // 'companies' or 'locations'
-            $table->timestamp('validity');
-            $table->unsignedBigInteger('company_location_id');
+            $table->foreignId('location_id')->references('id')->on('locations')->onDelete('cascade');
             $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('company_location_id')
-                ->references('id')
-                ->on('companies') // Update with your companies table name
-                ->on('locations'); // Update with your locations table name
             });
     }
 
