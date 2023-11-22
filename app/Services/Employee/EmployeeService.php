@@ -389,9 +389,17 @@ class EmployeeService
 
     public function getResponsibleCompaniesForUser($user)
     {
+        $companies = [];
         if ($user->hasPermissionTo('Access all companies')) {
-            return $this->companyService->getActiveCompanies();
+            $companies = $this->companyService->getActiveCompanies();
+        } else {
+            $companyUsers = CompanyUser::where('user_id', $user->id)->get();
+            foreach ($companyUsers as $companyUser) {
+                if ($companyUser->hasPermissionTo('Access company')) {
+                    $companies[] = $companyUser->company;
+                }
+            }
         }
-        return $user;
+        return $companies;
     }
 }

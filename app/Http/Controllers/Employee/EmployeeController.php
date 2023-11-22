@@ -242,9 +242,20 @@ class EmployeeController extends Controller
 
     public function getUserResponsibleCompanies()
     {
-        return response()->json([
-            'success' => true,
-            'data'    => $this->employeeService->getResponsibleCompaniesForUser(Auth::user())
-        ], 200);
+        try {
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getResponsibleCompaniesForUser(Auth::user())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

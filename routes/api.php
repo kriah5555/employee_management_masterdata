@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\MealVoucherController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sector\SectorController;
 use App\Http\Controllers\Company\CompanyController;
@@ -63,46 +62,12 @@ $integerRule = '[0-9]+'; # allow only integer values
 $statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
 });
 
-Route::resources([
-    'companies'       => CompanyController::class,
-    'email-templates' => EmailTemplateApiController::class,
-    'public-holidays' => PublicHolidayController::class,
-]);
-
-Route::resource('holiday-code-config', HolidayCodeConfigController::class)->only(['edit', 'update', 'create']);
-
-Route::get('/mail', [TestMailController::class, 'sendTestMail']);
-
-Route::controller(TranslationController::class)->group(function () {
-
-    Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
-
-    Route::get('/translations/{key?}', 'index');
-
-    Route::post('/translations', 'store');
-
-    Route::post('/translate', 'getStringTranslation');
-
-});
-
-Route::controller(ContractTemplateController::class)->group(function () use ($integerRule) {
-
-    Route::resource('contract-templates', ContractTemplateController::class)->except(['edit']);
-
-    Route::post('convert-pdf-to-html', 'convertPDFHtml');
-
-});
-
-
-Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $statusRule) {
+Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     $resources = [
         'contract-types'      => [
             'controller' => ContractTypeController::class,
@@ -148,10 +113,49 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
             'controller' => CompanyController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
+        'commute-types'       => [
+            'controller' => CommuteTypeController::class,
+            'methods'    => ['index', 'store', 'show', 'edit', 'update', 'destroy']
+        ],
+        'meal-vouchers'       => [
+            'controller' => MealVoucherController::class,
+            'methods'    => ['index', 'store', 'show', 'edit', 'update', 'destroy']
+        ],
+        'email-templates'     => [
+            'controller' => EmailTemplateApiController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'public-holidays'     => [
+            'controller' => PublicHolidayController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'contract-templates'  => [
+            'controller' => ContractTemplateController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        ],
+        'holiday-code-config' => [
+            'controller' => HolidayCodeConfigController::class,
+            'methods'    => ['edit', 'update', 'create']
+        ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
         Route::resource($uri, $controller)->only($methods);
     }
+
+    Route::get('convert-pdf-to-html', [ContractTemplateController::class, 'convertPDFHtml']);
+
+    Route::controller(TranslationController::class)->group(function () {
+
+        Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
+
+        Route::get('/translations/{key?}', 'index');
+
+        Route::post('/translations', 'store');
+
+        Route::post('/translate', 'getStringTranslation');
+
+    });
+
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
 
     Route::get('get-function-category-options-by-sector/{sector_id}', [SectorController::class, 'getOptionsForEmployeeContractCreation']);
@@ -183,16 +187,11 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
     });
 
-
-    Route::resource('commute-types', CommuteTypeController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
-
-    Route::resource('meal-vouchers', MealVoucherController::class)->only(['index', 'store', 'show', 'edit', 'update', 'destroy']);
-
-    Route::group(['middleware' => 'initialize-tenancy'], function () use ($statusRule, $integerRule) {
+    Route::group(['middleware' => 'initialize-tenancy'], function () use ($integerRule) {
 
         Route::resource('holidays', HolidayController::class)->except(['edit']);
 
-        Route::controller(LocationController::class)->group(function () use ($statusRule, $integerRule) {
+        Route::controller(LocationController::class)->group(function () use ($integerRule) {
 
             Route::get('location-workstations/{location_id}', 'locationWorkstations')->where(['location_id' => $integerRule]);
 
@@ -210,6 +209,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
             'employees'    => [
                 'controller' => EmployeeController::class,
                 'methods'    => ['index', 'show', 'store', 'update', 'destroy']
+            ],
+            'cost-centers' => [
+                'controller' => CostCenterController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
         ];
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
@@ -231,26 +234,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $
         Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
         Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
         Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
-
-        Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
-
-            Route::resource('cost-centers', CostCenterController::class)->except(['edit']);
-
-            // Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
-
-            // Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
-        });
-        Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
     });
-
-    // Route::controller(EmployeeController::class)->group(function () {
-
-    //     Route::get('/employees', 'index');
-
-    //     Route::get('/employees/create/{company_id}', 'create');
-
-    //     Route::post('/employees/store/{company_id}', 'store');
-
-    //     Route::post('/employees-get-function-salary', 'getFunctionSalaryToCreateEmployee');
-    // });
+    Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 });
