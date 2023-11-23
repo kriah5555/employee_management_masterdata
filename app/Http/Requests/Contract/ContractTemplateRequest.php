@@ -27,33 +27,33 @@ class ContractTemplateRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'body'     => 'required|string',
-            'status'   => 'required|boolean',
-            'employee_type_id' => [
+            'body'                  => 'required|string',
+            'status'                => 'required|boolean',
+            'employee_type_id'      => [
                 'bail',
                 'required',
                 'integer',
                 new ExistsInMasterDatabaseRule('employee_types'),
             ],
-            'social_secretary_id' => [
+            'social_secretary_id'   => 'nullable|array',
+            'social_secretary_id.*' => [
                 'bail',
-                'nullable',
                 'integer',
                 new ExistsInMasterDatabaseRule('social_secretaries'),
             ],
-            'company_id' => [
+            'company_id'            => [
                 'bail',
                 'nullable',
                 'integer',
                 new ExistsInMasterDatabaseRule('companies'),
                 new CompanyLinkedToSocialSecretaryRule($this->input('social_secretary_id')),
             ],
-            'pdf_file' => '',
-            'language' => [
-                'required',
-                Rule::in(config('app.available_locales')),
-                new ContractTemplateUniqueCombinationRule($this->route('contract_template')),
-            ],
+            'pdf_file'              => '',
+            // 'language'              => [
+            //     'required',
+            //     Rule::in(config('app.available_locales')),
+            //     new ContractTemplateUniqueCombinationRule($this->route('contract_template')),
+            // ],
         ];
 
     }

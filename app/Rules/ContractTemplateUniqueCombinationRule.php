@@ -5,6 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Models\Contract\ContractTemplate;
+
 class ContractTemplateUniqueCombinationRule implements ValidationRule
 {
     public function __construct(protected $exclude_id = null)
@@ -18,12 +19,12 @@ class ContractTemplateUniqueCombinationRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-         // Build the query to check uniqueness while excluding the current record
-         $query = ContractTemplate::query();
-         $query->where([
-            'employee_type_id'    => request()->input('employee_type_id'),
-            'social_secretary_id' => request()->input('social_secretary_id', null),
-            'language'            => request()->input('language'),
+        // Build the query to check uniqueness while excluding the current record
+        $query = ContractTemplate::query();
+        $query->where([
+            'employee_type_id' => request()->input('employee_type_id'),
+            // 'social_secretary_id' => request()->input('social_secretary_id', null),
+            'language'         => request()->input('language'),
         ]);
 
         // Exclude the current record if it's being updated

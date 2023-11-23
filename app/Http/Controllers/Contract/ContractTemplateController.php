@@ -23,7 +23,7 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getAll(['with' => 'employeeType']),
+                'data'    => $this->contractTemplateService->index(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -66,7 +66,7 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->get($id, ['company', 'employeeType', 'company', 'socialSecretary'])
+                'data'    => $this->contractTemplateService->get($id)
             ],
             JsonResponse::HTTP_OK,
         );
@@ -78,11 +78,11 @@ class ContractTemplateController extends Controller
     public function update(ContractTemplateRequest $request, $id)
     {
         $contractTemplate = ContractTemplate::findOrFail($id);
+        $this->contractTemplateService->update($contractTemplate, $request->validated());
         return returnResponse(
             [
                 'success' => true,
                 'message' => t('Contract template updated successfully'),
-                'data'    => $this->contractTemplateService->update($contractTemplate, $request->validated()),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -105,7 +105,7 @@ class ContractTemplateController extends Controller
 
     function convertPDFHtml(Request $request)
     {
-        try{
+        try {
             $pdfFilePath = $request->file('pdf_file')->getPathname();
             $file_name = storage_path('app/pdf_output.html');
             // $htmlOutput = shell_exec("pdftohtml -i -noframes -stdout '$pdfFilePath'");
