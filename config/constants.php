@@ -72,9 +72,11 @@ return [
     # 24 hours time format like 11:00
 
     'EMAIL_TEMPLATES'                   => [
-        'planning_mail'      => 'Planning Mail',
-        'leave_request_mail' => 'Leave request mail',
-        'plan_reminder'      => 'plan reminder Mail',
+        'planning_mail'                   => 'Planning Mail',
+        'leave_request_mail'              => 'Leave request mail',
+        'plan_reminder'                   => 'Plan reminder Mail',
+        'new_employee_creation_mail'      => 'New employee creation mail',
+        'existing_employee_creation_mail' => 'Existing employee creation mail',
     ],
 
     'MONTHLY_SALARY'                    => 1,
@@ -153,9 +155,17 @@ return [
         '{attachment_active_contract_date}'        => 'Active contract date',
     ],
 
-    'SIGNATURE' => [
+    'SIGNATURE_TOKENS' => [
         '{employee_signature}' => 'Employee signature',
         '{employer_signature}' => 'Employer signature',
+    ],
+
+    'FLEX_SALARY_TOKENS' => [
+        '{flex_salary_minimum}'   => 'Minimum flex salary',
+        '{flex_salary_inclusive}' => 'Inclusive flex salary',
+        '{flex_salary_exclusive}' => 'Exclusive flex salary',
+        '{flex_salary_vacation}'  => 'Flex vacation salary',
+        '{flex_salary_employee}'  => 'Employee flex salary',
     ],
 
     'TOKENS'                            => [

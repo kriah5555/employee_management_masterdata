@@ -121,7 +121,6 @@ class ContractTemplateController extends Controller
                 JsonResponse::HTTP_OK,
             );
 
-            dd($pdfFilePath, $htmlOutput);
         } catch (\Exception $e) {
             return returnResponse(
                 [

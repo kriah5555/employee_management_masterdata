@@ -45,6 +45,7 @@ class EmployeeContractDetailsRule implements ValidationRule
                 $fail('Incorrect weekly contract hours');
             }
         }
+        
         if (!array_key_exists('start_date', $value) || strtotime($value['start_date']) === false) {
             $fail('Please select correct contract start date');
         }

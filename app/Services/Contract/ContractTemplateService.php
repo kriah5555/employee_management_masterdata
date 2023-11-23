@@ -43,7 +43,8 @@ class ContractTemplateService extends BaseService
                     config('constants.COMPANY_TOKENS'),
                     config('constants.CONTRACT_TOKENS'),
                     config('constants.ATTACHMENT_TOKENS'),
-                    config('constants.SIGNATURE')
+                    config('constants.SIGNATURE_TOKENS'),
+                    config('constants.FLEX_SALARY_TOKENS'),
                 ),
             ];
         } catch (Exception $e) {

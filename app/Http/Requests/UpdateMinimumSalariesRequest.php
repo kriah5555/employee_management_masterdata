@@ -18,7 +18,7 @@ class UpdateMinimumSalariesRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'salaries.*.level'                       => 'required|integer|min:1',
+            'salaries.*.level'                       => 'required|integer|min:0',
             'salaries.*.categories'                  => 'required|array',
             'salaries.*.categories.*.category'       => 'required|integer|min:1',
             'salaries'                               => ['required', 'array', new MinimumSalariesLevelsRule],
