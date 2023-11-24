@@ -28,6 +28,8 @@ use App\Http\Controllers\Interim\InterimAgencyController;
 use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 use App\Http\Controllers\Company\Absence\HolidayController;
 use App\Http\Controllers\Company\Contract\ContractConfigurationController;
+use App\Http\Controllers\NotificationController\NotificationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -245,4 +247,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
+
+
+    Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
 });
