@@ -35,17 +35,19 @@ class WorkstationService
 
     public function getWorkstationDetails($workstation_id) 
     {
-        $workstation_details                    = self::getWorkstationById($workstation_id);
-        
+        $workstation_details = self::getWorkstationById($workstation_id);
+        $function_titles     = self::getWorkstationFunctions($workstation_details);
+        $workstation_details = $workstation_details->toArray();
+        $workstation_details['function_titles'] = $function_titles;
         return $workstation_details;
     }
 
     public function getWorkstationFunctions(Workstation $workstation) 
     {
-        $workstation                    = $workstation->toArray();
-        $function_titles                        = collect($workstation['function_titles'])->pluck('function_title');
-        return $function_titles->toArray();
-        return ;
+        $workstation     = $workstation->toArray();
+        $function_titles = collect($workstation['function_titles'])->pluck('function_title');
+        // DD($function_titles);   
+        return $function_titles;
     }
 
     public function getActiveWorkstationsOfCompany($workstation_id)

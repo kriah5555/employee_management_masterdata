@@ -36,7 +36,6 @@ class CompanyService
 
     public function createNewCompany($values)
     {
-        // dd($values);
         try {
             DB::connection('master')->beginTransaction();
             $company = $this->createCompany($values);
