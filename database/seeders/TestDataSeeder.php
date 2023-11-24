@@ -152,52 +152,52 @@ class TestDataSeeder extends Seeder
                 ],
                 'sector_salary_steps_details'  => [
                     [
-                        'level' => 1,
+                        'level' => 0,
                         'from'  => 0,
                         'to'    => 12
                     ],
                     [
-                        'level' => 2,
+                        'level' => 1,
                         'from'  => 13,
                         'to'    => 24
                     ],
                     [
-                        'level' => 3,
+                        'level' => 2,
                         'from'  => 25,
                         'to'    => 36
                     ],
                     [
-                        'level' => 4,
+                        'level' => 3,
                         'from'  => 37,
                         'to'    => 48
                     ],
                     [
-                        'level' => 5,
+                        'level' => 4,
                         'from'  => 49,
                         'to'    => 60
                     ],
                     [
-                        'level' => 6,
+                        'level' => 5,
                         'from'  => 61,
                         'to'    => 72
                     ],
                     [
-                        'level' => 7,
+                        'level' => 6,
                         'from'  => 73,
                         'to'    => 84
                     ],
                     [
-                        'level' => 8,
+                        'level' => 7,
                         'from'  => 85,
                         'to'    => 96
                     ],
                     [
-                        'level' => 9,
+                        'level' => 8,
                         'from'  => 97,
                         'to'    => 108
                     ],
                     [
-                        'level' => 10,
+                        'level' => 9,
                         'from'  => 109,
                         'to'    => 120
                     ],

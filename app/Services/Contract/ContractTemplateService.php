@@ -11,23 +11,15 @@ use App\Services\Sector\SectorService;
 use App\Services\CompanyService;
 use App\Services\EmployeeType\EmployeeTypeService;
 
-class ContractTemplateService extends BaseService
+class ContractTemplateService
 {
-    protected $sector_service;
 
-    protected $social_secretaryService;
-
-    protected $company_service;
-
-    protected $employee_type_service;
-
-    public function __construct(ContractTemplate $contractTemplate)
-    {
-        parent::__construct($contractTemplate);
-        $this->sector_service          = app(SectorService::class);
-        $this->social_secretaryService = app(SocialSecretaryService::class);
-        $this->company_service         = app(CompanyService::class);
-        $this->employee_type_service   = app(EmployeeTypeService::class);
+    public function __construct(
+        protected SectorService $sector_service,
+        protected SocialSecretaryService $social_secretaryService,
+        protected CompanyService $company_service,
+        protected EmployeeTypeService $employee_type_service
+    ) {
     }
 
     public function getOptionsToCreate()
@@ -55,11 +47,45 @@ class ContractTemplateService extends BaseService
     public function getOptionsToEdit($contract_template_id)
     {
         try {
-            $contract_template  = $this->get($contract_template_id, ['company', 'employeeType', 'company', 'socialSecretary']);
+            $contract_template = $this->get($contract_template_id, ['company', 'employeeType', 'company', 'socialSecretary']);
             $contract_template->socialSecretary;
-            $options            = $this->getOptionsToCreate();
+            $options = $this->getOptionsToCreate();
             $options['details'] = $contract_template;
             return $options;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function create($values)
+    {
+        try {
+            $contractTemplate = ContractTemplate::create($values);
+            $contractTemplate->socialSecretary()->sync($values['social_secretary_id'] ?? []);
+            return $contractTemplate;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function index()
+    {
+        return ContractTemplate::with('employeeType')->get();
+    }
+
+    public function get($id)
+    {
+        return ContractTemplate::whereId($id)->with(['company', 'employeeType', 'company', 'socialSecretary'])->first();
+    }
+
+    public function update($contractTemplate, $values)
+    {
+        try {
+            $contractTemplate->update($values);
+            $contractTemplate->socialSecretary()->sync($values['social_secretary_id'] ?? []);
+            return $contractTemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
