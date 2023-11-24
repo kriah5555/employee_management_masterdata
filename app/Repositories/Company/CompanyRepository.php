@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exceptions\ModelDeleteFailedException;
 use App\Exceptions\ModelUpdateFailedException;
+use App\Models\Tenant;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
@@ -27,11 +28,29 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     public function deleteCompany(Company $company)
     {
-        if ($company->delete()) {
-            return true;
-        } else {
-            throw new ModelDeleteFailedException('Failed to delete company');
+
+        try {
+            $company = $this->getCompanyById($company->id);
+            $tenant  = $this->getTenantByCompanyId($company->id);
+    
+            if ($tenant) {
+                $tenant->delete();
+            }
+
+            if ($company->delete()) {
+                return true;
+            } else {
+                throw new ModelDeleteFailedException('Failed to delete company');
+            }
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
         }
+    }
+
+    public function getTenantByCompanyId($companyId)
+    {
+        return Tenant::where('company_id', $companyId)->first();
     }
 
     public function createCompany(array $details): Company

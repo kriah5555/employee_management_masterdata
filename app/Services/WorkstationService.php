@@ -102,7 +102,7 @@ class WorkstationService
         return $rules;
     }
 
-    public function create($values, $company_id)
+    public function create($values)
     {
         try {
             DB::connection('tenant')->beginTransaction();
@@ -130,7 +130,7 @@ class WorkstationService
         }
     }
 
-    public function updateWorkstation($workstation_id, $values, $company_id)
+    public function updateWorkstation($workstation_id, $values)
     {
         try {
             DB::connection('tenant')->beginTransaction();

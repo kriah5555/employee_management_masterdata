@@ -29,8 +29,6 @@ use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 use App\Http\Controllers\Company\Absence\HolidayController;
 use App\Http\Controllers\Company\Contract\ContractConfigurationController;
 
-
-use App\Http\Controllers\TestMailController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
