@@ -123,6 +123,7 @@ return [
         '{company_vat}'                => 'Company VAT number',
         '{company_responsible_person}' => 'Responsible person',
         '{company_address}'            => 'Address:Street + number Postal code City Country',
+        '{company_sector}'             => 'Sector',
     ],
 
     'CONTRACT_TOKENS' => [
