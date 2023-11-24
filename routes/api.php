@@ -31,6 +31,8 @@ use App\Http\Controllers\Company\Contract\ContractConfigurationController;
 use App\Http\Controllers\NotificationController\NotificationController;
 
 
+
+use App\Http\Controllers\TestMailController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
