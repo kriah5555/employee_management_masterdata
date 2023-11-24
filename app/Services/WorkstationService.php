@@ -30,7 +30,22 @@ class WorkstationService
 
     public function getWorkstationById($workstation_id)
     {
-        return $this->workstationRepository->getWorkstationById($workstation_id);
+        return  $this->workstationRepository->getWorkstationById($workstation_id);
+    }
+
+    public function getWorkstationDetails($workstation_id) 
+    {
+        $workstation_details                    = self::getWorkstationById($workstation_id);
+        
+        return $workstation_details;
+    }
+
+    public function getWorkstationFunctions(Workstation $workstation) 
+    {
+        $workstation                    = $workstation->toArray();
+        $function_titles                        = collect($workstation['function_titles'])->pluck('function_title');
+        return $function_titles->toArray();
+        return ;
     }
 
     public function getActiveWorkstationsOfCompany($workstation_id)
@@ -85,7 +100,7 @@ class WorkstationService
         return $rules;
     }
 
-    public function create($values)
+    public function create($values, $company_id)
     {
         try {
             DB::connection('tenant')->beginTransaction();
@@ -98,7 +113,8 @@ class WorkstationService
                 $workstation = $this->workstationRepository->createWorkstation($values);
 
                 $workstation->locations()->sync($locations);
-                $workstation->functionTitles()->sync($function_titles);
+                // $workstation->functionTitles()->sync($function_titles);
+                $workstation->linkFunctionTitles($function_titles);
 
                 $workstation->save();
 
@@ -112,7 +128,7 @@ class WorkstationService
         }
     }
 
-    public function updateWorkstation($workstation_id, $values)
+    public function updateWorkstation($workstation_id, $values, $company_id)
     {
         try {
             DB::connection('tenant')->beginTransaction();
@@ -120,7 +136,10 @@ class WorkstationService
                 $function_titles = $values['function_titles'] ?? [];
                 $locations       = $values['locations'] ?? [];
 
-                $workstation->functionTitles()->sync($function_titles);
+                $workstation = self::getWorkstationById($workstation_id);
+                // $workstation->functionTitles()->sync($function_titles);                
+                $workstation->linkFunctionTitles($function_titles);
+
                 $workstation->locations()->sync($locations);
 
                 unset($values['function_titles']);

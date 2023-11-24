@@ -119,9 +119,10 @@ return [
     ],
 
     'COMPANY_TOKENS' => [
-        '{company_name}'   => 'Company_name',
-        '{company_vat}'    => 'Company VAT number',
+        '{company_name}'               => 'Company_name',
+        '{company_vat}'                => 'Company VAT number',
         '{company_responsible_person}' => 'Responsible person',
+        '{company_address}'            => 'Address:Street + number Postal code City Country',
     ],
 
     'CONTRACT_TOKENS' => [
@@ -153,9 +154,17 @@ return [
         '{attachment_active_contract_date}'        => 'Active contract date',
     ],
 
-    'SIGNATURE' => [
+    'SIGNATURE_TOKENS' => [
         '{employee_signature}' => 'Employee signature',
         '{employer_signature}' => 'Employer signature',
+    ],
+
+    'FLEX_SALARY_TOKENS' => [
+        '{flex_salary_minimum}' => 'Minimum flex salary',
+        '{flex_salary_inclusive}' => 'Inclusive flex salary',
+        '{flex_salary_exclusive}' => 'Exclusive flex salary',
+        '{flex_salary_vacation}' => 'Vacation flex salary',
+        '{flex_salary_employee}' => 'Employee flex salary',
     ],
 
     'TOKENS'                            => [

@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('workstation_to_functions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('function_title_id');
             $table->unsignedBigInteger('workstation_id');
+            $table->unsignedBigInteger('function_title_id');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

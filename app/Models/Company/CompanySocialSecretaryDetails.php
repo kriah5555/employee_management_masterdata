@@ -39,6 +39,6 @@ class CompanySocialSecretaryDetails extends BaseModel
     }
     public function socialSecretary()
     {
-        return $this->hasOne(SocialSecretary::class, 'social_secretary_id');
+        return $this->belongsTo(SocialSecretary::class, 'social_secretary_id');
     }
 }
