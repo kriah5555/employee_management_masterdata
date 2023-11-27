@@ -2,8 +2,8 @@
 
 namespace App\Repositories\User;
 
-use App\Interfaces\User\UserRepositoryInterface;
 use App\Models\User\User;
+use App\Interfaces\User\UserRepositoryInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -31,4 +31,6 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::where('social_security_number', $socialSecurityNumber)->get();
     }
+
+
 }

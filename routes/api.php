@@ -240,5 +240,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
 
+
+    Route::put('employee-update',[EmployeeController::class,'updateEmployee']);
+
     Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
 });
