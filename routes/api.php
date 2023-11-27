@@ -158,6 +158,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::get('get-function-category-options-by-sector/{sector_id}', [SectorController::class, 'getOptionsForEmployeeContractCreation']);
 
+    Route::post('get-sector-function-titles', [SectorController::class, 'getFunctionTitles']);
+
     Route::controller(SalaryController::class)->group(function () use ($integerRule) {
 
         Route::get('monthly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries')->where(['sector_id' => $integerRule]);

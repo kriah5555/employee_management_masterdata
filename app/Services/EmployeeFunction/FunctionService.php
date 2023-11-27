@@ -131,4 +131,17 @@ class FunctionService
     {
         return $this->functionCategoryRepository->getActiveFunctionCategories();
     }
+
+    public function getFunctionTitlesLinkedToSectors(array $sector_Ids)
+    {
+        $function_titles  = FunctionCategory::with(['functionTitles'])->whereIn('sector_id', $sector_Ids)->get()->pluck('functionTitles');
+        $function_titles->toArray();
+        $return_data = [];
+        foreach ($function_titles as $values) {
+            foreach ($values as $value) {
+                $return_data[$value['id']] = $value;
+            }
+        }
+        return array_values($return_data);
+    }
 }
