@@ -25,8 +25,8 @@ class EmailTemplatesSeeder extends Seeder
 
                 // Set empty string translations for body and subject for each language
                 foreach (config('app.available_locales') as $locale) {
-                    $emailTemplate->setTranslation('body', $locale, $locale);
-                    $emailTemplate->setTranslation('subject', $locale, $locale);
+                    $emailTemplate->setTranslation('body', $locale, $data);
+                    $emailTemplate->setTranslation('subject', $locale, $data);
                 }
 
                 // Save the translations

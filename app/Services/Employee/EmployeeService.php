@@ -24,7 +24,7 @@ use App\Models\EmployeeFunction\FunctionTitle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
+use App\Services\Email\MailService;
 
 class EmployeeService
 {
@@ -38,6 +38,7 @@ class EmployeeService
         protected LocationRepository $locationRepository,
         protected UserService $userService,
         protected CompanyService $companyService,
+        protected MailService $mailService
     ) {
     }
     /**
@@ -162,6 +163,7 @@ class EmployeeService
             $employeeProfile = $this->createEmployeeProfile($user, $values);
             $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             $this->createEmployeeContract($employeeProfile, $values);
+            // $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;
