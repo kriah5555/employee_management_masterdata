@@ -90,6 +90,53 @@ class EmployeeController extends Controller
         );
     }
 
+    /**
+     * Update the existing employeee type.
+     */
+    public function update(EmployeeTypeRequest $request, EmployeeType $employeeType)
+    {
+        $this->employeeTypService->update($employeeType, $request->validated());
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Employee type updated successfully',
+                'data'    => $this->employeeTypService->update($employeeType, $request->validated()),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+
+    public function updateEmployee(UpdateEmployeeRequest $request)
+    {
+        $companyId = getCompanyId();
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Employee updated successfully',
+                'data'    => $this->employeeService->updateEmployee($request->validated(), $companyId)
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
+
+
+    /**
+     * Delete employee type.
+     */
+    public function destroy(EmployeeType $employeeType)
+    {
+        $employeeType->delete();
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Employee type deleted successfully'
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+
     public function getFunctionSalaryToCreateEmployee(Request $request)
     {
         return returnResponse(
