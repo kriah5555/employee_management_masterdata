@@ -137,9 +137,14 @@ class SectorService
         return $data;
     }
 
-
     public function deleteSector(Sector $sector)
     {
         return $this->sectorRepository->deleteSector($sector);
+    }
+
+    public function getSectorFunctionTitles(array $sector_ids) 
+    {
+        $function_service = app(FunctionService::class);
+        return ['function_titles' => $function_service->getFunctionTitlesLinkedToSectors($sector_ids)];
     }
 }

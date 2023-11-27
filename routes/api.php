@@ -31,8 +31,6 @@ use App\Http\Controllers\Company\Contract\ContractConfigurationController;
 use App\Http\Controllers\NotificationController\NotificationController;
 
 
-
-use App\Http\Controllers\TestMailController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -161,6 +159,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
 
     Route::get('get-function-category-options-by-sector/{sector_id}', [SectorController::class, 'getOptionsForEmployeeContractCreation']);
+
+    Route::post('get-sector-function-titles', [SectorController::class, 'getFunctionTitles']);
 
     Route::controller(SalaryController::class)->group(function () use ($integerRule) {
 

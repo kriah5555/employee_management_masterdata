@@ -38,7 +38,7 @@ class WorkstationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Workstation created successfully',
-                'data'    => $this->workstation_service->create($request->validated(), getCompanyId()),
+                'data'    => $this->workstation_service->create($request->validated()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return returnResponse(
@@ -93,7 +93,7 @@ class WorkstationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Workstation updated successfully',
-                'data'    => $this->workstation_service->updateWorkstation($id, $request->validated(), getCompanyId()),
+                'data'    => $this->workstation_service->updateWorkstation($id, $request->validated()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return returnResponse(

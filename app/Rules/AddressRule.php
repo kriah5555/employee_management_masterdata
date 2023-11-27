@@ -22,7 +22,6 @@ class AddressRule implements ValidationRule
                 'country'         => 'required|string|max:50',
                 'latitude'        => 'nullable|numeric',
                 'longitude'       => 'nullable|numeric',
-                // 'status'      => 'required|boolean',
             ];
 
             $validator = \Validator::make($value, $address_rules);

@@ -49,8 +49,18 @@ class SectorAgeSalary extends Model
         'updated_by',
     ];
 
+    public function getPercentageAttribute($value)
+    {
+        return str_replace('.', ',', $value);
+    }
+
+    public function setPercentageAttribute($value)
+    {
+        $this->attributes['percentage'] = str_replace(',', '.', $value);
+    }
+
     public function getMaxTimeToWorkAttribute($value)
     {
-        return date('H:i', strtotime($value));
+        return $value ? date('H:i', strtotime($value)) : null;
     }
 }

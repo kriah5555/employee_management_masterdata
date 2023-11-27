@@ -70,12 +70,12 @@ class Sector extends BaseModel
 
     public function getNightHourStartTimeAttribute($value)
     {
-        return date('H:i', strtotime($value));
+        return $value ? date('H:i', strtotime($value)) : null;
     }
 
     public function getNightHourEndTimeAttribute($value)
     {
-        return date('H:i', strtotime($value));
+        return $value ? date('H:i', strtotime($value)) : null;
     }
 
     public function getActivitylogOptions(): LogOptions

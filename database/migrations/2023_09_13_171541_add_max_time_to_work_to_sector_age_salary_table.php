@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('sector_age_salary', function (Blueprint $table) {
-            $table->time('max_time_to_work')->default('00:00'); // Add new column
+            $table->time('max_time_to_work')->nullable()->default(null); // Set default value to NULL
         });
     }
 
