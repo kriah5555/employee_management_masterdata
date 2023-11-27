@@ -91,7 +91,6 @@ class User extends Authenticatable
         return $this->hasMany(EmployeeProfile::class)
             ->where('status', true);
     }
-
     public function userBankDetails($userId)
     {
         return $this->hasOne(UserBankAccount::class)->where('user_id', $userId);
