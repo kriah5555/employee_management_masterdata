@@ -16,6 +16,7 @@ class HolidayRepository implements HolidayRepositoryInterface
         if ($status != '' && array_key_exists($status, config('constants.ABSENCE_STATUS'))) {
             $query->where('absence_status', $status);
         }
+        $query->with(['absenceDates', 'absenceHours']);
         return $query->get();
     }
 

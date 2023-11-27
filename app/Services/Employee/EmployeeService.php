@@ -9,6 +9,7 @@ use App\Models\EmployeeType\EmployeeType;
 use App\Models\User\CompanyUser;
 use App\Models\User\UserBasicDetails;
 use App\Models\User\UserContactDetails;
+use App\Models\EmployeeFunction\FunctionTitle;
 use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
 use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use App\Services\CompanyService;
@@ -20,7 +21,6 @@ use App\Models\User\User;
 use App\Repositories\Employee\EmployeeBenefitsRepository;
 use App\Repositories\Company\LocationRepository;
 
-use App\Models\EmployeeFunction\FunctionTitle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -163,7 +163,7 @@ class EmployeeService
             $employeeProfile = $this->createEmployeeProfile($user, $values);
             $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             $this->createEmployeeContract($employeeProfile, $values);
-            // $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+            $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;

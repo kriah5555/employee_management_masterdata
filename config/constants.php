@@ -83,16 +83,14 @@ return [
 
     'HOURLY_SALARY'                     => 2,
 
-    'CONTRACT_TEMPLATE_TYPE'            => ['company' => 'Company', 'default' => 'Default'],
-
     // Holiday Leave
 
-    'HOLIDAY'          => 1,
-    'LEAVE'            => 2,
-    'PENDING_STATUS'   => 1,
-    'APPROVED_STATUS'  => 2,
-    'REJECTED_STATUS'  => 3,
-    'CANCELLED_STATUS' => 4,
+    'HOLIDAY'           => 1,
+    'LEAVE'             => 2,
+    'HOLIDAY_PENDING'   => 1,
+    'HOLIDAY_APPROVED'  => 2,
+    'HOLIDAY_REJECTED'  => 3,
+    'HOLIDAY_CANCELLED' => 4,
     'ABSENCE_STATUS'   => [
         1 => 'Pending',
         2 => 'Approved',
@@ -100,12 +98,18 @@ return [
         4 => 'Cancelled',
     ],
 
+    'HOLIDAY_FIRST_HALF'             => 1,
+    'HOLIDAY_SECOND_HALF'            => 1,
+    'HOLIDAY_FULL_DAY'               => 1,
+    'HOLIDAY_MULTIPLE_HOLIDAY_CODES' => 1,
+
     'ABSENCE_DURATION_TYPE'   => [
         1 => 'First half',
         2 => 'Second half',
         3 => 'Full day',
         4 => 'Multiple codes or combination',
     ],
+
 
     'EMPLOYEE_TOKENS' => [
         '{employee_first_name}'    => 'First name',

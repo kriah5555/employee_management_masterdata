@@ -130,7 +130,7 @@ class SectorSalaryService
     private function getSalaryStepidsBySectorSalaryConfig(SectorSalaryConfig $sectorSalaryConfig) 
     {
         return SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
-                ->whereIn('level', range(1, $sectorSalaryConfig->steps))
+                ->whereIn('level', range(0, $sectorSalaryConfig->steps))
                 ->get()->pluck('id');
     }
 
@@ -192,7 +192,7 @@ class SectorSalaryService
             } elseif ($revertSalaryData->isEmpty()) {
                 return "Nothing to revert";
             } else {
-                return 'success';
+                return 'Success';
             }
 
             DB::commit();

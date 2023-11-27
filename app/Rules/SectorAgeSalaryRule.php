@@ -28,7 +28,7 @@ class SectorAgeSalaryRule implements ValidationRule
             foreach ($value as $index => $val) {
                 $percentage = str_replace(',', '.', $val['percentage']);
 
-                $count = substr_count('.', $charToCount);
+                $count = substr_count('.', $percentage);
 
                 $max_time_to_work = isset($val['max_time_to_work']) ? $val['max_time_to_work'] : ''; // Access the max_time_to_work field
 

@@ -10,7 +10,7 @@ use App\Repositories\MealVoucherRepository;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Employee\EmployeeService;
-use App\Services\CompanyService;
+use App\Services\CompanyService;    
 use Illuminate\Http\Request;
 use App\Services\Company\LocationService;
 use App\Services\Employee\CommuteTypeService;
@@ -19,19 +19,15 @@ use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
-    protected $employeeService;
-    protected $companyService;
-    protected $locationService;
-    protected $commuteTypeService;
-    protected $mealVoucherService;
 
-    public function __construct(EmployeeService $employeeService, CompanyService $companyService, LocationService $locationService, CommuteTypeService $commuteTypeService, MealVoucherService $mealVoucherService)
+    public function __construct(
+        protected EmployeeService $employeeService,
+        protected CompanyService $companyService, 
+        protected CommuteTypeService $commuteTypeService, 
+        protected MealVoucherService $mealVoucherService,
+        protected LocationService $locationService,
+        )
     {
-        $this->employeeService = $employeeService;
-        $this->companyService = $companyService;
-        $this->locationService = $locationService;
-        $this->commuteTypeService = $commuteTypeService;
-        $this->mealVoucherService = $mealVoucherService;
     }
 
     /**
@@ -88,37 +84,6 @@ class EmployeeController extends Controller
             [
                 'success' => true,
                 'data'    => $this->employeeService->edit($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    /**
-     * Update the existing employeee type.
-     */
-    public function update(EmployeeTypeRequest $request, EmployeeType $employeeType)
-    {
-        $this->employeeTypService->update($employeeType, $request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee type updated successfully',
-                'data'    => $this->employeeTypService->update($employeeType, $request->validated()),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-    /**
-     * Delete employee type.
-     */
-    public function destroy(EmployeeType $employeeType)
-    {
-        $employeeType->delete();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee type deleted successfully'
             ],
             JsonResponse::HTTP_OK,
         );

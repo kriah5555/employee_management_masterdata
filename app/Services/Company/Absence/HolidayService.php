@@ -6,11 +6,12 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Company\Absence\Absence;
 use App\Services\BaseService;
 use App\Repositories\Company\Absence\HolidayRepository;
+use App\Repositories\Employee\EmployeeProfileRepository;
 use Exception;
 
 class HolidayService
 {
-    public function __construct(protected HolidayRepository $holiday_repository )
+    public function __construct(protected HolidayRepository $holiday_repository)
     {
     }
 
@@ -34,14 +35,64 @@ class HolidayService
         }
     }
 
-    public function createHoliday(array $details)
+    public function createHoliday($details, $holiday_hours, $dates)
+    {
+        $holiday = $this->holiday_repository->createHoliday($details);
+
+        if (!empty($holiday_hours)) {
+            $holiday->absenceHours()->createMany($holiday_hours);
+        }
+        
+        if ($details['multiple_dates']) {
+            $holiday->absenceDates()->create([
+                'dates' => $dates,
+            ]);
+        }
+
+        return $holiday;
+    }
+
+    public function applyHoliday(array $details)
     {
         try {
-            $holiday = $this->holiday_repository->createHoliday($details);
+            DB::connection('tenant')->beginTransaction();
+
+                $details['absence_status'] = config('constants.HOLIDAY_PENDING');
+                $details['shift_type']     = config('constants.HOLIDAY');
+                $holiday_code_counts       = $details['holiday_code_counts'];
+                $duration_type             = $details['duration_type'];
+                $holiday_hours_data        = [];
+
+                foreach ($holiday_code_counts as $holiday_code_count) {
+                    $holiday_hours_data[] = [
+                        'holiday_code_id' => $holiday_code_count['holiday_code'],
+                        'hours'           => $holiday_code_count['hours'],
+                        'duration_type'   => $duration_type,
+                    ];
+
+                    $hours = 0;
+                    if ($details['duration_type'] != config('constants.HOLIDAY_MULTIPLE_HOLIDAY_CODES')) {
+                        if ($details['multiple_dates']) { # if its multiple dates then check if the selected type is of full day or half day and multiply the days to hours else add default hours
+
+                            $days = count($details['dates']);
+                            $hours = (($duration_type['duration_type'] != config('constants.HOLIDAY_FULL_DAY')) 
+                            ? config('constants.DAY_HOURS') / 2 : config('constants.DAY_HOURS')) * $days;
+                        } else {
+                            $hours = ($duration_type['duration_type'] != config('constants.HOLIDAY_FULL_DAY')) 
+                            ? config('constants.DAY_HOURS') / 2 : config('constants.DAY_HOURS');
+                        }
+                        $holiday_hours_data['hours'] = $hours;
+                        break;
+                    }
+                }
+
+                $holiday = $this->createHoliday($details, $holiday_hours_data, json_encode($details['dates']));
+
+            DB::connection('tenant')->commit();
             
             return $holiday;
-
         } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
