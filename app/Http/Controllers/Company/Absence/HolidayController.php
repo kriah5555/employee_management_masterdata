@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\Company\Absence\HolidayService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Absence\HolidayRequest;
 
 class HolidayController extends Controller
 {
@@ -66,11 +67,13 @@ class HolidayController extends Controller
     public function store(Request $request)
     {
         try {
+            $request_data                   = $request->all();
+            $request_data['multiple_dates'] = true;
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Holiday created successfully'),
-                    'data'    => $this->holidayService->createHoliday($request->all())
+                    'data'    => $this->holidayService->applyHoliday($request_data)
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -94,7 +97,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getHolidayById($holidayId)
+                    'data'    => $this->holidayService->getHolidayById($holidayId, ['absenceDates', 'absenceHours'])
                 ],
                 JsonResponse::HTTP_CREATED,
             );

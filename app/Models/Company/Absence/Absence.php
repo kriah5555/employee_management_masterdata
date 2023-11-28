@@ -7,6 +7,7 @@ use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Company\Absence\AbsenceDates;
+use App\Models\Company\Absence\AbsenceHours;
 
 class Absence extends BaseModel
 {
@@ -44,6 +45,11 @@ class Absence extends BaseModel
 
     public function absenceDates()
     {
-        return $this->belongTo(AbsenceDates::class);
+        return $this->hasOne(AbsenceDates::class);
+    }
+
+    public function absenceHours()
+    {
+        return $this->hasMany(AbsenceHours::class);
     }
 }

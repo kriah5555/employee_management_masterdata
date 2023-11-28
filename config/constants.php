@@ -72,25 +72,25 @@ return [
     # 24 hours time format like 11:00
 
     'EMAIL_TEMPLATES'                   => [
-        'planning_mail'      => 'Planning Mail',
-        'leave_request_mail' => 'Leave request mail',
-        'plan_reminder'      => 'plan reminder Mail',
+        'planning_mail'                   => 'Planning Mail',
+        'leave_request_mail'              => 'Leave request mail',
+        'plan_reminder'                   => 'Plan reminder Mail',
+        'new_employee_creation_mail'      => 'New employee creation mail',
+        'existing_employee_creation_mail' => 'Existing employee creation mail',
     ],
 
     'MONTHLY_SALARY'                    => 1,
 
     'HOURLY_SALARY'                     => 2,
 
-    'CONTRACT_TEMPLATE_TYPE'            => ['company' => 'Company', 'default' => 'Default'],
-
     // Holiday Leave
 
-    'HOLIDAY'          => 1,
-    'LEAVE'            => 2,
-    'PENDING_STATUS'   => 1,
-    'APPROVED_STATUS'  => 2,
-    'REJECTED_STATUS'  => 3,
-    'CANCELLED_STATUS' => 4,
+    'HOLIDAY'           => 1,
+    'LEAVE'             => 2,
+    'HOLIDAY_PENDING'   => 1,
+    'HOLIDAY_APPROVED'  => 2,
+    'HOLIDAY_REJECTED'  => 3,
+    'HOLIDAY_CANCELLED' => 4,
     'ABSENCE_STATUS'   => [
         1 => 'Pending',
         2 => 'Approved',
@@ -98,12 +98,18 @@ return [
         4 => 'Cancelled',
     ],
 
+    'HOLIDAY_FIRST_HALF'             => 1,
+    'HOLIDAY_SECOND_HALF'            => 1,
+    'HOLIDAY_FULL_DAY'               => 1,
+    'HOLIDAY_MULTIPLE_HOLIDAY_CODES' => 1,
+
     'ABSENCE_DURATION_TYPE'   => [
         1 => 'First half',
         2 => 'Second half',
         3 => 'Full day',
         4 => 'Multiple codes or combination',
     ],
+
 
     'EMPLOYEE_TOKENS' => [
         '{employee_first_name}'    => 'First name',
@@ -161,11 +167,11 @@ return [
     ],
 
     'FLEX_SALARY_TOKENS' => [
-        '{flex_salary_minimum}' => 'Minimum flex salary',
+        '{flex_salary_minimum}'   => 'Minimum flex salary',
         '{flex_salary_inclusive}' => 'Inclusive flex salary',
         '{flex_salary_exclusive}' => 'Exclusive flex salary',
-        '{flex_salary_vacation}' => 'Vacation flex salary',
-        '{flex_salary_employee}' => 'Employee flex salary',
+        '{flex_salary_vacation}'  => 'Flex vacation salary',
+        '{flex_salary_employee}'  => 'Employee flex salary',
     ],
 
     'TOKENS'                            => [

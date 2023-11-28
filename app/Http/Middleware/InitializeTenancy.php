@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\JsonResponse;
+use App\Models\Tenant;
 
 class InitializeTenancy
 {
@@ -27,7 +28,7 @@ class InitializeTenancy
         $companyId = $request->header('Company-Id');
         if ($companyId) {
             $tenant = $this->companyService->getTenantByCompanyId($companyId);
-            if ($tenant) {
+            if ($tenant instanceof Tenant) {
                 tenancy()->initialize($tenant);
                 config(['database.connections.tenant_template.database' => $tenant->database_name]);
                 return $next($request);

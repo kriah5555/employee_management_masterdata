@@ -208,15 +208,12 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
                 'controller' => WorkstationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
-            'employees'    => [
-                'controller' => EmployeeController::class,
-                'methods'    => ['index', 'show', 'store', 'update', 'destroy']
-            ],
             'cost-centers' => [
                 'controller' => CostCenterController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
         ];
+
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
         }
@@ -229,13 +226,15 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
+        Route::resource('employees', EmployeeController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-        Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
-        Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
-        Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
-        Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
-        Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+        // Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
+        // Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
+        // Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
+        // Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
+        // Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 

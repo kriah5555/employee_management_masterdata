@@ -46,7 +46,6 @@ class WorkstationService
     {
         $workstation     = $workstation->toArray();
         $function_titles = collect($workstation['function_titles'])->pluck('function_title');
-        // DD($function_titles);   
         return $function_titles;
     }
 

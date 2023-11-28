@@ -21,7 +21,6 @@ class EmployeeSocialSecretaryDetailsRepository implements EmployeeSocialSecretar
     public function createEmployeeSocialSecretaryDetails(array $employeeSocialSecretaryDetailsDetails): EmployeeSocialSecretaryDetails
     {
 
-        // dd($employeeSocialSecretaryDetailsDetails);
         return EmployeeSocialSecretaryDetails::create($employeeSocialSecretaryDetailsDetails);
     }
 

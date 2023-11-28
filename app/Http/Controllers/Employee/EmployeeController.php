@@ -20,19 +20,15 @@ use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
 
 class EmployeeController extends Controller
 {
-    protected $employeeService;
-    protected $companyService;
-    protected $locationService;
-    protected $commuteTypeService;
-    protected $mealVoucherService;
 
-    public function __construct(EmployeeService $employeeService, CompanyService $companyService, LocationService $locationService, CommuteTypeService $commuteTypeService, MealVoucherService $mealVoucherService)
+    public function __construct(
+        protected EmployeeService $employeeService,
+        protected CompanyService $companyService,
+        protected CommuteTypeService $commuteTypeService,
+        protected MealVoucherService $mealVoucherService,
+        protected LocationService $locationService,
+        )
     {
-        $this->employeeService = $employeeService;
-        $this->companyService = $companyService;
-        $this->locationService = $locationService;
-        $this->commuteTypeService = $commuteTypeService;
-        $this->mealVoucherService = $mealVoucherService;
     }
 
     /**
