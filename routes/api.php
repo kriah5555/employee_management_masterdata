@@ -61,7 +61,11 @@ use App\Http\Controllers\NotificationController\NotificationController;
 $integerRule = '[0-9]+'; # allow only integer values
 $statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
-
+Route::get('/testing', function () {
+    return response()->json([
+        'message' => 'Masterdata'
+    ]);
+});
 
 Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
