@@ -274,7 +274,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('/get-availability', [AvailabilityController::class, 'avilableDateAndNOtAvailableDates']);
         Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
         Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
-
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
