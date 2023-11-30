@@ -61,7 +61,7 @@ class EmployeeHolidayCountService extends BaseService
                     'holiday_code_name'         => $holidayCode->holiday_code_name,
                     'employee_holiday_count_id' => $employee_holiday_count_id,
                     'holiday_code_count'        => $holidayCode->count_type == 2 ? $holidayCode->count / config('constants.DAY_HOURS') : 0,
-                    'count_type'                => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS')[$holidayCode->count_type],
+                    'count_type'                => config('absence.HOLIDAY_COUNT_TYPE_OPTIONS')[$holidayCode->count_type],
                     'count'                     => $holidayCode->count_type == 2 ? $count / config('constants.DAY_HOURS') : $count,
                     'reason'                    => $reason,
                 ];
@@ -190,7 +190,7 @@ class EmployeeHolidayCountService extends BaseService
             foreach ($holiday_code_count_history as $data) {
                 $return[] = [
                     'count'      => $data->count_type == 2 ? $data['count'] / config('constants.DAY_HOURS') : $data['count'],
-                    'count_type' => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS')[$data->count_type],
+                    'count_type' => config('absence.HOLIDAY_COUNT_TYPE_OPTIONS')[$data->count_type],
                     'reason'     => $data->reason,
                     'status'     => $data->status,
                 ];

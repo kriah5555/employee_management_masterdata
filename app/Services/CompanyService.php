@@ -51,7 +51,7 @@ class CompanyService
             DB::connection('tenant')->beginTransaction();
             foreach ($values['responsible_persons'] as $responsiblePerson) {
                 $employee_service = app(EmployeeService::class);
-                $employeeService->createNewResponsiblePerson($responsiblePerson, $company->id);
+                $employee_service->createNewResponsiblePerson($responsiblePerson, $company->id);
             }
             $location_ids = $this->createCompanyLocations($company, $values); # add company locations
             $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles

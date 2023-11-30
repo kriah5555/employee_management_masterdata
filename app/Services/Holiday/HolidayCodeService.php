@@ -22,29 +22,29 @@ class HolidayCodeService
         $holidayCode = $this->holidayCodeRepository->getHolidayCodeById($id);
         $holidayCode->holiday_type = [
             'value' => $holidayCode->holiday_type,
-            'label' => config('constants.HOLIDAY_TYPE_OPTIONS')[$holidayCode->holiday_type]
+            'label' => config('absence.HOLIDAY_TYPE_OPTIONS')[$holidayCode->holiday_type]
         ];
         $holidayCode->count_type = [
             'value' => $holidayCode->count_type,
-            'label' => config('constants.HOLIDAY_COUNT_TYPE_OPTIONS')[$holidayCode->count_type]
+            'label' => config('absence.HOLIDAY_COUNT_TYPE_OPTIONS')[$holidayCode->count_type]
         ];
         $holidayCode->employee_category = array_map(function ($employeeCategory) {
             return [
                 'value' => $employeeCategory,
-                'label' => config('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS')[$employeeCategory] ?? null,
+                'label' => config('absence.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS')[$employeeCategory] ?? null,
             ];
         }, json_decode($holidayCode->employee_category));
         $holidayCode->icon_type = [
             'value' => $holidayCode->icon_type,
-            'label' => config('constants.HOLIDAY_ICON_TYPE_OPTIONS')[$holidayCode->icon_type]
+            'label' => config('absence.HOLIDAY_ICON_TYPE_OPTIONS')[$holidayCode->icon_type]
         ];
         $holidayCode->contract_type = [
             'value' => $holidayCode->contract_type,
-            'label' => config('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS')[$holidayCode->contract_type]
+            'label' => config('absence.HOLIDAY_CONTRACT_TYPE_OPTIONS')[$holidayCode->contract_type]
         ];
         $holidayCode->type = [
             'value' => $holidayCode->type,
-            'label' => config('constants.HOLIDAY_OPTIONS')[$holidayCode->type]
+            'label' => config('absence.HOLIDAY_OPTIONS')[$holidayCode->type]
         ];
         return $holidayCode;
         // return $this->holidayCodeRepository->getHolidayCodeById($id);
@@ -52,27 +52,27 @@ class HolidayCodeService
     
     public function getHolidayCodeTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.HOLIDAY_TYPE_OPTIONS');
+        return getValueLabelOptionsFromConfig('absence.HOLIDAY_TYPE_OPTIONS');
     }
     
     public function getHolidayCodeCountTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.HOLIDAY_COUNT_TYPE_OPTIONS');
+        return getValueLabelOptionsFromConfig('absence.HOLIDAY_COUNT_TYPE_OPTIONS');
     }
 
     public function getHolidayCodeIconTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.HOLIDAY_ICON_TYPE_OPTIONS');
+        return getValueLabelOptionsFromConfig('absence.HOLIDAY_ICON_TYPE_OPTIONS');
     }
 
     public function getHolidayTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.HOLIDAY_OPTIONS');
+        return getValueLabelOptionsFromConfig('absence.HOLIDAY_OPTIONS');
     }
 
     public function getCompanyLinkingOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.HOLIDAY_INCLUDE_OPTIONS');
+        return getValueLabelOptionsFromConfig('absence.HOLIDAY_INCLUDE_OPTIONS');
     }
 
     public function createHolidayCode($values)

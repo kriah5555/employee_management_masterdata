@@ -180,6 +180,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('reasons-list/{category?}', 'getReasonsList');
 
     });
+
     Route::controller(SocialSecretaryController::class)->group(function () use ($integerRule) {
 
         Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
@@ -189,7 +190,16 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::group(['middleware' => 'initialize-tenancy'], function () use ($integerRule) {
 
-        Route::resource('holidays', HolidayController::class)->except(['edit']);
+        Route::controller(HolidayController::class)->group(function () use ($integerRule) {
+
+            Route::resource('holidays', HolidayController::class)->except(['edit', 'index']);
+
+            Route::get('holidays/{employee_id}/{status}', [HolidayController::class, 'index']) 
+                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']);
+
+            Route::post('holidays-status/{holiday_id}/{status}', 'updateHolidayStatus')
+                ->where(['status' => '(approve|cancel|request_cancel|reject)']);
+        });
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
 

@@ -18,9 +18,9 @@ class Absence extends BaseModel
     protected $table = 'absence';
 
     protected $fillable = [
-        'shift_type', # [1 => Holiday, 2 -> Leave]
-        'duration_type', #  [1 => first half, 2 => second half, 3 => full day, 4 => multiple codes or combination]
-        'absence_status', # [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled]
+        'absence_type', # [1 => Holiday, 2 -> Leave]
+        'duration_type', #  [1 => 'First half',2 => 'Second half',3 => 'Multiple codes',4 => 'Multiple codes first half',5 => 'Multiple codes half',6 => 'First and second half', # will have two holiday codes, 7 => 'Multiple dates', # will have two holiday codes],
+        'absence_status', # [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled, 5 => approved but requested for cancellation]
         'employee_profile_id',
         'manager_id',
         'reason',
@@ -33,6 +33,20 @@ class Absence extends BaseModel
         'deleted_at',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Listen for the 'deleting' event
+        static::deleting(function ($absence) {
+            // Delete related AbsenceHours
+            $absence->absenceHours()->delete();
+
+            // Delete related AbsenceDates
+            $absence->absenceDates()->delete();
+        });
+    }
+    
     public function employee()
     {
         return $this->hasOne(EmployeeProfile::class, 'employee_profile_id');
