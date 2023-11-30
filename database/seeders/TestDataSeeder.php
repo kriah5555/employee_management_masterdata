@@ -48,7 +48,7 @@ class TestDataSeeder extends Seeder
         CommuteType::insert($commuteTypes);
 
         $mealVouchers = [
-            ['name' => 'Sodexo', 'sort_order' => 1]
+            ['name' => 'Sodexo', 'sort_order' => 1, 'amount' => 0]
         ];
         MealVoucher::insert($mealVouchers);
 

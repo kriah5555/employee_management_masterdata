@@ -235,3 +235,22 @@ if (!function_exists('getCompanyId')) {
         return Request::header('Company-Id');
     }
 }
+
+if (!function_exists('formatToEuropeCurrency')) { # will convert number format to europe currency format
+    function formatToEuropeCurrency($currency)
+    {
+        $parts = explode('.', $currency);
+        // $decimal = 0;
+        // if (count($parts) == 2) {
+        //     $decimal = strlen($parts[1]);
+        // }
+        return number_format($currency, 4, ',', '.');
+    }
+}
+
+if (!function_exists('formatToNumber')) { # will convert europe currency format to number format
+    function formatToNumber($number)
+    {
+        return (float)str_replace(['.', ','], ['', '.'], $number);
+    }
+}

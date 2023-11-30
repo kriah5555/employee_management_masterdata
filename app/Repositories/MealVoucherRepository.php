@@ -37,3 +37,4 @@ class MealVoucherRepository implements MealVoucherRepositoryInterface
         return MealVoucher::whereId($mealVoucherId)->update($newDetails);
     }
 }
+;

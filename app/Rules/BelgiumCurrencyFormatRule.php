@@ -3,17 +3,23 @@
 namespace App\Rules;
 
 use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Rule;
 
-class BelgiumCurrencyFormatRule implements ValidationRule
+class BelgiumCurrencyFormatRule implements Rule
 {
-    /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     */
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+
+    public function passes($attribute, $value)
     {
-        
+        return $this->isEuropeanCurrencyFormat($value) || ctype_digit($value);
+    }
+
+    private function isEuropeanCurrencyFormat($value): bool
+    {
+        return preg_match(config('constants.EUROPE_CURRENCY_FORMAT_REGEX'), $value);
+    }
+    
+    public function message(): string
+    {
+        return 'Wrong currency format :attribute.';
     }
 }

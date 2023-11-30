@@ -13,7 +13,7 @@ class MealVoucher extends BaseModel
         'sort_order',
         'name',
         'status',
-        "amount",
+        'amount',
     ];
     /**
      * The table associated with the model.
@@ -52,18 +52,19 @@ class MealVoucher extends BaseModel
     protected $fillable = [
         'sort_order',
         'name',
-        'status'
+        'status',
+        'amount',
     ];
+
+    protected $appends = ['amount_formatted'];
 
     public function setAmountAttribute($value)
     {
-        $this->attributes['amount'] = strtr($value, ['.' => ',', ',' => '.']);
+        $this->attributes['amount'] = formatToNumber($value);
     }
 
-    public function getAmountAttribute($value)
+    public function getAmountFormattedAttribute()
     {
-        // return number_format($value, 2, ',', '.');
-        return strtr($value, [',' => '.', '.' => ',']);
+        return formatToEuropeCurrency($this->amount);
     }
-
 }

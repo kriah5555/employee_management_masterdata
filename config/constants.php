@@ -142,4 +142,6 @@ return [
         '{phone_number}'  => 'Phone number',
         '{company_name}'  => "Company name",
     ],
+
+    'EUROPE_CURRENCY_FORMAT_REGEX' => '/^\d{1,3}(?:\.\d{3})*(?:,\d+)?$/',
 ];
