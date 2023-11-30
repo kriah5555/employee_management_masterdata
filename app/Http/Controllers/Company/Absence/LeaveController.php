@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Company\Absence;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
 use App\Services\Company\Absence\HolidayService;
-use App\Http\Requests\Company\Absence\HolidayRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Absence\HolidayRequest;
 
-class HolidayController extends Controller
+class LeaveController extends Controller
 {
     public function __construct(protected HolidayService $holidayService)
     {
@@ -72,7 +72,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    // 'data'    => $this->holidayService->getOptionsToCreate()
+                    'data'    => $this->holidayService->getOptionsToCreate()
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -90,28 +90,27 @@ class HolidayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(HolidayRequest $request)
+    public function store(Request $request)
     {
-        return "Validation is Done";
-        // try {
-        //     $request_data = $request->all();
-        //     return returnResponse(
-        //         [
-        //             'success' => true,
-        //             'message' => t('Holiday created successfully'),
-        //             'data'    => $this->holidayService->applyHoliday($request_data)
-        //         ],
-        //         JsonResponse::HTTP_CREATED,
-        //     );
-        // } catch (Exception $e) {
-        //     return returnResponse(
-        //         [
-        //             'success' => false,
-        //             'message' => $e->getMessage(),
-        //         ],
-        //         JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-        //     );
-        // }
+        try {
+            $request_data = $request->all();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Holiday created successfully'),
+                    'data'    => $this->holidayService->applyHoliday($request_data)
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
