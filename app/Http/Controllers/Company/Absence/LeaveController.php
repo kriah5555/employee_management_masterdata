@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Absence\HolidayRequest;
 
-class HolidayController extends Controller
+class LeaveController extends Controller
 {
     public function __construct(protected HolidayService $holidayService)
     {
@@ -72,7 +72,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    // 'data'    => $this->holidayService->getOptionsToCreate()
+                    'data'    => $this->holidayService->getOptionsToCreate()
                 ],
                 JsonResponse::HTTP_CREATED,
             );
