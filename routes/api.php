@@ -28,6 +28,7 @@ use App\Http\Controllers\Interim\InterimAgencyController;
 use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 use App\Http\Controllers\Company\Absence\HolidayController;
 use App\Http\Controllers\Company\Contract\ContractConfigurationController;
+use App\Http\Controllers\Company\AvailabilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -247,6 +248,12 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
         Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
         Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+
+        Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
+        Route::get('/get-availability', [AvailabilityController::class, 'avilableDateAndNOtAvailableDates']);
+        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
+        Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
+        
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 });
