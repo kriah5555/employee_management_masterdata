@@ -42,7 +42,7 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     public function getTenantByCompanyId($companyId)
     {
-        return Tenant::where('company_id', $companyId)->first();
+        return Tenant::where('company_id', $companyId)->get()->first();
     }
 
     public function createCompany(array $details): Company

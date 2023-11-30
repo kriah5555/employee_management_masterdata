@@ -9,6 +9,7 @@ use App\Models\EmployeeType\EmployeeType;
 use App\Models\User\CompanyUser;
 use App\Models\User\UserBasicDetails;
 use App\Models\User\UserContactDetails;
+use App\Models\EmployeeFunction\FunctionTitle;
 use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
 use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use App\Services\CompanyService;
@@ -20,11 +21,10 @@ use App\Models\User\User;
 use App\Repositories\Employee\EmployeeBenefitsRepository;
 use App\Repositories\Company\LocationRepository;
 
-use App\Models\EmployeeFunction\FunctionTitle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
+use App\Services\Email\MailService;
 
 class EmployeeService
 {
@@ -37,6 +37,7 @@ class EmployeeService
         protected LocationRepository $locationRepository,
         protected UserService $userService,
         protected CompanyService $companyService,
+        protected MailService $mailService
     ) {
     }
     /**
@@ -161,6 +162,7 @@ class EmployeeService
             $employeeProfile = $this->createEmployeeProfile($user, $values);
             $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             $this->createEmployeeContract($employeeProfile, $values);
+            $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;
@@ -197,6 +199,37 @@ class EmployeeService
             throw $e;
         }
     }
+
+    public function updateEmployee( $values, $company_id)
+    {
+        try {
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+
+            $existingEmpProfile = $this->userService->getUserById($values['user_id']);
+
+            if ($existingEmpProfile) {
+                $user = $this->userService->updateUser($values);
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+
+            // Commit transactions
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+
+            return $user;
+
+
+
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
 
     public function createCompanyUser(User $user, $company_id, $role)
     {

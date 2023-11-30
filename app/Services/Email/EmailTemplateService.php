@@ -66,9 +66,19 @@ class EmailTemplateService extends BaseService
         ];
     }
 
+    public function getEmailTemplateDetailsById($email_template_id)
+    {
+        return $this->get($email_template_id);
+    }
+
+    public function getEmailTemplateDetailsByType($email_template_type)
+    {
+        return $this->model::where(['template_type' => $email_template_type])->get()->first();
+    }
+
     public function getOptionsToEdit($email_template_id)
     {
-        $email_template     = $this->get($email_template_id);
+        $email_template     = self::getEmailTemplateDetailsById($email_template_id);
         $options            = $this->getOptionsToCreate();
         $email_template['template_type'] = [
             'value' => $email_template['template_type'],

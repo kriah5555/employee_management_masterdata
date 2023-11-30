@@ -9,19 +9,23 @@ use App\Exceptions\ModelUpdateFailedException;
 
 class HolidayRepository implements HolidayRepositoryInterface
 {
-    public function getHolidays($status = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    public function getHolidays($employee_id = '', $status = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         $query = Absence::query();
-        $query->where('shift_type', config('constants.HOLIDAY'));
-        if ($status != '' && array_key_exists($status, config('constants.ABSENCE_STATUS'))) {
+        $query->where('absence_type', config('absence.HOLIDAY'));
+        if ($status != '') {
             $query->where('absence_status', $status);
         }
+        if ($employee_id != '') {
+            $query->where('employee_profile_id', $employee_id);
+        }
+        $query->with(['absenceDates', 'absenceHours']);
         return $query->get();
     }
 
     public function getHolidayById(string $absenceId, array $relations = [])
     {
-        return Absence::with($relations)->where('shift_type', config('constants.HOLIDAY'))->findOrFail($absenceId);
+        return Absence::with($relations)->where('absence_type', config('absence.HOLIDAY'))->findOrFail($absenceId);
     }
 
     public function deleteHoliday(Absence $absence)
@@ -35,13 +39,13 @@ class HolidayRepository implements HolidayRepositoryInterface
 
     public function createHoliday(array $details)
     {
-        $details['shift_type'] = config('constants.HOLIDAY');
+        $details['absence_type'] = config('absence.HOLIDAY');
         return Absence::create($details);
     }
 
     public function updateHoliday(Absence $absence, array $updatedDetails)
     {
-        $updatedDetails['shift_type'] = config('constants.HOLIDAY');
+        $updatedDetails['absence_type'] = config('absence.HOLIDAY');
         if ($absence->update($updatedDetails)) {
             return true;
         } else {

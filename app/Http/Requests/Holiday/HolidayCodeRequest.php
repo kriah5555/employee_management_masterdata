@@ -34,7 +34,7 @@ class HolidayCodeRequest extends ApiRequest
             'description'                       => 'nullable|string|max:255',
             'holiday_type'                      => [
                 'required',
-                Rule::in(array_keys(config('constants.HOLIDAY_TYPE_OPTIONS'))),
+                Rule::in(array_keys(config('absence.HOLIDAY_TYPE_OPTIONS'))),
             ],
             'type'                              => 'required|in:1,2,3,4',
             'count_type'                        => 'required|in:1,2,3',

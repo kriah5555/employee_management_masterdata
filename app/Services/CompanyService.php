@@ -29,9 +29,15 @@ class CompanyService
     {
         return $this->companyRepository->getCompanies();
     }
+
     public function getActiveCompanies()
     {
         return $this->companyRepository->getActiveCompanies();
+    }
+
+    public function getTenantByCompanyId($companyId)
+    {
+        return $this->companyRepository->getTenantByCompanyId($companyId);
     }
 
     public function createNewCompany($values)
@@ -43,9 +49,10 @@ class CompanyService
             $tenant = $this->createTenant($company);
             setTenantDB($tenant->id);
             DB::connection('tenant')->beginTransaction();
-            // foreach ($values['responsible_persons'] as $responsiblePerson) {
-            //     $this->employeeService->createNewResponsiblePerson($responsiblePerson, $company->id);
-            // }
+            foreach ($values['responsible_persons'] as $responsiblePerson) {
+                $employee_service = app(EmployeeService::class);
+                $employee_service->createNewResponsiblePerson($responsiblePerson, $company->id);
+            }
             $location_ids = $this->createCompanyLocations($company, $values); # add company locations
             $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();

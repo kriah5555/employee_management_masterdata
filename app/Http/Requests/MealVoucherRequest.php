@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\ApiRequest;
+use App\Rules\BelgiumCurrencyFormatRule;
 
 class MealVoucherRequest extends ApiRequest
 {
@@ -19,6 +20,7 @@ class MealVoucherRequest extends ApiRequest
             $rules = [
                 'sort_order' => 'required|integer',
                 'name'       => 'required|string|max:255',
+                'amount'     => ['required', new BelgiumCurrencyFormatRule],
             ];
         }
         return $rules;

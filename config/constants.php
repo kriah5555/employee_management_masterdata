@@ -2,22 +2,6 @@
 
 return [
 
-    'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Paid', 2 => 'Unpaid'],
-
-    'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
-
-    'HOLIDAY_OPTIONS'                   => [1 => 'Holiday', 2 => 'Leave', 3 => 'Sick Leave', 4 => 'Over time'],
-
-    'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
-
-    'YES_OR_NO_OPTIONs'                 => [0 => 'No', 1 => 'Yes'],
-
-    'HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS' => [1 => 'Servant', 2 => 'Worker'],
-
-    'HOLIDAY_CONTRACT_TYPE_OPTIONS'     => [1 => 'Both', 2 => 'Full time', 3 => 'Part time'],
-
-    'HOLIDAY_INCLUDE_OPTIONS'           => ['all' => 'ALL', 'include' => 'Include', 'exclude' => 'Exclude'],
-
     'DAY_HOURS'                         => 8,
 
     'LANGUAGE_OPTIONS'                  => [
@@ -72,38 +56,18 @@ return [
     # 24 hours time format like 11:00
 
     'EMAIL_TEMPLATES'                   => [
-        'planning_mail'      => 'Planning Mail',
-        'leave_request_mail' => 'Leave request mail',
-        'plan_reminder'      => 'plan reminder Mail',
+        'planning_mail'                   => 'Planning Mail',
+        'leave_request_mail'              => 'Leave request mail',
+        'plan_reminder'                   => 'Plan reminder Mail',
+        'new_employee_creation_mail'      => 'New employee creation mail',
+        'existing_employee_creation_mail' => 'Existing employee creation mail',
     ],
 
     'MONTHLY_SALARY'                    => 1,
 
     'HOURLY_SALARY'                     => 2,
 
-    'CONTRACT_TEMPLATE_TYPE'            => ['company' => 'Company', 'default' => 'Default'],
 
-    // Holiday Leave
-
-    'HOLIDAY'          => 1,
-    'LEAVE'            => 2,
-    'PENDING_STATUS'   => 1,
-    'APPROVED_STATUS'  => 2,
-    'REJECTED_STATUS'  => 3,
-    'CANCELLED_STATUS' => 4,
-    'ABSENCE_STATUS'   => [
-        1 => 'Pending',
-        2 => 'Approved',
-        3 => 'Rejected',
-        4 => 'Cancelled',
-    ],
-
-    'ABSENCE_DURATION_TYPE'   => [
-        1 => 'First half',
-        2 => 'Second half',
-        3 => 'Full day',
-        4 => 'Multiple codes or combination',
-    ],
 
     'EMPLOYEE_TOKENS' => [
         '{employee_first_name}'    => 'First name',
@@ -161,11 +125,11 @@ return [
     ],
 
     'FLEX_SALARY_TOKENS' => [
-        '{flex_salary_minimum}' => 'Minimum flex salary',
+        '{flex_salary_minimum}'   => 'Minimum flex salary',
         '{flex_salary_inclusive}' => 'Inclusive flex salary',
         '{flex_salary_exclusive}' => 'Exclusive flex salary',
-        '{flex_salary_vacation}' => 'Vacation flex salary',
-        '{flex_salary_employee}' => 'Employee flex salary',
+        '{flex_salary_vacation}'  => 'Flex vacation salary',
+        '{flex_salary_employee}'  => 'Employee flex salary',
     ],
 
     'TOKENS'                            => [
@@ -178,4 +142,6 @@ return [
         '{phone_number}'  => 'Phone number',
         '{company_name}'  => "Company name",
     ],
+
+    'EUROPE_CURRENCY_FORMAT_REGEX' => '/^\d{1,3}(?:\.\d{3})*(?:,\d+)?$/',
 ];

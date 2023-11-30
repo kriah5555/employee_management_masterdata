@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Address;
-use App\Models\Company\Company;
 use App\Models\Company\Employee\CommuteType;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
-use App\Models\Company\Location;
 use App\Models\MinimumSalary;
 use App\Models\Sector\SectorAgeSalary;
 use Illuminate\Database\Seeder;
@@ -51,7 +48,7 @@ class TestDataSeeder extends Seeder
         CommuteType::insert($commuteTypes);
 
         $mealVouchers = [
-            ['name' => 'Sodexo', 'sort_order' => 1]
+            ['name' => 'Sodexo', 'sort_order' => 1, 'amount' => 0]
         ];
         MealVoucher::insert($mealVouchers);
 

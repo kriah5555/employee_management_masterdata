@@ -5,6 +5,8 @@ namespace App\Models\Company\Absence;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Company\Absence\Absence;
+use App\Models\Holiday\HolidayCode;
 
 class AbsenceHours extends BaseModel
 {
@@ -28,5 +30,15 @@ class AbsenceHours extends BaseModel
         'created_at',
         'updated_at',
         'deleted_at',
-    ];
+    ]; 
+
+    public function absence()
+    {
+        return $this->belongsTo(Absence::class, 'absence_id');
+    }
+
+    public function holidayCode()
+    {
+      return $this->belongsTo(HolidayCode::class, 'holiday_code_id');  
+    }
 }

@@ -2,15 +2,16 @@
 
 namespace App\Models\User;
 
+use App\Models\User\UserBankAccount;
+use App\Models\User\UserBasicDetails;
+use App\Models\User\UserFamilyDetails;
+use Spatie\Permission\Traits\HasRoles;
+use App\Models\User\UserContactDetails;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasPermissions;
+use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
-use Spatie\Permission\Traits\HasPermissions;
-use App\Models\User\UserBasicDetails;
-use App\Models\User\UserBankAccount;
-use App\Models\User\UserFamilyDetails;
-use App\Models\Company\Employee\EmployeeProfile;
 
 class User extends Authenticatable
 {
@@ -86,4 +87,21 @@ class User extends Authenticatable
     {
         return $this->hasMany(CompanyUser::class);
     }
+    public function userBankDetails($userId)
+    {
+        return $this->hasOne(UserBankAccount::class)->where('user_id', $userId);
+    }
+    public function userBasicDetailsById($user_id)
+    {
+        return $this->hasOne(UserBasicDetails::class)->where('user_id', $user_id);
+    }
+    public function userAddressById($user_id)
+    {
+        return $this->hasOne(UserAddress::class)->where('user_id', $user_id);
+    }
+    public function userContactById($user_id)
+    {
+        return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
+    }
+
 }

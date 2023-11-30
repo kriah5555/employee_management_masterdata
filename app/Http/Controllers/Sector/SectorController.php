@@ -8,6 +8,8 @@ use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\Sector\SectorService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SectorController extends Controller
 {
@@ -115,5 +117,33 @@ class SectorController extends Controller
             ],
             JsonResponse::HTTP_OK,
         );
+    }
+
+    public function getFunctionTitles(Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'sector_ids' => 'required|array',
+                'sector_ids.*' => [
+                    'integer',
+                    Rule::exists('sectors', 'id'),
+                ],
+            ]);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->sectorService->getSectorFunctionTitles($request->input('sector_ids')),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }
