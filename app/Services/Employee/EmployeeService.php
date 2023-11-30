@@ -28,7 +28,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EmployeeService
 {
-    // Mail::to('sunilgangadhar.infanion@gmail.com')->send(new SendMail('Test mails', $htmlContent));
 
     public function __construct(
         protected EmployeeProfileRepository $employeeProfileRepository,

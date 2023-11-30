@@ -28,21 +28,13 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     public function deleteCompany(Company $company)
     {
-
         try {
-            $company = $this->getCompanyById($company->id);
-            $tenant  = $this->getTenantByCompanyId($company->id);
-    
-            if ($tenant) {
-                $tenant->delete();
-            }
-
             if ($company->delete()) {
                 return true;
             } else {
                 throw new ModelDeleteFailedException('Failed to delete company');
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage());
             throw $e;
         }

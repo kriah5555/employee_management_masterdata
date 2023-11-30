@@ -34,7 +34,8 @@
         "files" : [
             "app/Helpers/helpers.php",
             "app/Helpers/HelperClass.php",
-            "app/Helpers/MailHelper.php"
+            "app/Helpers/MailHelper.php",
+            "app/Helpers/Validators.php"
         ]
     },
     "autoload-dev": {

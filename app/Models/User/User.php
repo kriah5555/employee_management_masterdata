@@ -82,4 +82,8 @@ class User extends Authenticatable
         return $this->hasMany(EmployeeProfile::class)
             ->where('status', true);
     }
+    public function companyUser()
+    {
+        return $this->hasMany(CompanyUser::class);
+    }
 }
