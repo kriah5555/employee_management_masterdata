@@ -267,7 +267,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
 
 
-
         Route::controller(EmployeeController::class)->group(function () {
 
             Route::resource('employees', EmployeeController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
