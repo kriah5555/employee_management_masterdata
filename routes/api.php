@@ -29,8 +29,7 @@ use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 use App\Http\Controllers\Company\Absence\HolidayController;
 use App\Http\Controllers\Company\Absence\LeaveController;
 use App\Http\Controllers\Company\Contract\ContractConfigurationController;
-use App\Http\Controllers\NotificationController\NotificationController;
-
+use App\Http\Controllers\Company\AvailabilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -269,7 +268,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('/get-availability', [AvailabilityController::class, 'avilableDateAndNOtAvailableDates']);
         Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
         Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
-
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
