@@ -56,8 +56,15 @@ class MealVoucher extends BaseModel
         'amount',
     ];
 
+    protected $appends = ['amount_formatted'];
+
     public function setAmountAttribute($value)
     {
         $this->attributes['amount'] = formatToNumber($value);
+    }
+
+    public function getAmountFormattedAttribute()
+    {
+        return formatToEuropeCurrency($this->amount);
     }
 }
