@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             EmployeeTypeCategorySeeder::class,
             DimonaTypesSeeder::class,
             ContractRenewalTypesSeeder::class,
-            TestDataSeeder::class,
             EmailTemplatesSeeder::class,
         ]);
     }
