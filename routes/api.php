@@ -264,7 +264,20 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
+        Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
+        Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
+        Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
+        Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
+        Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+
+        Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
+        Route::get('/get-availability', [AvailabilityController::class, 'avilableDateAndNOtAvailableDates']);
+        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
+        Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
+
+    });
+    Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
+
 
 
         Route::controller(EmployeeController::class)->group(function () {
