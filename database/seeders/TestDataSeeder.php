@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Address;
-use App\Models\Company\Company;
 use App\Models\Company\Employee\CommuteType;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
-use App\Models\Company\Location;
 use App\Models\MinimumSalary;
 use App\Models\Sector\SectorAgeSalary;
 use Illuminate\Database\Seeder;
