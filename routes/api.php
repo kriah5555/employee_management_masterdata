@@ -200,7 +200,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
             Route::resource('holidays', HolidayController::class)->except(['edit', 'index']);
 
-            Route::get('holidays/{employee_id}/{status}', [HolidayController::class, 'index']) 
+            Route::get('holidays/{employee_id}/{status}', [HolidayController::class, 'index'])
                 ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']);
 
             Route::post('holidays-status/{holiday_id}/{status}', 'updateHolidayStatus')
@@ -249,6 +249,12 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
         Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
         Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+
+        Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
+        Route::get('/get-availability', [AvailabilityController::class, 'avilableDateAndNOtAvailableDates']);
+        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
+        Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
+
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
