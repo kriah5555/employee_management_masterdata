@@ -24,12 +24,12 @@ class HolidayRequest extends ApiRequest
             'duration_type' => [
                 'bail',
                 'required',
-                Rule::in(array_keys(config('constants.ABSENCE_DURATION_TYPE'))),
+                Rule::in(array_keys(config('absence.DURATION_TYPE'))),
             ],
             'absence_status' => [
                 'bail',
                 'required',
-                Rule::in(array_keys(config('constants.ABSENCE_STATUS'))),
+                Rule::in(array_keys(config('absence.STATUS'))),
             ],
             'employee_profile_id' => [
                 'bail',

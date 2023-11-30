@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('absence', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('shift_type')->nullable(); #  [1 => Holiday, 2 -> Leave]
-            $table->tinyInteger('duration_type')->nullable(); #  [1 => first half, 2 => second half, 3 => full day, 4 => multiple codes or combination]
-            $table->tinyInteger('absence_status')->nullable(); #  [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled]
+            $table->tinyInteger('absence_type')->nullable(); #  [1 => Holiday, 2 -> Leave]
+            $table->tinyInteger('duration_type')->nullable(); #  [1 => 'First half',2 => 'Second half',3 => 'Multiple codes',4 => 'Multiple codes first half',5 => 'Multiple codes half',6 => 'First and second half', # will have two holiday codes, 7 => 'Multiple dates', # will have two holiday codes],
+            $table->tinyInteger('absence_status')->nullable(); #  [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled, 5 => approved but requested for cancellation]
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
             $table->foreignId('manager_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
             $table->string('reason')->nullable();
@@ -42,6 +42,7 @@ return new class extends Migration
         Schema::create('absence_dates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('absence_id')->nullable()->references('id')->on('absence')->onDelete('cascade');
+            $table->tinyInteger('dates_type')->nullable(); # [1 =>  multiple dates, 2 => from and to date]
             $table->json('dates')->nullable();
             $table->boolean('status')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();

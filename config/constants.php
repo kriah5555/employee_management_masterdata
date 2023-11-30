@@ -2,22 +2,6 @@
 
 return [
 
-    'HOLIDAY_TYPE_OPTIONS'              => [1 => 'Paid', 2 => 'Unpaid'],
-
-    'HOLIDAY_COUNT_TYPE_OPTIONS'        => [1 => 'Hours', 2 => 'Days'],
-
-    'HOLIDAY_OPTIONS'                   => [1 => 'Holiday', 2 => 'Leave', 3 => 'Sick Leave', 4 => 'Over time'],
-
-    'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
-
-    'YES_OR_NO_OPTIONs'                 => [0 => 'No', 1 => 'Yes'],
-
-    'HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS' => [1 => 'Servant', 2 => 'Worker'],
-
-    'HOLIDAY_CONTRACT_TYPE_OPTIONS'     => [1 => 'Both', 2 => 'Full time', 3 => 'Part time'],
-
-    'HOLIDAY_INCLUDE_OPTIONS'           => ['all' => 'ALL', 'include' => 'Include', 'exclude' => 'Exclude'],
-
     'DAY_HOURS'                         => 8,
 
     'LANGUAGE_OPTIONS'                  => [
@@ -83,32 +67,6 @@ return [
 
     'HOURLY_SALARY'                     => 2,
 
-    // Holiday Leave
-
-    'HOLIDAY'           => 1,
-    'LEAVE'             => 2,
-    'HOLIDAY_PENDING'   => 1,
-    'HOLIDAY_APPROVED'  => 2,
-    'HOLIDAY_REJECTED'  => 3,
-    'HOLIDAY_CANCELLED' => 4,
-    'ABSENCE_STATUS'   => [
-        1 => 'Pending',
-        2 => 'Approved',
-        3 => 'Rejected',
-        4 => 'Cancelled',
-    ],
-
-    'HOLIDAY_FIRST_HALF'             => 1,
-    'HOLIDAY_SECOND_HALF'            => 1,
-    'HOLIDAY_FULL_DAY'               => 1,
-    'HOLIDAY_MULTIPLE_HOLIDAY_CODES' => 1,
-
-    'ABSENCE_DURATION_TYPE'   => [
-        1 => 'First half',
-        2 => 'Second half',
-        3 => 'Full day',
-        4 => 'Multiple codes or combination',
-    ],
 
 
     'EMPLOYEE_TOKENS' => [

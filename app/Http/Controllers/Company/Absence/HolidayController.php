@@ -13,18 +13,44 @@ class HolidayController extends Controller
     public function __construct(protected HolidayService $holidayService)
     {
     }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+    public function index($employee_id, $status)
     {
         try {
+            $status = config('absence.'.strtoupper($status));
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getHolidays(request()->input('status')),
+                    'data'    => $this->holidayService->getHolidays($employee_id, $status),
                 ],
                 JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function updateHolidayStatus($holiday_id, $status)
+    {
+        try {
+            $status = config('absence.'.strtoupper($status));
+            $this->holidayService->updateHolidayStatus($holiday_id, $status);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Holiday status updated successfully'),
+                ],
+                JsonResponse::HTTP_CREATED,
             );
         } catch (Exception $e) {
             return returnResponse(
@@ -67,8 +93,7 @@ class HolidayController extends Controller
     public function store(Request $request)
     {
         try {
-            $request_data                   = $request->all();
-            $request_data['multiple_dates'] = true;
+            $request_data = $request->all();
             return returnResponse(
                 [
                     'success' => true,
@@ -93,11 +118,12 @@ class HolidayController extends Controller
      */
     public function show($holidayId)
     {
+        $holiday_details = $this->holidayService->getHolidayById($holidayId, ['absenceDates', 'absenceHours.holidayCode']);
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getHolidayById($holidayId, ['absenceDates', 'absenceHours'])
+                    'data'    => $holiday_details
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -118,7 +144,7 @@ class HolidayController extends Controller
     public function update(Request $request, $holidayId)
     {
         try {
-            $this->holidayService->updateHoliday($holidayId, $request->all());
+            $this->holidayService->updateAppliedHoliday($holidayId, $request->all());
             return returnResponse(
                 [
                     'success' => true,
