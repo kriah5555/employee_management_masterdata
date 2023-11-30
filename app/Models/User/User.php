@@ -20,7 +20,7 @@ class User extends Authenticatable
     protected $connection = 'userdb';
 
     protected $guard_name = 'api';
-    
+
     protected $table = 'users';
     /**
      * The attributes that are mass assignable.
@@ -110,5 +110,10 @@ class User extends Authenticatable
     public function userContactById($user_id)
     {
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
+    }
+
+    public function companyUser()
+    {
+        return $this->hasMany(CompanyUser::class);
     }
 }

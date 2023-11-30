@@ -167,6 +167,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
         Route::resource($uri, $controller)->only($methods);
     }
+    Route::get('convert-pdf-to-html', [CompanyController::class, 'convertPDFHtml']);
 
     Route::get('convert-pdf-to-html', [ContractTemplateController::class, 'convertPDFHtml']);
 

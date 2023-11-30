@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Company;
 
 use App\Models\Company\Company;
 use App\Http\Requests\Company\CompanyRequest;
-use App\Http\Requests\Company\CompanyAdditionalDetailsRequest;
 use App\Services\Company\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -13,7 +12,7 @@ use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Interim\InterimAgencyService;
 use Exception;
 
-class CompanyController extends Controller
+class ResponsiblePersonController extends Controller
 {
     protected $companyService;
     protected $sectorService;
@@ -54,28 +53,6 @@ class CompanyController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(CompanyRequest $request)
-    {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'message' => 'Company created successfully',
-                    'data'    => $this->companyService->registerNewCompany($request->validated()),
-                ],
-                JsonResponse::HTTP_CREATED,
-            );
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
-    }
-
-    public function storeAdditionalDetails(CompanyAdditionalDetailsRequest $request)
     {
         try {
             return returnResponse(

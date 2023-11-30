@@ -7,6 +7,7 @@ use App\Http\Requests\Company\LocationRequest;
 use App\Models\Company\Location;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Exception;
 
 class LocationController extends Controller
 {
