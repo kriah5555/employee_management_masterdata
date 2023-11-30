@@ -12,7 +12,8 @@ class MealVoucher extends BaseModel
     protected $columnsToLog = [
         'sort_order',
         'name',
-        'status'
+        'status',
+        "amount",
     ];
     /**
      * The table associated with the model.
@@ -53,4 +54,16 @@ class MealVoucher extends BaseModel
         'name',
         'status'
     ];
+
+    public function setAmountAttribute($value)
+    {
+        $this->attributes['amount'] = strtr($value, ['.' => ',', ',' => '.']);
+    }
+
+    public function getAmountAttribute($value)
+    {
+        // return number_format($value, 2, ',', '.');
+        return strtr($value, [',' => '.', '.' => ',']);
+    }
+
 }

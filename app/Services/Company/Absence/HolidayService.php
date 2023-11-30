@@ -126,7 +126,7 @@ class HolidayService
                 'holiday_code_id' => $holiday_code_count['holiday_code'],
                 'hours'           => $holiday_code_count['hours'],
                 'duration_type'   => (in_array($holiday_code_count['duration_type'], [config('absence.FIRST_HALF'), config('absence.SECOND_HALF')]) 
-                                    && in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')])) # if the duration type is forts and second half with multiple holiday codes 
+                                    && in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), config('absence.FIRST_AND_SECOND_HALF')])) # if the duration type is forts and second half with multiple holiday codes or  it is first and second half
                                     ? $holiday_code_count['duration_type'] : $duration_type,
             ];
 

@@ -238,11 +238,11 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-        // Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
-        // Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
-        // Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
-        // Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
-        // Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+        Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
+        Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
+        Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
+        Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
+        Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 });

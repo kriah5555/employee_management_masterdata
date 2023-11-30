@@ -19,6 +19,7 @@ class MealVoucherRequest extends ApiRequest
             $rules = [
                 'sort_order' => 'required|integer',
                 'name'       => 'required|string|max:255',
+                'amount'     => 'required|string|regex:/^\d{1,3}(?:\.\d{3})*(?:,\d+)?$/',
             ];
         }
         return $rules;
