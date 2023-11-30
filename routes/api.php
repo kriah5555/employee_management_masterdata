@@ -25,13 +25,6 @@ use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 // use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
-<<<<<<< HEAD
-use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
-use App\Http\Controllers\Company\Absence\HolidayController;
-use App\Http\Controllers\Company\Absence\LeaveController;
-use App\Http\Controllers\Company\Contract\ContractConfigurationController;
-use App\Http\Controllers\Company\AvailabilityController;
-=======
 // use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 // use App\Http\Controllers\Company\Absence\HolidayController;
 // use App\Http\Controllers\Company\Absence\LeaveController;
@@ -59,7 +52,6 @@ use App\Http\Controllers\Employee\{
     FunctionTitleController,
     FunctionCategoryController,
 };
->>>>>>> dc54865 (leave APIs)
 
 /*
 |--------------------------------------------------------------------------
