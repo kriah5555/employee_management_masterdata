@@ -18,10 +18,10 @@ class SectorSalaryService
         $this->sectorService = $sectorService;
     }
 
-    public function getMinimumSalariesBySectorId($id, $salary_type = '')
+    public function getMinimumSalariesBySectorId($sector_id, $salary_type = '')
     {
         $field  = $this->getFieldBySalaryType($salary_type);
-        $sector = $this->sectorService->getSectorDetails($id);
+        $sector = $this->sectorService->getSectorDetails($sector_id);
         $sector->load('salaryConfig.salarySteps.minimumSalary');
 
         $return = [
@@ -36,7 +36,7 @@ class SectorSalaryService
             ];
 
             foreach ($item->minimumSalary as $salary_item) {
-                $data['cat' . $salary_item->category_number] = number_format($salary_item->$field ?? 0, 4);
+                $data['cat' . $salary_item->category_number] = formatToEuropeCurrency($salary_item->$field);
             }
 
             $return['salaries'][] = $data;
@@ -65,7 +65,7 @@ class SectorSalaryService
             $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
 
             #backup the old data
-            $sectorSalarySteps_ids = $this->getSalaryStepidsBySectorSalaryConfig($sectorSalaryConfig);
+            $sectorSalarySteps_ids = $this->getSalaryStepIdsBySectorSalaryConfig($sectorSalaryConfig);
             $this->addSalaryBackup($sectorSalarySteps_ids, $sectorSalaryConfig, $salary_type);
 
             foreach ($values as $value) {
@@ -88,46 +88,11 @@ class SectorSalaryService
         $minimumSalaryModel = MinimumSalary::where('sector_salary_steps_id', $sectorSalaryStepId)
             ->where('category_number', $category)->firstOrFail();
 
-        $minimumSalaryModel->$field = (float) str_replace(',', '.', $minimumSalary);
+        $minimumSalaryModel->$field = $minimumSalary;
         $minimumSalaryModel->save();
     }
 
-    // public function incrementMinimumSalaries($sectorId, $increment_coefficient)
-    // {
-    //     try {
-    //         DB::beginTransaction();
-    //         $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
-
-    //         $sectorSalarySteps = SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
-    //             ->whereIn('level', range(1, $sectorSalaryConfig->steps))
-    //             ->get()->pluck('id');
-
-    //         $old_salary_data = MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps)->get();
-    //         $save_old_data = [];
-    //         foreach ($old_salary_data as $salary_data) {
-    //             $save_old_data[$salary_data->sector_salary_steps_id][$salary_data->category_number] = $salary_data->salary;
-    //         }
-
-    //         # add to backup table
-    //         MinimumSalaryBackup::create([
-    //             'sector_salary_config_id' => $sectorSalaryConfig->id,
-    //             'category'                => $sectorSalaryConfig->category,
-    //             'salary_data'             => $save_old_data
-    //         ]);
-
-    //         # update all the minimum salaries by $increment_coefficient %
-    //         MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps)
-    //             ->update(['salary' => DB::raw("salary + (salary * $increment_coefficient / 100)")]);
-    //         DB::commit();
-    //     } catch (Exception $e) {
-    //         DB::rollback();
-    //         error_log($e->getMessage());
-    //         throw $e;
-    //     }
-    // }
-
-
-    private function getSalaryStepidsBySectorSalaryConfig(SectorSalaryConfig $sectorSalaryConfig) 
+    private function getSalaryStepIdsBySectorSalaryConfig(SectorSalaryConfig $sectorSalaryConfig) 
     {
         return SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
                 ->whereIn('level', range(0, $sectorSalaryConfig->steps))
@@ -141,7 +106,7 @@ class SectorSalaryService
             $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
 
             #backup the old data
-            $sectorSalarySteps_ids = $this->getSalaryStepidsBySectorSalaryConfig($sectorSalaryConfig);
+            $sectorSalarySteps_ids = $this->getSalaryStepIdsBySectorSalaryConfig($sectorSalaryConfig);
             $this->addSalaryBackup($sectorSalarySteps_ids, $sectorSalaryConfig);
 
             # update all the minimum salaries by $increment_coefficient %

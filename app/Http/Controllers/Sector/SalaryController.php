@@ -18,14 +18,14 @@ class SalaryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function getMinimumSalaries($id)
+    public function getMinimumSalaries($sector_id)
     {
         try {
             $salary_type = $this->getSalaryTypeFromPath(request()->getPathInfo());
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->sectorSalaryService->getMinimumSalariesBySectorId($id, $salary_type),
+                    'data'    => $this->sectorSalaryService->getMinimumSalariesBySectorId($sector_id, $salary_type),
                 ],
                 JsonResponse::HTTP_OK,
             );

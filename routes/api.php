@@ -30,6 +30,7 @@ use App\Http\Controllers\Company\Absence\HolidayController;
 use App\Http\Controllers\Company\Contract\ContractConfigurationController;
 use App\Http\Controllers\NotificationController\NotificationController;
 
+use App\Http\Controllers\Company\AvailabilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,7 +62,11 @@ use App\Http\Controllers\NotificationController\NotificationController;
 $integerRule = '[0-9]+'; # allow only integer values
 $statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
-
+Route::get('/testing', function () {
+    return response()->json([
+        'message' => 'Masterdata'
+    ]);
+});
 
 Route::group(['middleware' => 'service-registry'], function () {
     // Your API routes
@@ -182,6 +187,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('reasons-list/{category?}', 'getReasonsList');
 
     });
+
     Route::controller(SocialSecretaryController::class)->group(function () use ($integerRule) {
 
         Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
@@ -191,7 +197,16 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::group(['middleware' => 'initialize-tenancy'], function () use ($integerRule) {
 
-        Route::resource('holidays', HolidayController::class)->except(['edit']);
+        Route::controller(HolidayController::class)->group(function () use ($integerRule) {
+
+            Route::resource('holidays', HolidayController::class)->except(['edit', 'index']);
+
+            Route::get('holidays/{employee_id}/{status}', [HolidayController::class, 'index']) 
+                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']);
+
+            Route::post('holidays-status/{holiday_id}/{status}', 'updateHolidayStatus')
+                ->where(['status' => '(approve|cancel|request_cancel|reject)']);
+        });
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
 
@@ -230,11 +245,17 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-        // Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
-        // Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
-        // Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
-        // Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
-        // Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+        Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
+        Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
+        Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
+        Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
+        Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+
+        Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
+        Route::get('/get-availability', [AvailabilityController::class, 'avilableDateAndNOtAvailableDates']);
+        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
+        Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
+        
     });
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 

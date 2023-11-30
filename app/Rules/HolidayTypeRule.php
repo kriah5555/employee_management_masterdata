@@ -26,7 +26,7 @@ class HolidayTypeRule implements ValidationRule
 
         // Query the database once to check all holiday codes at once
         $invalidHolidayCodes = HolidayCode::whereIn('id', $holidayCodeIds)
-            ->where('holiday_type', '!=', config('constants.HOLIDAY'))
+            ->where('holiday_type', '!=', config('absence.HOLIDAY'))
             ->pluck('id')
             ->toArray();
 

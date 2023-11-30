@@ -22,6 +22,7 @@ class AbsenceDates extends BaseModel
     protected $fillable = [
         'absence_id',
         'dates',
+        'dates_type', # [1 =>  multiple dates, 2 => from and to date]
         'status',
         'created_by',
         'updated_by',
