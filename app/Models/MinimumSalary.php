@@ -62,4 +62,14 @@ class MinimumSalary extends BaseModel
     {
         return $this->belongsTo(SectorSalarySteps::class);
     }
+
+    public function setHourlyMinimumSalaryAttribute($value)
+    {
+        $this->attributes['hourly_minimum_salary'] = formatToNumber($value);
+    }
+
+    public function setMonthlyMinimumSalaryAttribute($value)
+    {
+        $this->attributes['monthly_minimum_salary'] = formatToNumber($value);
+    }
 }
