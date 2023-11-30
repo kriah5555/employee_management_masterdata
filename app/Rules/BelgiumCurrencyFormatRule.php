@@ -10,7 +10,7 @@ class BelgiumCurrencyFormatRule implements Rule
 
     public function passes($attribute, $value)
     {
-        return $this->isEuropeanCurrencyFormat($value) || is_numeric(formatToNumber($value));
+        return $this->isEuropeanCurrencyFormat($value) || is_numeric($value);
     }
 
     private function isEuropeanCurrencyFormat($value): bool
