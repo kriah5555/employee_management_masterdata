@@ -105,8 +105,10 @@ class WorkstationService
         try {
             DB::connection('tenant')->beginTransaction();
 
-            $locations = $values['locations'] ?? [];
-            $function_titles = $values['function_titles'] ?? [];
+                $locations       = $values['locations'] ?? [];
+                $function_titles = $values['function_titles'] ?? [];
+
+                unset($values['locations'], $values['locations_index']);
 
             unset($values['locations'], $values['locations_index']);
 
@@ -136,9 +138,9 @@ class WorkstationService
             $function_titles = $values['function_titles'] ?? [];
             $locations = $values['locations'] ?? [];
 
-            $workstation = self::getWorkstationById($workstation_id);
-            // $workstation->functionTitles()->sync($function_titles);
-            $workstation->linkFunctionTitles($function_titles);
+                $workstation = self::getWorkstationById($workstation_id);
+                // $workstation->functionTitles()->sync($function_titles);
+                $workstation->linkFunctionTitles($function_titles);
 
             $workstation->locations()->sync($locations);
 

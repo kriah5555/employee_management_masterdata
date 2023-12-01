@@ -43,13 +43,13 @@ class HolidayRequest extends ApiRequest
                 'bail',
                 'required',
                 'integer',
-                new EmployeeLinkedToCompanyRule($companyId),
+                // new EmployeeLinkedToCompanyRule($companyId),
             ],
             'manager_id' => [
                 'bail',
                 'required',
                 'integer',
-                new EmployeeLinkedToCompanyRule($companyId),
+                // new EmployeeLinkedToCompanyRule($companyId),
             ],
             'reason' => 'required|string',
 
