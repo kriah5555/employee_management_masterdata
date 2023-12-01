@@ -28,15 +28,6 @@ class LeaveRepository implements LeaveRepositoryInterface
         return Absence::with($relations)->where('absence_type', config('absence.LEAVE'))->findOrFail($absenceId);
     }
 
-    public function deleteLeave(Absence $absence)
-    {
-        if ($absence->delete()) {
-            return true;
-        } else {
-            throw new ModelDeleteFailedException('Failed to delete');
-        }
-    }
-
     public function createLeave(array $details)
     {
         $details['absence_type'] = config('absence.LEAVE');

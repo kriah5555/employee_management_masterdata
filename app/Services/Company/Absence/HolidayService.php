@@ -94,9 +94,9 @@ class HolidayService
 
                 $formatted_data = $this->absence_service->getAbsenceFormattedDataToSave($details);
 
-                $holiday = $this->holiday_repository->createHoliday($details);
+                $holiday = $this->holiday_repository->createHoliday($formatted_data['details']);
 
-                $holiday = $this->absence_service->createAbsenceRelatedData($formatted_data['details'], $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
+                $holiday = $this->absence_service->createAbsenceRelatedData($holiday, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
 
             DB::connection('tenant')->commit();
             
@@ -108,7 +108,7 @@ class HolidayService
         }
     }
 
-    public function updateAppliedHoliday($holiday_id, array $updatedDetails)
+    public function updateAppliedHoliday($holiday_id, array $details)
     {
         try {
             DB::connection('tenant')->beginTransaction();
@@ -119,9 +119,9 @@ class HolidayService
 
                 $this->absence_service->deleteAbsenceRelatedData($holiday); # delete old records of holiday dates and holiday hours
 
-                $this->holiday_repository->updateHoliday($holiday, $updatedDetails);
+                $this->holiday_repository->updateHoliday($holiday, $formatted_data['details']);
 
-                $this->absence_service->createAbsenceRelatedData($formatted_data['details'], $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
+                $this->absence_service->createAbsenceRelatedData($holiday, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
 
                 return $holiday;
 
@@ -137,8 +137,9 @@ class HolidayService
     public function deleteHoliday($absenceId)
     {
         try {
-            $absence = Absence::where('absence_type', config('absence.HOLIDAY'))->findOrFail($absenceId);
-            return $this->holiday_repository->deleteHoliday($absence);
+            $absence = $this->holiday_repository->getHolidayById($absenceId);
+            $this->absence_service->deleteAbsence($absence);
+            return;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

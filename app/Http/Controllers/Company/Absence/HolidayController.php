@@ -18,7 +18,31 @@ class HolidayController extends Controller
      * Display a listing of the resource.
      */
 
-    public function index($employee_id, $status)
+    public function index($status)
+    {
+        try {
+            $status = config('absence.'.strtoupper($status));
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->holidayService->getHolidays('', $status),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+
+
+    public function employeeHolidays($employee_id, $status)
     {
         try {
             $status = config('absence.'.strtoupper($status));
@@ -149,7 +173,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Location updated successfully'),
+                    'message' => t('Holiday updated successfully'),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -172,7 +196,7 @@ class HolidayController extends Controller
         $this->holidayService->deleteHoliday($holidayId);
         return response()->json([
             'success' => true,
-            'message' => t('Location deleted successfully')
+            'message' => t('Holiday deleted successfully')
         ]);
     }
 }

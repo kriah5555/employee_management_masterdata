@@ -79,9 +79,10 @@ class AbsenceService
                     config('absence.FIRST_HALF'), # if first half it will have single code
                     config('absence.SECOND_HALF'), # if second half it will have single code
                     config('absence.FIRST_AND_SECOND_HALF'), # if second half it will have single code
+                    config('absence.FULL_DAYS'), # if full day it will have single code
                 ]) 
-                || ($index == 2 && config('absence.FIRST_AND_SECOND_HALF'))
-            ) { # if it is first nd second half then there will be two holiday codes
+                || ($index == 2 && config('absence.FIRST_AND_SECOND_HALF')) # if it is first nd second half then there will be two holiday codes
+            ) { 
                 break;
             } 
         }
@@ -90,8 +91,7 @@ class AbsenceService
             'dates'      => json_encode($details['dates']), 
             'dates_type' => $details['duration_type'] == config('absence.MULTIPLE_DATES') ? config('absence.DATES_FROM_TO') : config('absence.DATES_MULTIPLE')
         ];
-
-
+        
         return [
             'absence_hours_data' => $absence_hours_data,
             'dates_data'         => $dates_data,
@@ -113,10 +113,18 @@ class AbsenceService
             $hours = config('constants.DAY_HOURS') * count($details['dates']);
         } elseif (in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')])) {
             $hours = $holiday_code_count['hours'];
-        } elseif (in_array($duration_type, [config('absence.FIRST_HALF'), config('absence.SECOND_HALF')])) {
+        } elseif (in_array($duration_type, [config('absence.FIRST_HALF'), config('absence.SECOND_HALF')])) { # will holiday code with no hours
             $hours = (config('constants.DAY_HOURS') / 2) * count($details['dates']);
+        } elseif (in_array($duration_type, [config('absence.FULL_DAYS')])) { # will fll day will have only one holiday coe with on hours
+            $hours = config('constants.DAY_HOURS') * count($details['dates']);
         }
 
         return $hours;
+    }
+
+    public function deleteAbsence(Absence $absence)
+    {
+        $absence->delete();
+        return;
     }
 }

@@ -27,6 +27,7 @@ use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
 use App\Http\Controllers\Company\Contract\CompanyContractTemplateController;
 use App\Http\Controllers\Company\Absence\HolidayController;
+use App\Http\Controllers\Company\Absence\LeaveController;
 use App\Http\Controllers\Company\Contract\ContractConfigurationController;
 use App\Http\Controllers\NotificationController\NotificationController;
 
@@ -200,11 +201,25 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
             Route::resource('holidays', HolidayController::class)->except(['edit', 'index']);
 
-            Route::get('holidays/{employee_id}/{status}', [HolidayController::class, 'index'])
-                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']);
+            Route::get('employee-holidays/{employee_id}/{status}', [HolidayController::class, 'employeeHolidays'])
+                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for employee flow
+
+            Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
+            ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for managers flow
 
             Route::post('holidays-status/{holiday_id}/{status}', 'updateHolidayStatus')
-                ->where(['status' => '(approve|cancel|request_cancel|reject)']);
+                ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
+        });
+
+        Route::controller(LeaveController::class)->group(function () use ($integerRule) {
+
+            Route::resource('leaves', LeaveController::class)->except(['edit', 'index']);
+
+            Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
+                ->where(['status' => '(approve|cancel)']); # to get leaves list
+
+            Route::post('leaves-status/{leave_id}/{status}', 'updateHolidayStatus')
+                ->where(['status' => '(cancel)']);
         });
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
