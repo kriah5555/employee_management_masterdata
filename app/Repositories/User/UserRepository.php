@@ -32,5 +32,6 @@ class UserRepository implements UserRepositoryInterface
         return User::where('social_security_number', $socialSecurityNumber)->get();
     }
 
+    
 
 }
