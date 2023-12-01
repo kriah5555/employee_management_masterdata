@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class DurationTypeRule implements ValidationRule
 {
-    public function __construct(protected $durationType,protected $companyId)
+    public function __construct(protected $durationType, protected $companyId)
     {
     }
     /**
@@ -17,12 +17,13 @@ class DurationTypeRule implements ValidationRule
      *
      * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
+
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
 
         foreach ($value as $data) {
 
-            $duration_type_rules = $this->getDurationTypeRule($fail,$this->companyId,$value,$data);
+            $duration_type_rules = $this->getDurationTypeRule($fail, $this->companyId, $value, $data);
 
             $validator = \Validator::make($data, $duration_type_rules);
 
@@ -34,96 +35,58 @@ class DurationTypeRule implements ValidationRule
             }
         }
     }
-    public function getDurationTypeRule($fail,$companyId,$value,array $data)
+    public function getDurationTypeRule($fail, $companyId, $value, array $data)
     {
 
-        $durationTypeRule = [];
+        $durationTypeRule = [
+            'holiday_code' => ['required', 'integer', new HolidayCodeLinkedToCompanyRule($companyId)],
+        ];
+
         switch ($this->durationType) {
-            case 1:
-                $durationTypeRule = [
-                    'holiday_code' => ['required','integer',new HolidayCodeLinkedToCompanyRule($companyId)],
-                    'duration_type' => ['required', 'integer', 'in:' . config('absence.FIRST_HALF')]
-                ];
+            case config('absence.FIRST_HALF'):
+            case config('absence.SECOND_HALF'):
+                $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . ($this->durationType === config('absence.FIRST_HALF') ? config('absence.FIRST_HALF') : config('absence.SECOND_HALF'))];
                 break;
-            case 2:
-                $durationTypeRule = [
-                    'holiday_code' => ['required','integer',new HolidayCodeLinkedToCompanyRule($companyId)],
-                    'duration_type' => ['required', 'integer', 'in:' . config('absence.SECOND_HALF')]
-                ];
+            case config('absence.MULTIPLE_HOLIDAY_CODES'):
+                $durationTypeRule['hours'] = 'required|numeric';
                 break;
-            case 3:
-                $durationTypeRule = [
-                    'holiday_code' => ['required','integer',new HolidayCodeLinkedToCompanyRule($companyId)],
-                    'hours' => 'required|numeric',
-                ];
-                break;
-            case 4:
+
+
+            case config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'):
+            case config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'):
                 $durationTypeCount = count(array_filter($value, function ($row) {
                     return isset($row['duration_type']);
                 }));
 
                 if ($durationTypeCount === 1) {
-                    $durationTypeRule = [
-                        'holiday_code' => ['required','integer',new HolidayCodeLinkedToCompanyRule($companyId)],
-                        'hours' => 'nullable|numeric',
-                    ];
+                    $durationTypeRule['hours'] = 'nullable|numeric';
 
-                    if(isset($data['duration_type'])){
-
-                        $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . config('absence.FIRST_HALF')];
+                    if (isset($data['duration_type'])) {
+                        $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . ($this->durationType === 4 ? config('absence.FIRST_HALF') : config('absence.SECOND_HALF'))];
                     }
-                }
-                else {
-                    $fail("Plaese select one first half");
+                } else {
+                    $fail("Please select atleat one half day");
                 }
                 break;
-            case 5:
-                $durationTypeCount = count(array_filter($value, function ($row) {
-                    return isset($row['duration_type']);
-                }));
-
-                if ($durationTypeCount === 1) {
-                    $durationTypeRule = [
-                        'holiday_code' => ['required','integer',new HolidayCodeLinkedToCompanyRule($companyId)],
-                        'hours' => 'nullable|numeric',
-                    ];
-
-                    if(isset($data['duration_type']))
-                    {
-                        $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . config('absence.SECOND_HALF'),
-                    ];
-                    }
-                }
-                else {
-                    $fail("Please select one second half");
-                }
-                break;
-
-            case 6:
+            case config('absence.FIRST_AND_SECOND_HALF'):
                 if (count($value) == 2) {
                     $durationTypes = array_column($value, 'duration_type');
-                    if(count($durationTypes) === count(array_unique($durationTypes))){
-                        $durationTypeRule = [
-                            'holiday_code' => ['required','integer',new HolidayCodeLinkedToCompanyRule($companyId)],
-                            'duration_type' => [
+                    if (count($durationTypes) === count(array_unique($durationTypes))) {
+                        $durationTypeRule['duration_type'] =
+                            [
                                 'required',
                                 'integer',
                                 Rule::in(config('absence.FIRST_HALF'), config('absence.SECOND_HALF')),
-                            ]
-                        ];
-                    }else{
+                            ];
+                    } else {
                         $fail("Duration type is same, Please check once");
                     }
-                }
-                else{
+                } else {
                     $fail("Please select two holiday code based on shift");
                 }
                 break;
-            case 7:
-            case 8:
-                $durationTypeRule = [
-                    'holiday_code' => ['required','integer',new HolidayCodeLinkedToCompanyRule($companyId)],
-                ];
+            case config('absence.MULTIPLE_DATES'):
+            case config('absence.FULL_DAYS'):
                 break;
         }
         return $durationTypeRule;

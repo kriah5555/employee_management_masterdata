@@ -46,15 +46,26 @@ class HolidayRequest extends ApiRequest
                 // new EmployeeLinkedToCompanyRule($companyId),
             ],
             'reason' => 'required|string',
+
             'dates' => [
                 'required',
                 'array',
                 'bail',
+                // new HoliadyRequestDataFormatRule(request()->input('duration_type')),
             ],
 
-            // 'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-            'dates' => new HoliadyRequestDataFormatRule(request()->input('duration_type')),
-
+            'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
+            'dates.from_date' => [
+                'bail',
+                'required_if:duration_type,' . config('absence.MULTIPLE_DATES'),
+                'date_format:d-m-Y',
+            ],
+            'dates.to_date' => [
+                'bail',
+                'required_if:duration_type,' . config('absence.MULTIPLE_DATES'),
+                'date_format:d-m-Y',
+                'after_or_equal:dates.from_date',
+            ],
 
 
             'holiday_code_counts' => [
@@ -66,16 +77,6 @@ class HolidayRequest extends ApiRequest
                 new DurationTypeRule(request()->input('duration_type'), $this->header('Company-Id')),
 
             ],
-
-            // // 'holiday_codes.*.hours' => 'required|numeric',
-            // 'holiday_code_counts.*.holiday_code' => 'required|integer',
-
-            // 'holiday_codes.*.holiday_code' => [
-            //     'bail',
-            //     'required',
-            //     'integer',
-            //     new HolidayCodeLinkedToCompanyRule($companyId),
-            // ],
         ];
     }
 
