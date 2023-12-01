@@ -48,6 +48,7 @@ return [
     'MULTIPLE_HOLIDAY_CODES_SECOND_HALF' => 5,
     'FIRST_AND_SECOND_HALF'              => 6,
     'MULTIPLE_DATES'                     => 7,
+    'FULL_DAYS'                          => 8,
 
     'DATES_MULTIPLE' => 1,
     'DATES_FROM_TO'  => 2,

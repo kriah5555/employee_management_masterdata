@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('manager_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
             $table->string('reason')->nullable();
             $table->boolean('status')->default(true);
+            $table->date('applied_date')->nullable(); 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

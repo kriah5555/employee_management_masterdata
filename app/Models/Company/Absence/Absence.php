@@ -17,12 +17,15 @@ class Absence extends BaseModel
 
     protected $table = 'absence';
 
+    protected $dateFormat = 'd-m-Y'; // Use 'd-m-Y' format for the date attribute
+
     protected $fillable = [
         'absence_type', # [1 => Holiday, 2 -> Leave]
         'duration_type', #  [1 => 'First half',2 => 'Second half',3 => 'Multiple codes',4 => 'Multiple codes first half',5 => 'Multiple codes half',6 => 'First and second half', # will have two holiday codes, 7 => 'Multiple dates', # will have two holiday codes],
         'absence_status', # [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled, 5 => approved but requested for cancellation]
         'employee_profile_id',
         'manager_id',
+        'applied_date',
         'reason',
         'status',
     ];
@@ -37,6 +40,10 @@ class Absence extends BaseModel
     {
         parent::boot();
 
+        static::creating(function ($absence) {
+            $absence->applied_date = now()->toDateString();
+        });
+        
         // Listen for the 'deleting' event
         static::deleting(function ($absence) {
             // Delete related AbsenceHours

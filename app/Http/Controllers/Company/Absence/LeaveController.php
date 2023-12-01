@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Company\Absence;
 
 use Illuminate\Http\Request;
-use App\Services\Company\Absence\HolidayService;
+use App\Services\Company\Absence\LeaveService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Absence\HolidayRequest;
 
 class LeaveController extends Controller
 {
-    public function __construct(protected HolidayService $holidayService)
+    public function __construct(protected LeaveService $leave_service)
     {
     }
 
@@ -18,14 +18,14 @@ class LeaveController extends Controller
      * Display a listing of the resource.
      */
 
-    public function index($employee_id, $status)
+    public function index($status)
     {
         try {
             $status = config('absence.'.strtoupper($status));
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getHolidays($employee_id, $status),
+                    'data'    => $this->leave_service->getLeaves($status),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -40,15 +40,15 @@ class LeaveController extends Controller
         }
     }
 
-    public function updateHolidayStatus($holiday_id, $status)
+    public function updateLeaveStatus($leave_id, $status)
     {
         try {
             $status = config('absence.'.strtoupper($status));
-            $this->holidayService->updateHolidayStatus($holiday_id, $status);
+            $this->leave_service->updateLeaveStatus($leave_id, $status);
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Holiday status updated successfully'),
+                    'message' => t('Leave status updated successfully'),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -72,7 +72,7 @@ class LeaveController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getOptionsToCreate()
+                    'data'    => $this->leave_service->getOptionsToCreate()
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -97,8 +97,8 @@ class LeaveController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Holiday created successfully'),
-                    'data'    => $this->holidayService->applyHoliday($request_data)
+                    'message' => t('Leave created successfully'),
+                    'data'    => $this->leave_service->applyLeave($request_data)
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -116,14 +116,14 @@ class LeaveController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($holidayId)
+    public function show($leaveId)
     {
-        $holiday_details = $this->holidayService->getHolidayById($holidayId, ['absenceDates', 'absenceHours.holidayCode']);
+        $leave_details = $this->leave_service->getLeaveById($leaveId, ['absenceDates', 'absenceHours.holidayCode']);
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $holiday_details
+                    'data'    => $leave_details
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -141,14 +141,14 @@ class LeaveController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $holidayId)
+    public function update(Request $request, $leaveId)
     {
         try {
-            $this->holidayService->updateAppliedHoliday($holidayId, $request->all());
+            $this->leave_service->updateApprovedLeave($leaveId, $request->all());
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Location updated successfully'),
+                    'message' => t('Leave updated successfully'),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -166,12 +166,12 @@ class LeaveController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($holidayId)
+    public function destroy($leaveId)
     {
-        $this->holidayService->deleteHoliday($holidayId);
+        $this->leave_service->deleteLeave($leaveId);
         return response()->json([
             'success' => true,
-            'message' => t('Location deleted successfully')
+            'message' => t('Leave deleted successfully')
         ]);
     }
 }
