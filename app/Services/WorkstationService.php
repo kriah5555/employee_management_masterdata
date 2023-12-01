@@ -16,8 +16,8 @@ use App\Rules\ExistsInMasterDatabaseRule;
 class WorkstationService
 {
     public function __construct(
-        protected WorkstationRepository $workstationRepository, 
-        protected LocationService $locationService, 
+        protected WorkstationRepository $workstationRepository,
+        protected LocationService $locationService,
         protected FunctionService $functionService
         )
     {
@@ -33,7 +33,7 @@ class WorkstationService
         return  $this->workstationRepository->getWorkstationById($workstation_id);
     }
 
-    public function getWorkstationDetails($workstation_id) 
+    public function getWorkstationDetails($workstation_id)
     {
         $workstation_details = self::getWorkstationById($workstation_id);
         $function_titles     = self::getWorkstationFunctions($workstation_details);
@@ -42,7 +42,7 @@ class WorkstationService
         return $workstation_details;
     }
 
-    public function getWorkstationFunctions(Workstation $workstation) 
+    public function getWorkstationFunctions(Workstation $workstation)
     {
         $workstation     = $workstation->toArray();
         $function_titles = collect($workstation['function_titles'])->pluck('function_title');
@@ -108,7 +108,7 @@ class WorkstationService
 
                 $locations       = $values['locations'] ?? [];
                 $function_titles = $values['function_titles'] ?? [];
-                
+
                 unset($values['locations'], $values['locations_index']);
 
                 $workstation = $this->workstationRepository->createWorkstation($values);
@@ -138,7 +138,7 @@ class WorkstationService
                 $locations       = $values['locations'] ?? [];
 
                 $workstation = self::getWorkstationById($workstation_id);
-                // $workstation->functionTitles()->sync($function_titles);                
+                // $workstation->functionTitles()->sync($function_titles);
                 $workstation->linkFunctionTitles($function_titles);
 
                 $workstation->locations()->sync($locations);

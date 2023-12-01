@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Company\Absence;
 
 use Illuminate\Http\Request;
-use App\Services\Company\Absence\HolidayService;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Absence\HolidayRequest;
+use App\Http\Controllers\Controller;
+use App\Services\Company\Absence\HolidayService;
+use App\Http\Requests\Company\Absence\HolidayRequest;
 
 class HolidayController extends Controller
 {
@@ -90,27 +90,28 @@ class HolidayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(HolidayRequest $request)
     {
-        try {
-            $request_data = $request->all();
-            return returnResponse(
-                [
-                    'success' => true,
-                    'message' => t('Holiday created successfully'),
-                    'data'    => $this->holidayService->applyHoliday($request_data)
-                ],
-                JsonResponse::HTTP_CREATED,
-            );
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+        return "Validation is Done";
+        // try {
+        //     $request_data = $request->all();
+        //     return returnResponse(
+        //         [
+        //             'success' => true,
+        //             'message' => t('Holiday created successfully'),
+        //             'data'    => $this->holidayService->applyHoliday($request_data)
+        //         ],
+        //         JsonResponse::HTTP_CREATED,
+        //     );
+        // } catch (Exception $e) {
+        //     return returnResponse(
+        //         [
+        //             'success' => false,
+        //             'message' => $e->getMessage(),
+        //         ],
+        //         JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+        //     );
+        // }
     }
 
     /**
