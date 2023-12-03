@@ -10,8 +10,6 @@ interface LeaveRepositoryInterface
 
     public function getLeaveById(string $companyId);
 
-    public function deleteLeave(Absence $absence);
-
     public function createLeave(array $details);
 
     public function updateLeave(Absence $absence, array $updatedDetails);

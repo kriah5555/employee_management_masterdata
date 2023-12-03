@@ -28,15 +28,6 @@ class HolidayRepository implements HolidayRepositoryInterface
         return Absence::with($relations)->where('absence_type', config('absence.HOLIDAY'))->findOrFail($absenceId);
     }
 
-    public function deleteHoliday(Absence $absence)
-    {
-        if ($absence->delete()) {
-            return true;
-        } else {
-            throw new ModelDeleteFailedException('Failed to delete');
-        }
-    }
-
     public function createHoliday(array $details)
     {
         $details['absence_type'] = config('absence.HOLIDAY');

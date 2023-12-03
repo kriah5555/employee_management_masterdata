@@ -1,0 +1,148 @@
+<?php
+
+namespace App\Services\Company\Absence;
+
+use Illuminate\Support\Facades\DB;
+use App\Models\Company\Absence\Absence;
+use App\Services\BaseService;
+use App\Repositories\Company\Absence\LeaveRepository;
+use App\Services\Company\Absence\AbsenceService;
+use Exception;
+use DateTime;
+
+class LeaveService
+{
+    public function __construct(protected LeaveRepository $leave_repository, protected AbsenceService $absence_service)
+    {
+    }
+
+    public function getLeaves($status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    {
+        try {
+            return $this->leave_repository->getLeaves('', $status);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getLeaveById(string $leave_id, array $relations = [])
+    {
+        try {
+            return $this->leave_repository->getLeaveById($leave_id, $relations);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function createLeave($details, $leave_hours, $dates_data)
+    {
+        try {
+            $leave = $this->leave_repository->createLeave($details);
+
+            $leave = $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data);
+            
+            return $leave;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateLeave($leave_id, $updatedDetails, $leave_hours, $dates_data)
+    {
+        try {
+            $leave = $this->getLeaveById($leave_id);
+
+            $this->absence_service->deleteAbsenceRelatedData($leave); # delete old records of leave dates and leave hours
+
+            $this->leave_repository->updateLeave($leave, $updatedDetails);
+
+            $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data);
+
+            return $leave;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateLeaveStatus($leave_id, $status)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+
+                $leave =  $this->getLeaveById($leave_id);
+
+                $this->absence_service->updateAbsenceStatus($leave, $status);
+
+            DB::connection('tenant')->commit();
+
+            return $leave;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function applyLeave(array $details)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+
+                $formatted_data = $this->absence_service->getAbsenceFormattedDataToSave($details, config('absence.APPROVE'));
+
+                $leave = $this->leave_repository->createLeave($formatted_data['details']);
+
+                $leave = $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
+
+            DB::connection('tenant')->commit();
+            
+            return $leave;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateApprovedLeave($leave_id, array $details)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+
+                $formatted_data = $this->absence_service->getAbsenceFormattedDataToSave($details, config('absence.APPROVE'));
+
+                $leave = $this->getLeaveById($leave_id);
+
+                $this->absence_service->deleteAbsenceRelatedData($leave); # delete old records of leave dates and leave hours
+
+                $this->leave_repository->updateLeave($leave, $formatted_data['details']);
+
+                $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
+
+                return $leave;
+
+            DB::connection('tenant')->commit();
+            return $leave;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());    
+            throw $e;
+        }
+    }
+
+    public function deleteLeave($leaveId)
+    {
+        try {
+            $leave = $this->leave_repository->getLeaveById($leaveId);
+            $this->absence_service->deleteAbsence($leave);
+            return;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+}
