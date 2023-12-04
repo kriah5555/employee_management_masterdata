@@ -53,19 +53,12 @@ class DurationTypeRule implements ValidationRule
 
             case config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'):
             case config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'):
-                $durationTypeCount = count(array_filter($value, function ($row) {
-                    return isset($row['duration_type']);
-                }));
 
-                if ($durationTypeCount === 1) {
                     $durationTypeRule['hours'] = 'nullable|numeric';
 
-                    if (isset($data['duration_type'])) {
+                    if ($data['duration_type']!="") {
                         $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . ($this->durationType === 4 ? config('absence.FIRST_HALF') : config('absence.SECOND_HALF'))];
                     }
-                } else {
-                    $fail("Please select atleat one half day");
-                }
                 break;
             case config('absence.FIRST_AND_SECOND_HALF'):
                 if (count($value) == 2) {

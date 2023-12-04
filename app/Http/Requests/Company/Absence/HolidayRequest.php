@@ -10,6 +10,7 @@ use App\Rules\EmployeeHolidayBalanceRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\HoliadyRequestDataFormatRule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
+use PSpell\Config;
 
 class HolidayRequest extends ApiRequest
 {
@@ -28,11 +29,16 @@ class HolidayRequest extends ApiRequest
                 'required',
                 Rule::in(array_keys(config('absence.DURATION_TYPE'))),
             ],
-            // 'absence_status' => [
-            //     'bail',
-            //     'required',
-            //     Rule::in(array_keys(config('absence.STATUS'))),
-            // ],
+            'absence_type' => [
+                'bail',
+                'required',
+                Rule::in(config('absence.HOLIDAY'), config('absence.LEAVE')),
+            ],
+            'absence_status' => [
+                'bail',
+                'required',
+                Rule::in(array_keys(config('absence.STATUS'))),
+            ],
             'employee_profile_id' => [
                 'bail',
                 'required',
