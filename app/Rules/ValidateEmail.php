@@ -14,7 +14,7 @@ class ValidateEmail implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!validateCompanyRszNumber($value)) {
+        if (!validateEmail($value)) {
             $fail(__('Incorrect :attribute value', ['attribute' => str_replace('_', ' ', $attribute)]));
         }
     }
