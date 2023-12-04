@@ -7,6 +7,7 @@ use App\Http\Requests\Company\WorkstationRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\Company\Workstation;
 use App\Http\Controllers\Controller;
+use Exception;
 
 class WorkstationController extends Controller
 {
@@ -56,7 +57,7 @@ class WorkstationController extends Controller
         try {
             return response()->json([
                 'success' => true,
-                'data'    => $this->workstation_service->getWorkstationById($id),
+                'data'    => $this->workstation_service->getWorkstationDetails($id),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return returnResponse(
@@ -74,7 +75,7 @@ class WorkstationController extends Controller
         try {
             return response()->json([
                 'success' => true,
-                'data'    => $this->workstation_service->getOptionsToCreate(request()->header('Company-Id')),
+                'data'    => $this->workstation_service->getOptionsToCreate(getCompanyId()),
             ], JsonResponse::HTTP_CREATED);
         } catch (Exception $e) {
             return returnResponse(

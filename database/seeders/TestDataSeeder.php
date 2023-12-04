@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Address;
-use App\Models\Company\Company;
 use App\Models\Company\Employee\CommuteType;
 use App\Models\EmployeeFunction\FunctionCategory;
 use App\Models\EmployeeFunction\FunctionTitle;
-use App\Models\Company\Location;
 use App\Models\MinimumSalary;
 use App\Models\Sector\SectorAgeSalary;
 use Illuminate\Database\Seeder;
@@ -51,7 +48,7 @@ class TestDataSeeder extends Seeder
         CommuteType::insert($commuteTypes);
 
         $mealVouchers = [
-            ['name' => 'Sodexo', 'sort_order' => 1]
+            ['name' => 'Sodexo', 'sort_order' => 1, 'amount' => 0]
         ];
         MealVoucher::insert($mealVouchers);
 
@@ -59,6 +56,7 @@ class TestDataSeeder extends Seeder
         $employeeTypes = [
             [
                 'name'                                => 'Normal employee',
+                'salary_type'                         => 'min',
                 'employee_type_category_id'           => 1,
                 'contract_types'                      => [1],
                 'employee_type_config_details'        => [
@@ -93,6 +91,7 @@ class TestDataSeeder extends Seeder
             ],
             [
                 'name'                                => 'Long term student',
+                'salary_type'                         => 'min1',
                 'employee_type_category_id'           => 1,
                 'contract_types'                      => [1],
                 'employee_type_config_details'        => [
@@ -110,6 +109,7 @@ class TestDataSeeder extends Seeder
             ],
             [
                 'name'                                => 'Long term flex',
+                'salary_type'                         => 'min2',
                 'employee_type_category_id'           => 1,
                 'contract_types'                      => [4],
                 'employee_type_config_details'        => [
@@ -144,10 +144,10 @@ class TestDataSeeder extends Seeder
             [
                 'name'                         => 'Horeca',
                 'paritair_committee'           => 302,
-                'category'                     => 9,
+                'category'                     => 10,
                 'employee_types'               => [1, 2, 3, 4],
                 'sector_salary_config_details' => [
-                    'category' => 9,
+                    'category' => 10,
                     'steps'    => 10,
                 ],
                 'sector_salary_steps_details'  => [
@@ -244,7 +244,7 @@ class TestDataSeeder extends Seeder
             foreach ($sector_salary_steps_details as $data) {
                 $data['sector_salary_config_id'] = $sectorSalaryConfigObj->id;
                 $sectorSalaryStepObj = SectorSalarySteps::create($data);
-                foreach (range(1, 9) as $category_number) {
+                foreach (range(1, 10) as $category_number) {
                     $minimumSalaryData[] = [
                         'sector_salary_steps_id' => $sectorSalaryStepObj->id,
                         'category_number'        => $category_number,

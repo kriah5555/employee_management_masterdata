@@ -10,7 +10,7 @@ use App\Models\User\User;
 use App\Repositories\User\UserBasicDetailsRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\User\UserFamilyDetailsRepository;
-
+use App\Models\User\CompanyUser;
 
 class UserService
 {
@@ -93,5 +93,76 @@ class UserService
             $this->createUserBankAccount($user, $values);
         }
         return $user;
+    }
+
+    public function getUserById($id)
+    {
+        return $this->userRepository->getUserById($id);
+    }
+
+    public function updateUserBankAccount(User $user, $values)
+    {
+        $values['user_id'] = $user->id;
+        $UserBankObject = $user->userBankDetails($user->id)->get()[0];
+        return $this->userBankAccountRepository->updateUserBankAccount($UserBankObject ,$values);
+    }
+
+    public function updateUserBasicDetails(User $user, $values)
+    {
+        $values['user_id'] = $user->id;
+        $values['date_of_birth'] = date('Y-m-d', strtotime($values['date_of_birth']));
+        $userDetailsObject = $user->userBasicDetailsById($user->id)->get()[0];
+
+        return $this->userBasicDetailsRepository->updateUserBasicDetails($userDetailsObject ,$values);
+    }
+
+
+    public function updateUserAddress(User $user, $values)
+    {
+        $values['user_id'] = $user->id;
+
+        $userAddressObject = $user->userAddressById($user->id)->get()[0];
+
+        return $this->userAddressRepository->updateUserAddress($userAddressObject, $values);
+    }
+
+    public function updateContactDetails(User $user, $values)
+    {
+        $values['user_id'] = $user->id;
+
+        $userContactObject = $user->userContactById($user->id)->get()[0];
+
+        return $this->userContactDetailsRepository->updateUserContactDetails($userContactObject, $values);
+    }
+
+    public function updateUser($values)
+    {
+        $username = $values['first_name'] . $values['last_name'];
+        $username = strtolower(str_replace(' ', '', $username));
+        $saveValues = [
+            'username'               => generateUniqueUsername($username),
+            'social_security_number' => $values['social_security_number'],
+        ];
+
+        $user = User::findOrFail($values['user_id']);
+        $updateUser = $user->update($saveValues);
+
+        $this->updateUserBankAccount($user, $values);
+        $this->updateUserBasicDetails($user, $values);
+        $this->updateUserAddress($user, $values);
+        $this->updateContactDetails($user, $values);
+
+
+        // If you need to return the updated user:
+        // return $user;
+
+        // Otherwise, return the update status:
+        return $updateUser;
+    }
+
+    public function getCompanyUserRoles($user_id, $company_id)
+    {
+        $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $user_id])->get()->first();
+        return $company_user->roles->pluck('name')->toArray();
     }
 }

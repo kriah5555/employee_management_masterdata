@@ -8,8 +8,8 @@ use App\Models\EmployeeType\EmployeeType;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Sector\Sector;
 use App\Models\MinimumSalary;
-
-class SectorSalarySteps extends Model
+use App\Models\BaseModel;
+class SectorSalarySteps extends BaseModel
 {
     protected $connection = 'master';
 

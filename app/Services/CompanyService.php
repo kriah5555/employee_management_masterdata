@@ -29,25 +29,29 @@ class CompanyService
     {
         return $this->companyRepository->getCompanies();
     }
+
     public function getActiveCompanies()
     {
         return $this->companyRepository->getActiveCompanies();
     }
 
+    public function getTenantByCompanyId($companyId)
+    {
+        return $this->companyRepository->getTenantByCompanyId($companyId);
+    }
+
     public function createNewCompany($values)
     {
-        // dd($values);
         try {
             DB::connection('master')->beginTransaction();
             $company = $this->createCompany($values);
-            // $location_ids = $this->createCompanyLocations($company, $values); # add company locations
-            // $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('master')->commit();
             $tenant = $this->createTenant($company);
             setTenantDB($tenant->id);
             DB::connection('tenant')->beginTransaction();
             foreach ($values['responsible_persons'] as $responsiblePerson) {
-                $this->employeeService->createNewResponsiblePerson($responsiblePerson, $company->id);
+                $employee_service = app(EmployeeService::class);
+                $employee_service->createNewResponsiblePerson($responsiblePerson, $company->id);
             }
             $location_ids = $this->createCompanyLocations($company, $values); # add company locations
             $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
@@ -55,7 +59,6 @@ class CompanyService
             return $company;
         } catch (Exception $e) {
             DB::connection('master')->rollback();
-            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -132,7 +135,7 @@ class CompanyService
                     return $location_ids[$value];
                 }, $workstation['locations_index']);
                 $workstation['company'] = $company_id;
-                $this->workstationService->create($workstation);
+                $this->workstationService->create($workstation, $company_id);
             }
         }
     }
@@ -230,7 +233,7 @@ class CompanyService
 
     public function getCompanyDetails($companyId): Company
     {
-        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails', 'interimAgencies']);
+        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails.socialSecretary', 'interimAgencies']);
     }
 
     public function getLocationsUnderCompany($companyId): Company
@@ -241,9 +244,5 @@ class CompanyService
     public function getCompanyById($companyId): Company
     {
         return $this->companyRepository->getCompanyById($companyId);
-    }
-    public function getTenantByCompanyId($companyId)
-    {
-        return Tenant::where('company_id', $companyId)->first();
     }
 }

@@ -11,11 +11,9 @@ use App\Models\MealVoucher;
 
 class MealVoucherController extends Controller
 {
-    protected $mealVoucherService;
 
-    public function __construct(MealVoucherService $mealVoucherService)
+    public function __construct(protected MealVoucherService $mealVoucherService)
     {
-        $this->mealVoucherService = $mealVoucherService;
     }
 
     public function index()

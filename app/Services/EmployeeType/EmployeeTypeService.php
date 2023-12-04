@@ -111,14 +111,15 @@ class EmployeeTypeService
             return ['value' => $key, 'label' => $value];
         }, array_keys($options), $options);
     }
+    
     public function getEmployeeCategoryOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS');
+        return getValueLabelOptionsFromConfig('absence.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS');
     }
 
     public function getEmployeeContractTypeOptions()
     {
-        return getValueLabelOptionsFromConfig('constants.HOLIDAY_CONTRACT_TYPE_OPTIONS');
+        return getValueLabelOptionsFromConfig('absence.HOLIDAY_CONTRACT_TYPE_OPTIONS');
     }
 
     public function getCompanyEmployeeTypes($company_id) 

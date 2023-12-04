@@ -9,6 +9,8 @@ use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Company\Location;
 use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Company\WorkstationToFunctions;
+
 class Workstation extends Model
 {
     use HasFactory, SoftDeletes;
@@ -34,6 +36,19 @@ class Workstation extends Model
 
     public function functionTitles()
     {
-        return $this->belongsToMany(FunctionTitle::class, 'workstation_to_functions', 'workstation_id', 'function_title_id');
+        return $this->hasMany(WorkstationToFunctions::class, 'workstation_id')->with('functionTitle');
+    }
+
+    public function linkFunctionTitles($function_title_ids)
+    {
+        WorkstationToFunctions::where('workstation_id', $this->id)->delete();
+
+        foreach ($function_title_ids as $function_title_id) {
+            WorkstationToFunctions::create([
+                'workstation_id'    => $this->id,
+                'function_title_id' => $function_title_id,
+            ]);
+        }
+
     }
 }

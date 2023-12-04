@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\ApiRequest;
-use App\Rules\CurrencyFormatRule;
+use App\Rules\BelgiumCurrencyFormatRule;
 use App\Rules\MinimumSalariesLevelsRule;
 use App\Rules\MinimumSalariesCategoriesRule;
 
@@ -23,7 +23,7 @@ class UpdateMinimumSalariesRequest extends ApiRequest
             'salaries.*.categories.*.category'       => 'required|integer|min:1',
             'salaries'                               => ['required', 'array', new MinimumSalariesLevelsRule],
             'salaries.*.categories'                  => ['required', 'array', new MinimumSalariesCategoriesRule],
-            'salaries.*.categories.*.minimum_salary' => ['required', new CurrencyFormatRule],
+            'salaries.*.categories.*.minimum_salary' => ['required', new BelgiumCurrencyFormatRule],
         ];
     }
     public function messages()

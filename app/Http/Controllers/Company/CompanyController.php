@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Company;
 
 use App\Models\Company\Company;
 use App\Http\Requests\Company\CompanyRequest;
-use App\Services\CompanyService;
+use App\Http\Requests\Company\CompanyAdditionalDetailsRequest;
+use App\Services\Company\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Interim\InterimAgencyService;
+use Exception;
 
 class CompanyController extends Controller
 {
@@ -29,13 +31,23 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->companyService->getCompanies(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->companyService->getCompanies(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -43,14 +55,46 @@ class CompanyController extends Controller
      */
     public function store(CompanyRequest $request)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Company created successfully',
-                'data'    => $this->companyService->createNewCompany($request->all()),
-            ],
-            JsonResponse::HTTP_CREATED,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Company created. Please complete the additional details',
+                    'data'    => $this->companyService->registerNewCompany($request->validated()),
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function storeAdditionalDetails(CompanyAdditionalDetailsRequest $request, Company $company)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Company additional details saved',
+                    'data'    => $this->companyService->companyAdditionalDetails($company, $request->validated()),
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -58,10 +102,20 @@ class CompanyController extends Controller
      */
     public function show($id)
     {
-        return response()->json([
-            'success' => true,
-            'data'    => $this->companyService->getCompanyDetails($id),
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->companyService->getCompanyDetails($id),
+            ]);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -70,7 +124,7 @@ class CompanyController extends Controller
     public function update(CompanyRequest $request, Company $company)
     {
         try {
-            $this->companyService->updateCompany($company, $request->all());
+            $this->companyService->updateCompany($company, $request->validated());
             return returnResponse(
                 [
                     'success' => true,
@@ -78,7 +132,7 @@ class CompanyController extends Controller
                 ],
                 JsonResponse::HTTP_CREATED,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return returnResponse(
                 [
                     'success' => false,
@@ -103,7 +157,7 @@ class CompanyController extends Controller
                 ],
                 JsonResponse::HTTP_CREATED,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return returnResponse(
                 [
                     'success' => false,

@@ -13,11 +13,16 @@ class AbsenceDates extends BaseModel
 
     protected $connection = 'tenant';
 
-    protected $table = 'absence_hours';
+    protected $table = 'absence_dates';
+
+    protected $casts = [
+        'dates' => 'json', // Cast the salary_data column to JSON
+    ];
 
     protected $fillable = [
         'absence_id',
         'dates',
+        'dates_type', # [1 =>  multiple dates, 2 => from and to date]
         'status',
         'created_by',
         'updated_by',
@@ -31,6 +36,7 @@ class AbsenceDates extends BaseModel
 
     public function absence()
     {
-        return $this->hasOne(Absence::class, 'absence_id');
+        return $this->belongsTo(Absence::class, 'absence_id');
     }
+    
 }
