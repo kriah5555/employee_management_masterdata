@@ -10,6 +10,8 @@ class UserBasicDetails extends BaseModel
 {
     use UserAudit;
     
+    protected $connection = 'userdb';
+
     protected static $sort = ['first_name'];
 
     protected $columnsToLog = [
@@ -29,7 +31,6 @@ class UserBasicDetails extends BaseModel
      *
      * @var string
      */
-    protected $connection = 'userdb';
 
     protected $table = 'user_basic_details';
 

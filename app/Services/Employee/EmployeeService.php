@@ -312,7 +312,7 @@ class EmployeeService
         return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
     }
 
-    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '')
+    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '') # get salary options to create employee
     {
         try {
             $employeeType = $this->employeeTypeService->model::findOrFail($employee_type_id);

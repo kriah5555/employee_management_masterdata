@@ -111,8 +111,10 @@ class AbsenceService
             $hours    = config('constants.DAY_HOURS') * $days;
         } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) { # there will be only one holiday code
             $hours = config('constants.DAY_HOURS') * count($details['dates']);
-        } elseif (in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')])) {
+        } elseif (in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES')])) { # if it is multiple codes the use the hours provided by user
             $hours = $holiday_code_count['hours'];
+        } elseif (in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')])) { # if it is multiple holiday codes with first or second half
+            $hours = ($holiday_code_count['duration_type'] == '') ? $holiday_code_count['hours'] : (config('constants.DAY_HOURS') / 2) * count($details['dates']); # if duration type is set in the holiday codes as first or second half the use default hours else use hours provided by user
         } elseif (in_array($duration_type, [config('absence.FIRST_HALF'), config('absence.SECOND_HALF')])) { # will holiday code with no hours
             $hours = (config('constants.DAY_HOURS') / 2) * count($details['dates']);
         } elseif (in_array($duration_type, [config('absence.FULL_DAYS')])) { # will fll day will have only one holiday coe with on hours

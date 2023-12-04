@@ -37,7 +37,7 @@ class SectorAgeSalaryRule implements ValidationRule
                     $fail($error);
                 }
 
-                if (!empty($max_time_to_work) && !preg_match(config('constants.TIME_FORMAT_REGEX'), $max_time_to_work)) {
+                if (!empty($max_time_to_work) && !preg_match(config('regex.TIME_FORMAT_REGEX'), $max_time_to_work)) {
                     $error = t("Incorrect :attribute.$index time format. It should be in 24-hour time format (HH:MM).");
                     $fail($error);
                 }

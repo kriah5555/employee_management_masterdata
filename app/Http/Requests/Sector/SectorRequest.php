@@ -31,8 +31,8 @@ class SectorRequest extends ApiRequest
             ],
             'experience'            => ['required', 'array', new SectorExperienceRule],
             'age'                   => ['required', 'array', new SectorAgeSalaryRule],
-            'night_hour_start_time' => ['nullable', 'regex:' . config('constants.TIME_FORMAT_REGEX')],
-            'night_hour_end_time'   => ['nullable', 'regex:' . config('constants.TIME_FORMAT_REGEX')],
+            'night_hour_start_time' => ['nullable', 'regex:' . config('regex.TIME_FORMAT_REGEX')],
+            'night_hour_end_time'   => ['nullable', 'regex:' . config('regex.TIME_FORMAT_REGEX')],
         ];
     }
     public function messages()

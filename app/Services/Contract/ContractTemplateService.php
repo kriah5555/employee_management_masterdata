@@ -31,12 +31,12 @@ class ContractTemplateService
                 'companies'          => $this->company_service->getActiveCompanies(),
                 'employee_types'     => $this->employee_type_service->getActiveEmployeeTypes(),
                 'tokens'             => array_merge(
-                    config('constants.EMPLOYEE_TOKENS'),
-                    config('constants.COMPANY_TOKENS'),
-                    config('constants.CONTRACT_TOKENS'),
-                    config('constants.ATTACHMENT_TOKENS'),
-                    config('constants.SIGNATURE_TOKENS'),
-                    config('constants.FLEX_SALARY_TOKENS'),
+                    config('tokens.EMPLOYEE_TOKENS'),
+                    config('tokens.COMPANY_TOKENS'),
+                    config('tokens.CONTRACT_TOKENS'),
+                    config('tokens.ATTACHMENT_TOKENS'),
+                    config('tokens.SIGNATURE_TOKENS'),
+                    config('tokens.FLEX_SALARY_TOKENS'),
                 ),
             ];
         } catch (Exception $e) {
