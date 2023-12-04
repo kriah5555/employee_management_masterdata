@@ -4,11 +4,9 @@ namespace App\Http\Requests\Company;
 
 use Illuminate\Validation\Rule;
 use App\Rules\AddressRule;
-use App\Rules\LocationRule;
-use App\Rules\WorkstationRule;
-use App\Rules\CompanySocialSecretaryRule;
 use App\Http\Requests\ApiRequest;
 use App\Rules\ValidateCompanyVatNumber;
+use App\Rules\ValidateEmail;
 
 class CompanyRequest extends ApiRequest
 {
@@ -28,7 +26,13 @@ class CompanyRequest extends ApiRequest
                     'integer',
                     Rule::exists('sectors', 'id'),
                 ],
-                'email'                   => 'required|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',
+                'email'                   => [
+                    'bail',
+                    'required',
+                    'string',
+                    "max:255",
+                    new ValidateEmail(),
+                ],
                 'phone'                   => [
                     'required',
                     'string',
@@ -51,7 +55,13 @@ class CompanyRequest extends ApiRequest
                     Rule::exists('social_secretaries', 'id')
                 ],
                 'social_secretary_number' => 'nullable|string',
-                'contact_email'           => 'nullable|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',
+                'contact_email'           => [
+                    'bail',
+                    'nullable',
+                    'string',
+                    "max:255",
+                    new ValidateEmail(),
+                ],
                 'oauth_key'               => 'nullable|string',
                 'status'                  => 'boolean',
             ];

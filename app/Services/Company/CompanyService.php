@@ -2,11 +2,11 @@
 
 namespace App\Services\Company;
 
+use App\Services\Employee\EmployeeService;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Company;
 use App\Services\AddressService;
 use App\Repositories\Company\CompanyRepository;
-use App\Models\Tenant;
 use App\Interfaces\Services\Company\CompanyServiceInterface;
 use Exception;
 
@@ -19,7 +19,9 @@ class CompanyService implements CompanyServiceInterface
         protected CompanyRepository $companyRepository,
         protected AddressService $addressService,
         protected CompanyTenancyService $companyTenancyService,
-        protected CompanyLogoService $companyLogoService
+        protected CompanyLogoService $companyLogoService,
+        protected CompanyLocationService $companyLocationService,
+        protected CompanyWorkstationService $companyWorkstationService,
     ) {
     }
 
@@ -47,16 +49,17 @@ class CompanyService implements CompanyServiceInterface
         }
     }
 
-    public function companyAdditionalDetails($values)
+    public function companyAdditionalDetails($company, $values)
     {
-        dd($values);
         try {
-            $company = DB::transaction(function () use ($values) {
-                return $this->createCompany($values);
-            });
-            $this->companyTenancyService->createTenant($company);
-            $company->address;
-            return $company;
+            DB::connection('tenant')->beginTransaction();
+            foreach ($values['responsible_persons'] as $responsiblePerson) {
+                $employee_service = app(EmployeeService::class);
+                $employee_service->createNewResponsiblePerson($responsiblePerson, $company->id);
+            }
+            $location_ids = $this->companyLocationService->createCompanyLocations($company, $values); # add company locations
+            $this->companyWorkstationService->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
+            DB::connection('tenant')->commit();
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -76,7 +79,6 @@ class CompanyService implements CompanyServiceInterface
         }
         $company->sectors()->sync($values['sectors'] ?? []);
         $company->interimAgencies()->sync($values['interim_agencies'] ?? []);
-        $company->refresh();
         return $company;
     }
 

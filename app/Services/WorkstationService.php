@@ -19,8 +19,7 @@ class WorkstationService
         protected WorkstationRepository $workstationRepository,
         protected LocationService $locationService,
         protected FunctionService $functionService
-        )
-    {
+    ) {
     }
 
     public function getWorkstationsOfCompany()
@@ -30,13 +29,13 @@ class WorkstationService
 
     public function getWorkstationById($workstation_id)
     {
-        return  $this->workstationRepository->getWorkstationById($workstation_id);
+        return $this->workstationRepository->getWorkstationById($workstation_id);
     }
 
     public function getWorkstationDetails($workstation_id)
     {
         $workstation_details = self::getWorkstationById($workstation_id);
-        $function_titles     = self::getWorkstationFunctions($workstation_details);
+        $function_titles = self::getWorkstationFunctions($workstation_details);
         $workstation_details = $workstation_details->toArray();
         $workstation_details['function_titles'] = $function_titles;
         return $workstation_details;
@@ -44,7 +43,7 @@ class WorkstationService
 
     public function getWorkstationFunctions(Workstation $workstation)
     {
-        $workstation     = $workstation->toArray();
+        $workstation = $workstation->toArray();
         $function_titles = collect($workstation['function_titles'])->pluck('function_title');
         return $function_titles;
     }
@@ -86,7 +85,7 @@ class WorkstationService
     {
         $rules['locations_index'] = 'nullable|array';
         $rules['locations_index.*'] = 'integer';
-        $rules['function_titles.*'][] = new FunctionTitlesLinkedToSectorRule(request()->input('sectors')); # to validate if the selected function title is linked to the sector selected
+        // $rules['function_titles.*'][] = new FunctionTitlesLinkedToSectorRule(request()->input('sectors')); # to validate if the selected function title is linked to the sector selected
         return $rules;
     }
 
@@ -106,18 +105,18 @@ class WorkstationService
         try {
             DB::connection('tenant')->beginTransaction();
 
-                $locations       = $values['locations'] ?? [];
-                $function_titles = $values['function_titles'] ?? [];
+            $locations = $values['locations'] ?? [];
+            $function_titles = $values['function_titles'] ?? [];
 
-                unset($values['locations'], $values['locations_index']);
+            unset($values['locations'], $values['locations_index']);
 
-                $workstation = $this->workstationRepository->createWorkstation($values);
+            $workstation = $this->workstationRepository->createWorkstation($values);
 
-                $workstation->locations()->sync($locations);
-                // $workstation->functionTitles()->sync($function_titles);
-                $workstation->linkFunctionTitles($function_titles);
+            $workstation->locations()->sync($locations);
+            // $workstation->functionTitles()->sync($function_titles);
+            $workstation->linkFunctionTitles($function_titles);
 
-                $workstation->save();
+            $workstation->save();
 
             DB::connection('tenant')->commit();
 
@@ -134,17 +133,17 @@ class WorkstationService
         try {
             DB::connection('tenant')->beginTransaction();
 
-                $function_titles = $values['function_titles'] ?? [];
-                $locations       = $values['locations'] ?? [];
+            $function_titles = $values['function_titles'] ?? [];
+            $locations = $values['locations'] ?? [];
 
-                $workstation = self::getWorkstationById($workstation_id);
-                // $workstation->functionTitles()->sync($function_titles);
-                $workstation->linkFunctionTitles($function_titles);
+            $workstation = self::getWorkstationById($workstation_id);
+            // $workstation->functionTitles()->sync($function_titles);
+            $workstation->linkFunctionTitles($function_titles);
 
-                $workstation->locations()->sync($locations);
+            $workstation->locations()->sync($locations);
 
-                unset($values['function_titles']);
-                $workstation->update($values);
+            unset($values['function_titles']);
+            $workstation->update($values);
 
             DB::connection('tenant')->commit();
             return $workstation;
@@ -158,7 +157,7 @@ class WorkstationService
     public function getOptionsToCreate($company_id)
     {
         $function_titles = $this->functionService->getCompanyFunctionTitlesOptions($company_id);
-        $locations       = $this->locationService->getActiveLocations();
+        $locations = $this->locationService->getActiveLocations();
 
         return [
             'locations'       => $locations,

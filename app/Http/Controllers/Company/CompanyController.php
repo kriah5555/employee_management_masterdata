@@ -59,7 +59,7 @@ class CompanyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Company created successfully',
+                    'message' => 'Company created. Please complete the additional details',
                     'data'    => $this->companyService->registerNewCompany($request->validated()),
                 ],
                 JsonResponse::HTTP_CREATED,
@@ -75,14 +75,14 @@ class CompanyController extends Controller
         }
     }
 
-    public function storeAdditionalDetails(CompanyAdditionalDetailsRequest $request)
+    public function storeAdditionalDetails(CompanyAdditionalDetailsRequest $request, Company $company)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Company created successfully',
-                    'data'    => $this->companyService->registerNewCompany($request->validated()),
+                    'message' => 'Company additional details saved',
+                    'data'    => $this->companyService->companyAdditionalDetails($company, $request->validated()),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
