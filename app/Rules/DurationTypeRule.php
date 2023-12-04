@@ -51,7 +51,6 @@ class DurationTypeRule implements ValidationRule
                 $durationTypeRule['hours'] = 'required|numeric';
                 break;
 
-
             case config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'):
             case config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'):
                 $durationTypeCount = count(array_filter($value, function ($row) {

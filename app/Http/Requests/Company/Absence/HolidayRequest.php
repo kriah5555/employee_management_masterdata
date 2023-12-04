@@ -37,13 +37,13 @@ class HolidayRequest extends ApiRequest
                 'bail',
                 'required',
                 'integer',
-                // new EmployeeLinkedToCompanyRule($companyId),
+                new EmployeeLinkedToCompanyRule($companyId),
             ],
             'manager_id' => [
                 'bail',
                 'required',
                 'integer',
-                // new EmployeeLinkedToCompanyRule($companyId),
+                new EmployeeLinkedToCompanyRule($companyId),
             ],
             'reason' => 'required|string',
 
@@ -51,9 +51,7 @@ class HolidayRequest extends ApiRequest
                 'required',
                 'array',
                 'bail',
-                // new HoliadyRequestDataFormatRule(request()->input('duration_type')),
             ],
-
             'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
             'dates.from_date' => [
                 'bail',
@@ -66,7 +64,6 @@ class HolidayRequest extends ApiRequest
                 'date_format:d-m-Y',
                 'after_or_equal:dates.from_date',
             ],
-
 
             'holiday_code_counts' => [
                 'bail',
