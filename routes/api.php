@@ -28,6 +28,7 @@ use App\Http\Controllers\Employee\{
 };
 
 use App\Http\Controllers\{
+    MealVoucherController,
     ReasonController,
     Rule\RuleController,
     Sector\SectorController,
@@ -272,9 +273,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
 
-        
+
         Route::controller(EmployeeController::class)->group(function () {
-            
+
             Route::resource('employees', EmployeeController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
@@ -284,9 +285,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
             Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');
             Route::get('user/responsible-companies', 'getUserResponsibleCompanies');
-            Route::put('employee-update','updateEmployee');
+            Route::put('employee-update', 'updateEmployee');
         });
-        
+
 
         Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
         Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);

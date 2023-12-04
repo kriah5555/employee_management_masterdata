@@ -76,9 +76,9 @@ class CompanyService implements CompanyServiceInterface
         $company = $this->companyRepository->createCompany($requestData);
         $company->companySocialSecretaryDetails()->create(
             [
-                'social_secretary_id'     => $values['social_secretary_id'],
-                'social_secretary_number' => $values['social_secretary_number'],
-                'contact_email'           => $values['contact_email']
+                'social_secretary_id'     => $values['social_secretary_id'] ?? null,
+                'social_secretary_number' => $values['social_secretary_number'] ?? null,
+                'contact_email'           => $values['contact_email'] ?? null
             ]
         );
         $company->sectors()->sync($values['sectors'] ?? []);
