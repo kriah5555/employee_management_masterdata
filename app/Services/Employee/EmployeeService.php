@@ -305,11 +305,14 @@ class EmployeeService
         return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
     }
 
-    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '') # get salary options to create employee
+    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '', $employee_subtype = '') # get salary options to create employee
     {
         try {
             $employeeType = app(EmployeeTypeService::class)->getEmployeeTypeDetails($employee_type_id);
-            $salary_type = $employeeType->salary_type['value'];
+            $salary_type  = $employeeType->salary_type['value'];
+            # for all employee types hourly salary will be returned, 1 => if teh employee type has long term contract with servant sub type then monthly salary will be returned
+            $return_salary_type =  ($employeeType->employeeTypeCategory->id == 1 && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary'; 
+
 
             $minimumSalary = 0;
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
@@ -342,15 +345,16 @@ class EmployeeService
                         $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
                             ->where('category_number', $function_category_number);
 
+
                         if ($minimumSalaries->isNotEmpty()) {
-                            $minimumSalary = $minimumSalaries->first()->salary;
+                            $minimumSalary = $minimumSalaries->first()->$return_salary_type;
                         }
                     }
                 }
             }
 
             return [
-                'minimumSalary' => $minimumSalary,
+                'minimumSalary' => formatToEuropeCurrency($minimumSalary),
                 'salary_type'   => [
                     'value' => $salary_type,
                     'label' => config('constants.SALARY_TYPES')[$salary_type],
