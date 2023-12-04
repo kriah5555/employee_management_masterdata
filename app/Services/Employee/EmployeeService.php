@@ -201,6 +201,37 @@ class EmployeeService
         }
     }
 
+    public function updateEmployee( $values, $company_id)
+    {
+        try {
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+
+            $existingEmpProfile = $this->userService->getUserById($values['user_id']);
+
+            if ($existingEmpProfile) {
+                $user = $this->userService->updateUser($values);
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+
+            // Commit transactions
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+
+            return $user;
+
+
+
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+
     public function createCompanyUser(User $user, $company_id, $role)
     {
         $companyUser = CompanyUser::create([
