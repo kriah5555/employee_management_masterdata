@@ -35,7 +35,7 @@ class AvailabilityController extends Controller
 
 
 
-public function avilableDateAndNOtAvailableDates()
+public function availableDateAndNOtAvailableDates()
 {
 
     $rules = [

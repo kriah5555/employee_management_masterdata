@@ -20,7 +20,6 @@ class User extends Authenticatable
     protected $connection = 'userdb';
 
     protected $guard_name = 'api';
-
     protected $table = 'users';
     /**
      * The attributes that are mass assignable.
@@ -91,18 +90,22 @@ class User extends Authenticatable
         return $this->hasMany(EmployeeProfile::class)
             ->where('status', true);
     }
+
     public function userBankDetails($userId)
     {
         return $this->hasOne(UserBankAccount::class)->where('user_id', $userId);
     }
+
     public function userBasicDetailsById($user_id)
     {
         return $this->hasOne(UserBasicDetails::class)->where('user_id', $user_id);
     }
+
     public function userAddressById($user_id)
     {
         return $this->hasOne(UserAddress::class)->where('user_id', $user_id);
     }
+
     public function userContactById($user_id)
     {
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);

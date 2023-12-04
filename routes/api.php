@@ -282,7 +282,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::put('employee-update','updateEmployee');
         });
 
-
         Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
         Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
         Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
