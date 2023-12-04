@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Address;
+use Exception;
 
 class AddressService
 {
@@ -24,7 +25,7 @@ class AddressService
     public function updateAddress($address_id, $values)
     {
         try {
-            $address = Address::where('id', '=', $address_id)->update($values);
+            Address::where('id', '=', $address_id)->update($values);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
