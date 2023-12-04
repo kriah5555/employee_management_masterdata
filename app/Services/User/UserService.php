@@ -10,7 +10,7 @@ use App\Models\User\User;
 use App\Repositories\User\UserBasicDetailsRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\User\UserFamilyDetailsRepository;
-
+use App\Models\User\CompanyUser;
 
 class UserService
 {
@@ -160,6 +160,9 @@ class UserService
         return $updateUser;
     }
 
-
-
+    public function getCompanyUserRoles($user_id, $company_id)
+    {
+        $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $user_id])->get()->first();
+        return $company_user->roles->pluck('name')->toArray();
+    }
 }

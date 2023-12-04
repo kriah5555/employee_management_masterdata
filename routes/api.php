@@ -30,7 +30,6 @@ use App\Http\Controllers\Interim\InterimAgencyController;
 // use App\Http\Controllers\Company\Absence\LeaveController;
 // use App\Http\Controllers\Company\Contract\ContractConfigurationController;
 use App\Http\Controllers\NotificationController\NotificationController;
-
 // use App\Http\Controllers\Company\AvailabilityController;
 
 use App\Http\Controllers\Company\{
@@ -51,6 +50,7 @@ use App\Http\Controllers\Employee\{
     EmployeeTypeController,
     FunctionTitleController,
     FunctionCategoryController,
+    ResponsiblePersonController,
 };
 
 /*
@@ -276,27 +276,34 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
-        Route::resource('employees', EmployeeController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-        Route::get('employee-contract/create', [EmployeeController::class, 'createEmployeeContract']);
-        Route::get('employee-commute/create', [EmployeeController::class, 'createEmployeeCommute']);
-        Route::get('employee-benefits/create', [EmployeeController::class, 'createEmployeeBenefits']);
-        Route::get('employee/update-personal-details', [EmployeeController::class, 'updatePersonalDetails']);
-        Route::get('employees/contracts/{employeeId}', [EmployeeController::class, 'getEmployeeContracts']);
+        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
+
+        
+        Route::controller(EmployeeController::class)->group(function () {
+            
+            Route::resource('employees', EmployeeController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+
+            Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
+            Route::get('employee-contract/create', 'createEmployeeContract');
+            Route::get('employee-commute/create', 'createEmployeesCommute');
+            Route::get('employee-benefits/create', 'createEmployeeBenefits');
+            Route::get('employee/update-personal-details', 'updatePersonalDetails');
+            Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');
+            Route::get('user/responsible-companies', 'getUserResponsibleCompanies');
+            Route::put('employee-update','updateEmployee');
+        });
+        
 
         Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
-        Route::get('/get-availability', [AvailabilityController::class, 'avilableDateAndNOtAvailableDates']);
+        Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
         Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
-        Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
+        Route::delete('/delete-availability', [AvailabilityController::class, 'deleteAvailability']);
         
     });
-    Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
-
-
-    Route::put('employee-update',[EmployeeController::class,'updateEmployee']);
 
     Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
 });

@@ -15,7 +15,6 @@ class EmployeeProfile extends BaseModel
 
     protected $columnsToLog = [
         'user_id',
-        'company_id',
         'status',
     ];
 

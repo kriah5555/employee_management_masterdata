@@ -38,15 +38,15 @@ class CompanyRequest extends ApiRequest
                 Rule::exists('interim_agencies', 'id'),
             ],
             'employer_id'             => 'nullable|digits_between:1,11',
-            'rsz_number'              => 'nullable|digits_between:1,11',
+            'rsz_number'              => 'nullable|'.config('constants.RSZ_NUMBER_VALIDATION'),
             'username'                => 'nullable|string|max:50',
             'oauth_key'               => 'nullable',
-            'email'                   => 'required|max:255|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/',
+            'email'                   => 'required|max:255|regex:' . config('regex.EMAIL_REGEX'),
             'phone'                   => [
                 'required',
                 'string',
                 'max:20',
-                //'regex:/^(\+[0-9]{1,4}\s[0-9]{1,3}\s[0-9]{1,3}\s[0-9\s]+)$/', # need to be added back
+                // 'regex:' . config('regex.PHONE_REGEX'), # need to be added back
             ],
         ];
     }
