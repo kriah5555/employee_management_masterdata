@@ -160,9 +160,6 @@ class UserService
         return $updateUser;
     }
 
-    public function getCompanyUserRoles($user_id, $company_id)
-    {
-        $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $user_id])->get()->first();
-        return $company_user->roles->pluck('name')->toArray();
-    }
+
+
 }
