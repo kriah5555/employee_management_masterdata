@@ -102,10 +102,20 @@ class CompanyController extends Controller
      */
     public function show($id)
     {
-        return response()->json([
-            'success' => true,
-            'data'    => $this->companyService->getCompanyDetails($id),
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'data'    => $this->companyService->getCompanyDetails($id),
+            ]);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -114,7 +124,7 @@ class CompanyController extends Controller
     public function update(CompanyRequest $request, Company $company)
     {
         try {
-            $this->companyService->updateCompany($company, $request->all());
+            $this->companyService->updateCompany($company, $request->validated());
             return returnResponse(
                 [
                     'success' => true,
