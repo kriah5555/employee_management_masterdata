@@ -91,21 +91,22 @@ class User extends Authenticatable
             ->where('status', true);
     }
 
+    public function companyUser()
+    {
+        return $this->hasMany(CompanyUser::class);
+    }
     public function userBankDetails($userId)
     {
         return $this->hasOne(UserBankAccount::class)->where('user_id', $userId);
     }
-
     public function userBasicDetailsById($user_id)
     {
         return $this->hasOne(UserBasicDetails::class)->where('user_id', $user_id);
     }
-
     public function userAddressById($user_id)
     {
         return $this->hasOne(UserAddress::class)->where('user_id', $user_id);
     }
-
     public function userContactById($user_id)
     {
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
