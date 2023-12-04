@@ -16,7 +16,7 @@ use Exception;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Models\User\User;
 use App\Services\EmployeeType\EmployeeTypeService;
-
+use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -238,10 +238,11 @@ class EmployeeService
         $values['user_id'] = $user->id;
         return $this->employeeProfileRepository->createEmployeeProfile($values);
     }
+    
     public function createEmployeeSocialSecretaryDetails(EmployeeProfile $employeeProfile, $values)
     {
         $values['employee_profile_id'] = $employeeProfile->id;
-        return $this->employeeSocialDetailsRepository->createEmployeeSocialSecretaryDetails($values);
+        return app(EmployeeSocialSecretaryDetailsRepository::class)->createEmployeeSocialSecretaryDetails($values);
     }
 
     public function createEmployeeContract($employeeProfile, $values)
@@ -323,7 +324,6 @@ class EmployeeService
                         ->where('to', '>=', $experience_in_months)
                         ->get();
 
-                        dd($sectorSalarySteps);
                     if ($sectorSalarySteps->isNotEmpty()) {
                         $function_category_number = $functionCategory->category;
 
