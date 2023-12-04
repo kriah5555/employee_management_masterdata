@@ -7,19 +7,15 @@ use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Company\Employee\LongTermEmployeeContract;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\User\CompanyUser;
-use App\Models\User\UserBasicDetails;
-use App\Models\User\UserContactDetails;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
-use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use App\Services\CompanyService;
 use App\Services\User\UserService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Models\User\User;
-use App\Repositories\Employee\EmployeeBenefitsRepository;
-use App\Repositories\Company\LocationRepository;
+use App\Services\EmployeeType\EmployeeTypeService;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -31,10 +27,7 @@ class EmployeeService
 
     public function __construct(
         protected EmployeeProfileRepository $employeeProfileRepository,
-        protected EmployeeBenefitsRepository $employeeBenefitsRepository,
-        protected EmployeeSocialSecretaryDetailsRepository $employeeSocialDetailsRepository,
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
-        protected LocationRepository $locationRepository,
         protected UserService $userService,
         protected CompanyService $companyService,
         protected MailService $mailService
@@ -314,14 +307,13 @@ class EmployeeService
     function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '') # get salary options to create employee
     {
         try {
-            $employeeType = $this->employeeTypeService->model::findOrFail($employee_type_id);
-            $salary_type = $employeeType->salary_type;
+            $employeeType = app(EmployeeTypeService::class)->getEmployeeTypeDetails($employee_type_id);
+            $salary_type = $employeeType->salary_type['value'];
 
             $minimumSalary = 0;
-            $salaryTypeLabel = null;
-
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
-                // Retrieve the FunctionTitle based on its ID
+                // Retrieve the FunctionTitle based on its 
+                
                 $functionTitle = FunctionTitle::findOrFail($function_title_id);
                 $functionCategory = $functionTitle->functionCategory;
 
@@ -331,6 +323,7 @@ class EmployeeService
                         ->where('to', '>=', $experience_in_months)
                         ->get();
 
+                        dd($sectorSalarySteps);
                     if ($sectorSalarySteps->isNotEmpty()) {
                         $function_category_number = $functionCategory->category;
 

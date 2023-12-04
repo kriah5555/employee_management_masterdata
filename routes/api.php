@@ -1,21 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Sector\SectorController;
-use App\Http\Controllers\Holiday\HolidayCodeController;
-use App\Http\Controllers\Holiday\HolidayCodeConfigController;
-use App\Http\Controllers\Holiday\EmployeeHolidayCountController;
-use App\Http\Controllers\Sector\SalaryController;
-use App\Http\Controllers\Email\EmailTemplateApiController;
-use App\Http\Controllers\Translations\TranslationController;
-use App\Http\Controllers\Contract\ContractTypeController;
-use App\Http\Controllers\Contract\ContractTemplateController;
-use App\Http\Controllers\Rule\RuleController;
-use App\Http\Controllers\ReasonController;
-use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
-use App\Http\Controllers\Holiday\PublicHolidayController;
-use App\Http\Controllers\Interim\InterimAgencyController;
-use App\Http\Controllers\NotificationController\NotificationController;
 
 use App\Http\Controllers\Company\{
     CompanyController,
@@ -29,13 +14,34 @@ use App\Http\Controllers\Company\{
     Contract\CompanyContractTemplateController,
 };
 
+use App\Http\Controllers\Holiday\{
+    HolidayCodeController,
+    PublicHolidayController,
+    HolidayCodeConfigController,
+    EmployeeHolidayCountController,
+};
+
 use App\Http\Controllers\Employee\{
     EmployeeController,
     CommuteTypeController,
-    EmployeeTypeController,
-    FunctionTitleController,
-    FunctionCategoryController,
     ResponsiblePersonController,
+};
+
+use App\Http\Controllers\{
+    ReasonController,
+    Rule\RuleController,
+    Sector\SectorController,
+    Sector\SalaryController,
+    Contract\ContractTypeController,
+    Interim\InterimAgencyController,
+    Email\EmailTemplateApiController,
+    Translations\TranslationController,
+    EmployeeType\EmployeeTypeController,
+    Contract\ContractTemplateController,
+    EmployeeFunction\FunctionTitleController,
+    SocialSecretary\SocialSecretaryController,
+    EmployeeFunction\FunctionCategoryController,
+    NotificationController\NotificationController,
 };
 
 /*

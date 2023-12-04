@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\MealVoucherService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use App\Models\EmployeeType\EmployeeType;
 use App\Services\Company\LocationService;
 use App\Services\Employee\EmployeeService;
@@ -139,6 +140,25 @@ class EmployeeController extends Controller
 
     public function getFunctionSalaryToCreateEmployee(Request $request)
     {
+        $rules = [
+            'employee_type_id'     => 'required|integer',
+            'employee_subtype'     => 'nullable|string',
+            'function_title_id'    => 'required|integer',
+            'experience_in_months' => 'required|integer',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $validator->errors()->first(),
+                ],
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+        
         return returnResponse(
             [
                 'success' => true,
