@@ -74,9 +74,13 @@ class CompanyService implements CompanyServiceInterface
         $requestData['logo_id'] = isset($requestData['logo']) ? $this->companyLogoService->addCompanyLogo($requestData) : '';
         unset($requestData['social_Secretary_details'], $requestData['sectors'], $requestData['interim_agencies']);
         $company = $this->companyRepository->createCompany($requestData);
-        if (isset($values['social_Secretary_details'])) {
-            $company->companySocialSecretaryDetails()->create($values['social_Secretary_details']);
-        }
+        $company->companySocialSecretaryDetails()->create(
+            [
+                'social_secretary_id'     => $values['social_secretary_id'],
+                'social_secretary_number' => $values['social_secretary_number'],
+                'contact_email'           => $values['contact_email']
+            ]
+        );
         $company->sectors()->sync($values['sectors'] ?? []);
         $company->interimAgencies()->sync($values['interim_agencies'] ?? []);
         return $company;
@@ -85,11 +89,14 @@ class CompanyService implements CompanyServiceInterface
     public function updateCompany($company, $values)
     {
         DB::beginTransaction();
-        $this->addressService->updateAddress($company->address, $values['address']);
-
-        if (isset($values['social_Secretary_details'])) {
-            $company->companySocialSecretaryDetails()->updateOrCreate([], $values['social_Secretary_details']);
-        }
+        $this->addressService->updateAddress($company->address->id, $values['address']);
+        $company->companySocialSecretaryDetails()->updateOrCreate(
+            [
+                'social_secretary_id'     => $values['social_secretary_id'],
+                'social_secretary_number' => $values['social_secretary_number'],
+                'contact_email'           => $values['contact_email']
+            ]
+        );
         $company->sectors()->sync($values['sectors'] ?? []);
         $company->interimAgencies()->sync($values['interim_agencies'] ?? []);
         unset($values['social_Secretary_details'], $values['sectors'], $values['interim_agencies'], $values['address']);
