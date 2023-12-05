@@ -30,7 +30,7 @@ class ContractTemplateRequest extends ApiRequest
             'status'                => 'boolean',
             'body'                  => 'required|array',
             'body.*'                => 'nullable|string',
-            'social_secretary_id'   => 'nullable|array',
+            'social_secretary'   => 'nullable|array',
             'employee_type_id'      => [
                 'bail',
                 'required',
@@ -47,7 +47,7 @@ class ContractTemplateRequest extends ApiRequest
                 'nullable',
                 'integer',
                 new ExistsInMasterDatabaseRule('companies'),
-                new CompanyLinkedToSocialSecretaryRule($this->input('social_secretary_id')),
+                new CompanyLinkedToSocialSecretaryRule($this->input('social_secretary')),
             ],
         ];
 
