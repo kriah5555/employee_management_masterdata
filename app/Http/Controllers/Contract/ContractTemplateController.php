@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Contract\ContractTemplateRequest;
 use App\Services\Contract\ContractTemplateService;
 use Illuminate\Http\Request;
+use Exception;
 
 class ContractTemplateController extends Controller
 {
@@ -20,13 +21,24 @@ class ContractTemplateController extends Controller
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->contractTemplateService->index(),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->contractTemplateService->index(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -121,7 +133,7 @@ class ContractTemplateController extends Controller
                 JsonResponse::HTTP_OK,
             );
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return returnResponse(
                 [
                     'success' => false,

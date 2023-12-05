@@ -17,7 +17,7 @@ class SocialSecretaryRepository implements SocialSecretaryRepositoryInterface
     }
     public function getActiveSocialSecretaries(): Collection
     {
-        return SocialSecretary::where('status', '=', true)->get();
+        return SocialSecretary::allActive();
     }
 
     public function getSocialSecretaryById(string $socialSecretaryId, array $relations = []): Collection|Builder|SocialSecretary
