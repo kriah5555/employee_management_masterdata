@@ -52,11 +52,11 @@ class ResponsiblePersonService
             DB::connection('tenant')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
 
-                return $this->responsiblePersonRepository->updateResponsiblePerson($responsible_person_id, $responsible_person_details, $company_id);
+                $data = $this->responsiblePersonRepository->updateResponsiblePerson($responsible_person_id, $responsible_person_details, $company_id);
 
             DB::connection('tenant')->commit();
             DB::connection('userdb')->commit();
-            return ;
+            return $data;
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
             DB::connection('userdb')->rollback();

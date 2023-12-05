@@ -3,7 +3,6 @@
 namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\ResponsiblePersonInterface;
-// use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\User\User;
 use App\Models\User\CompanyUser;
 use App\Exceptions\ModelDeleteFailedException;
@@ -24,10 +23,20 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     public function getCompanyResponsiblePersonUserIds($company_id)
     {
         $roles = $this->roles;
-        return CompanyUser::with(['roles' => function ($query) use ($roles) {
-            $query->whereIn('name', $roles);
-        }])
-        ->where('company_id', $company_id)->get()->pluck('user_id');
+
+        return CompanyUser::where('company_id', $company_id)
+        ->get()
+        ->filter(function ($user) use ($roles, $company_id) {
+            $user_roles = app(UserService::class)->getCompanyUserRoles($user->user_id, $company_id);
+            return !empty(array_intersect($roles, $user_roles));
+        })
+        ->pluck('user_id')
+        ->toArray();
+
+        // return CompanyUser::with(['roles' => function ($query) use ($roles) {
+        //     $query->whereIn('name', $roles);
+        // }])
+        // ->where('company_id', $company_id)->get()->pluck('user_id');
     }
 
     public function getCompanyResponsiblePersons($company_id)
@@ -44,7 +53,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
         $user_service = app(UserService::class);
         $user         = User::whereIn('id', $user_ids)
                         ->with(['userBasicDetails', 'roles'])
-                        ->find($user_id);
+                        ->findOrFail($user_id);
 
         unset($user->roles);
         $user->roles = $user_service->getCompanyUserRoles($user->id, $company_id);

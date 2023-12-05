@@ -24,6 +24,7 @@ use App\Http\Controllers\Holiday\{
 use App\Http\Controllers\Employee\{
     EmployeeController,
     CommuteTypeController,
+    EmployeeAccessController,
     ResponsiblePersonController,
 };
 
@@ -273,6 +274,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
 
+        Route::resource('employee-access', EmployeeAccessController::class)->only(['create']);
 
         Route::controller(EmployeeController::class)->group(function () {
 
@@ -287,7 +289,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::get('user/responsible-companies', 'getUserResponsibleCompanies');
             Route::put('employee-update', 'updateEmployee');
         });
-
 
         Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
         Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
