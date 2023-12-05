@@ -8,20 +8,17 @@ use App\Interfaces\Services\Company\CompanyLocationServiceInterface;
 
 class CompanyLocationService implements CompanyLocationServiceInterface
 {
-    protected $locationService;
-
-    public function __construct(LocationService $locationService)
+    public function __construct(protected LocationService $locationService)
     {
-        $this->locationService = $locationService;
     }
 
     public function createCompanyLocations(Company $company, $values)
     {
         $location_ids = [];
         if (isset($values['locations'])) {
-            foreach ($values['locations'] as $index => $location) {
+            foreach ($values['locations'] as $index => $location_details) {
                 $location['company'] = $company->id;
-                $location_ids[$index] = $this->locationService->create($location)->id;
+                $location_ids[$index] = $this->locationService->create($location_details)->id;
             }
         }
         return $location_ids;

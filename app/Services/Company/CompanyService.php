@@ -49,14 +49,15 @@ class CompanyService implements CompanyServiceInterface
         }
     }
 
-    public function companyAdditionalDetails($company, $values)
+    public function companyAdditionalDetails($company_id, $values)
     {
         try {
             DB::connection('tenant')->beginTransaction();
             foreach ($values['responsible_persons'] as $responsiblePerson) {
                 $employee_service = app(EmployeeService::class);
-                $employee_service->createNewResponsiblePerson($responsiblePerson, $company->id);
+                $employee_service->createNewResponsiblePerson($responsiblePerson, $company_id);
             }
+            $company = $this->getCompanyDetails($company_id);
             $location_ids = $this->companyLocationService->createCompanyLocations($company, $values); # add company locations
             $this->companyWorkstationService->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();
