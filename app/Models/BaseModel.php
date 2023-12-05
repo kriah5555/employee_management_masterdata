@@ -64,4 +64,5 @@ class BaseModel extends Model
         }
         return $values;
     }
+    protected $dates = [];
 }
