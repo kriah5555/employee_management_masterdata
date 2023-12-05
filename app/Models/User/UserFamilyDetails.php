@@ -13,7 +13,8 @@ class UserFamilyDetails extends BaseModel
     protected $columnsToLog = [
         'user_id',
         'marital_status_id',
-        'dependent_spouse'
+        'dependent_spouse',
+        'children',
     ];
     /**
      * The table associated with the model.
@@ -53,6 +54,7 @@ class UserFamilyDetails extends BaseModel
         'user_id',
         'marital_status_id',
         'dependent_spouse',
+        'children',
         'status',
     ];
     protected $apiValues = [

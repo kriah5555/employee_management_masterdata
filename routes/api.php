@@ -280,7 +280,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
             Route::get('employee-contract/create', 'createEmployeeContract');
-            Route::get('employee-commute/create', 'createEmployeesCommute');
+            Route::get('employee-commute/create', 'createEmployeeCommute');
             Route::get('employee-benefits/create', 'createEmployeeBenefits');
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
             Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');

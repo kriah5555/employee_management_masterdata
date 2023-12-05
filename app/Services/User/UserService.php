@@ -89,9 +89,7 @@ class UserService
         $this->createUserAddress($user, $values);
         $this->createUserContactDetails($user, $values);
         $this->createUserFamilyDetails($user, $values);
-        if (array_key_exists('bank_account_number', $values)) {
-            $this->createUserBankAccount($user, $values);
-        }
+        $this->createUserBankAccount($user, $values);
         return $user;
     }
 
@@ -104,7 +102,7 @@ class UserService
     {
         $values['user_id'] = $user->id;
         $UserBankObject = $user->userBankDetails($user->id)->get()[0];
-        return $this->userBankAccountRepository->updateUserBankAccount($UserBankObject ,$values);
+        return $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
     }
 
     public function updateUserBasicDetails(User $user, $values)
@@ -112,8 +110,7 @@ class UserService
         $values['user_id'] = $user->id;
         $values['date_of_birth'] = date('Y-m-d', strtotime($values['date_of_birth']));
         $userDetailsObject = $user->userBasicDetailsById($user->id)->get()[0];
-
-        return $this->userBasicDetailsRepository->updateUserBasicDetails($userDetailsObject ,$values);
+        return $this->userBasicDetailsRepository->updateUserBasicDetails($userDetailsObject, $values);
     }
 
 
@@ -164,5 +161,14 @@ class UserService
     {
         $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $user_id])->get()->first();
         return $company_user->roles->pluck('name')->toArray();
+    }
+
+    public function updateUserDetails(User $user, $values)
+    {
+        $this->userBasicDetailsRepository->updateUserBasicDetails($user->userBasicDetails, $values);
+        $this->userAddressRepository->updateUserAddress($user->userAddress, $values);
+        $this->userContactDetailsRepository->updateUserContactDetails($user->userContactDetails, $values);
+        $this->userFamilyDetailsRepository->updateUserFamilyDetails($user->userFamilyDetails, $values);
+        $this->userBankAccountRepository->updateUserBankAccount($user->userBankAccount, $values);
     }
 }

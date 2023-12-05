@@ -127,11 +127,17 @@ class EmployeeService
         $userAddressDetails = $employee->user->userAddress->toApiReponseFormat();
         $userContactDetails = $employee->user->userContactDetails->toApiReponseFormat();
         $userBankAccountDetails = $employee->user->userBankAccount->toApiReponseFormat();
-        $userFamilyDetails = [
-            'dependent_spouse' => [
+        $employee->user->userFamilyDetails->dependent_spouse = 'no';
+        if ($employee->user->userFamilyDetails->dependent_spouse) {
+            $dependentSpouse = [
                 'id'   => $employee->user->userFamilyDetails->dependent_spouse,
                 'name' => config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse]
-            ],
+            ];
+        } else {
+            $dependentSpouse = null;
+        }
+        $userFamilyDetails = [
+            'dependent_spouse' => $dependentSpouse,
             'marital_status'   => $employee->user->userFamilyDetails->maritalStatus->toApiReponseFormat(),
             'children'         => 0
         ];
@@ -193,7 +199,7 @@ class EmployeeService
         }
     }
 
-    public function updateEmployee( $values, $company_id)
+    public function updateEmployee($values, $company_id)
     {
         try {
             DB::connection('master')->beginTransaction();
@@ -238,7 +244,7 @@ class EmployeeService
         $values['user_id'] = $user->id;
         return $this->employeeProfileRepository->createEmployeeProfile($values);
     }
-    
+
     public function createEmployeeSocialSecretaryDetails(EmployeeProfile $employeeProfile, $values)
     {
         $values['employee_profile_id'] = $employeeProfile->id;
@@ -309,15 +315,15 @@ class EmployeeService
     {
         try {
             $employeeType = app(EmployeeTypeService::class)->getEmployeeTypeDetails($employee_type_id);
-            $salary_type  = $employeeType->salary_type['value'];
+            $salary_type = $employeeType->salary_type['value'];
             # for all employee types hourly salary will be returned, 1 => if teh employee type has long term contract with servant sub type then monthly salary will be returned
-            $return_salary_type =  ($employeeType->employeeTypeCategory->id == 1 && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary'; 
+            $return_salary_type = ($employeeType->employeeTypeCategory->id == 1 && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
 
 
             $minimumSalary = 0;
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
-                // Retrieve the FunctionTitle based on its 
-                
+                // Retrieve the FunctionTitle based on its
+
                 $functionTitle = FunctionTitle::findOrFail($function_title_id);
                 $functionCategory = $functionTitle->functionCategory;
 
@@ -431,5 +437,25 @@ class EmployeeService
             }
         }
         return $companies;
+    }
+
+    public function update($employeeProfileId, $values)
+    {
+        try {
+            $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+            $this->userService->updateUserDetails($employeeProfile->user, $values);
+            $employeeProfile->employeeSocialSecretaryDetails->update($values);
+            // Commit transactions
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+            return $employeeProfile;
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }
