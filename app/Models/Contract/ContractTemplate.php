@@ -8,10 +8,11 @@ use App\Models\Company\Company;
 use App\Models\Sector\Sector;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\SocialSecretary\SocialSecretary;
+use Spatie\Translatable\HasTranslations;
 
 class ContractTemplate extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
     protected $connection = 'master';
 
@@ -21,15 +22,10 @@ class ContractTemplate extends BaseModel
 
     protected $fillable = [
         'body',
-        'language',
         'status',
         'employee_type_id',
     ];
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
+    public $translatable = ['body'];
 
     public function employeeType()
     {

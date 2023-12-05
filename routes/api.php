@@ -141,7 +141,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'email-templates'     => [
             'controller' => EmailTemplateApiController::class,
-            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            'methods'    => ['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']
         ],
         'public-holidays'     => [
             'controller' => PublicHolidayController::class,
@@ -271,9 +271,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
 
-	Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
+        Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-	Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
+        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
 
         Route::controller(EmployeeController::class)->group(function () {
 
