@@ -79,7 +79,7 @@ class ContractTemplateService
     {
         try {
             $contractTemplate->update($values);
-            $contractTemplate->socialSecretary()->sync($values['social_secretary_id'] ?? []);
+            $contractTemplate->socialSecretary()->sync($values['social_secretary'] ?? []);
             return $contractTemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());

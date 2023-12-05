@@ -26,8 +26,8 @@ class CompanyContractTemplateService extends BaseService
         $company_id = request()->header('Company-Id');
         try {
             return [
-                'employee_types'     => $this->employee_type_service->getCompanyEmployeeTypes($company_id),
-                'tokens'             => array_merge(
+                'employee_types' => $this->employee_type_service->getCompanyEmployeeTypes($company_id),
+                'tokens'         => array_merge(
                     config('tokens.EMPLOYEE_TOKENS'),
                     config('tokens.COMPANY_TOKENS'),
                     config('tokens.CONTRACT_TOKENS'),
@@ -45,7 +45,12 @@ class CompanyContractTemplateService extends BaseService
     public function create($data)
     {
         try {
-            return $this->model::create($data);
+            $companyContractemplate = CompanyContractTemplate::create($data);
+            foreach (config('app.available_locales') as $locale) {
+                $companyContractemplate->setTranslation('body', $locale, $data['body'][$locale]);
+            }
+            $companyContractemplate->save();
+            return $companyContractemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -56,6 +61,16 @@ class CompanyContractTemplateService extends BaseService
     {
         try {
             return $this->model::with(['employeeType'])->get();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+    public function update($companyContractTemplate, $values)
+    {
+        try {
+            $companyContractTemplate->update($values);
+            return $companyContractTemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
