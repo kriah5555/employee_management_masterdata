@@ -17,7 +17,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
 
     public function __construct()
     {
-        $this->roles = [config('roles_permissions.MANAGER'), config('roles_permissions.CUSTOMER_ADMIN')];
+        $this->roles = array_keys(config('roles_permissions.RESPONSIBLE_PERSON_ROLES'));
     }
 
     public function getCompanyResponsiblePersonUserIds($company_id)
@@ -43,7 +43,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     {
         $user_ids = $this->getCompanyResponsiblePersonUserIds($company_id);
         return User::whereIn('id', $user_ids)
-        ->with(['userBasicDetails'])
+        ->with(['userBasicDetails', 'userContactDetails'])
         ->get();
     }
 

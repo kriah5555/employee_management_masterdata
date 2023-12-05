@@ -232,7 +232,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::resource('leaves', LeaveController::class)->except(['edit', 'index']);
 
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
-                ->where(['status' => '(approve|cancel)']); # to get leaves list
+                ->where(['status' => '(approve|pending)']); # to get leaves list
 
             Route::post('leaves-status/{leave_id}/{status}', 'updateLeaveStatus')
                 ->where(['status' => '(cancel)']);
@@ -273,8 +273,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
         Route::resource('employee-access', EmployeeAccessController::class)->only(['create']);
-
-        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
+        
+	    Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
 
         Route::controller(EmployeeController::class)->group(function () {
 

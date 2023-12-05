@@ -40,7 +40,23 @@ class ResponsiblePersonController extends Controller
      */
     public function create()
     {
-        //
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->responsible_person_service->getOptionsToCreateResponsiblePersons(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**

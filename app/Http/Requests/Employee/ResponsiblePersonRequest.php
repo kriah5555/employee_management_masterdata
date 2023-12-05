@@ -25,7 +25,7 @@ class ResponsiblePersonRequest extends ApiRequest
             'first_name'             => 'required|string|max:255',
             'last_name'              => 'required|string|max:255',
             'social_security_number' => 'required|' . config('constants.RSZ_NUMBER_VALIDATION'),
-            'role'                   => 'required|in:' . config('roles_permissions.CUSTOMER_ADMIN') . ',' . config('roles_permissions.MANAGER'),
+            'role'                   => 'required|in:' . implode(',', array_keys(config('roles_permissions.RESPONSIBLE_PERSON_ROLES'))),
         ];
         return $rules;
     }

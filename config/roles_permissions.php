@@ -11,6 +11,16 @@ return [
     'STAFF'          => 'staff',
     'EMPLOYEE'       => 'employee',
 
+    'RESPONSIBLE_PERSON_ROLES' => [
+        'admin'          => 'Admin',
+        'moderator'      => 'Moderator',
+        'customer_admin' => 'Customer admin',
+        'hr_manager'     => 'HR manager',
+        'manager'        => 'Manager',
+        'planner'        => 'Planner',
+        'staff'          => 'Staff',
+    ],
+
     'ROLES' => [
         'admin',
         'moderator',

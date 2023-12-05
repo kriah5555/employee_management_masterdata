@@ -83,4 +83,16 @@ class ResponsiblePersonService
             throw $e;
         }
     }
+
+    public function getOptionsToCreateResponsiblePersons()
+    {
+        try {
+            return [
+                'roles' => getValueLabelOptionsFromConfig('roles_permissions.RESPONSIBLE_PERSON_ROLES')
+            ];
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }
