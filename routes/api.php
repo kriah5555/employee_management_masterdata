@@ -208,6 +208,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
     });
 
+    Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
+
     Route::group(['middleware' => 'initialize-tenancy'], function () use ($integerRule) {
 
         Route::controller(HolidayController::class)->group(function () use ($integerRule) {
@@ -270,8 +272,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
-
-        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
 
 
         Route::controller(EmployeeController::class)->group(function () {
