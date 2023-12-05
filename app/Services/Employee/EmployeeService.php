@@ -131,7 +131,7 @@ class EmployeeService
         if ($employee->user->userFamilyDetails->dependent_spouse) {
             $dependentSpouse = [
                 'id'   => $employee->user->userFamilyDetails->dependent_spouse,
-                'name' => $employee->user->userFamilyDetails->dependent_spouse ? config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse]
+                'name' => $employee->user->userFamilyDetails->dependent_spouse ? config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse] : null
             ];
         } else {
             $dependentSpouse = null;
