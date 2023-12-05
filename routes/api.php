@@ -208,7 +208,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
     });
 
-    Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
+    Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
     Route::group(['middleware' => 'initialize-tenancy'], function () use ($integerRule) {
 
@@ -271,8 +271,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
 
-        Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
+	Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
+	Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
 
         Route::controller(EmployeeController::class)->group(function () {
 
@@ -284,7 +285,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::get('employee-benefits/create', 'createEmployeeBenefits');
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
             Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');
-            Route::get('user/responsible-companies', 'getUserResponsibleCompanies');
             Route::put('employee-update', 'updateEmployee');
         });
 
