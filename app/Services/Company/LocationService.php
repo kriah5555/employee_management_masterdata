@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Repositories\Company\LocationRepository;
 use App\Services\BaseService;
 use App\Models\Company\Location;
+use App\Services\Employee\ResponsiblePersonService;
 
 class LocationService extends BaseService
 {
@@ -87,6 +88,9 @@ class LocationService extends BaseService
 
     public function getOptionsToCreate()
     {
-        return ['workstations' => Workstation::where('status', true)->get()];
+        return [
+            'workstations'        => Workstation::where('status', true)->get(),
+            'responsible_persons' => app(ResponsiblePersonService::class)->getCompanyResponsiblePersons(getCompanyId()),
+        ];
     }
 }

@@ -9,7 +9,7 @@ use App\Models\User\User;
 class UserBasicDetails extends BaseModel
 {
     use UserAudit;
-    
+
     protected $connection = 'userdb';
 
     protected static $sort = ['first_name'];
