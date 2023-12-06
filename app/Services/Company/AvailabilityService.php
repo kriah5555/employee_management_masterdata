@@ -194,7 +194,6 @@ class AvailabilityService
             ->select('dates')
             ->get();
 
-        // dd($existingAvailabilityDates);
         if (count($existingAvailabilityDates) > 0) {
             $avilableDates = $this->convertDateArray(
                 $year,

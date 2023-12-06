@@ -63,8 +63,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     public function deleteResponsiblePerson(string $responsible_person_id, string $company_id)
     {
         $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $responsible_person_id])->get()->first();
-        $company_user->removeRole(config('roles_permissions.CUSTOMER_ADMIN')); # detach the role
-        $company_user->removeRole(config('roles_permissions.MANAGER')); # detach the role
+        $company_user->detachRoles($this->roles);
     }
 
     public function createResponsiblePerson(array $responsible_person_details, string $company_id)

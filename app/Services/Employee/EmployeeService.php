@@ -190,7 +190,7 @@ class EmployeeService
                 $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
-            return $employeeProfile;
+            return $user;
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();

@@ -21,7 +21,6 @@ class AvailabilityController extends Controller
 
     public function createAvailability(AvailabilityRequest $request, User $user)
     {
-        dd($user);
         try {
             return returnResponse(
                 [

@@ -49,15 +49,15 @@ class ContractTemplateService
     {
         try {
             return DB::transaction(function () use ($values) {
-                $contractemplate = ContractTemplate::create([
+                $contract_template = ContractTemplate::create([
                     'employee_type_id' => $values['employee_type_id'],
                 ]);
-                $contractemplate->socialSecretary()->sync($values['social_secretary'] ?? []);
+                $contract_template->socialSecretary()->sync($values['social_secretary'] ?? []);
                 foreach (config('app.available_locales') as $locale) {
-                    $contractemplate->setTranslation('body', $locale, $values['body'][$locale]);
+                    $contract_template->setTranslation('body', $locale, $values['body'][$locale]);
                 }
-                $contractemplate->save();
-                return $contractemplate;
+                $contract_template->save();
+                return $contract_template;
             });
         } catch (Exception $e) {
             error_log($e->getMessage());

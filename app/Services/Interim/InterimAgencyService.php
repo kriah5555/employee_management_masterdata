@@ -31,6 +31,7 @@ class InterimAgencyService
     {
         return $this->interimAgencyRepository->getInterimAgencies();
     }
+    
     public function getActiveInterimAgencies()
     {
         return $this->interimAgencyRepository->getActiveInterimAgencies();
