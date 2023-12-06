@@ -35,9 +35,6 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                 'hours' => $group->sum('hours'),
             ];
         });
-
-        dd($absenceHoursValidate);
-
         foreach ($absenceHoursValidate as $index => $data) {
             if (array_key_exists('hours', $data)) {
                 $hours = $data['hours'];
