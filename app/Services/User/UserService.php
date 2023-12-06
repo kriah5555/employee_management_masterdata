@@ -137,10 +137,7 @@ class UserService
 
     public function updateUser($values)
     {
-        $username = $values['first_name'] . $values['last_name'];
-        $username = strtolower(str_replace(' ', '', $username));
         $saveValues = [
-            'username'               => generateUniqueUsername($username),
             'social_security_number' => $values['social_security_number'],
         ];
 

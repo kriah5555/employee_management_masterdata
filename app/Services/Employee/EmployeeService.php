@@ -203,9 +203,12 @@ class EmployeeService
 
             if ($existingEmpProfile) {
                 $user = $this->userService->updateUser($values);
+                $this->mailService->sendEmployeeAccountUpdateMail($values);
+
             } else {
                 $user = $existingEmpProfile->last();
             }
+
 
             // Commit transactions
             DB::connection('master')->commit();
@@ -238,7 +241,7 @@ class EmployeeService
         $values['user_id'] = $user->id;
         return $this->employeeProfileRepository->createEmployeeProfile($values);
     }
-    
+
     public function createEmployeeSocialSecretaryDetails(EmployeeProfile $employeeProfile, $values)
     {
         $values['employee_profile_id'] = $employeeProfile->id;
@@ -313,8 +316,8 @@ class EmployeeService
 
             $minimumSalary = 0;
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
-                // Retrieve the FunctionTitle based on its 
-                
+                // Retrieve the FunctionTitle based on its
+
                 $functionTitle = FunctionTitle::findOrFail($function_title_id);
                 $functionCategory = $functionTitle->functionCategory;
 
