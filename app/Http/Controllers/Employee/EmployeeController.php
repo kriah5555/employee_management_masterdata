@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Models\Company\Employee\EmployeeProfile;
+use Exception;
 use Illuminate\Http\Request;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\MealVoucherService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use App\Models\EmployeeType\EmployeeType;
 use App\Services\Company\LocationService;
+use Illuminate\Support\Facades\Validator;
 use App\Services\Employee\EmployeeService;
 use App\Services\Employee\CommuteTypeService;
 use App\Http\Requests\Employee\EmployeeRequest;
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
-use Exception;
 
 class EmployeeController extends Controller
 {

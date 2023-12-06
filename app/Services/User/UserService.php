@@ -2,15 +2,17 @@
 
 namespace App\Services\User;
 
-use App\Repositories\User\UserBankAccountRepository;
-use App\Repositories\User\UserContactDetailsRepository;
+use App\Models\User\User;
+use App\Models\User\CompanyUser;
+use App\Services\Email\MailService;
+use App\Models\User\UserBankAccount;
+use Illuminate\Support\Facades\Hash;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserAddressRepository;
-use App\Models\User\User;
+use App\Repositories\User\UserBankAccountRepository;
 use App\Repositories\User\UserBasicDetailsRepository;
-use Illuminate\Support\Facades\Hash;
 use App\Repositories\User\UserFamilyDetailsRepository;
-use App\Models\User\CompanyUser;
+use App\Repositories\User\UserContactDetailsRepository;
 
 class UserService
 {
@@ -21,6 +23,8 @@ class UserService
     protected $userBasicDetailsRepository;
     protected $userContactDetailsRepository;
     protected $userFamilyDetailsRepository;
+    protected  $mailService;
+
 
 
     public function __construct(
@@ -29,7 +33,9 @@ class UserService
         UserAddressRepository $userAddressRepository,
         UserBankAccountRepository $userBankAccountRepository,
         UserContactDetailsRepository $userContactDetailsRepository,
-        UserFamilyDetailsRepository $userFamilyDetailsRepository
+        UserFamilyDetailsRepository $userFamilyDetailsRepository,
+        MailService $mailService
+
     ) {
         $this->userRepository = $userRepository;
         $this->userBasicDetailsRepository = $userBasicDetailsRepository;
@@ -37,6 +43,7 @@ class UserService
         $this->userBankAccountRepository = $userBankAccountRepository;
         $this->userContactDetailsRepository = $userContactDetailsRepository;
         $this->userFamilyDetailsRepository = $userFamilyDetailsRepository;
+        $this->mailService = $mailService;
     }
 
     public function getUserBySocialSecurityNumber($socialSecurityNumber)
@@ -101,15 +108,28 @@ class UserService
     public function updateUserBankAccount(User $user, $values)
     {
         $values['user_id'] = $user->id;
-        $UserBankObject = $user->userBankDetails($user->id)->get()[0];
-        return $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
+        $UserBankObject = $user->userBankDetails($user->id)->get()->first();
+
+        $newAccountNumber = $values['account_number'];
+
+        $existingAccountNumber = UserBankAccount::where('user_id', $values['user_id'])
+       ->pluck('account_number')
+       ->first();
+
+        $details =  $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
+
+        if ($newAccountNumber != $existingAccountNumber) {
+            $this->mailService->sendEmployeeAccountUpdateMail($values);
+        }
+
+        return $details;
     }
 
     public function updateUserBasicDetails(User $user, $values)
     {
         $values['user_id'] = $user->id;
         $values['date_of_birth'] = date('Y-m-d', strtotime($values['date_of_birth']));
-        $userDetailsObject = $user->userBasicDetailsById($user->id)->get()[0];
+        $userDetailsObject = $user->userBasicDetailsById($user->id)->get()->first();
         return $this->userBasicDetailsRepository->updateUserBasicDetails($userDetailsObject, $values);
     }
 
@@ -118,7 +138,7 @@ class UserService
     {
         $values['user_id'] = $user->id;
 
-        $userAddressObject = $user->userAddressById($user->id)->get()[0];
+        $userAddressObject = $user->userAddressById($user->id)->get()->first();
 
         return $this->userAddressRepository->updateUserAddress($userAddressObject, $values);
     }
@@ -127,7 +147,7 @@ class UserService
     {
         $values['user_id'] = $user->id;
 
-        $userContactObject = $user->userContactById($user->id)->get()[0];
+        $userContactObject = $user->userContactById($user->id)->get()->first();
 
         return $this->userContactDetailsRepository->updateUserContactDetails($userContactObject, $values);
     }
