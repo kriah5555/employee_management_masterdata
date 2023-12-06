@@ -7,7 +7,7 @@ use App\Traits\UserAudit;
 use App\Models\Company\CompanyAddress;
 use App\Models\Company\Company;
 use App\Models\Company\Workstation;
-use App\Models\User\User;
+
 class Location extends BaseModel
 {
     use UserAudit;
@@ -52,10 +52,5 @@ class Location extends BaseModel
     public function address()
     {
         return $this->belongsTo(CompanyAddress::class, 'address');
-    }
-
-    public function responsiblePerson()
-    {
-        return $this->belongsTo(User::class, 'responsible_person_id');
     }
 }

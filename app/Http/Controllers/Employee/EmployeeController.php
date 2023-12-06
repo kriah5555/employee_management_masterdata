@@ -205,7 +205,7 @@ class EmployeeController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeService->getSalary($request->employee_type_id, $request->function_title_id, $request->experience_in_months)
+                    'data'    => $this->employeeService->getSalary($request->employee_type_id, $request->function_title_id, $request->experience_in_months, $request->employee_subtype)
                 ],
                 JsonResponse::HTTP_OK,
             );

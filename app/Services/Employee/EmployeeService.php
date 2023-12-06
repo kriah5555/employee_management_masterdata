@@ -319,7 +319,6 @@ class EmployeeService
             # for all employee types hourly salary will be returned, 1 => if teh employee type has long term contract with servant sub type then monthly salary will be returned
             $return_salary_type = ($employeeType->employeeTypeCategory->id == 1 && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
 
-
             $minimumSalary = 0;
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
                 // Retrieve the FunctionTitle based on its
@@ -346,11 +345,10 @@ class EmployeeService
                             $function_category_number = 999;
                         }
 
-                        $function_category_number = max(1, $function_category_number);
+                        $function_category_number = max(1, $function_category_number); # get group function category
 
                         $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
                             ->where('category_number', $function_category_number);
-
 
                         if ($minimumSalaries->isNotEmpty()) {
                             $minimumSalary = $minimumSalaries->first()->$return_salary_type;
@@ -361,6 +359,7 @@ class EmployeeService
 
             return [
                 'minimumSalary' => formatToEuropeCurrency($minimumSalary),
+                'salary' => ucwords(str_replace("_", " ", $return_salary_type)),
                 'salary_type'   => [
                     'value' => $salary_type,
                     'label' => $salary_type ? config('constants.SALARY_TYPES')[$salary_type] : null,

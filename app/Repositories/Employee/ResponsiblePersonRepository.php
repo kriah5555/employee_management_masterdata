@@ -43,7 +43,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     {
         $user_ids = $this->getCompanyResponsiblePersonUserIds($company_id);
         return User::whereIn('id', $user_ids)
-        ->with(['userBasicDetails', 'userContactDetails'])
+        ->with(['userBasicDetails'])
         ->get();
     }
 
@@ -52,7 +52,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
         $user_ids     = $this->getCompanyResponsiblePersonUserIds($company_id);
         $user_service = app(UserService::class);
         $user         = User::whereIn('id', $user_ids)
-                        ->with(['userBasicDetails', 'roles'])
+                        ->with(['userBasicDetails', 'roles', 'userContactDetails'])
                         ->findOrFail($user_id);
 
         unset($user->roles);
@@ -86,9 +86,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
         $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $responsible_person_id])->get()->first();
         
         if (!$company_user->hasRole($responsible_person_details['role'])) { # check if the roles are same else update the role
-            $company_user->removeRole(config('roles_permissions.CUSTOMER_ADMIN')); # detach the role
-            $company_user->removeRole(config('roles_permissions.MANAGER')); # detach the role
-            $company_user->assignRole($responsible_person_details['role']);
+            $company_user->detachRoles($this->roles)->assignRole($responsible_person_details['role']);
         }
         
         return $responsible_person;

@@ -15,8 +15,8 @@ class ResponsiblePersonRequest extends ApiRequest
     public function rules(): array
     {
         $rules =  [
-            'email' => 'required|max:255|regex:' . config('regex.EMAIL_REGEX'),
-            'phone' => [
+            'email'        => 'required|max:255|regex:' . config('regex.EMAIL_REGEX'),
+            'phone_number' => [
                 'required',
                 'string',
                 'max:20',
