@@ -66,7 +66,12 @@ return [
 
     'HOURLY_SALARY'                     => 2,
 
-    
-    
     'RSZ_NUMBER_VALIDATION' => 'digits_between:1,11',
+
+    'DASHBOARD_ACCESS_OPTIONS' => [
+        1 => 'Company',
+        2 => 'Location',
+    ],
+    'COMPANY'          => 1,
+    'LOCATIONS'        => 2,
 ];

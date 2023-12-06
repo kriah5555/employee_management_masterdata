@@ -14,11 +14,20 @@ return new class extends Migration
         Schema::create('availability', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->nullable()->references('id')->on('employee_profiles');
-            $table->unsignedBigInteger('company_id'); // Store company_id directly
             $table->integer('type')->nullable(false);
             $table->integer('year')->nullable(false);
             $table->integer('month')->nullable(false);
             $table->json('dates')->nullable(false);
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('availability_remarks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('employee_id')->nullable()->references('id')->on('employee_profiles');
+            $table->json('dates')->nullable(false);
+            $table->integer('type');
+            $table->string('remark')->nullable(false);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,5 +39,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('availability');
+        Schema::dropIfExists('availability_remarks');
+
     }
 };

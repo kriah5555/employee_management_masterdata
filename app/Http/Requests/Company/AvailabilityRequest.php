@@ -10,7 +10,6 @@ use Illuminate\Validation\Rule;
 
 class AvailabilityRequest extends ApiRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -20,10 +19,7 @@ class AvailabilityRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'employee_id' => 'required|int|bail',
-            // 'employee_id' => ['required|int',  Rule::exists('employee', 'id'),]
-            'company_id' => 'required|int|bail',
-            // 'company_id' => ['required|int',  Rule::exists('company', 'id'),]
+            'employee_id' => ['required' , 'int',  Rule::exists('employee_profiles', 'id'),],
             'type' => 'required|between:0,1|bail',
             'remark' => 'required|string|bail',
             'dates' => [
@@ -31,16 +27,7 @@ class AvailabilityRequest extends ApiRequest
                 'array',
                 'bail',
             ],
-            'dates.*' => 'date_format:'.config('constants.DEFAULT_DATE_FORMAT'),
-                // 'regex:/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-(19|20)\d\d$/',
-                // 'regex:/^\d{2}-\d{2}-\d{4}$/u'
-                function ($attribute, $value, $fail) {
-                    foreach ($value as $date) {
-                        if (!\DateTime::createFromFormat('d-m-Y', $date)) {
-                            $fail("The $attribute should be in the day-month-year format.");
-                        }
-                    }
-                },
+            'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
         ];
     }
 

@@ -16,14 +16,14 @@ use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
 use App\Http\Controllers\Interim\InterimAgencyController;
 use App\Http\Controllers\NotificationController\NotificationController;
-// use App\Http\Controllers\Company\AvailabilityController;
 
 use App\Http\Controllers\Company\{
     CompanyController,
     LocationController,
     CostCenterController,
     WorkstationController,
-    AvailabilityController,
+    DashboardAccessController,
+    Contract\AvailabilityController,
     Absence\LeaveController,
     Absence\HolidayController,
     Contract\ContractConfigurationController,
@@ -66,6 +66,7 @@ use App\Http\Controllers\Employee\{
 
     500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
+
 $integerRule = '[0-9]+'; # allow only integer values
 $statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
@@ -165,7 +166,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('/translations', 'store');
 
         Route::post('/translate', 'getStringTranslation');
-
     });
 
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
@@ -192,7 +192,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::controller(ReasonController::class)->group(function () {
 
         Route::get('reasons-list/{category?}', 'getReasonsList');
-
     });
 
     Route::controller(SocialSecretaryController::class)->group(function () use ($integerRule) {
@@ -212,7 +211,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
                 ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for employee flow
 
             Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
-            ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for managers flow
+                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for managers flow
             Route::post('holidays-status/{holiday_id}/{status}', 'updateHolidayStatus')
                 ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
         });
@@ -231,7 +230,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
 
             Route::get('location-workstations/{location_id}', 'locationWorkstations')->where(['location_id' => $integerRule]);
-
         });
 
         $resources = [
@@ -247,6 +245,14 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
                 'controller' => CostCenterController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
+            'availability' => [
+                'controller' => AvailabilityController::class,
+                'methods'    => ['show', 'store', 'update', 'destroy']
+            ],
+            'dashboard-access' => [
+                'controller' => DashboardAccessController::class,
+                'methods'    => ['index', 'store', 'destroy']
+            ],
         ];
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
@@ -256,7 +262,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::controller(CompanyContractTemplateController::class)->group(function () {
 
             Route::resource('company-contract-templates', CompanyContractTemplateController::class)->except(['edit']);
-
         });
 
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
@@ -278,19 +283,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
             Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');
             Route::get('user/responsible-companies', 'getUserResponsibleCompanies');
-            Route::put('employee-update','updateEmployee');
+            Route::put('employee-update', 'updateEmployee');
         });
-
-        Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
-        Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
-        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
-        Route::delete('/delete-availabiility', [AvailabilityController::class, 'deleteAvailability']);
-        Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
-
     });
-
-
-
     Route::put('employee-update', [EmployeeController::class, 'updateEmployee']);
 
     Route::post('/send-notification', [NotificationController::class, 'sendNotification']);

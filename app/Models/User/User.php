@@ -115,8 +115,4 @@ class User extends Authenticatable
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
     }
 
-    public function companyUser()
-    {
-        return $this->hasMany(CompanyUser::class);
-    }
 }
