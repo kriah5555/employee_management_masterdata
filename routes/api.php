@@ -245,16 +245,20 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         });
 
         $resources = [
-            'locations'    => [
+            'locations'                  => [
                 'controller' => LocationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
-            'workstations' => [
+            'workstations'               => [
                 'controller' => WorkstationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
-            'cost-centers' => [
+            'cost-centers'               => [
                 'controller' => CostCenterController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            ],
+            'company-contract-templates' => [
+                'controller' => CompanyContractTemplateController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
         ];
@@ -262,12 +266,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
         }
-
-        Route::controller(CompanyContractTemplateController::class)->group(function () {
-
-            Route::resource('company-contract-templates', CompanyContractTemplateController::class)->except(['edit']);
-
-        });
 
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
@@ -291,7 +289,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::put('employee-update', 'updateEmployee');
         });
 
-        Route::post('/create-availability', [AvailabilityController::class, 'createAvailability']);
+        Route::post('employee-availability/{user_id}', [AvailabilityController::class, 'createAvailability']);
         Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
         Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
         Route::delete('/delete-availability', [AvailabilityController::class, 'deleteAvailability']);

@@ -20,50 +20,34 @@ class AvailabilityRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'employee_id' => 'required|int|bail',
-            // 'employee_id' => ['required|int',  Rule::exists('employee', 'id'),]
-            'company_id' => 'required|int|bail',
-            // 'company_id' => ['required|int',  Rule::exists('company', 'id'),]
-            'type' => 'required|between:0,1|bail',
-            'remark' => 'required|string|bail',
-            'dates' => [
+            'company_ids'   => [
+                'required',
+                'array',
+            ],
+            'company_ids.*' => [
+                'bail',
+                'integer',
+                Rule::exists('master.company_users', 'company_id'),
+            ],
+            'type'          => 'required|between:0,1|bail',
+            'remark'        => 'bail|string',
+            'dates'         => [
                 'required',
                 'array',
                 'bail',
             ],
-            'dates.*' => 'date_format:'.config('constants.DEFAULT_DATE_FORMAT'),
-                // 'regex:/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-(19|20)\d\d$/',
-                // 'regex:/^\d{2}-\d{2}-\d{4}$/u'
-                function ($attribute, $value, $fail) {
-                    foreach ($value as $date) {
-                        if (!\DateTime::createFromFormat('d-m-Y', $date)) {
-                            $fail("The $attribute should be in the day-month-year format.");
-                        }
-                    }
-                },
+            'dates.*'       => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT')
         ];
     }
 
     public function messages()
     {
         return [
-            'employee_id.required' => 'Employee is required.',
-            'company_id.required' => 'Please select the company.',
-            'type.required' => 'Please select the availability option.',
-            'remark.required' => 'The remark field is required.',
-            'dates.required' => 'Date is required.',
-            'dates.array' => 'Dates must be in an array.',
-            'dates.regex' => 'The date should be in the day-month-year format (e.g., 20-12-2023).',
+            'company_ids.required' => 'Please select the company.',
+            'type.required'        => 'Please select the availability option.',
+            'dates.required'       => 'Date is required.',
+            'dates.array'          => 'Dates must be in an array.',
+            'dates.date'           => 'The date should be in the day-month-year format (e.g., 20-12-2023).',
         ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        $errors = $validator->errors()->all();
-
-        throw new HttpResponseException(response()->json([
-            'success' => false,
-            'message' => implode(' ', $errors),
-        ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
     }
 }
