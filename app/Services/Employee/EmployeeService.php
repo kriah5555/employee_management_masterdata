@@ -209,7 +209,9 @@ class EmployeeService
 
             if ($existingEmpProfile) {
                 $user = $this->userService->updateUser($values);
-                $this->mailService->sendEmployeeAccountUpdateMail($values);
+
+                // $this->mailService->sendEmployeeAccountUpdateMail($values);
+
 
             } else {
                 $user = $existingEmpProfile->last();
