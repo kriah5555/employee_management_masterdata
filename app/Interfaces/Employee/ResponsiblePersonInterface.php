@@ -8,7 +8,7 @@ interface ResponsiblePersonInterface
 {
     public function getCompanyResponsiblePersons($company_id);
 
-    public function getResponsiblePersonById(string $responsible_person_id, string $company_id, string $formatted_roles);
+    public function getResponsiblePersonById(string $responsible_person_id, string $company_id);
 
     public function deleteResponsiblePerson(string $responsible_person_id, string $company_id);
 

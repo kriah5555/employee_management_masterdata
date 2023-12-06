@@ -43,6 +43,7 @@ class DashboardAccessController extends Controller
         }
     }
 
+
     /**
      * Show the form for creating a new resource.
      */
@@ -82,7 +83,6 @@ class DashboardAccessController extends Controller
      */
     public function show(Request $dashboardAccess)
     {
-
     }
 
     /**

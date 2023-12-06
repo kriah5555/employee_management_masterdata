@@ -37,7 +37,7 @@ class CompanyRequest extends ApiRequest
                     'required',
                     'string',
                     'max:20',
-                    //'regex:/^(\+[0-9]{1,4}\s[0-9]{1,3}\s[0-9]{1,3}\s[0-9\s]+)$/', # need to be added back
+                    // 'regex:'.config('regex.PHONE_REGEX'), # need to be added back
                 ],
                 'sender_number'           => 'nullable|digits_between:1,11',
                 'username'                => 'nullable|string|max:50',

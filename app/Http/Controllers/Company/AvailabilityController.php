@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company\Contract;
-
+namespace App\Http\Controllers\Company;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -14,6 +13,35 @@ class AvailabilityController extends Controller
 
     public function __construct(protected AvailabilityService $availabilityService)
     {
+    }
+
+     /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $rules = [
+            'period' => 'required|regex:/^\d{2}-\d{4}$/',
+        ];
+
+        $validator = Validator::make(request()->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
+        }
+        try {
+            return response()->json([
+                'success' => true,
+                'available_dates' => $this->availabilityService->availableDates(request()),
+                'notAvailable_dates' => $this->availabilityService->notAvailableDates(request()),
+                'date_overview' => $this->availabilityService->dateOverView(request())
+            ], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -46,28 +74,7 @@ class AvailabilityController extends Controller
      */
     public function show(string $id)
     {
-        $rules = [
-            'period' => 'required|regex:/^\d{2}-\d{4}$/',
-        ];
 
-        $validator = Validator::make(request()->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
-        }
-        try {
-            return response()->json([
-                'success' => true,
-                'available_dates' => $this->availabilityService->availableDates(request()),
-                'notAvailable_dates' => $this->availabilityService->notAvailableDates(request()),
-                'date_overview' => $this->availabilityService->dateOverView(request(),$id)
-            ], JsonResponse::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json([
-                "success" => false,
-                "message" => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
     /**

@@ -40,6 +40,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('availability');
         Schema::dropIfExists('availability_remarks');
-
     }
 };

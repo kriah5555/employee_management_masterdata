@@ -1,42 +1,49 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Sector\SectorController;
-use App\Http\Controllers\Holiday\HolidayCodeController;
-use App\Http\Controllers\Holiday\HolidayCodeConfigController;
-use App\Http\Controllers\Holiday\EmployeeHolidayCountController;
-use App\Http\Controllers\Sector\SalaryController;
-use App\Http\Controllers\Email\EmailTemplateApiController;
-use App\Http\Controllers\Translations\TranslationController;
-use App\Http\Controllers\Contract\ContractTypeController;
-use App\Http\Controllers\Contract\ContractTemplateController;
-use App\Http\Controllers\Rule\RuleController;
-use App\Http\Controllers\ReasonController;
-use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
-use App\Http\Controllers\Holiday\PublicHolidayController;
-use App\Http\Controllers\Interim\InterimAgencyController;
-use App\Http\Controllers\NotificationController\NotificationController;
 
 use App\Http\Controllers\Company\{
     CompanyController,
     LocationController,
     CostCenterController,
     WorkstationController,
-    DashboardAccessController,
-    Contract\AvailabilityController,
+    AvailabilityController,
     Absence\LeaveController,
     Absence\HolidayController,
     Contract\ContractConfigurationController,
     Contract\CompanyContractTemplateController,
 };
 
+use App\Http\Controllers\Holiday\{
+    HolidayCodeController,
+    PublicHolidayController,
+    HolidayCodeConfigController,
+    EmployeeHolidayCountController,
+};
+
 use App\Http\Controllers\Employee\{
     EmployeeController,
     CommuteTypeController,
-    EmployeeTypeController,
-    FunctionTitleController,
-    FunctionCategoryController,
+    EmployeeAccessController,
     ResponsiblePersonController,
+};
+
+use App\Http\Controllers\{
+    MealVoucherController,
+    ReasonController,
+    Rule\RuleController,
+    Sector\SectorController,
+    Sector\SalaryController,
+    Contract\ContractTypeController,
+    Interim\InterimAgencyController,
+    Email\EmailTemplateApiController,
+    Translations\TranslationController,
+    EmployeeType\EmployeeTypeController,
+    Contract\ContractTemplateController,
+    EmployeeFunction\FunctionTitleController,
+    SocialSecretary\SocialSecretaryController,
+    EmployeeFunction\FunctionCategoryController,
+    NotificationController\NotificationController,
 };
 
 /*
@@ -136,7 +143,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'email-templates'     => [
             'controller' => EmailTemplateApiController::class,
-            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            'methods'    => ['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']
         ],
         'public-holidays'     => [
             'controller' => PublicHolidayController::class,
@@ -201,6 +208,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
     });
 
+    Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
+
     Route::group(['middleware' => 'initialize-tenancy'], function () use ($integerRule) {
 
         Route::controller(HolidayController::class)->group(function () use ($integerRule) {
@@ -209,6 +218,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
             Route::get('employee-holidays/{employee_id}/{status}', [HolidayController::class, 'employeeHolidays'])
                 ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for employee flow
+
+            Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
+                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for managers flow
 
             Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
                 ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for managers flow
@@ -221,7 +233,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::resource('leaves', LeaveController::class)->except(['edit', 'index']);
 
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
-                ->where(['status' => '(approve|cancel)']); # to get leaves list
+                ->where(['status' => '(approve|pending)']); # to get leaves list
 
             Route::post('leaves-status/{leave_id}/{status}', 'updateLeaveStatus')
                 ->where(['status' => '(cancel)']);
@@ -233,25 +245,29 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         });
 
         $resources = [
-            'locations'    => [
+            'locations'                  => [
                 'controller' => LocationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
-            'workstations' => [
+            'workstations'               => [
                 'controller' => WorkstationController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
-            'cost-centers' => [
+            'cost-centers'               => [
                 'controller' => CostCenterController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
             'availability' => [
                 'controller' => AvailabilityController::class,
-                'methods'    => ['show', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'store', 'update', 'destroy']
             ],
             'dashboard-access' => [
                 'controller' => DashboardAccessController::class,
                 'methods'    => ['index', 'store', 'destroy']
+            ],
+            'company-contract-templates' => [
+                'controller' => CompanyContractTemplateController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
         ];
 
@@ -259,18 +275,14 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::resource($uri, $controller)->only($methods);
         }
 
-        Route::controller(CompanyContractTemplateController::class)->group(function () {
-
-            Route::resource('company-contract-templates', CompanyContractTemplateController::class)->except(['edit']);
-        });
-
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
 
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit', 'create']);
+        Route::resource('employee-access', EmployeeAccessController::class)->only(['create']);
 
+	    Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
 
         Route::controller(EmployeeController::class)->group(function () {
 
@@ -278,14 +290,23 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
             Route::get('employee-contract/create', 'createEmployeeContract');
-            Route::get('employee-commute/create', 'createEmployeesCommute');
+            Route::get('employee-commute/create', 'createEmployeeCommute');
             Route::get('employee-benefits/create', 'createEmployeeBenefits');
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
             Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');
-            Route::get('user/responsible-companies', 'getUserResponsibleCompanies');
             Route::put('employee-update', 'updateEmployee');
         });
+
+        Route::post('employee-availability/{user_id}', [AvailabilityController::class, 'createAvailability']);
+        Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
+        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
+        Route::delete('/delete-availability', [AvailabilityController::class, 'deleteAvailability']);
+        Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
+
     });
+
+
+
     Route::put('employee-update', [EmployeeController::class, 'updateEmployee']);
 
     Route::post('/send-notification', [NotificationController::class, 'sendNotification']);

@@ -151,11 +151,10 @@ class AvailabilityService
         }
     }
 
-    public function dateOverView($request, $id)
+    public function dateOverView($request)
     {
         $mothDates = array_merge($this->availableDates[0], $this->notAvailableDates[0]);
-
-        $datesData = AvailabilityRemarks::where('employee_id', $id)->get();
+        $datesData = AvailabilityRemarks::where('employee_id', $request->input('employee_id'))->get();
 
         $matchingDates = [];
 

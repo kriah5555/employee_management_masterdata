@@ -60,6 +60,7 @@ return [
         'plan_reminder'                   => 'Plan reminder Mail',
         'new_employee_creation_mail'      => 'New employee creation mail',
         'existing_employee_creation_mail' => 'Existing employee creation mail',
+        'Employee_account_update_mail'    => 'Employee account number update'
     ],
 
     'MONTHLY_SALARY'                    => 1,

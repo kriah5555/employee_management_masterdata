@@ -7,20 +7,16 @@ use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Company\Employee\LongTermEmployeeContract;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\User\CompanyUser;
-use App\Models\User\UserBasicDetails;
-use App\Models\User\UserContactDetails;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
-use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use App\Services\CompanyService;
 use App\Services\User\UserService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Models\User\User;
-use App\Repositories\Employee\EmployeeBenefitsRepository;
-use App\Repositories\Company\LocationRepository;
-
+use App\Services\EmployeeType\EmployeeTypeService;
+use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -31,10 +27,7 @@ class EmployeeService
 
     public function __construct(
         protected EmployeeProfileRepository $employeeProfileRepository,
-        protected EmployeeBenefitsRepository $employeeBenefitsRepository,
-        protected EmployeeSocialSecretaryDetailsRepository $employeeSocialDetailsRepository,
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
-        protected LocationRepository $locationRepository,
         protected UserService $userService,
         protected CompanyService $companyService,
         protected MailService $mailService
@@ -134,11 +127,17 @@ class EmployeeService
         $userAddressDetails = $employee->user->userAddress->toApiReponseFormat();
         $userContactDetails = $employee->user->userContactDetails->toApiReponseFormat();
         $userBankAccountDetails = $employee->user->userBankAccount->toApiReponseFormat();
-        $userFamilyDetails = [
-            'dependent_spouse' => [
+        $employee->user->userFamilyDetails->dependent_spouse = 'no';
+        if ($employee->user->userFamilyDetails->dependent_spouse) {
+            $dependentSpouse = [
                 'id'   => $employee->user->userFamilyDetails->dependent_spouse,
-                'name' => config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse]
-            ],
+                'name' => $employee->user->userFamilyDetails->dependent_spouse ? config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse] : null
+            ];
+        } else {
+            $dependentSpouse = null;
+        }
+        $userFamilyDetails = [
+            'dependent_spouse' => $dependentSpouse,
             'marital_status'   => $employee->user->userFamilyDetails->maritalStatus->toApiReponseFormat(),
             'children'         => 0
         ];
@@ -151,18 +150,18 @@ class EmployeeService
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
-            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
-            if ($existingEmpProfile->isEmpty()) {
-                $user = $this->userService->createNewUser($values);
-            } else {
-                $user = $existingEmpProfile->last();
-            }
-            $user->assignRole('employee');
-            $this->createCompanyUser($user, $company_id, 'employee');
-            $employeeProfile = $this->createEmployeeProfile($user, $values);
-            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-            $this->createEmployeeContract($employeeProfile, $values);
-            $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+                $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+                if ($existingEmpProfile->isEmpty()) {
+                    $user = $this->userService->createNewUser($values);
+                } else {
+                    $user = $existingEmpProfile->last();
+                }
+                $user->assignRole('employee');
+                $this->createCompanyUser($user, $company_id, 'employee');
+                $employeeProfile = $this->createEmployeeProfile($user, $values);
+                $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+                $this->createEmployeeContract($employeeProfile, $values);
+                $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;
@@ -179,16 +178,16 @@ class EmployeeService
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
-            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
-            if ($existingEmpProfile->isEmpty()) {
-                $user = $this->userService->createNewUser($values);
-            } else {
-                $user = $existingEmpProfile->last();
-            }
-            $user->assignRole($values['role']);
-            $this->createCompanyUser($user, $company_id, $values['role']);
-            $employeeProfile = $this->createEmployeeProfile($user, $values);
-            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+                $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+                if ($existingEmpProfile->isEmpty()) {
+                    $user = $this->userService->createNewUser($values);
+                } else {
+                    $user = $existingEmpProfile->last();
+                }
+                $user->assignRole($values['role']);
+                $this->createCompanyUser($user, $company_id, $values['role']);
+                $employeeProfile = $this->createEmployeeProfile($user, $values);
+                $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;
@@ -200,16 +199,18 @@ class EmployeeService
         }
     }
 
-    public function updateEmployee( $values, $company_id)
+    public function updateEmployee($values, $company_id)
     {
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
 
-            $existingEmpProfile = $this->userService->getUserById($values['user_id']);
+                $existingEmpProfile = $this->userService->getUserById($values['user_id']);
 
             if ($existingEmpProfile) {
                 $user = $this->userService->updateUser($values);
+                $this->mailService->sendEmployeeAccountUpdateMail($values);
+
             } else {
                 $user = $existingEmpProfile->last();
             }
@@ -245,10 +246,11 @@ class EmployeeService
         $values['user_id'] = $user->id;
         return $this->employeeProfileRepository->createEmployeeProfile($values);
     }
+
     public function createEmployeeSocialSecretaryDetails(EmployeeProfile $employeeProfile, $values)
     {
         $values['employee_profile_id'] = $employeeProfile->id;
-        return $this->employeeSocialDetailsRepository->createEmployeeSocialSecretaryDetails($values);
+        return app(EmployeeSocialSecretaryDetailsRepository::class)->createEmployeeSocialSecretaryDetails($values);
     }
 
     public function createEmployeeContract($employeeProfile, $values)
@@ -311,17 +313,18 @@ class EmployeeService
         return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
     }
 
-    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '') # get salary options to create employee
+    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '', $employee_subtype = '') # get salary options to create employee
     {
         try {
-            $employeeType = $this->employeeTypeService->model::findOrFail($employee_type_id);
-            $salary_type = $employeeType->salary_type;
+            $employeeType = app(EmployeeTypeService::class)->getEmployeeTypeDetails($employee_type_id);
+            $salary_type = $employeeType->salary_type['value'];
+            # for all employee types hourly salary will be returned, 1 => if teh employee type has long term contract with servant sub type then monthly salary will be returned
+            $return_salary_type = ($employeeType->employeeTypeCategory->id == 1 && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
 
             $minimumSalary = 0;
-            $salaryTypeLabel = null;
-
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
-                // Retrieve the FunctionTitle based on its ID
+                // Retrieve the FunctionTitle based on its
+
                 $functionTitle = FunctionTitle::findOrFail($function_title_id);
                 $functionCategory = $functionTitle->functionCategory;
 
@@ -344,23 +347,24 @@ class EmployeeService
                             $function_category_number = 999;
                         }
 
-                        $function_category_number = max(1, $function_category_number);
+                        $function_category_number = max(1, $function_category_number); # get group function category
 
                         $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
                             ->where('category_number', $function_category_number);
 
                         if ($minimumSalaries->isNotEmpty()) {
-                            $minimumSalary = $minimumSalaries->first()->salary;
+                            $minimumSalary = $minimumSalaries->first()->$return_salary_type;
                         }
                     }
                 }
             }
 
             return [
-                'minimumSalary' => $minimumSalary,
+                'minimumSalary' => formatToEuropeCurrency($minimumSalary),
+                'salary' => ucwords(str_replace("_", " ", $return_salary_type)),
                 'salary_type'   => [
                     'value' => $salary_type,
-                    'label' => config('constants.SALARY_TYPES')[$salary_type],
+                    'label' => $salary_type ? config('constants.SALARY_TYPES')[$salary_type] : null,
                 ],
             ];
         } catch (Exception $e) {
@@ -434,5 +438,25 @@ class EmployeeService
             }
         }
         return $companies;
+    }
+
+    public function update($employeeProfileId, $values)
+    {
+        try {
+            $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId);
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+            $this->userService->updateUserDetails($employeeProfile->user, $values);
+            $employeeProfile->employeeSocialSecretaryDetails->update($values);
+            // Commit transactions
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+            return $employeeProfile;
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }

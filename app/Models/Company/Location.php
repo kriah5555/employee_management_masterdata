@@ -7,6 +7,7 @@ use App\Traits\UserAudit;
 use App\Models\Company\CompanyAddress;
 use App\Models\Company\Company;
 use App\Models\Company\Workstation;
+
 class Location extends BaseModel
 {
     use UserAudit;
@@ -18,7 +19,8 @@ class Location extends BaseModel
     protected $columnsToLog = [
         'location_name',
         'status',
-        'address'
+        'address',
+        'responsible_person_id',
     ];
 
 
@@ -31,7 +33,8 @@ class Location extends BaseModel
     protected $fillable = [
         'location_name',
         'status',
-        'address'
+        'address',
+        'responsible_person_id',
     ];
 
     public function workstations()

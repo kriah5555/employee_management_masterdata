@@ -155,7 +155,6 @@ class HolidayService
     // {
     //     return getValueLabelOptionsFromConfig('absence.DURATION_TYPE');
     // }
-
     // public function getOptionsToCreate()
     // {
     //     try {

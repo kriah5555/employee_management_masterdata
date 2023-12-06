@@ -45,26 +45,20 @@ class ContractTemplateService
         }
     }
 
-    public function getOptionsToEdit($contract_template_id)
-    {
-        try {
-            $contract_template = $this->get($contract_template_id, ['company', 'employeeType', 'company', 'socialSecretary']);
-            $contract_template->socialSecretary;
-            $options = $this->getOptionsToCreate();
-            $options['details'] = $contract_template;
-            return $options;
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
     public function create($values)
     {
         try {
-            $contractTemplate = ContractTemplate::create($values);
-            $contractTemplate->socialSecretary()->sync($values['social_secretary_id'] ?? []);
-            return $contractTemplate;
+            return DB::transaction(function () use ($values) {
+                $contractemplate = ContractTemplate::create([
+                    'employee_type_id' => $values['employee_type_id'],
+                ]);
+                $contractemplate->socialSecretary()->sync($values['social_secretary'] ?? []);
+                foreach (config('app.available_locales') as $locale) {
+                    $contractemplate->setTranslation('body', $locale, $values['body'][$locale]);
+                }
+                $contractemplate->save();
+                return $contractemplate;
+            });
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -73,19 +67,19 @@ class ContractTemplateService
 
     public function index()
     {
-        return ContractTemplate::with('employeeType')->get();
+        return ContractTemplate::with('employeeType')->where('status', true)->get();
     }
 
     public function get($id)
     {
-        return ContractTemplate::whereId($id)->with(['company', 'employeeType', 'company', 'socialSecretary'])->first();
+        return ContractTemplate::whereId($id)->with(['employeeType', 'socialSecretary'])->first();
     }
 
     public function update($contractTemplate, $values)
     {
         try {
             $contractTemplate->update($values);
-            $contractTemplate->socialSecretary()->sync($values['social_secretary_id'] ?? []);
+            $contractTemplate->socialSecretary()->sync($values['social_secretary'] ?? []);
             return $contractTemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());

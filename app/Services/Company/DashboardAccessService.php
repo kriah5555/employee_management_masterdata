@@ -11,7 +11,6 @@ use Carbon\Carbon;
 class DashboardAccessService
 {
     protected $locations=[];
-
     public function getDashboardAccess($request)
     {
         try{

@@ -21,6 +21,16 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('availability_remarks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('employee_id')->nullable()->references('id')->on('employee_profiles');
+            $table->unsignedBigInteger('company_id'); // Store company_id directly
+            $table->json('dates')->nullable(false);
+            $table->integer('type');
+            $table->string('remark')->nullable(false);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -29,5 +39,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('contract_configurations');
+        Schema::dropIfExists('availability_remarks');
     }
 };
