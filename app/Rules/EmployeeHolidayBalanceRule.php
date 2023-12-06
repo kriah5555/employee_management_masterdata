@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Models\Company\Employee\EmployeeHolidayCount;
 use App\Models\Company\Absence\Absence;
+use App\Services\Company\Absence\AbsenceService;
 
 class EmployeeHolidayBalanceRule implements ValidationRule
 {
@@ -21,11 +22,26 @@ class EmployeeHolidayBalanceRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        $absenceHoursData = collect($value)->map(function ($data) {
+            return [
+                'holiday_code' => $data['holiday_code'],
+                'hours' => app(AbsenceService::class)->getCalculateAbsenceHours(request(), $data, $withDateCalculates = true),
+            ];
+        });
 
-        foreach ($value as $index => $data) {
+        $absenceHoursValidate = $absenceHoursData->groupBy('holiday_code')->map(function ($group) {
+            return [
+                'holiday_code' => $group->first()['holiday_code'],
+                'hours' => $group->sum('hours'),
+            ];
+        });
+
+        dd($absenceHoursValidate);
+
+        foreach ($absenceHoursValidate as $index => $data) {
             if (array_key_exists('hours', $data)) {
-            $hours = $data['hours'];
-            $holidayCodeId = $data['holiday_code'];
+                $hours = $data['hours'];
+                $holidayCodeId = $data['holiday_code'];
 
                 // Fetch holiday count for the specified employee and holiday code
                 $holidayCount = EmployeeHolidayCount::where('employee_id', $this->employee_id)
