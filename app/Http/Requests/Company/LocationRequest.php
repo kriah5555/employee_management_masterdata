@@ -4,6 +4,7 @@ namespace App\Http\Requests\Company;
 
 use App\Services\Company\LocationService;
 use App\Http\Requests\ApiRequest;
+use App\Rules\ResponsiblePersonExistsRule;
 
 class LocationRequest extends ApiRequest
 {
@@ -13,6 +14,9 @@ class LocationRequest extends ApiRequest
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             unset($location_rules['company']);
         }
+        $location_rules['responsible_person_id'] = [
+            new ResponsiblePersonExistsRule(getCompanyId())
+        ];
         return $location_rules;
     }
 
