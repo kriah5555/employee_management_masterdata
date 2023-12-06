@@ -47,7 +47,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
         ->get();
     }
 
-    public function getResponsiblePersonById(string $user_id, string $company_id, $formatted_roles = true) : User
+    public function getResponsiblePersonById(string $user_id, string $company_id)
     {
         $user_ids     = $this->getCompanyResponsiblePersonUserIds($company_id);
         $user_service = app(UserService::class);
@@ -75,7 +75,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
 
     public function updateResponsiblePerson(string $responsible_person_id, array $responsible_person_details, string $company_id)
     {
-        $responsible_person                         = $this->getResponsiblePersonById($responsible_person_id, $company_id, false);
+        $responsible_person                         = $this->getResponsiblePersonById($responsible_person_id, $company_id);
         $responsible_person->social_security_number = $responsible_person_details['social_security_number'];
         $userBasicDetails                           = $responsible_person->userBasicDetails;
 
