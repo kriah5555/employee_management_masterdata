@@ -111,6 +111,7 @@ class EmployeeTypeService
             return ['value' => $key, 'label' => $value];
         }, array_keys($options), $options);
     }
+    
     public function getEmployeeCategoryOptions()
     {
         return getValueLabelOptionsFromConfig('absence.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS');

@@ -17,7 +17,7 @@ class NotificationController extends Controller
         $this->notificationService = $notificationService;
     }
 
-    public function sendNotificationto($userID, $title, $description)
+    public function sendNotificationTo($userID, $title, $description)
     {
         try {
             $success = $this->notificationService->sendNotification($userID, $title, $description);
@@ -40,7 +40,7 @@ class NotificationController extends Controller
             $title = $titles[$key] ?? '';
             $description = $descriptions[$key] ?? ''; 
 
-            $responses[] = $this->sendNotificationto($userID, $title, $description);
+            $responses[] = $this->sendNotificationTo($userID, $title, $description);
         }
 
         return response()->json(['responses' => $responses]);

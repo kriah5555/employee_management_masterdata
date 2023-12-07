@@ -59,7 +59,6 @@ class CompanyService
             return $company;
         } catch (Exception $e) {
             DB::connection('master')->rollback();
-            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }

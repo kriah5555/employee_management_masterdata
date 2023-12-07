@@ -18,9 +18,11 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles, HasPermissions;
 
-    protected $guard_name = 'api';
-    protected $table = 'users';
     protected $connection = 'userdb';
+
+    protected $guard_name = 'api';
+    
+    protected $table = 'users';
     /**
      * The attributes that are mass assignable.
      *
@@ -59,50 +61,64 @@ class User extends Authenticatable
     {
         return $this->where('username', $username)->first();
     }
+
     public function userBasicDetails()
     {
         return $this->hasOne(UserBasicDetails::class);
     }
+
     public function userContactDetails()
     {
         return $this->hasOne(UserContactDetails::class);
     }
+
     public function userAddress()
     {
         return $this->hasOne(UserAddress::class);
     }
+
     public function userBankAccount()
     {
         return $this->hasOne(UserBankAccount::class);
     }
+
     public function userFamilyDetails()
     {
         return $this->hasOne(UserFamilyDetails::class);
     }
+
     public function employeeProfiles()
     {
         return $this->hasMany(EmployeeProfile::class)
             ->where('status', true);
     }
+    
+    public function companyUser()
+    {
+        return $this->hasMany(CompanyUser::class);
+    }
     public function userBankDetails($userId)
     {
         return $this->hasOne(UserBankAccount::class)->where('user_id', $userId);
     }
+
     public function userBasicDetailsById($user_id)
     {
         return $this->hasOne(UserBasicDetails::class)->where('user_id', $user_id);
     }
+
     public function userAddressById($user_id)
     {
         return $this->hasOne(UserAddress::class)->where('user_id', $user_id);
     }
+
     public function userContactById($user_id)
     {
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
     }
+    
     public function deviceToken()
     {
         return $this->hasMany(DeviceToken::class);
     }
-
 }

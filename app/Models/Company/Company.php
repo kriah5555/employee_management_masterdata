@@ -22,7 +22,7 @@ class Company extends BaseModel
         'address',
         'employer_id',
         'sender_number',
-        'rsz_number',
+        'vat_number',
         'social_secretary_id',
         'interim_agency_id',
         'oauth_key',
@@ -59,15 +59,15 @@ class Company extends BaseModel
 
     protected $fillable = [
         'company_name',
-        'address',
-        'employer_id',
+        'address_id',
+        'vat_number',
         'sender_number',
         'rsz_number',
         'oauth_key',
         'username',
         'email',
         'phone',
-        'logo',
+        'logo_id',
         'status',
         'created_by',
         'updated_by'
@@ -75,7 +75,7 @@ class Company extends BaseModel
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address');
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
     protected $dates = [
@@ -86,12 +86,6 @@ class Company extends BaseModel
     public function sectors()
     {
         return $this->belongsToMany(Sector::class, 'sector_to_company');
-    }
-
-    public function sectorsValue()
-    {
-        return $this->belongsToMany(Sector::class, 'sector_to_company', 'company_id', 'sector_id')
-            ->select('sectors.id as value', 'sectors.name as label');
     }
 
     public function locations()
@@ -134,6 +128,15 @@ class Company extends BaseModel
             $holiday_codes = HolidayCode::all()->pluck('id');
             $company->holidayCodes()->sync($holiday_codes);
         });
+
+        static::deleting(function ($company) {
+            $tenant = Tenant::where('company_id', $company->id)->first();
+
+            if ($tenant) {
+                $tenant->delete();
+            }            
+        });
+
     }
 
     # can call this externally and link the holiday codes

@@ -10,8 +10,6 @@ interface HolidayRepositoryInterface
 
     public function getHolidayById(string $absenceId);
 
-    public function deleteHoliday(Absence $absence);
-
     public function createHoliday(array $details);
 
     public function updateHoliday(Absence $absence, array $updatedDetails);

@@ -2,10 +2,8 @@
 
 namespace App\Services\Employee;
 
-use Illuminate\Support\Facades\DB;
-use Exception;
 use App\Repositories\CommuteTypeRepository;
-use App\Models\CommuteType;
+use App\Models\Company\Employee\CommuteType;
 
 class CommuteTypeService
 {

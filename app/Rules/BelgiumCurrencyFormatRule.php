@@ -15,7 +15,7 @@ class BelgiumCurrencyFormatRule implements Rule
 
     private function isEuropeanCurrencyFormat($value): bool
     {
-        return preg_match(config('constants.EUROPE_CURRENCY_FORMAT_REGEX'), $value);
+        return preg_match(config('regex.EUROPE_CURRENCY_FORMAT_REGEX'), $value);
     }
     
     public function message(): string

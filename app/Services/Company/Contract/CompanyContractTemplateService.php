@@ -26,14 +26,14 @@ class CompanyContractTemplateService extends BaseService
         $company_id = request()->header('Company-Id');
         try {
             return [
-                'employee_types'     => $this->employee_type_service->getCompanyEmployeeTypes($company_id),
-                'tokens'             => array_merge(
-                    config('constants.EMPLOYEE_TOKENS'),
-                    config('constants.COMPANY_TOKENS'),
-                    config('constants.CONTRACT_TOKENS'),
-                    config('constants.ATTACHMENT_TOKENS'),
-                    config('constants.SIGNATURE_TOKENS'),
-                    config('constants.FLEX_SALARY_TOKENS')
+                'employee_types' => $this->employee_type_service->getCompanyEmployeeTypes($company_id),
+                'tokens'         => array_merge(
+                    config('tokens.EMPLOYEE_TOKENS'),
+                    config('tokens.COMPANY_TOKENS'),
+                    config('tokens.CONTRACT_TOKENS'),
+                    config('tokens.ATTACHMENT_TOKENS'),
+                    config('tokens.SIGNATURE_TOKENS'),
+                    config('tokens.FLEX_SALARY_TOKENS')
                 ),
             ];
         } catch (Exception $e) {
@@ -45,7 +45,12 @@ class CompanyContractTemplateService extends BaseService
     public function create($data)
     {
         try {
-            return $this->model::create($data);
+            $companyContractemplate = CompanyContractTemplate::create($data);
+            foreach (config('app.available_locales') as $locale) {
+                $companyContractemplate->setTranslation('body', $locale, $data['body'][$locale]);
+            }
+            $companyContractemplate->save();
+            return $companyContractemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -56,6 +61,16 @@ class CompanyContractTemplateService extends BaseService
     {
         try {
             return $this->model::with(['employeeType'])->get();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+    public function update($companyContractTemplate, $values)
+    {
+        try {
+            $companyContractTemplate->update($values);
+            return $companyContractTemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

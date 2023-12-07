@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Traits\DatabaseFieldDateFormat;
 
 
 class BaseModel extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity, DatabaseFieldDateFormat;
 
     protected static $sort = [];
 
@@ -47,11 +48,6 @@ class BaseModel extends Model
     }
     protected static function allActive()
     {
-        return parent::where('status', '=', true)->get();
-    }
-
-    protected function getActive()
-    {
         return parent::where('status', true)->get();
     }
 
@@ -68,4 +64,5 @@ class BaseModel extends Model
         }
         return $values;
     }
+    protected $dates = [];
 }

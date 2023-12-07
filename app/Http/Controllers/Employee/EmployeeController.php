@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Employee;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
@@ -10,11 +11,11 @@ use App\Services\MealVoucherService;
 use Illuminate\Support\Facades\Auth;
 use App\Models\EmployeeType\EmployeeType;
 use App\Services\Company\LocationService;
+use Illuminate\Support\Facades\Validator;
 use App\Services\Employee\EmployeeService;
-use App\Repositories\CommuteTypeRepository;
-use App\Repositories\MealVoucherRepository;
 use App\Services\Employee\CommuteTypeService;
-use App\Http\Requests\Employee\CreateEmployeeRequest;
+use App\Http\Requests\Employee\EmployeeRequest;
+use App\Models\Company\Employee\EmployeeProfile;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
 
@@ -27,8 +28,7 @@ class EmployeeController extends Controller
         protected CommuteTypeService $commuteTypeService,
         protected MealVoucherService $mealVoucherService,
         protected LocationService $locationService,
-        )
-    {
+    ) {
     }
 
     /**
@@ -36,29 +36,49 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeService->index()
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->index()
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
      * API to get the details required for creating an employee type.
      */
-    public function store(CreateEmployeeRequest $request)
+    public function store(EmployeeRequest $request)
     {
-        $companyId = getCompanyId();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee created successfully',
-                'data'    => $this->employeeService->createNewEmployee($request->validated(), $companyId)
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $companyId = getCompanyId();
+            $this->employeeService->createNewEmployee($request->validated(), $companyId);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee created successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -66,58 +86,72 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeService->getEmployeeDetails($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
-    }
-
-
-    /**
-     * API to get all the details required for editing an employee type.
-     */
-    public function edit($id)
-    {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeService->edit($id),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getEmployeeDetails($id),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
      * Update the existing employeee type.
      */
-    public function update(EmployeeTypeRequest $request, EmployeeType $employeeType)
+    public function update(EmployeeRequest $request, $employeeProfileId)
     {
-        $this->employeeTypService->update($employeeType, $request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee type updated successfully',
-                'data'    => $this->employeeTypService->update($employeeType, $request->validated()),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $this->employeeService->update($employeeProfileId, $request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee profile updated successfully',
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
 
     public function updateEmployee(UpdateEmployeeRequest $request)
     {
-        $companyId = getCompanyId();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee updated successfully',
-                'data'    => $this->employeeService->updateEmployee($request->validated(), $companyId)
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $companyId = getCompanyId();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee updated successfully',
+                    'data'    => $this->employeeService->updateEmployee($request->validated(), $companyId)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
 
@@ -127,31 +161,70 @@ class EmployeeController extends Controller
      */
     public function destroy(EmployeeType $employeeType)
     {
-        $employeeType->delete();
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => 'Employee type deleted successfully'
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $employeeType->delete();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee type deleted successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function getFunctionSalaryToCreateEmployee(Request $request)
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeService->getSalary($request->employee_type_id, $request->function_title_id, $request->experience_in_months)
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        try {
+            $rules = [
+                'employee_type_id'     => 'required|integer',
+                'employee_subtype'     => 'nullable|string',
+                'function_title_id'    => 'required|integer',
+                'experience_in_months' => 'required|integer',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => false,
+                        'message' => $validator->errors()->first(),
+                    ],
+                    JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getSalary($request->employee_type_id, $request->function_title_id, $request->experience_in_months, $request->employee_subtype)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function createEmployeeContract()
     {
-        $companyId = getCompanyId();
         try {
+            $companyId = getCompanyId();
             return returnResponse(
                 [
                     'success' => true,
@@ -166,7 +239,7 @@ class EmployeeController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -187,7 +260,7 @@ class EmployeeController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -207,7 +280,7 @@ class EmployeeController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -226,7 +299,7 @@ class EmployeeController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -245,7 +318,7 @@ class EmployeeController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -264,7 +337,7 @@ class EmployeeController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

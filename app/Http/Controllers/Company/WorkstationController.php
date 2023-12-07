@@ -7,6 +7,7 @@ use App\Http\Requests\Company\WorkstationRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\Company\Workstation;
 use App\Http\Controllers\Controller;
+use Exception;
 
 class WorkstationController extends Controller
 {
@@ -106,9 +107,9 @@ class WorkstationController extends Controller
         }
     }
 
-    public function destroy(Workstation $workstation)
+    public function destroy($workstation_id)
     {
-        $workstation->delete();
+        $this->workstation_service->deleteWorkstation($workstation_id);
         return response()->json([
             'success' => true,
             'message' => 'Workstation deleted successfully'
