@@ -31,7 +31,7 @@ class CompanyAdditionalDetailsRequest extends ApiRequest
                 "max:255",
                 new ValidateEmail(),
             ],
-            'responsible_persons.*.phone_number'                  => ['required', 'string'],
+            'responsible_persons.*.phone_number'           => ['required', 'string'],
             'responsible_persons.*.social_security_number' => ['required', 'string'],
             'responsible_persons.*.role'                   => 'string|required|in:' . implode(',', array_keys(config('roles_permissions.RESPONSIBLE_PERSON_ROLES'))),
             'locations'                                    => ['nullable', 'array', new LocationRule()],
