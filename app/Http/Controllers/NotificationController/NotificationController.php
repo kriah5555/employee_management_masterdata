@@ -17,16 +17,32 @@ class NotificationController extends Controller
         $this->notificationService = $notificationService;
     }
 
-    public function sendNotification(Request $request)
+    public function sendNotificationto($userID, $title, $description)
     {
-        $token = $request->input('token');
+        try {
+            $success = $this->notificationService->sendNotification($userID, $title, $description);
 
-        if (!$token) {
-            return Response::json(['error' => 'Token is required.'], 400);
+            return response()->json(['success' => $success]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function sendNotification()
+    {
+        $userIDs = [1,1,1]; // Array of user IDs
+        $titles = ['Login Notification', 'Another Notification', 'Yet Another Notification'];
+        $descriptions = ['Hi, you have logged in 30 mins late', 'This is another notification', 'And here is one more'];
+
+        $responses = [];
+
+        foreach ($userIDs as $key => $userID) {
+            $title = $titles[$key] ?? '';
+            $description = $descriptions[$key] ?? ''; 
+
+            $responses[] = $this->sendNotificationto($userID, $title, $description);
         }
 
-        $success = $this->notificationService->sendNotification($token);
-
-        return Response::json(['success' => $success]);
+        return response()->json(['responses' => $responses]);
     }
 }
