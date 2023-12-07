@@ -78,11 +78,11 @@ class CompanyController extends Controller
     public function storeAdditionalDetails(CompanyAdditionalDetailsRequest $request)
     {
         try {
+            $this->companyService->companyAdditionalDetails(getCompanyId(), $request->validated());
             return returnResponse(
                 [
                     'success' => true,
                     'message' => 'Company additional details saved',
-                    'data'    => $this->companyService->companyAdditionalDetails(getCompanyId(), $request->validated()),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
