@@ -105,6 +105,29 @@ class UserService
         return $this->userRepository->getUserById($id);
     }
 
+
+    public function getUserDeviceTokens($id)
+    {
+        // Retrieve the user by ID
+        $user = User::find($id);
+
+        if (!$user) {
+            // Handle the case where the user with the given ID is not found
+            return null;
+        }
+
+        // Access the deviceToken relationship to get the associated device tokens
+        $deviceTokens = $user->deviceToken;
+
+        // Extract only the "device_token" values from the array
+        $deviceTokensArray = $deviceTokens->pluck('device_token')->toArray();
+
+        // Return the device tokens or an empty array if not found
+        return $deviceTokensArray;
+    }
+
+
+
     public function updateUserBankAccount(User $user, $values)
     {
         $values['user_id'] = $user->id;
