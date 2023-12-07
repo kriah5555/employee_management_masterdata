@@ -4,7 +4,6 @@ namespace App\Services\Contract;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Contract\ContractTemplate;
-use App\Services\BaseService;
 use Exception;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Sector\SectorService;
@@ -67,7 +66,7 @@ class ContractTemplateService
 
     public function index()
     {
-        return ContractTemplate::with('employeeType')->where('status', true)->get();
+        return ContractTemplate::with('employeeType')->get();
     }
 
     public function get($id)
