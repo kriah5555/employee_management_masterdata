@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\User\DeviceToken;
 use App\Models\User\UserBankAccount;
 use App\Models\User\UserBasicDetails;
 use App\Models\User\UserFamilyDetails;
@@ -114,5 +115,10 @@ class User extends Authenticatable
     public function userContactById($user_id)
     {
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
+    }
+    
+    public function deviceToken()
+    {
+        return $this->hasMany(DeviceToken::class);
     }
 }

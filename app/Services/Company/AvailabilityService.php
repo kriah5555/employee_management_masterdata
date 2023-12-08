@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Company;
 
 use DateTime;
 use App\Models\Company\Availability;
 use App\Models\Company\AvailabilityRemarks;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Exception;
 
 
 class AvailabilityService
@@ -33,11 +34,9 @@ class AvailabilityService
 
     public function dateMonthYearStore($groupedData, $request, $update = false)
     {
-        // return "hiiiiii";
         $results = "";
         global $remarkDetailsUpdate;
         $remarkDetailsUpdate = false;
-        // dd("ture");
         foreach ($groupedData as $yearData) {
             foreach ($yearData as $monthData) {
                 $datesAsIntegers = array_map('intval', $monthData['dates']);
@@ -71,13 +70,14 @@ class AvailabilityService
                             $newDates = array_unique(array_merge($existingDates, $datesAsIntegers));
                             $existingRecord->dates = json_encode(array_values($newDates));
                             $existingRecord->save();
-                            if (!$update) $remarkDetailsUpdate = true;
+                            if (!$update)
+                                $remarkDetailsUpdate = true;
                             $results = "Availability created successfully";
                         } else {
-                            throw new \Exception("Availability not created, please check the dates selected!");
+                            throw new Exception("Availability not created, please check the dates selected!");
                         }
                     } else {
-                        throw new \Exception("Availability not created, please check the dates selected!");
+                        throw new Exception("Availability not created, please check the dates selected!");
                     }
                 } else {
 
@@ -93,16 +93,17 @@ class AvailabilityService
                     if (count($commonDates) == 0) {
                         Availability::create([
                             'employee_id' => $request['employee_id'],
-                            'company_id' => $request['company_id'],
-                            'type' => $request['type'],
-                            'year' => $monthData['year'],
-                            'month' => $monthData['month'],
-                            'dates' => json_encode(array_values(array_unique($datesAsIntegers))),
+                            'company_id'  => $request['company_id'],
+                            'type'        => $request['type'],
+                            'year'        => $monthData['year'],
+                            'month'       => $monthData['month'],
+                            'dates'       => json_encode(array_values(array_unique($datesAsIntegers))),
                         ]);
-                        if (!$update)  $remarkDetailsUpdate = true;
+                        if (!$update)
+                            $remarkDetailsUpdate = true;
                         $results = "Availability created successfully";
                     } else {
-                        throw new \Exception("Availability not created, please check the dates selected!");
+                        throw new Exception("Availability not created, please check the dates selected!");
                     }
                 }
             }
@@ -135,7 +136,7 @@ class AvailabilityService
             // Create an array for the month if it doesn't exist
             if (!isset($groupedData[$year][$month])) {
                 $groupedData[$year][$month] = [
-                    'year' => $year,
+                    'year'  => $year,
                     'month' => $month,
                     'dates' => [],
                 ];
@@ -152,10 +153,10 @@ class AvailabilityService
     {
         AvailabilityRemarks::create([
             'employee_id' => $request['employee_id'],
-            'company_id' => $request['company_id'],
-            'type' => $request['type'],
-            'dates' => json_encode(array_values($request['dates'])),
-            'remark' => $request['remark']
+            'company_id'  => $request['company_id'],
+            'type'        => $request['type'],
+            'dates'       => json_encode(array_values($request['dates'])),
+            'remark'      => $request['remark']
         ]);
     }
 
@@ -193,7 +194,6 @@ class AvailabilityService
             ->select('dates')
             ->get();
 
-        // dd($existingAvailabilityDates);
         if (count($existingAvailabilityDates) > 0) {
             $avilableDates = $this->convertDateArray(
                 $year,
@@ -205,7 +205,7 @@ class AvailabilityService
             return $avilableDates;
         } else {
             $this->availableDates[] = [];
-            throw new \Exception("Something went wrong!");
+            throw new Exception("Something went wrong!");
         }
     }
 
@@ -241,7 +241,7 @@ class AvailabilityService
             return $notAvilableDates;
         } else {
             $this->notAvailableDates[] = [];
-            throw new \Exception("Something went wrong!");
+            throw new Exception("Something went wrong!");
         }
     }
 
@@ -262,10 +262,10 @@ class AvailabilityService
                 if (in_array($date, $mothDates)) {
                     $dateObject = [
                         "employee_id" => $value->employee_id,
-                        "company_id" => $value->company_id,
-                        "dates" => $date,
-                        "remark" => $value->remark,
-                        "type" => $value->type
+                        "company_id"  => $value->company_id,
+                        "dates"       => $date,
+                        "remark"      => $value->remark,
+                        "type"        => $value->type
                     ];
                     $matchingDates[] = $dateObject;
                 }
@@ -274,7 +274,7 @@ class AvailabilityService
         if (count($matchingDates) > 0) {
             return $matchingDates;
         } else {
-            throw new \Exception("Something went wrong!");
+            throw new Exception("Something went wrong!");
         }
     }
 
@@ -292,10 +292,10 @@ class AvailabilityService
             $updateDateAsPerMonth = $this->dateMonthYearStore($groupedData, $request, true);
 
             $avalibilityTableDates = AvailabilityRemarks::where('id', $id)->update([
-                'dates' => json_encode(array_values(array_unique($request['dates']))),
-                'company_id' => $request['company_id'],
-                'remark' => $request['remark'],
-                'type' => $request['type'],
+                'dates'       => json_encode(array_values(array_unique($request['dates']))),
+                'company_id'  => $request['company_id'],
+                'remark'      => $request['remark'],
+                'type'        => $request['type'],
                 'employee_id' => $request['employee_id']
             ]);
 
@@ -303,7 +303,7 @@ class AvailabilityService
             if ($updateDateAsPerMonth && $avalibilityTableDates) {
                 return "Availability updated successfully";
             } else {
-                throw new \Exception("Availability not updated, please check the dates selected!");
+                throw new Exception("Availability not updated, please check the dates selected!");
             }
             DB::commit();
         } catch (Exception $e) {
@@ -326,10 +326,10 @@ class AvailabilityService
                 $avalibilityTableDates->delete();
                 return "Availability deleted successfully";
             } else {
-                throw new \Exception("Availability is not deleted , please check the dates selected");
+                throw new Exception("Availability is not deleted , please check the dates selected");
             }
         } else {
-            throw new \Exception("Availability is not deleted , please check the dates selected");
+            throw new Exception("Availability is not deleted , please check the dates selected");
         }
     }
 

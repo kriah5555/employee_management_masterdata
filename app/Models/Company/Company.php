@@ -128,6 +128,15 @@ class Company extends BaseModel
             $holiday_codes = HolidayCode::all()->pluck('id');
             $company->holidayCodes()->sync($holiday_codes);
         });
+
+        static::deleting(function ($company) {
+            $tenant = Tenant::where('company_id', $company->id)->first();
+
+            if ($tenant) {
+                $tenant->delete();
+            }            
+        });
+
     }
 
     # can call this externally and link the holiday codes

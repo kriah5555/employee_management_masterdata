@@ -25,30 +25,30 @@ class UpdateEmployeeRequest extends ApiRequest
     {
 
         return [
-            'user_id' => ['required'],
-            'first_name'                => 'required|string|max:255',
-            'last_name'                 => 'required|string|max:255',
-            'gender_id'                 => [
+            'user_id'                => ['required'],
+            'first_name'             => 'required|string|max:255',
+            'last_name'              => 'required|string|max:255',
+            'gender_id'              => [
                 'bail',
                 'required',
                 'integer',
                 new GenderRule(),
             ],
-            'date_of_birth' => 'required|date|date_format:Y-m-d|before:today',
-            'street_house_no'           => 'required|string|max:255',
-            'postal_code'               => 'required|string|max:50',
-            'city'                      => 'required|string|max:50',
-            'country'                   => 'required|string|max:50',
-            'nationality'               => 'required|string|max:50',
+            'date_of_birth'          => 'required|date|date_format:Y-m-d|before:today',
+            'street_house_no'        => 'required|string|max:255',
+            'postal_code'            => 'required|string|max:50',
+            'city'                   => 'required|string|max:50',
+            'country'                => 'required|string|max:50',
+            'nationality'            => 'required|string|max:50',
             'phone_number'           => 'nullable|string|max:255',
-            'email'                     => 'required|email',
-            'social_security_number'    => [
+            'email'                  => 'required|email',
+            'social_security_number' => [
                 'required',
                 'string',
                 new ValidateLengthIgnoringSymbols(11, 11, [',', '.', '-']),
                 // new SocialSecurityNumberRule(new EmployeeProfileRepository)
             ],
-            'account_number'       => 'nullable|string|max:255',
+            'account_number'         => 'nullable|string|max:255',
 
 
         ];
@@ -57,11 +57,11 @@ class UpdateEmployeeRequest extends ApiRequest
     public function messages()
     {
         return [
-            'user_id.required' => 'User id is required',
-            'user_id.exists' => 'User not exists',
+            'user_id.required'    => 'User id is required',
+            'user_id.exists'      => 'User not exists',
             'first_name.required' => 'First name is required',
-            'first_name.string' => 'First name details are wrong',
-            'last_name.required' => 'Last name is required',
+            'first_name.string'   => 'First name details are wrong',
+            'last_name.required'  => 'Last name is required',
             // 'rsz_number.exists' => 'RSZ number already exists, please copy the employee details'
         ];
     }

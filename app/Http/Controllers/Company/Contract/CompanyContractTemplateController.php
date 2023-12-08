@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Company\Contract;
 
-use App\Models\Contract\ContractTemplate;
+use App\Models\Company\Contract\CompanyContractTemplate;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Contract\ContractTemplateRequest;
@@ -10,7 +10,7 @@ use App\Services\Company\Contract\CompanyContractTemplateService;
 
 class CompanyContractTemplateController extends Controller
 {
-    public function __construct(protected CompanyContractTemplateService $contractTemplateService)
+    public function __construct(protected CompanyContractTemplateService $companyContractTemplateService)
     {
     }
 
@@ -22,7 +22,7 @@ class CompanyContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getAll(['with' => ['employeeType']]),
+                'data'    => $this->companyContractTemplateService->getAll(['with' => ['employeeType']]),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -36,7 +36,7 @@ class CompanyContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getOptionsToCreate(),
+                'data'    => $this->companyContractTemplateService->getOptionsToCreate(),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -51,7 +51,7 @@ class CompanyContractTemplateController extends Controller
             [
                 'success' => true,
                 'message' => 'Contract template created successfully',
-                'data'    => $this->contractTemplateService->create($request->validated()),
+                'data'    => $this->companyContractTemplateService->create($request->validated()),
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -65,7 +65,7 @@ class CompanyContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->get($id, ['employeeType'])
+                'data'    => $this->companyContractTemplateService->get($id, ['employeeType'])
             ],
             JsonResponse::HTTP_OK,
         );
@@ -76,12 +76,12 @@ class CompanyContractTemplateController extends Controller
      */
     public function update(ContractTemplateRequest $request, $id)
     {
-        $contractTemplate = ContractTemplate::findOrFail($id);
+        $companyContractTemplate = CompanyContractTemplate::findOrFail($id);
         return returnResponse(
             [
                 'success' => true,
                 'message' => t('Contract template updated successfully'),
-                'data'    => $this->contractTemplateService->update($contractTemplate, $request->validated()),
+                'data'    => $this->companyContractTemplateService->update($companyContractTemplate, $request->validated()),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -90,9 +90,10 @@ class CompanyContractTemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ContractTemplate $contractTemplate)
+    public function destroy($id)
     {
-        $contractTemplate->delete();
+        $companyContractTemplate = CompanyContractTemplate::findOrFail($id);
+        $companyContractTemplate->delete();
         return returnResponse(
             [
                 'success' => true,

@@ -60,13 +60,14 @@ return [
         'plan_reminder'                   => 'Plan reminder Mail',
         'new_employee_creation_mail'      => 'New employee creation mail',
         'existing_employee_creation_mail' => 'Existing employee creation mail',
+        'Employee_account_update_mail'    => 'Employee account number update'
     ],
 
     'MONTHLY_SALARY'                    => 1,
 
     'HOURLY_SALARY'                     => 2,
 
-    
-    
+
+
     'RSZ_NUMBER_VALIDATION' => 'digits_between:1,11',
 ];

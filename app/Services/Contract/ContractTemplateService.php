@@ -4,7 +4,6 @@ namespace App\Services\Contract;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Contract\ContractTemplate;
-use App\Services\BaseService;
 use Exception;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Sector\SectorService;
@@ -45,26 +44,20 @@ class ContractTemplateService
         }
     }
 
-    public function getOptionsToEdit($contract_template_id)
-    {
-        try {
-            $contract_template = $this->get($contract_template_id, ['company', 'employeeType', 'company', 'socialSecretary']);
-            $contract_template->socialSecretary;
-            $options = $this->getOptionsToCreate();
-            $options['details'] = $contract_template;
-            return $options;
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
     public function create($values)
     {
         try {
-            $contractTemplate = ContractTemplate::create($values);
-            $contractTemplate->socialSecretary()->sync($values['social_secretary_id'] ?? []);
-            return $contractTemplate;
+            return DB::transaction(function () use ($values) {
+                $contract_template = ContractTemplate::create([
+                    'employee_type_id' => $values['employee_type_id'],
+                ]);
+                $contract_template->socialSecretary()->sync($values['social_secretary'] ?? []);
+                foreach (config('app.available_locales') as $locale) {
+                    $contract_template->setTranslation('body', $locale, $values['body'][$locale]);
+                }
+                $contract_template->save();
+                return $contract_template;
+            });
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -78,14 +71,14 @@ class ContractTemplateService
 
     public function get($id)
     {
-        return ContractTemplate::whereId($id)->with(['company', 'employeeType', 'company', 'socialSecretary'])->first();
+        return ContractTemplate::whereId($id)->with(['employeeType', 'socialSecretary'])->first();
     }
 
     public function update($contractTemplate, $values)
     {
         try {
             $contractTemplate->update($values);
-            $contractTemplate->socialSecretary()->sync($values['social_secretary_id'] ?? []);
+            $contractTemplate->socialSecretary()->sync($values['social_secretary'] ?? []);
             return $contractTemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());

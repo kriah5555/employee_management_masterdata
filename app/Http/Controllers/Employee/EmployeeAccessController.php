@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Http\Requests\Employee\ResponsiblePersonRequest;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
-use App\Services\Employee\ResponsiblePersonService;
+use App\Services\Employee\EmployeeAccessService;
 
-class ResponsiblePersonController extends Controller
+class EmployeeAccessController extends Controller
 {
-    public function __construct(protected ResponsiblePersonService $responsible_person_service)
+    public function __construct(protected EmployeeAccessService $employee_access_service)
     {
 
     }
-    
+
     public function index()
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->getCompanyResponsiblePersons(getCompanyId()),
+                    // 'data'    => $this->companyService->getCompanies(),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -35,16 +34,13 @@ class ResponsiblePersonController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->getOptionsToCreateResponsiblePersons(),
+                    // 'data'    => $this->companyService->getCompanies(),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -59,17 +55,13 @@ class ResponsiblePersonController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(ResponsiblePersonRequest $request)
+    public function store(Request $request)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->createResponsiblePerson($request->validated(), getCompanyId()),
-                    'message' => 'Responsible person created successfully',
+                    // 'data'    => $this->companyService->getCompanies(),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -83,17 +75,14 @@ class ResponsiblePersonController extends Controller
             );
         }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $user_id)
+    
+    public function show(string $id)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->getResponsiblePersonById($user_id, getCompanyId()),
+                    // 'data'    => $this->companyService->getCompanies(),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -107,18 +96,14 @@ class ResponsiblePersonController extends Controller
             );
         }
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(ResponsiblePersonRequest $request, string $user_id)
+    
+    public function update(Request $request, string $id)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->updateResponsiblePerson($user_id, $request->validated(), getCompanyId()),
-                    'message' => 'Responsible person updated successfully',
+                    // 'data'    => $this->companyService->getCompanies(),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -132,18 +117,14 @@ class ResponsiblePersonController extends Controller
             );
         }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $user_id)
+    
+    public function destroy(string $id)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->deleteResponsiblePerson($user_id, getCompanyId()),
-                    'message' => 'Responsible person deleted successfully',
+                    // 'data'    => $this->companyService->getCompanies(),
                 ],
                 JsonResponse::HTTP_OK,
             );

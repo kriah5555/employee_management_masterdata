@@ -38,5 +38,9 @@ class AbsenceDates extends BaseModel
     {
         return $this->belongsTo(Absence::class, 'absence_id');
     }
+
+    public function datesArray()
+    {
+    }
     
 }

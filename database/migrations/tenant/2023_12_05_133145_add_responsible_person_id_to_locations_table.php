@@ -4,14 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('meal_vouchers', function (Blueprint $table) {
-            $table->string('amount')->nullable();
+        Schema::table('locations', function (Blueprint $table) {
+            $table->unsignedBigInteger('responsible_person_id')->nullable();
         });
     }
 
@@ -20,8 +21,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('meal_vouchers', function (Blueprint $table) {
-            $table->dropColumn('amount');
+        
+        Schema::table('locations', function (Blueprint $table) {
+            $table->dropColumn('responsible_person_id');
         });
     }
 };

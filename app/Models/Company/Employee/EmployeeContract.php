@@ -5,7 +5,7 @@ namespace App\Models\Company\Employee;
 use App\Models\BaseModel;
 use App\Models\EmployeeType\EmployeeType;
 use App\Traits\UserAudit;
-use App\Models\Employee\LongTermEmployeeContract;
+use App\Models\Company\Employee\LongTermEmployeeContract;
 
 class EmployeeContract extends BaseModel
 {

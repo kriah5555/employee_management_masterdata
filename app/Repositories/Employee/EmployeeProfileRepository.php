@@ -4,7 +4,6 @@ namespace App\Repositories\Employee;
 
 use App\Interfaces\Employee\EmployeeProfileRepositoryInterface;
 use App\Models\Company\Employee\EmployeeProfile;
-use App\Models\User\CompanyUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\User\User;
