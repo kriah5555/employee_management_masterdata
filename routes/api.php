@@ -273,8 +273,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
         Route::resource('employee-access', EmployeeAccessController::class)->only(['create']);
-        
-	    Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
+
+        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
 
         Route::controller(EmployeeController::class)->group(function () {
 
@@ -282,6 +282,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
             Route::get('employee-contract/create', 'createEmployeeContract');
+            Route::get('employee-contract-functions/create', 'createEmployeeContractFunctions');
             Route::get('employee-commute/create', 'createEmployeeCommute');
             Route::get('employee-benefits/create', 'createEmployeeBenefits');
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
@@ -296,7 +297,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
 
     });
-    
+
     Route::put('employee-update', [EmployeeController::class, 'updateEmployee']);
 
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);

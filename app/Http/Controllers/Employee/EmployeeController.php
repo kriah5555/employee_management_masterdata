@@ -246,6 +246,26 @@ class EmployeeController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    public function createEmployeeContractFunctions()
+    {
+        try {
+            $companyId = getCompanyId();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'functions' => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function createEmployeeCommute()
     {
