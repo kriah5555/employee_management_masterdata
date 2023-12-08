@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sector;
 
 use App\Models\Sector\Sector;
 use App\Http\Requests\Sector\SectorRequest;
+use App\Services\CompanyService;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\Sector\SectorService;
 use App\Http\Controllers\Controller;
@@ -16,10 +17,11 @@ class SectorController extends Controller
     protected $sectorService;
 
     protected $employeeTypeService;
-    public function __construct(SectorService $sectorService, EmployeeTypeService $employeeTypeService)
+    public function __construct(SectorService $sectorService, EmployeeTypeService $employeeTypeService, CompanyService $companyService)
     {
         $this->sectorService = $sectorService;
         $this->employeeTypeService = $employeeTypeService;
+        $this->companyService = $companyService;
     }
     /**
      * Display a listing of the resource.
@@ -123,7 +125,7 @@ class SectorController extends Controller
     {
         try {
             $this->validate($request, [
-                'sector_ids' => 'required|array',
+                'sector_ids'   => 'required|array',
                 'sector_ids.*' => [
                     'integer',
                     Rule::exists('sectors', 'id'),
@@ -144,6 +146,26 @@ class SectorController extends Controller
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
+        }
+    }
+    public function getCompanyLinkedFunctions()
+    {
+        try {
+            $companyId = getCompanyId();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'functions' => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
