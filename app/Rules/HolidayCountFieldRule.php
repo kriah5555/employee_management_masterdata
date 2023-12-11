@@ -40,15 +40,15 @@ class HolidayCountFieldRule implements ValidationRule
         // Check if the count exceeds the count in the HolidayCodes table
         if ($this->holiday_code_id) {
             $holidayCode = HolidayCode::findOrFail($this->holiday_code_id);
-            if ($holidayCode->count_type == 2) {
+            if ($holidayCode->count_type == config('absence.DAYS')) {
                 // If count_type is 2, modify the count value
                 $count = $holidayCode->count / config('constants.DAY_HOURS');
             } else {
                 $count = $holidayCode->count;
             }
-
+            $count_type = strtolower(config('absence.HOLIDAY_COUNT_TYPE_OPTIONS')[$holidayCode->count_type]);
             if ($holidayCode && $value > $count) {
-                $fail("The :attribute cannot exceed the maximum count of {$count}");
+                $fail("The :attribute cannot exceed the maximum count of {$count} {$count_type}");
             }
         }
     }

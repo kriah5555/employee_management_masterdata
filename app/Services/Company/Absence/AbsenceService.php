@@ -126,6 +126,8 @@ class AbsenceService
 
     public function deleteAbsence(Absence $absence)
     {
+        $absence->absenceHours()->delete();
+        $absence->absenceDates()->delete();
         $absence->delete();
         return;
     }

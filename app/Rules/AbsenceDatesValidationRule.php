@@ -7,7 +7,7 @@ use App\Services\DateService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class DateValidationRule implements ValidationRule
+class AbsenceDatesValidationRule implements ValidationRule
 {
     public function __construct(protected $employee_profile_id, protected $duration_type, protected $absence_id = 0)
     {
@@ -20,26 +20,29 @@ class DateValidationRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $databaseDates = $this->getDatesAsPerEmployee($this->employee_profile_id, $this->absence_id);
+
         foreach ($databaseDates as $oldDate) {
             if ($oldDate['dates_type'] == config('absence.DATES_FROM_TO')) {
                 $oldDate['dates'] = $this->dateArrayFormat($oldDate);
             }
+
             $oldDatesArray = json_decode(json_encode($oldDate['dates']), true);
 
             if ($this->duration_type == config('absence.MULTIPLE_DATES')) {
                 $value = [$attribute => $value];
                 $value = $this->dateArrayFormat($value);
             }
+
             foreach ($value as $newDate) {
                 if (in_array($newDate, $oldDatesArray)) {
                     if ($oldDate['duration_type'] == config('absence.FIRST_HALF')) {
-                        $this->vaildationFail(config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), $fail);
+                        $this->validationFail(config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), $fail);
                     } elseif ($oldDate['duration_type'] == config('absence.SECOND_HALF')) {
-                        $this->vaildationFail(config('absence.FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), $fail);
+                        $this->validationFail(config('absence.FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), $fail);
                     } elseif ($oldDate['duration_type'] == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF')) {
-                        $this->vaildationFail(config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), $fail);
+                        $this->validationFail(config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), $fail);
                     } elseif ($oldDate['duration_type'] == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')) {
-                        $this->vaildationFail(config('absence.FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), $fail);
+                        $this->validationFail(config('absence.FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), $fail);
                     } elseif (in_array($oldDate['duration_type'], [config('absence.MULTIPLE_HOLIDAY_CODES'), config('absence.FIRST_AND_SECOND_HALF'), config('absence.MULTIPLE_DATES'), config('absence.FULL_DAYS')])) {
                         $fail("The selected dates have already been designated as holidays. Please verify your choices and try again!");
                     }
@@ -48,7 +51,7 @@ class DateValidationRule implements ValidationRule
         }
     }
 
-    public function vaildationFail(string $firstCondition, string $secondCondition, Closure $fail)
+    public function validationFail(string $firstCondition, string $secondCondition, Closure $fail)
     {
         if (!in_array($this->duration_type, [$firstCondition, $secondCondition])) {
             $fail("The selected dates have already been designated as holidays. Please verify your choices and try again!");

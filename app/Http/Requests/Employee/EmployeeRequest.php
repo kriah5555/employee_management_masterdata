@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Employee;
 
 use App\Http\Requests\ApiRequest;
-use App\Rules\SocialSecurityNumberRule;
-use App\Rules\ValidateLengthIgnoringSymbols;
+use App\Rules\DuplicateSocialSecurityNumberRule;
+// use App\Rules\ValidateLengthIgnoringSymbolsRule;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use Illuminate\Validation\Rule;
 use App\Rules\CurrencyFormatRule;
@@ -67,11 +67,11 @@ class EmployeeRequest extends ApiRequest
                 $rules['clothing_compensation'] = ['required', new CurrencyFormatRule];
                 $rules['social_secretary_number'] = 'nullable|string|max:255';
                 $rules['contract_number'] = 'nullable|string|max:255';
-                $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbols(11, 11, [',', '.', '-']), new SocialSecurityNumberRule()];
+                $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']), new DuplicateSocialSecurityNumberRule()];
                 $rules['employee_contract_details'] = ['bail', 'required', 'array', new EmployeeContractDetailsRule(app(EmployeeTypeService::class))];
                 $rules['employee_function_details'] = ['bail', 'required', 'array', new EmployeeFunctionDetailsRule(app(EmployeeTypeService::class), app(FunctionService::class))];
             } elseif ($this->isMethod('put')) {
-                $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbols(11, 11, [',', '.', '-'])];
+                $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-'])];
             }
         }
         return $rules;

@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ValidateLengthIgnoringSymbols implements ValidationRule
+class ValidateLengthIgnoringSymbolsRule implements ValidationRule
 {
     protected $symbolsToIgnore;
     protected $minLength;

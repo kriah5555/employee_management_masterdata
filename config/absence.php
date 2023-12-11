@@ -22,6 +22,8 @@ return [
 
     'HOLIDAY'        => 1,
     'LEAVE'          => 2,
+    'HOURS'          => 1,
+    'DAYS'           => 2,
 
     // absence status
 

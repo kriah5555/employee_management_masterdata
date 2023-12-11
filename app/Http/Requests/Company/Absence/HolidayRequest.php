@@ -7,7 +7,7 @@ use App\Rules\HolidayTypeRule;
 use App\Rules\DurationTypeRule;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
-use App\Rules\DateValidationRule;
+use App\Rules\AbsenceDatesValidationRule;
 use App\Rules\EmployeeHolidayBalanceRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\HoliadyRequestDataFormatRule;
@@ -36,36 +36,15 @@ class HolidayRequest extends ApiRequest
             'array',
             'bail',
         ];
-        $path = $this->getPathInfo();
 
-        if (request()->route('holiday')) {
-            $holiday_code_counts[] = new EmployeeHolidayBalanceRule(
-                request()->input('employee_profile_id'),
-                request()->route('holiday')
-            );
-
-            $dates[] = new DateValidationRule(request()->input('employee_profile_id'),request()->input('duration_type'),request()->route('holiday'));
-
-        } else {
-            $holiday_code_counts[] = new EmployeeHolidayBalanceRule(request()->input('employee_profile_id'));
-            $dates[] = new DateValidationRule(request()->input('employee_profile_id'),request()->input('duration_type'));
-        }
+        $holiday_code_counts[] = new EmployeeHolidayBalanceRule(request()->input('employee_profile_id'));
+        $dates[]               = new AbsenceDatesValidationRule(request()->input('employee_profile_id'),request()->input('duration_type'));
 
         return [
             'duration_type' => [
                 'bail',
                 'required',
                 Rule::in(array_keys(config('absence.DURATION_TYPE'))),
-            ],
-            'absence_type' => [
-                'bail',
-                'required',
-                Rule::in(config('absence.HOLIDAY'), config('absence.LEAVE')),
-            ],
-            'absence_status' => [
-                'bail',
-                'required',
-                Rule::in(array_keys(config('absence.STATUS'))),
             ],
             'employee_profile_id' => [
                 'bail',
