@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Employee;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use App\Services\Employee\EmployeeAccessService;
 
 class EmployeeAccessController extends Controller
