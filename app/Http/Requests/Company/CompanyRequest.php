@@ -72,7 +72,7 @@ class CompanyRequest extends ApiRequest
                     'string',
                     new ValidateCompanyVatNumber(),
                     Rule::unique('companies')->where(function ($query) {
-                        $query->where('status', true);
+                        $query->where('status', true)->where('deleted_at', null);
                     })
                 ];
             } elseif ($this->isMethod('put')) {
@@ -82,7 +82,7 @@ class CompanyRequest extends ApiRequest
                     'string',
                     new ValidateCompanyVatNumber(),
                     Rule::unique('companies')->where(function ($query) {
-                        $query->where('status', true);
+                        $query->where('status', true)->where('deleted_at', null);
                     })->ignore($this->company)
                 ];
             }

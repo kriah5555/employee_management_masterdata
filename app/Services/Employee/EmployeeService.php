@@ -161,7 +161,7 @@ class EmployeeService
                 $employeeProfile = $this->createEmployeeProfile($user, $values);
                 $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
                 $this->createEmployeeContract($employeeProfile, $values);
-                $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+                //$this->mailService->sendEmployeeCreationMail($employeeProfile->id);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;
