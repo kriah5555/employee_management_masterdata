@@ -53,4 +53,15 @@ class Location extends BaseModel
     {
         return $this->belongsTo(CompanyAddress::class, 'address');
     }
+
+    public function getWorkStationsOfIds(mixed $locations)
+    {
+        if (!is_array($locations)) {
+            $locations = (array) $locations;
+        }
+        return $this->belongsToMany(Workstation::class, 'locations_to_workstations')
+        ->select('workstations.id', 'workstations.workstation_name as workStationsName')
+        ->whereIn('locations.id', $locations)
+        ->where('workstations.status', true);
+    }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Company\Contract;
 
 use App\Models\Company\Contract\CompanyContractTemplate;
-use App\Models\Contract\ContractTemplate;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Contract\ContractTemplateRequest;
@@ -91,9 +90,10 @@ class CompanyContractTemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ContractTemplate $contractTemplate)
+    public function destroy($id)
     {
-        $contractTemplate->delete();
+        $companyContractTemplate = CompanyContractTemplate::findOrFail($id);
+        $companyContractTemplate->delete();
         return returnResponse(
             [
                 'success' => true,

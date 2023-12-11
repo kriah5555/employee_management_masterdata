@@ -181,6 +181,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::post('get-sector-function-titles', [SectorController::class, 'getFunctionTitles']);
 
+    Route::get('get-company-linked-functions', [SectorController::class, 'getCompanyLinkedFunctions']);
+
     Route::controller(SalaryController::class)->group(function () use ($integerRule) {
 
         Route::get('monthly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries')->where(['sector_id' => $integerRule]);
@@ -282,7 +284,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('employee-access', EmployeeAccessController::class)->only(['create']);
 
-	    Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
+        Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
 
         Route::controller(EmployeeController::class)->group(function () {
 
@@ -290,6 +292,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
             Route::get('employee-contract/create', 'createEmployeeContract');
+            Route::get('employee-contract-functions/create', 'createEmployeeContractFunctions');
             Route::get('employee-commute/create', 'createEmployeeCommute');
             Route::get('employee-benefits/create', 'createEmployeeBenefits');
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
@@ -305,9 +308,5 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     });
 
-
-
-    Route::put('employee-update', [EmployeeController::class, 'updateEmployee']);
-
-    Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
+    Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 });

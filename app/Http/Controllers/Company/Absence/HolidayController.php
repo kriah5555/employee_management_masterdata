@@ -117,12 +117,11 @@ class HolidayController extends Controller
     public function store(HolidayRequest $request)
     {
         try {
-            $request_data = $request->all();
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Holiday created successfully'),
-                    'data'    => $this->holidayService->applyHoliday($request_data)
+                    'data'    => $this->holidayService->applyHoliday($request->validated())
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -168,7 +167,7 @@ class HolidayController extends Controller
     public function update(HolidayRequest $request, $holidayId)
     {
         try {
-            // $this->holidayService->updateAppliedHoliday($holidayId, $request->all());
+            $this->holidayService->updateAppliedHoliday($holidayId, $request->all());
             return returnResponse(
                 [
                     'success' => true,

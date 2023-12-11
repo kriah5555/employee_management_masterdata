@@ -18,7 +18,7 @@ return [
         'hr_manager'     => 'HR manager',
         'manager'        => 'Manager',
         'planner'        => 'Planner',
-        'staff'          => 'Staff',
+        'staff'          => 'Staff'
     ],
 
     'ROLES' => [

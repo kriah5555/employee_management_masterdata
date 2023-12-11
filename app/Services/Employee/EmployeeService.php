@@ -101,7 +101,7 @@ class EmployeeService
         return $employeeDetails;
     }
 
-    public function getEmployeeDetails(string $employeeProfileId)
+    public function getEmployeeDetails(mixed $employeeProfileId)
     {
         return $this->formatEmployeeData($this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
             'user',
@@ -190,7 +190,7 @@ class EmployeeService
                 $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
-            return $employeeProfile;
+            return $user;
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();
@@ -209,7 +209,9 @@ class EmployeeService
 
             if ($existingEmpProfile) {
                 $user = $this->userService->updateUser($values);
-                $this->mailService->sendEmployeeAccountUpdateMail($values);
+
+                // $this->mailService->sendEmployeeAccountUpdateMail($values);
+
 
             } else {
                 $user = $existingEmpProfile->last();

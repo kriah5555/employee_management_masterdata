@@ -9,6 +9,7 @@ use App\Exceptions\ModelDeleteFailedException;
 use App\Exceptions\ModelUpdateFailedException;
 use App\Services\Employee\EmployeeService;
 use App\Services\User\UserService;
+use App\Repositories\User\UserRepository;
 
 class ResponsiblePersonRepository implements ResponsiblePersonInterface
 {
@@ -63,8 +64,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     public function deleteResponsiblePerson(string $responsible_person_id, string $company_id)
     {
         $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $responsible_person_id])->get()->first();
-        $company_user->removeRole(config('roles_permissions.CUSTOMER_ADMIN')); # detach the role
-        $company_user->removeRole(config('roles_permissions.MANAGER')); # detach the role
+        $company_user->roles()->delete();
     }
 
     public function createResponsiblePerson(array $responsible_person_details, string $company_id)
@@ -75,18 +75,15 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
 
     public function updateResponsiblePerson(string $responsible_person_id, array $responsible_person_details, string $company_id)
     {
-        $responsible_person                         = $this->getResponsiblePersonById($responsible_person_id, $company_id);
-        $responsible_person->social_security_number = $responsible_person_details['social_security_number'];
-        $userBasicDetails                           = $responsible_person->userBasicDetails;
-
-        if ($userBasicDetails) {
-            $userBasicDetails->update($responsible_person_details);
-        }
+        $responsible_person = $this->getResponsiblePersonById($responsible_person_id, $company_id);
+        app(UserRepository::class)->updateUser($responsible_person->id, ['social_security_number' => $responsible_person_details['social_security_number']]);
+        app(UserService::class)->updateUserDetails($responsible_person, $responsible_person_details);
 
         $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $responsible_person_id])->get()->first();
 
         if (!$company_user->hasRole($responsible_person_details['role'])) { # check if the roles are same else update the role
-            $company_user->detachRoles($this->roles)->assignRole($responsible_person_details['role']);
+            $company_user->roles()->detach();
+            $company_user->assignRole($responsible_person_details['role']);
         }
 
         return $responsible_person;

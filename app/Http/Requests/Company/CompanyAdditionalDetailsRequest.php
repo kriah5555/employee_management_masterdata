@@ -31,13 +31,9 @@ class CompanyAdditionalDetailsRequest extends ApiRequest
                 "max:255",
                 new ValidateEmail(),
             ],
-            'responsible_persons.*.phone'                  => ['required', 'string'],
+            'responsible_persons.*.phone_number'           => ['required', 'string'],
             'responsible_persons.*.social_security_number' => ['required', 'string'],
-            'responsible_persons.*.role'                   => [
-                'required',
-                'string',
-                Rule::exists('userdb.roles', 'name')
-            ],
+            'responsible_persons.*.role'                   => 'string|required|in:' . implode(',', array_keys(config('roles_permissions.RESPONSIBLE_PERSON_ROLES'))),
             'locations'                                    => ['nullable', 'array', new LocationRule()],
             'workstations'                                 => ['nullable', 'array', new WorkstationRule()]
         ];
@@ -51,10 +47,10 @@ class CompanyAdditionalDetailsRequest extends ApiRequest
             'email.max'                  => t('The email field may not be greater than 255 characters.'),
             'email.regex'                => t('The email field must be a valid email address.'),
 
-            'phone.required'             => t('The phone field is required.'),
-            'phone.string'               => t('The phone field must be a string.'),
-            'phone.max'                  => t('The phone field may not be greater than 20 characters.'),
-            'phone.regex'                => t('The phone field must be a valid phone number in the format: +XX X XXX XXXX'),
+            'phone_number.required'      => t('The phone field is required.'),
+            'phone_number.string'        => t('The phone field must be a string.'),
+            'phone_number.max'           => t('The phone field may not be greater than 20 characters.'),
+            'phone_number.regex'         => t('The phone field must be a valid phone number in the format: +XX X XXX XXXX'),
             'vat_number.unique'          => t('Company with same VAT already present.'),
             'responsible_persons.*.role' => t('Invalid role added for responsible person.'),
         ];
