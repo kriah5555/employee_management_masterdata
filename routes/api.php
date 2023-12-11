@@ -308,7 +308,5 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     });
 
-    Route::put('employee-update', [EmployeeController::class, 'updateEmployee']);
-
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 });

@@ -9,7 +9,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use App\Traits\DatabaseFieldDateFormat;
 
-
 class BaseModel extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity, DatabaseFieldDateFormat;

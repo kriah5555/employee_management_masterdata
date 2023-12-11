@@ -48,7 +48,7 @@ class HolidayCodeRequest extends ApiRequest
             'employee_types.*'                  => [
                 'bail',
                 'integer',
-                Rule::exists('employee_types', 'id'),
+                Rule::exists('master.employee_types', 'id'),
             ],
             'link_companies'                    => 'required|in:all,include,exclude',
             'companies'                         => 'nullable|array',
@@ -56,11 +56,11 @@ class HolidayCodeRequest extends ApiRequest
                 [
                     'bail',
                     'integer',
-                    Rule::exists('companies', 'id')
+                    Rule::exists('master.companies', 'id')
                 ],
         ];
 
-        if ($this->input('type') == 1) { # if the type is holiday then only add validation for count
+        if ($this->input('type') == config('absence.HOLIDAY')) { # if the type is holiday then only add validation for count
             $rules['count'] = [
                 'bail',
                 new HolidayCountFieldRule()
