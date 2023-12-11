@@ -2,15 +2,16 @@
 
 namespace App\Http\Requests\Company\Absence;
 
+use PSpell\Config;
 use App\Rules\HolidayTypeRule;
 use App\Rules\DurationTypeRule;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
+use App\Rules\DateValidationRule;
 use App\Rules\EmployeeHolidayBalanceRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\HoliadyRequestDataFormatRule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
-use PSpell\Config;
 
 class HolidayRequest extends ApiRequest
 {
@@ -57,6 +58,7 @@ class HolidayRequest extends ApiRequest
                 'required',
                 'array',
                 'bail',
+                new DateValidationRule(request()->input('employee_profile_id'),request()->input('duration_type')),
             ],
             'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
             'dates.from_date' => [

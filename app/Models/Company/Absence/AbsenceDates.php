@@ -27,7 +27,7 @@ class AbsenceDates extends BaseModel
         'created_by',
         'updated_by',
     ];
-    
+
     protected $dates = [
         'created_at',
         'updated_at',
@@ -38,5 +38,4 @@ class AbsenceDates extends BaseModel
     {
         return $this->belongsTo(Absence::class, 'absence_id');
     }
-    
 }

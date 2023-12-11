@@ -72,7 +72,7 @@ class AbsenceService
             ];
 
             $hours = 0;
-            $absence_hours_data[$index]['hours'] = $this->getCalculateAbsenceHours($details, $holiday_code_count);
+            $absence_hours_data[$index]['hours'] = $this->getCalculateAbsenceHours($details, $holiday_code_count,$with_date_calculates=true);
             if (
                 in_array($duration_type, [
                     config('absence.MULTIPLE_DATES'), # if multiple dates it will have from and to date so only one holiday code
@@ -121,7 +121,6 @@ class AbsenceService
         } elseif (in_array($duration_type, [config('absence.FULL_DAYS')])) { # will fll day will have only one holiday coe with on hours
             $hours = config('constants.DAY_HOURS');
         }
-
         return $hours * $days;
     }
 
