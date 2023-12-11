@@ -11,7 +11,7 @@ use App\Services\Company\Absence\AbsenceService;
 class EmployeeHolidayBalanceRule implements ValidationRule
 {
 
-    public function __construct(protected $employee_id)
+    public function __construct(protected $employee_id,protected $absence_id=0)
     {
     }
 
@@ -52,8 +52,13 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                         ->where('holiday_code_id', $holidayCodeId)
                         ->where('hours', '>', 0);
                 }])
-                    ->where('employee_profile_id', $this->employee_id)
-                    ->get(['id', 'employee_profile_id']);
+                    ->where('employee_profile_id', $this->employee_id);
+
+                if ($this->absence_id > 0) {
+                    $absences->where('id', '!=', $this->absence_id);
+                }
+
+                $absences = $absences->get(['id', 'employee_profile_id']);
 
                 // Flatten and pluck the hours data
                 $hoursData = $absences->pluck('absenceHours')->flatten()->pluck('hours');

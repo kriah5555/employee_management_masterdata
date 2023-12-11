@@ -228,7 +228,6 @@ if (!function_exists('getActiveTenantId')) {
     }
 }
 
-
 if (!function_exists('getCompanyId')) {
     function getCompanyId()
     {

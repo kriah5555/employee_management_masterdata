@@ -24,6 +24,33 @@ class HolidayRequest extends ApiRequest
     {
         $companyId = $this->header('Company-Id');
 
+        $holiday_code_counts = [
+            'bail',
+            'required',
+            'array',
+            new DurationTypeRule(request()->input('duration_type'), $companyId),
+        ];
+
+        $dates = [
+            'required',
+            'array',
+            'bail',
+        ];
+        $path = $this->getPathInfo();
+
+        if (request()->route('holiday')) {
+            $holiday_code_counts[] = new EmployeeHolidayBalanceRule(
+                request()->input('employee_profile_id'),
+                request()->route('holiday')
+            );
+
+            $dates[] = new DateValidationRule(request()->input('employee_profile_id'),request()->input('duration_type'),request()->route('holiday'));
+
+        } else {
+            $holiday_code_counts[] = new EmployeeHolidayBalanceRule(request()->input('employee_profile_id'));
+            $dates[] = new DateValidationRule(request()->input('employee_profile_id'),request()->input('duration_type'));
+        }
+
         return [
             'duration_type' => [
                 'bail',
@@ -54,12 +81,7 @@ class HolidayRequest extends ApiRequest
             ],
             'reason' => 'required|string',
 
-            'dates' => [
-                'required',
-                'array',
-                'bail',
-                new DateValidationRule(request()->input('employee_profile_id'),request()->input('duration_type')),
-            ],
+            'dates' => $dates,
             'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
             'dates.from_date' => [
                 'bail',
@@ -72,16 +94,7 @@ class HolidayRequest extends ApiRequest
                 'date_format:d-m-Y',
                 'after_or_equal:dates.from_date',
             ],
-
-            'holiday_code_counts' => [
-                'bail',
-                'required',
-                'array',
-                // new HolidayTypeRule(),
-                new EmployeeHolidayBalanceRule(request()->input('employee_profile_id')),
-                new DurationTypeRule(request()->input('duration_type'), $this->header('Company-Id')),
-
-            ],
+            'holiday_code_counts' => $holiday_code_counts,
         ];
     }
 

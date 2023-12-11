@@ -96,7 +96,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    // 'data'    => $this->holidayService->getOptionsToCreate()
+                    'data'    => $this->holidayService->getOptionsToCreate()
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -165,10 +165,10 @@ class HolidayController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $holidayId)
+    public function update(HolidayRequest $request, $holidayId)
     {
         try {
-            $this->holidayService->updateAppliedHoliday($holidayId, $request->all());
+            // $this->holidayService->updateAppliedHoliday($holidayId, $request->all());
             return returnResponse(
                 [
                     'success' => true,

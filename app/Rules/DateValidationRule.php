@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class DateValidationRule implements ValidationRule
 {
-    public function __construct(protected $employee_profile_id, protected $duration_type)
+    public function __construct(protected $employee_profile_id, protected $duration_type, protected $absence_id = 0)
     {
     }
     /**
@@ -19,19 +19,19 @@ class DateValidationRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $databaseDates = $this->getDatesAsPerEmployee($this->employee_profile_id);
+        $databaseDates = $this->getDatesAsPerEmployee($this->employee_profile_id, $this->absence_id);
         foreach ($databaseDates as $oldDate) {
-            if($oldDate['dates_type']==config('absence.DATES_FROM_TO')){
-               $oldDate['dates']=$this->dateArrayFormat($oldDate);
+            if ($oldDate['dates_type'] == config('absence.DATES_FROM_TO')) {
+                $oldDate['dates'] = $this->dateArrayFormat($oldDate);
             }
             $oldDatesArray = json_decode(json_encode($oldDate['dates']), true);
 
-            if($this->duration_type==config('absence.MULTIPLE_DATES')){
-                $value=[$attribute=>$value];
-                $value=$this->dateArrayFormat($value);
+            if ($this->duration_type == config('absence.MULTIPLE_DATES')) {
+                $value = [$attribute => $value];
+                $value = $this->dateArrayFormat($value);
             }
             foreach ($value as $newDate) {
-             if (in_array($newDate, $oldDatesArray)) {
+                if (in_array($newDate, $oldDatesArray)) {
                     if ($oldDate['duration_type'] == config('absence.FIRST_HALF')) {
                         $this->vaildationFail(config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), $fail);
                     } elseif ($oldDate['duration_type'] == config('absence.SECOND_HALF')) {
@@ -55,13 +55,18 @@ class DateValidationRule implements ValidationRule
         }
     }
 
-    public function getDatesAsPerEmployee($employee_profile_id)
+    public function getDatesAsPerEmployee($employee_profile_id, $absence_id)
     {
-        $result = DB::table('absence')
+        $query = DB::table('absence')
             ->join('absence_dates', 'absence.id', '=', 'absence_dates.absence_id')
             ->select('absence_dates.dates', 'absence_dates.dates_type', 'absence.duration_type')
-            ->where('absence.employee_profile_id', $employee_profile_id)
-            ->get();
+            ->where('absence.employee_profile_id', $employee_profile_id);
+
+        $query->when($absence_id > 0, function ($query) use ($absence_id) {
+            $query->where('absence.id', '!=', $absence_id);
+        });
+
+        $result = $query->get();
 
         $oldData = [];
         foreach ($result as $index => $data) {
@@ -78,13 +83,13 @@ class DateValidationRule implements ValidationRule
     {
         $fromDate = '';
         $toDate = '';
-                if (is_array($oldDate['dates'])) {
-                    $fromDate = $oldDate['dates']['from_date'];
-                    $toDate = $oldDate['dates']['to_date'];
-                } elseif (is_object($oldDate['dates']) && property_exists($oldDate['dates'], 'from_date')) {
-                    $fromDate = $oldDate['dates']->from_date;
-                    $toDate = $oldDate['dates']->to_date;
-                }
+        if (is_array($oldDate['dates'])) {
+            $fromDate = $oldDate['dates']['from_date'];
+            $toDate = $oldDate['dates']['to_date'];
+        } elseif (is_object($oldDate['dates']) && property_exists($oldDate['dates'], 'from_date')) {
+            $fromDate = $oldDate['dates']->from_date;
+            $toDate = $oldDate['dates']->to_date;
+        }
         return (new DateService())->getDatesArray($fromDate, $toDate);
     }
 }
