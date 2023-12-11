@@ -115,12 +115,28 @@ class PlanningService implements PlanningInterface
     {
         foreach ($plannings as $plan) 
         {
-            $planTemp = [];
             //Initializing.
-            $datesArray = $dates;
             $type = $plan['employee_type_id'];
             $profile = $plan['employee_profile_id'];
 
+            //Workstations details.
+            if (!isset($response[$plan['workstation_id']])) {
+                $response[$plan['workstation_id']]['workstation_id'] = $plan['workstation_id'];
+                $response[$plan['workstation_id']]['workstation_name'] = $plan['workstation_name'];
+            }
+
+            //Employee details.
+            if (!isset($response[$plan['workstation_id']]['employee'][$profile])) {
+                $response[$plan['workstation_id']]['employee'][$profile] = $employeeData[$profile];
+                $response[$plan['workstation_id']]['employee'][$profile]['employee_type_name'] = $employeeTypes[$type]['name'];
+                $response[$plan['workstation_id']]['employee'][$profile]['employee_type_color'] = $employeeTypes[$type]['color'];
+                foreach ($dates as $date) {
+                    $response[$plan['workstation_id']]['employee'][$profile][$date] = [];
+                }
+                $response[$plan['workstation_id']]['employee'][$profile]['total'] = 0;
+            }
+
+            $planTemp = [];
             $planTemp = [
                 'start_date' => $plan['start_date'],
                 'start_time' => $plan['start_time'],
@@ -128,12 +144,14 @@ class PlanningService implements PlanningInterface
                 'end_date' => $plan['end_time'],
                 'contract_hours' => $plan['contract_hours'],
             ];
-            $response[$plan['workstation_id']]['workstation_id'] = $plan['workstation_id'];
-            $response[$plan['workstation_id']]['workstation_name'] = $plan['workstation_name'];
-            $response[$plan['workstation_id']]['employee'][$profile] = $employeeData[$profile];
-            $response[$plan['workstation_id']]['employee'][$profile]['employee_type_name'] = $employeeTypes[$type]['name'];
-            $response[$plan['workstation_id']]['employee'][$profile]['employee_type_color'] = $employeeTypes[$type]['color'];
+
             $response[$plan['workstation_id']]['employee'][$profile][$plan['start_date']][] = $planTemp;
+            $response[$plan['workstation_id']]['employee'][$profile]['total'] += $plan['contract_hours'];
+        }
+
+        $response = array_values($response);
+        foreach ($response as $id => $value) {
+            $response[$id]['employee'] = array_values($value['employee']);
         }
         return $response;
     }
@@ -151,7 +169,6 @@ class PlanningService implements PlanningInterface
             $response[$value['value']]['employee'] = [];
         }
 
-        // dd($response);
         //Getting the data from the query.
         $planningRaw = $this->planningBase->weeklyPlanning($locations, $workstations, $employee_types, $weekNo, $year);
         if (count($planningRaw) > 0) {
@@ -166,25 +183,16 @@ class PlanningService implements PlanningInterface
 
             //Employee profiles.
             $employeeProfilesData = $this->employeeProfilesFormat(
-                $this->employeeService->getEmployeeDetails($employeeProfiles)->toArray()
+                $this->employeeService->getEmployeeDetailsPlanning($employeeProfiles)->toArray()
             );
 
             //Function details.
             // $functionDetails = $this->functionTitle->getFunctionDetails($functions);
-            // dd($employeeProfilesData);
 
-            // foreach ($employeeProfilesData as $value) {
-            // }
             //Format the weekly data
             $this->formatWeeklyData($planningRaw, $employeeTypeDetails, $employeeProfilesData, $dates, $response);
-            
-
-            return $response;
-            // dd($response);
-            // exit;
-            // print_r([$data, $employeeTypeDetails, $employeeProfilesData, $functionDetails]);
-            // exit;
         }
+        return $response;
     }
 
     public function getDayPlanningService()
