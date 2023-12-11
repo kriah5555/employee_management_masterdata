@@ -462,4 +462,26 @@ class EmployeeService
             throw $e;
         }
     }
+
+    public function getUserDetails()
+    {
+        try {
+            $userID = Auth::guard('web')->user()->id;
+
+
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+            $user_details= $this->userService->getUserDetails($userID);
+            // Commit transactions
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+            return $user_details;
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+
+    }
 }

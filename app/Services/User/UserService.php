@@ -211,4 +211,18 @@ class UserService
         $this->userFamilyDetailsRepository->updateUserFamilyDetails($user->userFamilyDetails, $values);
         $this->userBankAccountRepository->updateUserBankAccount($user->userBankAccount, $values);
     }
+
+    public function getUserDetails($userID)
+    {
+        $user = User::find($userID);
+
+        $userBasicDetails = $user->userBasicDetailsById($user->id)->get()->first()->toApiReponseFormat();
+        $userAddressDetails = $user->userAddressById($user->id)->get()->first()->toApiReponseFormat();
+        $userContactDetails = $user->userContactById($user->id)->get()->first()->toApiReponseFormat();
+        $userBankAccountDetails = $user->userBankDetails($user->id)->get()->first()->toApiReponseFormat();
+
+        return array_merge($user->toArray(), $userBasicDetails, $userAddressDetails, $userContactDetails, $userBankAccountDetails);
+    }
+
+
 }
