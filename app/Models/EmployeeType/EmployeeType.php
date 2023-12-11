@@ -83,4 +83,12 @@ class EmployeeType extends BaseModel
     {
         return $this->hasOne(EmployeeTypeDimonaConfig::class);
     }
+
+    public function getEmployeeTypeDetails($employeeIds)
+    {
+        return $this->with(['employeeTypeConfig', 'dimonaConfig'])
+        ->whereIn('id', (array)$employeeIds)
+        ->get()
+        ->toArray();
+    }
 }

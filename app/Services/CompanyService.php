@@ -53,7 +53,7 @@ class CompanyService
                 $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();
             return $company;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('tenant')->rollback();
             error_log($e->getMessage());

@@ -75,7 +75,7 @@ class EmployeeService
         return array_values($response);
     }
 
-    public function getEmployeeDetails(string $employeeProfileId)
+    public function getEmployeeDetails(mixed $employeeProfileId)
     {
         return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
             'user',

@@ -143,12 +143,10 @@ class Company extends BaseModel
         $this->holidayCodes()->sync($holiday_codes);
     }
 
-    // public function toArray()
-    // {
-    //     $array = parent::toArray();
-    //     // $array['logo'] = $this->logoFile; // Append the logoFile relationship data
-    //     return $array;
-    // }
-
+    public function employeeTypes($companyId)
+    {
+        return $this->with('sectors.employeeTypesValue')
+        ->where('id', $companyId);
+    }
 
 }

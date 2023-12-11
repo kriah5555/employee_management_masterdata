@@ -265,4 +265,18 @@ if (!function_exists('getTenantFolderPath')) {
     }
 }
 
+if (!function_exists('getWeekDates')) {
+    function getWeekDates($weekNo, $year)
+    {
+        $dates = [];
+        $startDate = new DateTime();
+        $startDate->setISODate($year, $weekNo, 1); // Set to the first day of the given week
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startDate->format('Y-m-d');
+            $dates[$date] = $date;
+            $startDate->modify('+1 day');
+        }
+        return $dates;
+    }
+}
 

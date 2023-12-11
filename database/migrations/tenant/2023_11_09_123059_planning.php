@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('location_id')->references('id')->on('locations');
             $table->foreignId('workstation_id')->references('id')->on('workstations');
-            $table->integer('function');
+            $table->integer('function_id');
             $table->timestamp('start_date_time');
             $table->timestamp('end_date_time');
             $table->decimal('contract_hours');
-            $table->string('employee_type_id');
+            $table->integer('employee_type_id');
             $table->integer('plan_type'); //OTH, front end, cloned, mobile app, event planning, openshift.
             $table->foreignId('employee_profile_id')->references('id')->on('employee_profiles');
             $table->integer('mail_status');

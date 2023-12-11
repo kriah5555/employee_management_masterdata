@@ -14,7 +14,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         return EmployeeProfile::all();
     }
 
-    public function getEmployeeProfileById(string $id, array $relations = []): Collection|Builder|EmployeeProfile
+    public function getEmployeeProfileById(mixed $id, array $relations = []): Collection|Builder|EmployeeProfile
     {
         return EmployeeProfile::with($relations)->findOrFail($id);
     }

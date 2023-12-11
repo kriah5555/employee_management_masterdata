@@ -21,7 +21,7 @@ use App\Http\Controllers\Contract\ContractTemplateController;
 use App\Http\Controllers\Rule\RuleController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\Employee\EmployeeController;
-use App\Http\Controllers\Company\CostCenterController;
+#use App\Http\Controllers\Company\CostCenterController;
 use App\Http\Controllers\SocialSecretary\SocialSecretaryController;
 use App\Http\Controllers\Employee\CommuteTypeController;
 use App\Http\Controllers\Holiday\PublicHolidayController;
@@ -97,14 +97,14 @@ Route::controller(ContractTemplateController::class)->group(function () use ($in
 
 });
 
-Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
+/*Route::controller(CostCenterController::class)->group(function () use ($statusRule, $integerRule) {
 
     Route::resource('cost-center', CostCenterController::class)->where(['status' => $statusRule, 'company_id' => $integerRule])->except(['index', 'create']);
 
     Route::get('cost-center/{company_id}/{status}', 'index')->where(['status' => $statusRule, 'company_id' => $integerRule]);
 
     Route::get('cost-center/create/{company_id}', 'create')->where('company_id', $integerRule);
-});
+});*/
 
 
 Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule, $statusRule) {
