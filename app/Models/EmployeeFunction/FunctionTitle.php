@@ -64,4 +64,12 @@ class FunctionTitle extends BaseModel
             ->select('id as value', 'name as label')
             ->where('status', true);
     }
+
+    public function getFunctionDetails($functionIds)
+    {
+        return $this->with(['functionCategory'])
+        ->whereIn('id', $functionIds)
+        ->get()
+        ->toArray();
+    }
 }

@@ -3,8 +3,6 @@
 namespace App\Repositories\User;
 
 use App\Models\User\UserBankAccount;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SendMailIfBankAccountChanged;
 use App\Exceptions\ModelDeleteFailedException;
 use App\Exceptions\ModelUpdateFailedException;
 use App\Interfaces\User\UserBankAccountRepositoryInterface;

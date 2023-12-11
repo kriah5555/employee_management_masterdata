@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Models\Company\Employee\EmployeeProfile;
+use Exception;
 use Illuminate\Http\Request;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\MealVoucherService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use App\Models\EmployeeType\EmployeeType;
 use App\Services\Company\LocationService;
+use Illuminate\Support\Facades\Validator;
 use App\Services\Employee\EmployeeService;
 use App\Services\Employee\CommuteTypeService;
 use App\Http\Requests\Employee\EmployeeRequest;
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
-use Exception;
 
 class EmployeeController extends Controller
 {
@@ -281,6 +282,26 @@ class EmployeeController extends Controller
                         'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions(), 'key', 'value'),
                         'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions(), 'key', 'value'),
                         'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function createEmployeeContractFunctions()
+    {
+        try {
+            $companyId = getCompanyId();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'functions' => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
                     ]
                 ],
                 JsonResponse::HTTP_OK,

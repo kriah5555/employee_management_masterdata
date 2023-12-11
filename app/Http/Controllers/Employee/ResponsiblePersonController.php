@@ -143,7 +143,7 @@ class ResponsiblePersonController extends Controller
                 [
                     'success' => true,
                     'data'    => $this->responsible_person_service->deleteResponsiblePerson($user_id, getCompanyId()),
-                    'message' => 'Responsible person updated successfully',
+                    'message' => 'Responsible person deleted successfully',
                 ],
                 JsonResponse::HTTP_OK,
             );

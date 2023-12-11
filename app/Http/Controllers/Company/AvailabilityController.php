@@ -20,6 +20,30 @@ class AvailabilityController extends Controller
      */
     public function index()
     {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => $this->availabilityService->createAvailability($request->validated())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    "success" => false,
+                    "message" => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+
+
+    public function availableDateAndNOtAvailableDates()
+    {
+
         $rules = [
             'period' => 'required|regex:/^\d{2}-\d{4}$/',
         ];

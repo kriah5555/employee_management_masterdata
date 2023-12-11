@@ -70,16 +70,6 @@ function getRelativeFolderPath($folderName = '')
     return $baseName . '/' . $folderName;
 }
 
-//--------------------------------------------------------------------//
-
-
-function removeDefaultValuesFields($tab_key = 'tab_2', $bbrightFields = '')
-{
-    $defaultIds = config('copdefaultfields.' . $tab_key);
-    $defaultIds = array_keys($defaultIds);
-    return array_diff($bbrightFields, $defaultIds, );
-}
-
 /**
  * [sortArrayByKey description]
  * @param  [type]  $array               [description]
@@ -107,7 +97,7 @@ function return_lat_lng($address)
 {
     $lat = $lng = $status = '';
     //$address = preg_replace("/\s+/", "%20", $street . '+' . $housenumber . '+' . $bus . '+' . $city);
-    $api_key = 'AIzaSyAMSD-__Ie0dy1gQMGksKTqzOAWlhNc2Ms';
+    $api_key = env('GOOGLE_MAP_KEY');
     $curl = curl_init();
     curl_setopt_array(
         $curl,
