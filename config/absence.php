@@ -10,7 +10,7 @@ return [
 
     'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
 
-    'YES_OR_NO_OPTIONs'                 => [0 => 'No', 1 => 'Yes'],
+    'YES_OR_NO_OPTIONS'                 => [0 => 'No', 1 => 'Yes'],
 
     'HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS' => [1 => 'Servant', 2 => 'Worker'],
 
