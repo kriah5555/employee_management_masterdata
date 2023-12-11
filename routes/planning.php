@@ -32,11 +32,10 @@ Route::get('/check', function() {
 Route::controller(PlanningController::class)
     ->middleware(['initialize-tenancy'])
     ->prefix('planning')
-    // ->name('planning.get')
     ->group(function() {
 
         $planningResouces = [
-            ['path' => 'get-planning-filter', 'function' => 'getPlanningOverviewFilter'],
+            ['path' => 'get-planning-options', 'function' => 'getPlanningOverviewOptions'],
             ['path' => 'get-monthly-planning', 'function' => 'getMonthlyPlanning'],
             ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning']
         ];
