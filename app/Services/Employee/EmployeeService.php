@@ -101,7 +101,7 @@ class EmployeeService
         return $employeeDetails;
     }
 
-    public function getEmployeeDetails(string $employeeProfileId)
+    public function getEmployeeDetails(mixed $employeeProfileId)
     {
         return $this->formatEmployeeData($this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
             'user',

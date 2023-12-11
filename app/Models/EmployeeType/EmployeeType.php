@@ -90,4 +90,12 @@ class EmployeeType extends BaseModel
     {
         return $this->belongsToMany(Sector::class, 'sector_to_employee_types');
     }
+    
+    public function getEmployeeTypeDetails($employeeIds)
+    {
+        return $this->with(['employeeTypeConfig', 'dimonaConfig'])
+        ->whereIn('id', (array)$employeeIds)
+        ->get()
+        ->toArray();
+    }
 }

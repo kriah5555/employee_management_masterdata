@@ -273,3 +273,47 @@ if (!function_exists('replaceTokens')) {
     }
 }
 
+if (!function_exists('makeTenantFolderPath')) {
+    function makeTenantFolderPath($tenantName)
+    {
+        $tenantPath = storage_path() . '/company/' . $tenantName;
+        if (!is_dir($tenantPath)) {
+            mkdir($tenantPath, 0777, true);
+        }
+        return $tenantPath;
+    }
+}
+
+if (!function_exists('makeTenantDatabaseName')) {
+    function makeTenantDatabaseName($companyName, $companyId)
+    {
+        return 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $companyName) . '_' . $companyId);
+    }
+}
+
+if (!function_exists('getTenantFolderPath')) {
+    function getTenantFolderPath($tenantName)
+    {
+        $tenantPath = storage_path() . '/company/' . $tenantName;
+        if (!is_dir($tenantPath)) {
+        mkdir($tenantPath, 0777, true);
+        }
+        return $tenantPath;
+    }
+}
+
+if (!function_exists('getWeekDates')) {
+    function getWeekDates($weekNo, $year)
+    {
+        $dates = [];
+        $startDate = new DateTime();
+        $startDate->setISODate($year, $weekNo, 1); // Set to the first day of the given week
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startDate->format('Y-m-d');
+            $dates[$date] = $date;
+            $startDate->modify('+1 day');
+        }
+        return $dates;
+    }
+}
+
