@@ -126,4 +126,9 @@ class Sector extends BaseModel
     {
         return $this->belongsToMany(Company::class, 'sector_to_company');
     }
+
+    public function employeeTypesValue()
+    {
+        return $this->belongsToMany(EmployeeType::class, 'sector_to_employee_types')->select(['employee_type_id as value', 'name as label']);
+    }
 }

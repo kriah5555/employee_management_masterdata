@@ -101,7 +101,7 @@ class EmployeeService
         return $employeeDetails;
     }
 
-    public function getEmployeeDetails(mixed $employeeProfileId)
+    public function getEmployeeDetails(string $employeeProfileId)
     {
         return $this->formatEmployeeData($this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
             'user',
@@ -461,5 +461,17 @@ class EmployeeService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function getEmployeeDetailsPlanning(array $employeeProfileId)
+    {
+        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
+            'user',
+            'user.userBasicDetails',
+            'user.userContactDetails',
+            'user.userFamilyDetails',
+            'user.userBankAccount',
+            'employeeSocialSecretaryDetails'
+        ]);
     }
 }
