@@ -201,7 +201,7 @@ class CompanyService
                 'key'  => $employeeType->employeeTypeCategory->id,
                 'name' => $employeeType->employeeTypeCategory->name
             ];
-            $employeeTypeOptions[$employeeType->employeeTypeCategory->id][] = [
+            $employeeTypeOptions[$employeeType->employeeTypeCategory->id][$employeeType->id] = [
                 'key'  => $employeeType->id,
                 'name' => $employeeType->name
             ];
@@ -211,9 +211,17 @@ class CompanyService
                 'employment_types'   => $employeeType->employeeTypeCategory->employment_types,
             ];
         }
+        $employeeTypes = [];
+        foreach ($employeeTypeOptions as $key => $value) {
+            usort($value, function ($a, $b) {
+                return strcmp($a['name'], $b['name']);
+            });
+            $employeeTypes[$key] = array_values($value);
+        }
+        ksort($employeeTypeCategoryOptions);
         return [
             'employee_type_categories'      => array_values($employeeTypeCategoryOptions),
-            'employee_types'                => $employeeTypeOptions,
+            'employee_types'                => $employeeTypes,
             'employee_type_category_config' => $employeeTypeCategoryConfig
         ];
     }
