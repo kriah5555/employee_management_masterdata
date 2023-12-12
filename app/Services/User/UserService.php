@@ -130,22 +130,24 @@ class UserService
 
     public function updateUserBankAccount(User $user, $values)
     {
+        $existingAccountNumber = '';
         $values['user_id'] = $user->id;
-        $UserBankObject = $user->userBankDetails($user->id)->get()->first();
+        $UserBankObject = $user->userBankAccount;
 
+        // if ($UserBankObject)
         $newAccountNumber = $values['account_number'];
-
-        $existingAccountNumber = UserBankAccount::where('user_id', $values['user_id'])
-       ->pluck('account_number')
-       ->first();
-
-        $details =  $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
+        if(is_null($UserBankObject)) {
+            $UserBankObject = $this->createUserBankAccount($user, $values);
+        } else {
+            $existingAccountNumber = $UserBankObject->account_number;
+            $details =  $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
+        }
 
         if ($newAccountNumber != $existingAccountNumber) {
             $this->mailService->sendEmployeeAccountUpdateMail($values);
         }
 
-        return $details;
+        
     }
 
     public function updateUserBasicDetails(User $user, $values)
