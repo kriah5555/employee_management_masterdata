@@ -93,7 +93,7 @@ class EmployeeType extends BaseModel
     
     public function getEmployeeTypeDetails($employeeIds)
     {
-        return $this->with(['employeeTypeConfig', 'dimonaConfig'])
+        return $this->with(['employeeTypeConfig', 'dimonaConfig', 'contractTypes'])
         ->whereIn('id', (array)$employeeIds)
         ->get()
         ->toArray();

@@ -5,9 +5,10 @@ namespace App\Models\Planning;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Company\{Workstation, Location};
-use App\Models\Employee\EmployeeProfile;
 use Illuminate\Support\Facades\DB;
+use App\Models\Company\{Workstation, Location};
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Models\Planning\{PlanningBreak, PlanningContracts, PlanningDimona, TimeRegistration};
 
 
 class PlanningBase extends Model
@@ -72,23 +73,72 @@ class PlanningBase extends Model
         'updated_by'
     ];
 
-
-    public function workstation()
-    {
-        return $this->hasOne(Workstation::class, 'id', 'workstation_id');
-    }
-
+    /**
+     * Adding the inverse relation with Location models
+     *
+     * @return void
+     */
     public function location()
     {
-        return $this->hasOne(Location::class, 'id', 'location_id');
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
+    /**
+     * Adding the inverse relation with workstation models
+     *
+     * @return void
+     */
+    public function workStation()
+    {
+        return $this->belongsTo(Workstation::class, 'workstation_id');
+    }
+
+    /**
+     * Adding the inverse relation with employee profile models
+     *
+     * @return void
+     */
     public function employeeProfile()
     {
-        return $this->hasOne(EmployeeProfile::class, 'id', 'employee_profile_id');
+        return $this->belongsTo(EmployeeProfile::class, 'employee_profile_id');
     }
 
 
+    /**
+     * Getting multiple records from one-to-many relationship with timeregistraions Model.
+     *
+     * @return void
+     */
+    public function timeRegistrations()
+    {
+        return $this->hasMany(TimeRegistration::class, 'plan_id');
+    }
+
+    /**
+     * Getting multiple records from one-to-many relationship with contract Model.
+     *
+     * @return void
+     */
+    public function contracts()
+    {
+        return $this->hasMany(PlanningContracts::class, 'plan_id');
+    }
+
+    /**
+     * Getting multiple records from one-to-many relationship with breaks Model.
+     *
+     * @return void
+     */
+    public function breaks()
+    {
+        return $this->hasMany(PlanningBreak::class, 'plan_id');
+    }
+
+    /**
+     * Get planning for the monthly overview.
+     *
+     * @return array
+     */
     public function monthPlanning($year, $locations, $workstations, $employee_types)
     {
         $query = $this->select(DB::raw('count(*) as count'), DB::raw('start_date_time::date as date'))
@@ -113,6 +163,16 @@ class PlanningBase extends Model
             return $query->get()->toArray();
     }
 
+    /**
+     * Planing weekly overview query.
+     * @todo: furher modification are required.
+     * @param  [type] $locations
+     * @param  [type] $workstations
+     * @param  [type] $employee_types
+     * @param  [type] $weekNo
+     * @param  [type] $year
+     * @return array
+     */
     public function weeklyPlanning($locations, $workstations, $employee_types, $weekNo, $year)
     {
         $query =  $this->select(
@@ -149,5 +209,34 @@ class PlanningBase extends Model
             $query->whereRaw("EXTRACT('week' FROM start_date_time) = ?", [$weekNo]);
         }
         return $query->get()->toArray();
+    }
+
+    /**
+     * Day planning query.
+     *
+     * @param  [type] $locations
+     * @param  [type] $workstations
+     * @param  [type] $employee_types
+     * @param  [type] $date
+     * @return object
+     */
+    public function dayPlanning($locations, $workstations, $employee_types, $date) :mixed
+    {
+        // Assuming you have an instance of PlanningBase model
+        $query= $this->whereDate('start_date_time', $date);
+
+        if (!empty($employee_types)) {
+            $query->whereIn('employee_type_id', (array) $employee_types);
+        }
+
+        if (!empty($locations)) {
+            $query->whereIn('location_id', (array)$locations);
+        }
+
+        if (!empty($workstations)) {
+            $query->whereIn('workstation_id', (array)$workstations);
+        }
+
+        return $query->get();
     }
 }
