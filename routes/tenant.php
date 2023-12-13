@@ -141,6 +141,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::put('employee-update', 'updateEmployee');
 
+            Route::get('get-active-contract-employees', 'getActiveContractEmployees');
+
         });
 
         Route::post('employee-availability/{user_id}', [AvailabilityController::class, 'createAvailability']);

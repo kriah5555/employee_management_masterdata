@@ -485,4 +485,40 @@ class EmployeeService
             'employeeSocialSecretaryDetails'
         ]);
     }
+
+
+    public function getActiveContractEmployeesByWeek($weekNumber, $year)
+    {
+        $weekDates = getWeekDates($weekNumber, $year);
+        $startDateOfWeek = reset($weekDates);
+        $endDateOfWeek = end($weekDates);
+
+        $contracts = EmployeeContract::with('employeeProfile.user.userBasicDetails')->where(function ($query) use ($startDateOfWeek, $endDateOfWeek) {
+            $query->where(function ($query) use ($startDateOfWeek) {
+                $query->where('start_date', '<', $startDateOfWeek)
+                    ->where(function ($query) use ($startDateOfWeek) {
+                        $query->where('end_date', '>', $startDateOfWeek)
+                            ->orWhereNull('end_date');
+                    });
+            })->orWhere(function ($query) use ($endDateOfWeek) {
+                $query->where('start_date', '<', $endDateOfWeek)
+                    ->where(function ($query) use ($endDateOfWeek) {
+                        $query->where('end_date', '>', $endDateOfWeek)
+                            ->orWhereNull('end_date');
+                    });
+            });
+        })->get();
+
+        $activeEmployees = [];
+        foreach ($contracts as $contract) {
+            $activeEmployees[] = [
+                'value' => $contract->employeeProfile->id,
+                'label' => $contract->employeeProfile->user->userBasicDetails->first_name . ' ' . $contract->employeeProfile->user->userBasicDetails->last_name
+            ];
+        }
+        usort($activeEmployees, function ($a, $b) {
+            return strcmp($a['label'], $b['label']);
+        });
+        return $activeEmployees;
+    }
 }

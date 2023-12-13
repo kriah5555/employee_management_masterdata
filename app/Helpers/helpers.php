@@ -251,7 +251,7 @@ if (!function_exists('formatToEuropeCurrency')) { # will convert number format t
 if (!function_exists('formatToNumber')) { # will convert europe currency format to number format
     function formatToNumber($number)
     {
-        return (float)str_replace(['.', ','], ['', '.'], $number);
+        return (float) str_replace(['.', ','], ['', '.'], $number);
     }
 }
 
@@ -296,7 +296,7 @@ if (!function_exists('getTenantFolderPath')) {
     {
         $tenantPath = storage_path() . '/company/' . $tenantName;
         if (!is_dir($tenantPath)) {
-        mkdir($tenantPath, 0777, true);
+            mkdir($tenantPath, 0777, true);
         }
         return $tenantPath;
     }
