@@ -386,4 +386,29 @@ class EmployeeController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * API to get list of all employee types.
+     */
+    public function getActiveContractEmployees(Request $request)
+    {
+        $weekNumber = $request->input('week_number');
+        $year = $request->input('year');
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getActiveContractEmployeesByWeek($weekNumber, $year)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }

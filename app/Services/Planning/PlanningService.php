@@ -27,6 +27,12 @@ class PlanningService implements PlanningInterface
         protected EmployeeService $employeeService
     ) {}
 
+    /**
+     * Get employee type of the company
+     *
+     * @param  [type] $companyId
+     * @return array
+     */
     public function getEmployeeTypes($companyId)
     {
         $response = [];
@@ -42,6 +48,12 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
+    /**
+     * Formating the options
+     *
+     * @param  [type] $data
+     * @return array
+     */
     public function optionsFormat($data)
     {
         $response = [];
@@ -51,6 +63,12 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
+    /**
+     * Workstations data format.
+     *
+     * @param  [type] $data
+     * @return array
+     */
     public function workStationFormat($data) 
     {
         $response = [];
@@ -58,6 +76,21 @@ class PlanningService implements PlanningInterface
             $response[$value['id']]['id'] = $value['id'];
             $response[$value['id']]['name'] = $value['location_name'];
             $response[$value['id']]['workstations'] = $value['workstations_values'];
+        }
+        return $response;
+    }
+
+    /**
+     * Function indexing by id
+     *
+     * @param  [type] $data
+     * @return array
+     */
+    public function functionFormat($data)
+    {
+        $response = [];
+        foreach ($data as $value) {
+            $response[$value['id']] = $value;
         }
         return $response;
     }
@@ -195,11 +228,92 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
-    public function getDayPlanningService()
+    public function getDayPlanningService($locations, $workstations, $employee_types, $date)
     {
+        $response = [];
+        $planningRaw = $this->planningBase->dayPlanning($locations, $workstations, $employee_types, $date);
         
+        $plannings = (count($planningRaw->all()) > 0) ? $planningRaw->toArray() : [];
+        // getting required info.
+        if (count($plannings) > 0) {
+            $workstations = array_unique(array_column($plannings, 'workstation_id'));
+            $employeeTypes = array_unique(array_column($plannings, 'employee_type_id'));
+            $employeeProfiles = array_unique(array_column($plannings, 'employee_profile_id'));
+            $functions = array_unique(array_column($plannings, 'function_id'));
+    
+            //Employee type details.
+            $employeeTypeDetails = $this->employeeTypeFormat(
+                $this->employeeType->getEmployeeTypeDetails($employeeTypes)
+            );
+    
+            //Employee profiles.
+            $employeeProfilesData = $this->employeeProfilesFormat(
+                $this->employeeService->getEmployeeDetailsPlanning($employeeProfiles)->toArray()
+            );
+
+            //Function details.
+            $functionDetails = $this->functionFormat($this->functionTitle->getFunctionDetails($functions));
+        }
+
+        // dd([$plannings, $employeeProfilesData, $functionDetails, $employeeTypeDetails, $response]);
+        foreach ($planningRaw->all() as $planning) {
+            $this->formatDayPlanning($planning, $employeeProfilesData, $functionDetails, $employeeTypeDetails, $response);
+        }
+        return $response;
     }
-    public function getAllPlanning()
+
+    public function formatDayPlanning($planningBase, $employeeInfo, $functionInfo, $employeeTypeInfo, &$response)
+    {
+        // $array = $planningBase->toArray();
+        $data = [];
+        $planningId = $planningBase->id;
+        $data['id'] = $planningBase->id;
+        $data['location_id'] = $planningBase->location_id;
+        $data['workstation_id'] = $planningBase->workstation_id;
+        $data['function_id'] = $planningBase->function_id;
+        $data['employee_type_id'] = $planningBase->employee_type_id;
+        $data['employee_profile_id'] = $planningBase->employee_profile_id;
+        $data['start_date_time'] = $planningBase->start_date_time;
+        $data['end_date_time'] = $planningBase->end_date_time;
+        $data['function'] = ['id' => $planningBase->function_id, 'name' => $functionInfo[$planningBase->function_id]['name']];
+        $data['employee_type'] = $employeeTypeInfo[$planningBase->employee_type_id];
+        $data['employee_details'] = $employeeInfo[$planningBase->employee_profile_id];
+
+        // Getting information from relations.
+        //    $location = $planningBase->location->toArray();
+        //    $workstation = $planningBase->workStation->toArray();
+        //    $employeeProfile = $planningBase->employeeProfile->toArray();
+
+        $timeRegistrations = $planningBase->timeRegistrations->toArray();
+        // Accessing data from TimeRegistration models
+        foreach ($timeRegistrations as $timeRegistration) {
+            $startTime = $timeRegistration['actual_start_time'];
+            $endTime = $timeRegistration['actual_end_time'];
+        }
+
+        $contracts = $planningBase->contracts->toArray();
+        // Accessing data from PlanningContracts models
+        foreach ($contracts as $contract) {
+            $contractStatus = $contract['contract_status'];
+            // Access other properties as needed
+        }
+
+        $breaks = $planningBase->breaks->toArray();
+        // Accessing data from PlanningBreak models
+        foreach ($breaks as $break) {
+            $breakStartTime = $break['break_start_time'];
+            $breakEndTime = $break['break_end_time'];
+        }
+        $data['actions'] = [
+            'plan' => ['action' => 'start', 'status' => 'active'],
+            'contract' => ['action' => 'sign', 'status' => 'active'],
+            'break' => ['actions' => 'start', 'status' => 'active'],
+        ];
+        $response[]= $data;
+    }
+
+
+    public function planningCreateOptionsService($workstation, $employeeId)
     {
 
     }

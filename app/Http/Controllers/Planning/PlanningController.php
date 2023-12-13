@@ -15,12 +15,13 @@ class PlanningController extends Controller
 {
     public function __construct(protected PlanningService $planningService)
     {}
-    
-    // public function getWeeklyPlanning()
-    // {
 
-    // }
-
+    /**
+     * Planning overview options function
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return json
+     */
     public function getPlanningOverviewOptions(Request $request)
     {
         try {
@@ -28,7 +29,7 @@ class PlanningController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Monthly planning',
+                    'message' => 'Planning options',
                     'data'    => $this->planningService->getPlanningOverviewFilterService($companyId),
                 ],
                 JsonResponse::HTTP_OK,
@@ -44,6 +45,12 @@ class PlanningController extends Controller
         }
     }
 
+    /**
+     * Get monthly planning data
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return json
+     */
     public function getMonthlyPlanning(Request $request)
     {
         try {
@@ -69,6 +76,12 @@ class PlanningController extends Controller
         }
     }
 
+    /**
+     * Get weekly planning info.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return json
+     */
     public function getWeeklyPlanning(Request $request)
     {
         $input = $output = [];
@@ -93,14 +106,92 @@ class PlanningController extends Controller
         }
     }
 
+    /**
+     * Get day planning
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return json
+     */
     public function getDayPlanning(Request $request)
     {
-        $input = $request->only(['locations', 'workstations', 'employee_types', 'date']);
-        return $this->planningService->getDayPlanningService($input['locations'], $input['workstations'], $input['employee_types'], $input['week'], $input['year']);
+        $input = $data = [];
+        try {
+            $input = $request->only(['locations', 'workstations', 'employee_types', 'date']);
+            $data = $this->planningService->getDayPlanningService($input['locations'], $input['workstations'], $input['employee_types'], $input['date']);
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Day planning response',
+                    'data'    => $data
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch(\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }  
     }
 
-    public function getEmployeeList()
+    /**
+     * Get employee in create planning.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return json
+     */
+    public function getEmployeeList(Request $request)
     {
+        $input = $data = [];
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee options',
+                    'data'    => $data
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    /**
+     * Get employee planning options by workstation and employeeId.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return json
+     */
+    public function planningCreateOptions(Request $request)
+    {
+        $input = $data = [];
+        try {
+            $input = $request->only(['workstation', 'employee_id']);
+            $data = $this->planningService->planningCreateOptionsService($input['workstation'], $input['employee_id']);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee options',
+                    'data'    => $data
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
