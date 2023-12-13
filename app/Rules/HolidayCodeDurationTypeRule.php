@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class DurationTypeRule implements ValidationRule
+class HolidayCodeDurationTypeRule implements ValidationRule
 {
     public function __construct(protected $durationType, protected $companyId)
     {
@@ -22,7 +22,7 @@ class DurationTypeRule implements ValidationRule
 
         foreach ($value as $data) {
 
-            $duration_type_rules = $this->getDurationTypeRule($fail, $this->companyId, $value, $data);
+            $duration_type_rules = $this->getHolidayCodeDurationTypeRule($fail, $this->companyId, $value, $data);
 
             $validator = \Validator::make($data, $duration_type_rules);
 
@@ -34,7 +34,7 @@ class DurationTypeRule implements ValidationRule
             }
         }
     }
-    public function getDurationTypeRule($fail, $companyId, $value, array $data)
+    public function getHolidayCodeDurationTypeRule($fail, $companyId, $value, array $data)
     {
 
         $durationTypeRule = [
@@ -43,19 +43,20 @@ class DurationTypeRule implements ValidationRule
 
         switch ($this->durationType) {
             case config('absence.FIRST_HALF'):
+                break;
             case config('absence.SECOND_HALF'):
-                $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . ($this->durationType === config('absence.FIRST_HALF') ? config('absence.FIRST_HALF') : config('absence.SECOND_HALF'))];
                 break;
             case config('absence.MULTIPLE_HOLIDAY_CODES'):
                 $durationTypeRule['hours'] = 'required|numeric';
                 break;
 
             case config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'):
+                break;
             case config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'):
 
                     $durationTypeRule['hours'] = 'nullable|numeric';
 
-                    if ($data['duration_type']!="") {
+                    if ($data['duration_type'] != "") {
                         $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . ($this->durationType === 4 ? config('absence.FIRST_HALF') : config('absence.SECOND_HALF'))];
                     }
                 break;
@@ -77,6 +78,7 @@ class DurationTypeRule implements ValidationRule
                 }
                 break;
             case config('absence.MULTIPLE_DATES'):
+                break;
             case config('absence.FULL_DAYS'):
                 break;
         }

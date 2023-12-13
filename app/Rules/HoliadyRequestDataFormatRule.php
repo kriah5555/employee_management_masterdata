@@ -16,7 +16,6 @@ class HoliadyRequestDataFormatRule implements ValidationRule
         $duration_type_rules = $this->getDateFormatRule($fail, $value, $this->durationType);
 
 
-dd($value,$duration_type_rules );
         $validator = \Validator::make($value, $duration_type_rules);
 
         if ($validator->fails()) {

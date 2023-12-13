@@ -7,11 +7,12 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use App\Models\Company\Employee\EmployeeHolidayCount;
 use App\Models\Company\Absence\Absence;
 use App\Services\Company\Absence\AbsenceService;
+use App\Repositories\Holiday\HolidayCodeRepository;
 
 class EmployeeHolidayBalanceRule implements ValidationRule
 {
 
-    public function __construct(protected $employee_id,protected $absence_id=0)
+    public function __construct(protected $employee_id, protected $duration_type, protected $absence_id = '')
     {
     }
 
@@ -25,7 +26,7 @@ class EmployeeHolidayBalanceRule implements ValidationRule
         $absenceHoursData = collect($value)->map(function ($data) {
             return [
                 'holiday_code' => $data['holiday_code'],
-                'hours' => app(AbsenceService::class)->getCalculateAbsenceHours(request(), $data, $withDateCalculates = true),
+                'hours' => app(AbsenceService::class)->getCalculateAbsenceHours(request(), $data, true),
             ];
         });
 
@@ -34,7 +35,9 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                 'holiday_code' => $group->first()['holiday_code'],
                 'hours' => $group->sum('hours'),
             ];
-        });
+        }); # to make unique holiday code with count
+        
+
         foreach ($absenceHoursValidate as $index => $data) {
             if (array_key_exists('hours', $data)) {
                 $hours = $data['hours'];
@@ -51,28 +54,31 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                     $query->select('absence_id', 'hours')
                         ->where('holiday_code_id', $holidayCodeId)
                         ->where('hours', '>', 0);
-                }])
+                    }])
+                    ->where('absence_type', config('absence.HOLIDAY'))
                     ->where('employee_profile_id', $this->employee_id);
 
-                if ($this->absence_id > 0) {
+                if (!empty($this->absence_id)) {
                     $absences->where('id', '!=', $this->absence_id);
                 }
 
                 $absences = $absences->get(['id', 'employee_profile_id']);
 
                 // Flatten and pluck the hours data
-                $hoursData = $absences->pluck('absenceHours')->flatten()->pluck('hours');
+                $employee_holiday_hours_used = $absences->pluck('absenceHours')->flatten()->pluck('hours');
+                
+                // Use Laravel Collections to sum the hours
+                $totalAbsenceHours = $employee_holiday_hours_used->sum() + $hours;
 
-                // dd($hoursData->sum()+1);
-                if ($hoursData->sum() > 0) {
-                    // Use Laravel Collections to sum the hours
-                    $totalAbsenceHours = $hoursData->sum() + $hours;
-
-                    // Check if the total absence hours exceed the holiday count
-                    if ($holidayCount < $totalAbsenceHours) {
-                        $fail("Holiday balance not available from $attribute.$index holiday code");
-                    }
+                // Check if the total absence hours exceed the holiday count
+                if ($holidayCount < $totalAbsenceHours) {
+                    $holiday_code = app(HolidayCodeRepository::class)->getHolidayCodeById($holidayCodeId);
+                    $fail("Holiday balance not available for '$holiday_code->holiday_code_name'");
                 }
+            }
+
+            if (app(AbsenceService::class)->breakHolidayCodeCountLoopCondition($index, $this->duration_type)) { # will break the loop according to the duration type holiday count needed
+                break;
             }
         }
     }

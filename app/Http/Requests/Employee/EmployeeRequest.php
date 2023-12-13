@@ -4,7 +4,7 @@ namespace App\Http\Requests\Employee;
 
 use App\Http\Requests\ApiRequest;
 use App\Rules\DuplicateSocialSecurityNumberRule;
-// use App\Rules\ValidateLengthIgnoringSymbolsRule;
+use App\Rules\ValidateLengthIgnoringSymbolsRule;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use Illuminate\Validation\Rule;
 use App\Rules\CurrencyFormatRule;

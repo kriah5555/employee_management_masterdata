@@ -73,9 +73,7 @@ class PlanningController extends Controller
     {
         $input = $output = [];
         try {
-            // dd($request);
-            $input = $request->only(['locations', 'workstations', 'employee_types', 'week', 'year']);
-            // dd($input);
+            $input  = $request->only(['locations', 'workstations', 'employee_types', 'week', 'year']);
             $output = $this->planningService->getWeeklyPlanningService($input['locations'], $input['workstations'], $input['employee_types'], $input['week'], $input['year']);
             return returnResponse(
                 [

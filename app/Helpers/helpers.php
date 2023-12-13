@@ -238,12 +238,14 @@ if (!function_exists('getCompanyId')) {
 if (!function_exists('formatToEuropeCurrency')) { # will convert number format to europe currency format
     function formatToEuropeCurrency($currency)
     {
-        $parts = explode('.', $currency);
+        // $parts = explode('.', $currency);
         // $decimal = 0;
         // if (count($parts) == 2) {
         //     $decimal = strlen($parts[1]);
         // }
-        return number_format((float) $currency, 4, ',', '.');
+
+        $currency = str_replace(',', '.', $currency);
+        return number_format($currency, 4, ',', '.');
     }
 }
 

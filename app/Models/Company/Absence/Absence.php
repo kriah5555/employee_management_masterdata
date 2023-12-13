@@ -4,6 +4,7 @@ namespace App\Models\Company\Absence;
 
 use App\Models\BaseModel;
 use App\Services\DateService;
+use Illuminate\Support\Carbon;
 use App\Models\Company\Absence\AbsenceDates;
 use App\Models\Company\Absence\AbsenceHours;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -73,5 +74,10 @@ class Absence extends BaseModel
     public function absenceHours()
     {
         return $this->hasMany(AbsenceHours::class);
+    }
+
+    public function getAppliedDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
     }
 }

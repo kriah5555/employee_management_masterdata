@@ -72,17 +72,8 @@ class AbsenceService
             ];
 
             $hours = 0;
-            $absence_hours_data[$index]['hours'] = $this->getCalculateAbsenceHours($details, $holiday_code_count,$with_date_calculates=true);
-            if (
-                in_array($duration_type, [
-                    config('absence.MULTIPLE_DATES'), # if multiple dates it will have from and to date so only one holiday code
-                    config('absence.FIRST_HALF'), # if first half it will have single code
-                    config('absence.SECOND_HALF'), # if second half it will have single code
-                    config('absence.FIRST_AND_SECOND_HALF'), # if second half it will have single code
-                    config('absence.FULL_DAYS'), # if full day it will have single code
-                ])
-                || ($index == 2 && config('absence.FIRST_AND_SECOND_HALF')) # if it is first nd second half then there will be two holiday codes
-            ) {
+            $absence_hours_data[$index]['hours'] = $this->getCalculateAbsenceHours($details, $holiday_code_count);
+            if ($this->breakHolidayCodeCountLoopCondition($index, $duration_type)) {
                 break;
             }
         }
@@ -97,6 +88,19 @@ class AbsenceService
             'dates_data'         => $dates_data,
             'details'            => $details
         ];
+    }
+
+    public function breakHolidayCodeCountLoopCondition($index, $duration_type)
+    {
+        return 
+            in_array($duration_type, [
+                config('absence.MULTIPLE_DATES'), # if multiple dates it will have from and to date so only one holiday code
+                config('absence.FIRST_HALF'), # if first half it will have single code
+                config('absence.SECOND_HALF'), # if second half it will have single code
+                config('absence.FIRST_AND_SECOND_HALF'), # if second half it will have single code
+                config('absence.FULL_DAYS'), # if full day it will have single code
+            ])
+            || ($index == 2 && config('absence.FIRST_AND_SECOND_HALF')); # if it is first nd second half then there will be two holiday codes
     }
 
     public function getCalculateAbsenceHours($details, $holiday_code_count, $with_date_calculates = false) # if $with_date_calculates => true it will return the hours * days else will return hours
