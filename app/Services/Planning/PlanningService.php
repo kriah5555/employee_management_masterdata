@@ -25,7 +25,8 @@ class PlanningService implements PlanningInterface
         protected EmployeeType $employeeType,
         protected FunctionTitle $functionTitle,
         protected EmployeeService $employeeService
-    ) {}
+    ) {
+    }
 
     /**
      * Get employee type of the company
@@ -69,7 +70,7 @@ class PlanningService implements PlanningInterface
      * @param  [type] $data
      * @return array
      */
-    public function workStationFormat($data) 
+    public function workStationFormat($data)
     {
         $response = [];
         foreach ($data as $value) {
@@ -120,7 +121,7 @@ class PlanningService implements PlanningInterface
     public function employeeTypeFormat(array $employeeTypeDetails)
     {
         $formatedEmployeeDetails = [];
-        foreach($employeeTypeDetails as $value) {
+        foreach ($employeeTypeDetails as $value) {
             $formatedEmployeeDetails[$value['id']]['id'] = $value['id'];
             $formatedEmployeeDetails[$value['id']]['name'] = $value['name'];
             $formatedEmployeeDetails[$value['id']]['category'] = $value['employee_type_category_id'];
@@ -132,9 +133,9 @@ class PlanningService implements PlanningInterface
     public function employeeProfilesFormat(array $employee)
     {
         $employeeFormat = [];
-        foreach($employee as $value) {
+        foreach ($employee as $value) {
             $user = $value['user'];
-            $name = $user['user_basic_details']['first_name']. ' ' . $user['user_basic_details']['last_name'];
+            $name = $user['user_basic_details']['first_name'] . ' ' . $user['user_basic_details']['last_name'];
             $employeeFormat[$value['id']]['id'] = $value['id'];
             $employeeFormat[$value['id']]['user_id'] = $value['user_id'];
             $employeeFormat[$value['id']]['social_security_number'] = $user['social_security_number'];
@@ -146,8 +147,7 @@ class PlanningService implements PlanningInterface
 
     public function formatWeeklyData(array $plannings, array $employeeTypes, array $employeeData, array $dates, &$response)
     {
-        foreach ($plannings as $plan) 
-        {
+        foreach ($plannings as $plan) {
             //Initializing.
             $type = $plan['employee_type_id'];
             $profile = $plan['employee_profile_id'];
@@ -171,10 +171,10 @@ class PlanningService implements PlanningInterface
 
             $planTemp = [];
             $planTemp = [
-                'start_date' => $plan['start_date'],
-                'start_time' => $plan['start_time'],
-                'end_date' => $plan['end_date'],
-                'end_date' => $plan['end_time'],
+                'start_date'     => $plan['start_date'],
+                'start_time'     => $plan['start_time'],
+                'end_date'       => $plan['end_date'],
+                'end_date'       => $plan['end_time'],
                 'contract_hours' => $plan['contract_hours'],
             ];
 
@@ -232,7 +232,7 @@ class PlanningService implements PlanningInterface
     {
         $response = [];
         $planningRaw = $this->planningBase->dayPlanning($locations, $workstations, $employee_types, $date);
-        
+
         $plannings = (count($planningRaw->all()) > 0) ? $planningRaw->toArray() : [];
         // getting required info.
         if (count($plannings) > 0) {
@@ -240,12 +240,12 @@ class PlanningService implements PlanningInterface
             $employeeTypes = array_unique(array_column($plannings, 'employee_type_id'));
             $employeeProfiles = array_unique(array_column($plannings, 'employee_profile_id'));
             $functions = array_unique(array_column($plannings, 'function_id'));
-    
+
             //Employee type details.
             $employeeTypeDetails = $this->employeeTypeFormat(
                 $this->employeeType->getEmployeeTypeDetails($employeeTypes)
             );
-    
+
             //Employee profiles.
             $employeeProfilesData = $this->employeeProfilesFormat(
                 $this->employeeService->getEmployeeDetailsPlanning($employeeProfiles)->toArray()
@@ -305,11 +305,11 @@ class PlanningService implements PlanningInterface
             $breakEndTime = $break['break_end_time'];
         }
         $data['actions'] = [
-            'plan' => ['action' => 'start', 'status' => 'active'],
+            'plan'     => ['action' => 'start', 'status' => 'active'],
             'contract' => ['action' => 'sign', 'status' => 'active'],
-            'break' => ['actions' => 'start', 'status' => 'active'],
+            'break'    => ['actions' => 'start', 'status' => 'active'],
         ];
-        $response[]= $data;
+        $response[] = $data;
     }
 
 

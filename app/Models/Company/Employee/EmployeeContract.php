@@ -81,4 +81,8 @@ class EmployeeContract extends BaseModel
     {
         return $this->belongsTo(EmployeeProfile::class);
     }
+    public function employeeFunctionDetails()
+    {
+        return $this->hasMany(EmployeeFunctionDetails::class);
+    }
 }

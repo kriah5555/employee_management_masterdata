@@ -9,12 +9,14 @@ use App\Models\Planning\PlanningBase;
 use App\Services\Planning\PlanningService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Planning\GetWeeklyPlanningRequest;
 
 
 class PlanningController extends Controller
 {
     public function __construct(protected PlanningService $planningService)
-    {}
+    {
+    }
 
     /**
      * Planning overview options function
@@ -34,13 +36,12 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -65,13 +66,12 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -82,26 +82,23 @@ class PlanningController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return json
      */
-    public function getWeeklyPlanning(Request $request)
+    public function getWeeklyPlanning(GetWeeklyPlanningRequest $request)
     {
-        $input = $output = [];
         try {
-            $input = $request->only(['locations', 'workstations', 'employee_types', 'week', 'year']);
-            $output = $this->planningService->getWeeklyPlanningService($input['locations'], $input['workstations'], $input['employee_types'], $input['week'], $input['year']);
+            $output = $this->planningService->getWeeklyPlanningService($request->input('location'), $request->input('workstations'), $request->input('employee_types'), $request->input('week'), $request->input('year'));
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'weekly planning response',
                     'data'    => $output
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -127,40 +124,12 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch(\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }  
-    }
-
-    /**
-     * Get employee in create planning.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return json
-     */
-    public function getEmployeeList(Request $request)
-    {
-        $input = $data = [];
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'message' => 'Employee options',
-                    'data'    => $data
-                ],
-                JsonResponse::HTTP_OK,
-            );
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -189,8 +158,8 @@ class PlanningController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
