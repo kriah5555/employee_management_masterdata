@@ -60,9 +60,9 @@ class DateValidationRule implements ValidationRule
         $query = DB::table('absence')
             ->join('absence_dates', 'absence.id', '=', 'absence_dates.absence_id')
             ->select('absence_dates.dates', 'absence_dates.dates_type', 'absence.duration_type')
-            ->where('absence.employee_profile_id', $employee_profile_id);
-
-        $query->when($absence_id > 0, function ($query) use ($absence_id) {
+            ->where('absence.employee_profile_id', $employee_profile_id)
+            ->whereNull('absence.deleted_at');
+            $query->when($absence_id > 0, function ($query) use ($absence_id) {
             $query->where('absence.id', '!=', $absence_id);
         });
 

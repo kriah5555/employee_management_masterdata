@@ -105,7 +105,6 @@ class UserService
         return $this->userRepository->getUserById($id);
     }
 
-
     public function getUserDeviceTokens($id)
     {
         // Retrieve the user by ID

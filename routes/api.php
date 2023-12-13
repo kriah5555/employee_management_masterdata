@@ -8,6 +8,7 @@ use App\Http\Controllers\Company\{
     CostCenterController,
     WorkstationController,
     AvailabilityController,
+    AppSettingsController,
     Absence\LeaveController,
     Absence\HolidayController,
     Contract\ContractConfigurationController,
@@ -271,6 +272,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
                 'controller' => CompanyContractTemplateController::class,
                 'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
+            'app-settings' => [
+                'controller' => AppSettingsController::class,
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+            ],
         ];
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
@@ -307,6 +312,5 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
 
     });
-
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 });

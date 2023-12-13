@@ -11,7 +11,7 @@ use App\Services\Company\Absence\AbsenceService;
 class EmployeeHolidayBalanceRule implements ValidationRule
 {
 
-    public function __construct(protected $employee_id,protected $absence_id=0)
+    public function __construct(protected $employee_id, protected $absence_id = 0)
     {
     }
 
@@ -52,6 +52,7 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                         ->where('holiday_code_id', $holidayCodeId)
                         ->where('hours', '>', 0);
                 }])
+                    ->whereNull('absence.deleted_at')
                     ->where('employee_profile_id', $this->employee_id);
 
                 if ($this->absence_id > 0) {
@@ -63,7 +64,8 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                 // Flatten and pluck the hours data
                 $hoursData = $absences->pluck('absenceHours')->flatten()->pluck('hours');
 
-                // dd($hoursData->sum()+1);
+                dd($hoursData);
+
                 if ($hoursData->sum() > 0) {
                     // Use Laravel Collections to sum the hours
                     $totalAbsenceHours = $hoursData->sum() + $hours;

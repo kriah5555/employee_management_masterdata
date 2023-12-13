@@ -42,14 +42,4 @@ class AbsenceHours extends BaseModel
     {
         return $this->belongsTo(HolidayCode::class, 'holiday_code_id');
     }
-
-    public function dateArrayFormat($datesArray)
-    {
-        $dates = ["from_date" => "01-11-2023", "to_date" => "05-11-2023"];
-        if (isset($dates['from_date']) && isset($dates['to_date'])) {
-            $datesArray = (new DateService())->getDatesArray($dates['from_date'], $dates['to_date']);
-        } else {
-            return $datesArray;
-        }
-    }
 }
