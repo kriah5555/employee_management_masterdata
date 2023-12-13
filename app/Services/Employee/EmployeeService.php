@@ -521,4 +521,34 @@ class EmployeeService
         });
         return $activeEmployees;
     }
+
+    public function getEmployeeActiveTypesByDate($employeeId, $date)
+    {
+        $activeContracts = EmployeeContract::with(['employeeType', 'employeeFunctionDetails.functionTitle'])->where('employee_profile_id', $employeeId)->where(function ($query) use ($date) {
+            $query->where(function ($query) use ($date) {
+                $query->where('start_date', '<', $date)
+                    ->where(function ($query) use ($date) {
+                        $query->where('end_date', '>', $date)
+                            ->orWhereNull('end_date');
+                    });
+            });
+        })->get();
+        $activeTypes = [];
+        foreach ($activeContracts as $activeContract) {
+            $activeTypes[] = [
+                'value' => $activeContract->employeeType->id,
+                'label' => $activeContract->employeeType->name,
+            ];
+            foreach ($activeContract->employeeFunctionDetails as $employeeFunctionDetails) {
+                $activeFunctions[$activeContract->employeeType->id][] = [
+                    'value' => $employeeFunctionDetails->functionTitle->id,
+                    'label' => $employeeFunctionDetails->functionTitle->name
+                ];
+            }
+        }
+        return [
+            'employee_types' => $activeTypes,
+            'functions'      => $activeFunctions,
+        ];
+    }
 }
