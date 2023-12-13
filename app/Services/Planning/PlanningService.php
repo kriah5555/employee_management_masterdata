@@ -255,7 +255,6 @@ class PlanningService implements PlanningInterface
             $functionDetails = $this->functionFormat($this->functionTitle->getFunctionDetails($functions));
         }
 
-        // dd([$plannings, $employeeProfilesData, $functionDetails, $employeeTypeDetails, $response]);
         foreach ($planningRaw->all() as $planning) {
             $this->formatDayPlanning($planning, $employeeProfilesData, $functionDetails, $employeeTypeDetails, $response);
         }

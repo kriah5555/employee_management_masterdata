@@ -61,7 +61,8 @@ return [
         3 => 'Multiple codes',
         4 => 'Multiple codes first half',
         5 => 'Multiple codes second half',
-        6 => 'First and second half', # will have two holiday codes
-        7 => 'Multiple dates', # will have two holiday codes
+        6 => 'First and second half', 
+        7 => 'Multiple dates',
+        8 => 'Full day', 
     ],
 ];

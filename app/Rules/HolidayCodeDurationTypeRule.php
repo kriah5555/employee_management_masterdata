@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 
+# to validate the duration types in holiday codes and validate the holiday hours are given or not
 class HolidayCodeDurationTypeRule implements ValidationRule
 {
     public function __construct(protected $durationType, protected $companyId)
@@ -44,44 +45,46 @@ class HolidayCodeDurationTypeRule implements ValidationRule
         switch ($this->durationType) {
             case config('absence.FIRST_HALF'):
                 break;
+
             case config('absence.SECOND_HALF'):
                 break;
+
             case config('absence.MULTIPLE_HOLIDAY_CODES'):
                 $durationTypeRule['hours'] = 'required|numeric';
                 break;
 
+            case config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'): # dont add break statement it should continue to next case because both have same validation
             case config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'):
-                break;
-            case config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'):
 
-                    $durationTypeRule['hours'] = 'nullable|numeric';
-
-                    if ($data['duration_type'] != "") {
-                        $durationTypeRule['duration_type'] = ['required', 'integer', 'in:' . ($this->durationType === 4 ? config('absence.FIRST_HALF') : config('absence.SECOND_HALF'))];
+                    if (!collect($value)->contains('duration_type', $this->durationType === config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') ? config('absence.FIRST_HALF') : config('absence.SECOND_HALF'))) { # one of the holiday code should have the duration type for first ror second half
+                        $duration = $this->durationType == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') ? 'First half' : 'Second half';
+                        $fail("Holiday code for $duration is not selected.");
                     }
+
+                    if (!collect($value)->contains('duration_type', '')) { # at least one holiday code should be selected for multiple holiday code
+                        $fail("Please select holiday code for multiple holiday codes.");
+                    }
+                    $durationTypeRule['hours'] = 'required|numeric';
                 break;
+
             case config('absence.FIRST_AND_SECOND_HALF'):
-                if (count($value) == 2) {
-                    $durationTypes = array_column($value, 'duration_type');
-                    if (count($durationTypes) === count(array_unique($durationTypes))) {
-                        $durationTypeRule['duration_type'] =
-                            [
-                                'required',
-                                'integer',
-                                Rule::in(config('absence.FIRST_HALF'), config('absence.SECOND_HALF')),
-                            ];
-                    } else {
-                        $fail("Duration type is same, Please check once");
+                if (count($value) == 2) { # it should only have first and second half holiday codes
+                    if (!collect($value)->contains('duration_type', config('absence.FIRST_HALF')) || !collect($value)->contains('duration_type', config('absence.SECOND_HALF'))) {
+                        $fail("Please select First and second half holiday code.");
                     }
                 } else {
-                    $fail("Please select two holiday code based on shift");
+                    $fail("Only first and second half holiday codes should be selected.");
                 }
                 break;
-            case config('absence.MULTIPLE_DATES'):
-                break;
+
+            case config('absence.MULTIPLE_DATES'): # dont add break statement it should continue to next case because both have same validation
             case config('absence.FULL_DAYS'):
+                if (count($value) != 1) {
+                    $fail("Only one holiday codes should be selected");
+                }
                 break;
         }
+
         return $durationTypeRule;
     }
 }
