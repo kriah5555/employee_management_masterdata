@@ -37,7 +37,10 @@ Route::controller(PlanningController::class)
         $planningResouces = [
             ['path' => 'get-planning-options', 'function' => 'getPlanningOverviewOptions'],
             ['path' => 'get-monthly-planning', 'function' => 'getMonthlyPlanning'],
-            ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning']
+            ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning'],
+            ['path' => 'get-day-planning', 'function' => 'getDayPlanning'],
+            ['path' => 'get-employee', 'function' => 'getEmployeeList'],
+            ['path' => 'get-planning-create', 'function' => 'planningCreateOptions']
         ];
 
         foreach ($planningResouces as $api) {
