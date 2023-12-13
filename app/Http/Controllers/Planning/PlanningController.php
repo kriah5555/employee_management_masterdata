@@ -21,17 +21,32 @@ class PlanningController extends Controller
 
     // }
 
-    public function getPlanningOverviewFilter(Request $request)
+    public function getPlanningOverviewOptions(Request $request)
     {
-        $companyId = $request->header('company-id');
-        return $this->planningService->getPlanningOverviewFilterService($companyId);
-
+        try {
+            $companyId = $request->header('company-id');
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Monthly planning',
+                    'data'    => $this->planningService->getPlanningOverviewFilterService($companyId),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function getMonthlyPlanning(Request $request)
     {
         try {
-
             $input = $request->only(['locations', 'workstations', 'employee_types', 'year']);
             $data = $this->planningService->getMonthlyPlanningService($input['year'], $input['locations'], $input['workstations'], $input['employee_types']);
 

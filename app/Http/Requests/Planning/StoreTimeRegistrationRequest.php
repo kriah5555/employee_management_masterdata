@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Planning;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePlanningRequest extends FormRequest
+class StoreTimeRegistrationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

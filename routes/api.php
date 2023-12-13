@@ -89,6 +89,7 @@ Route::group(['middleware' => 'service-registry'], function () {
 });
 
 Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
+
     $resources = [
         'contract-types'      => [
             'controller' => ContractTypeController::class,
@@ -182,8 +183,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::post('get-sector-function-titles', [SectorController::class, 'getFunctionTitles']);
 
-    Route::get('get-company-linked-functions', [SectorController::class, 'getCompanyLinkedFunctions']);
-
     Route::controller(SalaryController::class)->group(function () use ($integerRule) {
 
         Route::get('monthly-minimum-salaries/{sector_id}/get', 'getMinimumSalaries')->where(['sector_id' => $integerRule]);
@@ -197,6 +196,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('hourly-minimum-salaries/{sector_id}/undo', 'undoIncrementedMinimumSalaries')->where(['sector_id' => $integerRule]);
 
         Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
+
     });
 
     Route::controller(ReasonController::class)->group(function () {
@@ -209,6 +209,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
 
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
+
     });
 
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
@@ -304,13 +305,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');
             Route::put('employee-update', 'updateEmployee');
         });
-
-        Route::post('employee-availability/{user_id}', [AvailabilityController::class, 'createAvailability']);
-        Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
-        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
-        Route::delete('/delete-availability', [AvailabilityController::class, 'deleteAvailability']);
-        Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
-
     });
+    Route::get('/user-details', [EmployeeController::class, 'getUserDetails']);
+
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 });
