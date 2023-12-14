@@ -39,7 +39,7 @@ class EmployeeHolidayCountRequest extends ApiRequest
                 'nullable',
                 new EmployeeHolidayCountRule(request()->header('Company-Id')),
             ],
-            
+
             // "holiday_code_counts.*.holiday_code_id" => [
             //     'bail',
             //     'required',

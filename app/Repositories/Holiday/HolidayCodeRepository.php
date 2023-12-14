@@ -15,6 +15,7 @@ class HolidayCodeRepository implements HolidayCodeRepositoryInterface
     {
         return HolidayCode::all();
     }
+    
     public function getActiveHolidayCodes(): Collection
     {
         return HolidayCode::where('status', '=', true)->get();

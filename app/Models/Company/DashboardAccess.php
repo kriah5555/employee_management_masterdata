@@ -11,6 +11,8 @@ class DashboardAccess extends Model
     use HasFactory, SoftDeletes;
 
     protected $connection = 'tenant';
+    protected $table = 'dashboard_access';
+    protected $primary_key = 'id';
 
     protected $fillable = [
         'unique_key',

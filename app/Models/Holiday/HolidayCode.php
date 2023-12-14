@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\Company\Company;
+use App\Models\BaseModel;
 
-class HolidayCode extends Model
+class HolidayCode extends BaseModel
 {
     protected $connection = 'master';
+
+    protected static $sort = ['holiday_code_name', 'internal_code'];
 
     use HasFactory, SoftDeletes;
 
@@ -25,13 +28,14 @@ class HolidayCode extends Model
         'count',
         'internal_code',
         'description',
-        'holiday_type',
-        'count_type',
-        'icon_type',
-        'consider_plan_hours_in_week_hours',
-        'employee_category',
-        'contract_type',
-        'status'
+        'holiday_type', # [1 => 'Paid', 2 => 'Unpaid', 3 => 'Sick Leave']
+        'count_type', # [1 => 'Hours', 2 => 'Days', 3 => 'Sick Leave']
+        'icon_type', # [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others']
+        'consider_plan_hours_in_week_hours', # [0 => 'No', 1 => 'Yes']
+        'employee_category', #  [1 => 'HQ servant', 2 => 'Servant', 3 => 'Worker']
+        'contract_type', # [1 => 'Both', 2 => 'Full time', 3 => 'Part time']
+        'status',
+        'type', # [1 => 'Holiday', 2 => 'Leave']
     ];
 
     protected $dates = [
@@ -44,12 +48,13 @@ class HolidayCode extends Model
         parent::boot();
 
         self::creating(function ($holidayCode) {
-            $holidayCode->processCountAttribute();
+            // $holidayCode->processCountAttribute();
+            $holidayCode->count_type = 1;
         });
 
-        self::updating(function ($holidayCode) {
-            $holidayCode->processCountAttribute();
-        });
+        // self::updating(function ($holidayCode) {
+        //     $holidayCode->processCountAttribute();
+        // });
 
         // static::created(function ($holidayCode) {
         //     $companies = Company::all();

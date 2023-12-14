@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\Absence\Absence;
+use App\Services\DateService;
 
 class AbsenceDates extends BaseModel
 {
@@ -27,20 +28,27 @@ class AbsenceDates extends BaseModel
         'created_by',
         'updated_by',
     ];
-    
+
     protected $dates = [
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
+    protected $appends = ['absence_dates_array'];
+
     public function absence()
     {
         return $this->belongsTo(Absence::class, 'absence_id');
     }
 
-    public function datesArray()
+    public function getAbsenceDatesArrayAttribute() # will return the all dates which absence is applied
     {
+        $customDates = json_decode($this->getAttribute('dates'), true);
+        if ($this->dates_type == 2) { # will have from and to date
+            return app(DateService::class)->getDatesArray($customDates['from_date'], $customDates['to_date']);
+        } else {
+            return $customDates;
+        }
     }
-    
 }

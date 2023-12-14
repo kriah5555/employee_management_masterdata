@@ -13,12 +13,10 @@ class Availability extends Model
     use HasFactory, SoftDeletes;
 
     protected $connection = 'tenant';
-
     protected $table = 'availability';
 
     protected $fillable = [
         'employee_id',
-        'company_id',
         'type',
         'year',
         'month',

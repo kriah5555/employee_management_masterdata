@@ -8,8 +8,8 @@ use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
 
 use Illuminate\Http\JsonResponse;
-use App\Rules\SocialSecurityNumberRule;
-use App\Rules\ValidateLengthIgnoringSymbols;
+use App\Rules\DuplicateSocialSecurityNumberRule;
+use App\Rules\ValidateLengthIgnoringSymbolsRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -45,8 +45,8 @@ class UpdateEmployeeRequest extends ApiRequest
             'social_security_number' => [
                 'required',
                 'string',
-                new ValidateLengthIgnoringSymbols(11, 11, [',', '.', '-']),
-                // new SocialSecurityNumberRule(new EmployeeProfileRepository)
+                new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']),
+                // new DuplicateSocialSecurityNumberRule(new EmployeeProfileRepository)
             ],
             'account_number'         => 'nullable|string|max:255',
 

@@ -16,7 +16,6 @@ class AvailabilityRemarks extends Model
     protected $table = 'availability_remarks';
     protected $fillable  = [
         'employee_id',
-        'company_id',
         'dates',
         'remark',
         'type'

@@ -2,12 +2,14 @@
 
 namespace App\Models\Company\Absence;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Company\Employee\EmployeeProfile;
+use App\Services\DateService;
+use Illuminate\Support\Carbon;
 use App\Models\Company\Absence\AbsenceDates;
 use App\Models\Company\Absence\AbsenceHours;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Company\Employee\EmployeeProfile;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Absence extends BaseModel
 {
@@ -29,7 +31,7 @@ class Absence extends BaseModel
         'reason',
         'status',
     ];
-    
+
     protected $dates = [
         'created_at',
         'updated_at',
@@ -43,7 +45,7 @@ class Absence extends BaseModel
         static::creating(function ($absence) {
             $absence->applied_date = now()->toDateString();
         });
-        
+
         // Listen for the 'deleting' event
         static::deleting(function ($absence) {
             // Delete related AbsenceHours
@@ -53,7 +55,7 @@ class Absence extends BaseModel
             $absence->absenceDates()->delete();
         });
     }
-    
+
     public function employee()
     {
         return $this->hasOne(EmployeeProfile::class, 'employee_profile_id');
@@ -72,5 +74,10 @@ class Absence extends BaseModel
     public function absenceHours()
     {
         return $this->hasMany(AbsenceHours::class);
+    }
+
+    public function getAppliedDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
     }
 }

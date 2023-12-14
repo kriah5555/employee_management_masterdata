@@ -13,7 +13,7 @@ class ResponsiblePersonController extends Controller
     {
 
     }
-    
+
     public function index()
     {
         try {

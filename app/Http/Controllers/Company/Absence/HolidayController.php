@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Company\Absence;
 
 use Illuminate\Http\Request;
-use App\Services\Company\Absence\HolidayService;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Absence\HolidayRequest;
+use App\Http\Controllers\Controller;
+use App\Services\Company\Absence\HolidayService;
+use App\Http\Requests\Company\Absence\HolidayRequest;
 
 class HolidayController extends Controller
 {
@@ -96,7 +96,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    // 'data'    => $this->holidayService->getOptionsToCreate()
+                    'data'    => $this->holidayService->getOptionsToCreate()
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -114,15 +114,14 @@ class HolidayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(HolidayRequest $request)
     {
         try {
-            $request_data = $request->all();
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Holiday created successfully'),
-                    'data'    => $this->holidayService->applyHoliday($request_data)
+                    'data'    => $this->holidayService->applyHoliday($request->validated())
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -165,7 +164,7 @@ class HolidayController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $holidayId)
+    public function update(HolidayRequest $request, $holidayId)
     {
         try {
             $this->holidayService->updateAppliedHoliday($holidayId, $request->all());

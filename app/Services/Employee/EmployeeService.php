@@ -150,20 +150,21 @@ class EmployeeService
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
-            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
-            if ($existingEmpProfile->isEmpty()) {
-                $user = $this->userService->createNewUser($values);
-            } else {
-                $user = $existingEmpProfile->last();
-            }
-            $user->assignRole('employee');
-            $this->createCompanyUser($user, $company_id, 'employee');
-            $employeeProfile = $this->createEmployeeProfile($user, $values);
-            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-            $this->createEmployeeContract($employeeProfile, $values);
-            //$this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+                $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+                if ($existingEmpProfile->isEmpty()) {
+                    $user = $this->userService->createNewUser($values);
+                } else {
+                    $user = $existingEmpProfile->last();
+                }
+                $user->assignRole('employee');
+                $this->createCompanyUser($user, $company_id, 'employee');
+                $employeeProfile = $this->createEmployeeProfile($user, $values);
+                $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+                $this->createEmployeeContract($employeeProfile, $values);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
+            // $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+
             return $employeeProfile;
         } catch (Exception $e) {
             DB::connection('master')->rollback();
@@ -216,7 +217,6 @@ class EmployeeService
             } else {
                 $user = $existingEmpProfile->last();
             }
-
 
             // Commit transactions
             DB::connection('master')->commit();

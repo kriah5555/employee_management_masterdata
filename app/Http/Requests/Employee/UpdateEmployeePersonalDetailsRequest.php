@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Employee;
 
 use App\Http\Requests\ApiRequest;
-use App\Rules\SocialSecurityNumberRule;
-use App\Rules\ValidateLengthIgnoringSymbols;
+use App\Rules\DuplicateSocialSecurityNumberRule;
+use App\Rules\ValidateLengthIgnoringSymbolsRule;
 use App\Rules\User\GenderRule;
 
 class UpdateEmployeePersonalDetailsRequest extends ApiRequest
@@ -32,8 +32,8 @@ class UpdateEmployeePersonalDetailsRequest extends ApiRequest
             'social_security_number' => [
                 'required',
                 'string',
-                new ValidateLengthIgnoringSymbols(11, 11, [',', '.', '-']),
-                // new SocialSecurityNumberRule(new EmployeeProfileRepository)
+                new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']),
+                // new DuplicateSocialSecurityNumberRule(new EmployeeProfileRepository)
             ],
             'place_of_birth'         => 'string|max:255',
             'license_expiry_date'    => 'nullable|date',

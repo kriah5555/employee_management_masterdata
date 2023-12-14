@@ -11,7 +11,6 @@ use Carbon\Carbon;
 class DashboardAccessService
 {
     protected $locations=[];
-    
     public function getDashboardAccess($request)
     {
         try{
@@ -23,7 +22,6 @@ class DashboardAccessService
             } else if($dashboardAccessData->pluck('type')->first() == config('constants.LOCATIONS')) {
                 $this->locations= Location::where('id',$dashboardAccessData->pluck('location_id'))->get();
             }
-
             if ($this->locations->count() > 0) {
                 return $this->generateQrCodeWithLocations();
             }
