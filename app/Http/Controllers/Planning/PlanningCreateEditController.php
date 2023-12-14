@@ -7,6 +7,7 @@ use App\Http\Requests\Planning\StorePlanningRequest;
 use App\Http\Requests\Planning\UpdatePlanningRequest;
 use App\Models\Planning\PlanningBase as Planning;
 use App\Services\Planning\PlanningCreateEditService;
+use App\Services\Planning\PlanningService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use Exception;
@@ -14,8 +15,10 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class PlanningCreateEditController extends Controller
 {
-    public function __construct(protected PlanningCreateEditService $planningCreateEditService)
-    {
+    public function __construct(
+        protected PlanningCreateEditService $planningCreateEditService,
+        protected PlanningService $planningService
+    ) {
     }
 
     /**
@@ -130,8 +133,28 @@ class PlanningCreateEditController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Planning $planning)
+    public function destroy($plan_id)
     {
-        //
+        try {
+            $planning = $this->planningService->getPlanningById($plan_id);
+            $this->planningCreateEditService->deletePlan($planning);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => "Plan deleted",
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                    'file'    => $e->getFile(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

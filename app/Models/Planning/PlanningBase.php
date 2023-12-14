@@ -2,6 +2,7 @@
 
 namespace App\Models\Planning;
 
+use App\Models\EmployeeType\EmployeeType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\{Workstation, Location};
 use App\Models\Company\Employee\EmployeeProfile;
@@ -23,6 +24,7 @@ class PlanningBase extends BaseModel
      */
     protected $table = 'planning_base';
 
+    protected static $sort = ['start_date_time', 'end_date_time'];
     /**
      * The primary key associated with the table.
      *
@@ -80,6 +82,10 @@ class PlanningBase extends BaseModel
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
+    }
+    public function employeeType()
+    {
+        return $this->belongsTo(EmployeeType::class, 'employee_type_id');
     }
 
     /**

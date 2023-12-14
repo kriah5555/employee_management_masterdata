@@ -9,6 +9,7 @@ use App\Services\Employee\EmployeeService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\ModelDeleteFailedException;
 
 class PlanningCreateEditService implements PlanningCreateEditInterface
 {
@@ -112,5 +113,15 @@ class PlanningCreateEditService implements PlanningCreateEditInterface
                     });
                 }
             })->exists();
+    }
+
+    public function deletePlan(PlanningBase $planning)
+    {
+        if ($planning->delete()) {
+            return true;
+        } else {
+            throw new ModelDeleteFailedException('Failed to delete planning');
+        }
+
     }
 }

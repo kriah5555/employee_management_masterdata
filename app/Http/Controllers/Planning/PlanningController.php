@@ -10,6 +10,8 @@ use App\Services\Planning\PlanningService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Planning\GetWeeklyPlanningRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 
 class PlanningController extends Controller
@@ -55,6 +57,46 @@ class PlanningController extends Controller
     public function getMonthlyPlanning(Request $request)
     {
         try {
+            $rules = [
+                'location'         => [
+                    'required',
+                    'integer',
+                    Rule::exists('locations', 'id'),
+                ],
+                'workstations'     => 'array',
+                'workstations.*'   => [
+                    'required',
+                    'integer',
+                    Rule::exists('workstations', 'id'),
+                ],
+                'employee_types'   => 'array',
+                'employee_types.*' => [
+                    'required',
+                    'integer',
+                    Rule::exists('employee_types', 'id'),
+                ],
+                'year'             => 'required|digits:4',
+            ];
+
+            $customMessages = [
+                'employee_id.required'    => 'Please select employee',
+                'employee_id.integer'     => 'Employee ID must be an integer.',
+                'date.integer'            => 'Date required.',
+                'year.digits'             => 'Incorrect year format.',
+                'workstations.*.exists'   => 'Invalid workstation selected',
+                'employee_types.*.exists' => 'Invalid employee type selected'
+            ];
+
+            $validator = Validator::make(request()->all(), $rules, $customMessages);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
             $input = $request->only(['location', 'workstations', 'employee_types', 'year']);
             $data = $this->planningService->getMonthlyPlanningService($input['year'], $input['location'], $input['workstations'], $input['employee_types']);
 
