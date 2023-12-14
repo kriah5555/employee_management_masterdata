@@ -190,17 +190,17 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('planning_base');
-        Schema::dropIfExists('event_details');
-        Schema::dropIfExists('event_department_details');
-        Schema::dropIfExists('event_employee_details');
-        Schema::dropIfExists('vacancies');
-        Schema::dropIfExists('vacancy_post_employee');
-        Schema::dropIfExists('time_registration');
-        Schema::dropIfExists('overtime');
-        Schema::dropIfExists('planning_break');
-        Schema::dropIfExists('planning_contracts');
-        Schema::dropIfExists('longterm_planning');
         Schema::dropIfExists('longterm_planning_timings');
+        Schema::dropIfExists('longterm_planning');
+        Schema::dropIfExists('planning_contracts');
+        Schema::dropIfExists('planning_break');
+        Schema::dropIfExists('overtime');
+        Schema::dropIfExists('time_registration');
+        Schema::dropIfExists('vacancy_post_employee');
+        Schema::dropIfExists('vacancies');
+        Schema::dropIfExists('event_employee_details');
+        Schema::dropIfExists('event_department_details');
+        Schema::dropIfExists('event_details');
+        Schema::dropIfExists('planning_base');
     }
 };
