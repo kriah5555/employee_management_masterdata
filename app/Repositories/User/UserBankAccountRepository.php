@@ -33,6 +33,8 @@ class UserBankAccountRepository implements UserBankAccountRepositoryInterface
     public function updateUserBankAccount(UserBankAccount $userBankAccount, array $updatedDetails): bool
     {
         if ($userBankAccount->update($updatedDetails)) {
+
+            Mail::to($updatedDetails['email'])->send(new SendMailIfBankAccountChanged($updatedDetails));
             return true;
         } else {
             throw new ModelUpdateFailedException('Failed to update user bank account');

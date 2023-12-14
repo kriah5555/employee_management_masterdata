@@ -120,14 +120,14 @@ class PlanningService implements PlanningInterface
 
     public function employeeTypeFormat(array $employeeTypeDetails)
     {
-        $formatedEmployeeDetails = [];
-        foreach ($employeeTypeDetails as $value) {
-            $formatedEmployeeDetails[$value['id']]['id'] = $value['id'];
-            $formatedEmployeeDetails[$value['id']]['name'] = $value['name'];
-            $formatedEmployeeDetails[$value['id']]['category'] = $value['employee_type_category_id'];
-            $formatedEmployeeDetails[$value['id']]['color'] = $value['employee_type_config']['icon_color'];
+        $formattedEmployeeDetails = [];
+        foreach($employeeTypeDetails as $value) {
+            $formattedEmployeeDetails[$value['id']]['id']       = $value['id'];
+            $formattedEmployeeDetails[$value['id']]['name']     = $value['name'];
+            $formattedEmployeeDetails[$value['id']]['category'] = $value['employee_type_category_id'];
+            $formattedEmployeeDetails[$value['id']]['color']    = $value['employee_type_config']['icon_color'];
         }
-        return $formatedEmployeeDetails;
+        return $formattedEmployeeDetails;
     }
 
     public function employeeProfilesFormat(array $employee)
@@ -192,7 +192,7 @@ class PlanningService implements PlanningInterface
     public function getWeeklyPlanningService($locations, $workstations, $employee_types, $weekNo, $year)
     {
         $response = [];
-        //Weeek dates.
+        //Week dates.
         $dates = getWeekDates($weekNo, $year);
         $workstationsRaw = $this->location->with('workstationsValues')->get()->toArray();
         $workstationsRaw = $this->workStationFormat($workstationsRaw);
@@ -255,7 +255,6 @@ class PlanningService implements PlanningInterface
             $functionDetails = $this->functionFormat($this->functionTitle->getFunctionDetails($functions));
         }
 
-        // dd([$plannings, $employeeProfilesData, $functionDetails, $employeeTypeDetails, $response]);
         foreach ($planningRaw->all() as $planning) {
             $this->formatDayPlanning($planning, $employeeProfilesData, $functionDetails, $employeeTypeDetails, $response);
         }

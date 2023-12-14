@@ -38,5 +38,5 @@ return [
         'Access all companies',
         'Access company',
     ],
-    
+
 ];

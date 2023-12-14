@@ -58,12 +58,11 @@ class DashboardAccessController extends Controller
 
     public function store(DashboardAccessRequest $request)
     {
-        // return $request;
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Access created successfully'),
+                    'message' => t('Dashboard Access created successfully'),
                     'data'    => $this->dashboardService->createDashboardAccess($request->all())
                 ],
                 JsonResponse::HTTP_CREATED,
@@ -84,7 +83,6 @@ class DashboardAccessController extends Controller
      */
     public function show(Request $dashboardAccess)
     {
-        return "jjjjj";
     }
 
     /**
@@ -111,7 +109,7 @@ class DashboardAccessController extends Controller
         $this->dashboardService->deleteDashboardAccess($unique_key);
         return response()->json([
             'success' => true,
-            'message' => t('Location deleted successfully')
+            'message' => t('Dashboard Access deleted successfully')
         ]);
     }
 }

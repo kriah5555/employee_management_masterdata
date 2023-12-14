@@ -80,12 +80,12 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
         app(UserService::class)->updateUserDetails($responsible_person, $responsible_person_details);
 
         $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $responsible_person_id])->get()->first();
-        
+
         if (!$company_user->hasRole($responsible_person_details['role'])) { # check if the roles are same else update the role
             $company_user->roles()->detach();
             $company_user->assignRole($responsible_person_details['role']);
         }
-        
+
         return $responsible_person;
     }
 }

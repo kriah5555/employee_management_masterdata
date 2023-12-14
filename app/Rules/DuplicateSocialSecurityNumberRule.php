@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Services\Employee\EmployeeService;
 
-class SocialSecurityNumberRule implements ValidationRule
+class DuplicateSocialSecurityNumberRule implements ValidationRule
 {
     protected $employeeService;
 

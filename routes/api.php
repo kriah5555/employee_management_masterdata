@@ -73,6 +73,7 @@ use App\Http\Controllers\{
 
     500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
+
 $integerRule = '[0-9]+'; # allow only integer values
 $statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
@@ -173,7 +174,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('/translations', 'store');
 
         Route::post('/translate', 'getStringTranslation');
-
     });
 
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
@@ -201,7 +201,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::controller(ReasonController::class)->group(function () {
 
         Route::get('reasons-list/{category?}', 'getReasonsList');
-
     });
 
     Route::controller(SocialSecretaryController::class)->group(function () use ($integerRule) {

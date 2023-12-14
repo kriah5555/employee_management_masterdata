@@ -24,7 +24,6 @@ class Company extends BaseModel
         'sender_number',
         'vat_number',
         'social_secretary_id',
-        'interim_agency_id',
         'oauth_key',
         'username',
         'email',

@@ -10,7 +10,7 @@ return [
 
     'HOLIDAY_ICON_TYPE_OPTIONS'         => [1 => 'Illness', 2 => 'Holiday', 3 => 'Unemployed', 4 => 'Others'],
 
-    'YES_OR_NO_OPTIONs'                 => [0 => 'No', 1 => 'Yes'],
+    'YES_OR_NO_OPTIONS'                 => [0 => 'No', 1 => 'Yes'],
 
     'HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS' => [1 => 'Servant', 2 => 'Worker'],
 
@@ -22,6 +22,8 @@ return [
 
     'HOLIDAY'        => 1,
     'LEAVE'          => 2,
+    'HOURS'          => 1,
+    'DAYS'           => 2,
 
     // absence status
 
@@ -59,7 +61,8 @@ return [
         3 => 'Multiple codes',
         4 => 'Multiple codes first half',
         5 => 'Multiple codes second half',
-        6 => 'First and second half', # will have two holiday codes
-        7 => 'Multiple dates', # will have two holiday codes
+        6 => 'First and second half', 
+        7 => 'Multiple dates',
+        8 => 'Full day', 
     ],
 ];

@@ -60,7 +60,7 @@ return [
         'plan_reminder'                   => 'Plan reminder Mail',
         'new_employee_creation_mail'      => 'New employee creation mail',
         'existing_employee_creation_mail' => 'Existing employee creation mail',
-        'Employee_account_update_mail'    => 'Employee account number update'
+        'employee_account_update_mail'    => 'Employee account number update'
     ],
 
     'MONTHLY_SALARY'               => 1,
@@ -78,5 +78,15 @@ return [
         'OPEN_SHIFT_PLANNING'       => 6,
         'EVENT_PLANNING'            => 7,
         'MONTHLY_OVERVIEW_PLANNING' => 8,
-    ]
+    ],
+
+    'RSZ_NUMBER_VALIDATION' => 'digits_between:1,11',
+
+    'DASHBOARD_ACCESS_OPTIONS' => [
+        1 => 'Company',
+        2 => 'Location',
+    ],
+
+    'COMPANY'          => 1,
+    'LOCATIONS'        => 2,
 ];

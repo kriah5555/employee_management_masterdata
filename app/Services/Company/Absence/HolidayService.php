@@ -42,7 +42,7 @@ class HolidayService
             $holiday = $this->holiday_repository->createHoliday($details);
 
             $holiday = $this->absence_service->createAbsenceRelatedData($holiday, $holiday_hours, $dates_data);
-            
+
             return $holiday;
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -99,7 +99,7 @@ class HolidayService
                 $holiday = $this->absence_service->createAbsenceRelatedData($holiday, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
 
             DB::connection('tenant')->commit();
-            
+
             return $holiday;
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
@@ -129,7 +129,7 @@ class HolidayService
             return $holiday;
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
-            error_log($e->getMessage());    
+            error_log($e->getMessage());
             throw $e;
         }
     }
@@ -155,7 +155,6 @@ class HolidayService
     // {
     //     return getValueLabelOptionsFromConfig('absence.DURATION_TYPE');
     // }
-    
     // public function getOptionsToCreate()
     // {
     //     try {

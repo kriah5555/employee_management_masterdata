@@ -23,7 +23,7 @@ class HolidayRequest extends ApiRequest
     {
         $companyId = getCompanyId();
 
-        $absence_id = request()->route('holiday');
+        $absence_id = request()->route('leave');
         return [
             'duration_type' => [
                 'bail',
@@ -54,7 +54,6 @@ class HolidayRequest extends ApiRequest
                 'required',
                 'array',
                 new HolidayCodeDurationTypeRule(request()->input('duration_type'), $companyId, $absence_id),
-                new EmployeeHolidayBalanceRule(request()->input('employee_profile_id'), request()->input('duration_type'), $absence_id)
             ],
         ];
     }
