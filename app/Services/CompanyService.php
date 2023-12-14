@@ -48,6 +48,7 @@ class CompanyService
             DB::connection('master')->commit();
             $tenant = $this->createTenant($company);
             setTenantDB($tenant->id);
+
             DB::connection('tenant')->beginTransaction();
             foreach ($values['responsible_persons'] as $responsiblePerson) {
                 $employee_service = app(EmployeeService::class);
@@ -57,7 +58,7 @@ class CompanyService
             $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();
             return $company;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::connection('master')->rollback();
             error_log($e->getMessage());
             throw $e;
@@ -86,7 +87,7 @@ class CompanyService
     public function createTenant($company)
     {
         $database_name = 'tenant_' . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $company->company_name) . '_' . $company->id);
-
+        makeTenantFolderPath($database_name);
         return Tenant::create([
             'tenancy_db_name' => $database_name,
             'database_name'   => $database_name,
@@ -200,7 +201,7 @@ class CompanyService
                 'key'  => $employeeType->employeeTypeCategory->id,
                 'name' => $employeeType->employeeTypeCategory->name
             ];
-            $employeeTypeOptions[$employeeType->employeeTypeCategory->id][] = [
+            $employeeTypeOptions[$employeeType->employeeTypeCategory->id][$employeeType->id] = [
                 'key'  => $employeeType->id,
                 'name' => $employeeType->name
             ];
@@ -210,9 +211,17 @@ class CompanyService
                 'employment_types'   => $employeeType->employeeTypeCategory->employment_types,
             ];
         }
+        $employeeTypes = [];
+        foreach ($employeeTypeOptions as $key => $value) {
+            usort($value, function ($a, $b) {
+                return strcmp($a['name'], $b['name']);
+            });
+            $employeeTypes[$key] = array_values($value);
+        }
+        ksort($employeeTypeCategoryOptions);
         return [
             'employee_type_categories'      => array_values($employeeTypeCategoryOptions),
-            'employee_types'                => $employeeTypeOptions,
+            'employee_types'                => $employeeTypes,
             'employee_type_category_config' => $employeeTypeCategoryConfig
         ];
     }

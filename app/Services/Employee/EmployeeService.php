@@ -150,18 +150,18 @@ class EmployeeService
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
-                $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
-                if ($existingEmpProfile->isEmpty()) {
-                    $user = $this->userService->createNewUser($values);
-                } else {
-                    $user = $existingEmpProfile->last();
-                }
-                $user->assignRole('employee');
-                $this->createCompanyUser($user, $company_id, 'employee');
-                $employeeProfile = $this->createEmployeeProfile($user, $values);
-                $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-                $this->createEmployeeContract($employeeProfile, $values);
-                $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+            if ($existingEmpProfile->isEmpty()) {
+                $user = $this->userService->createNewUser($values);
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+            $user->assignRole('employee');
+            $this->createCompanyUser($user, $company_id, 'employee');
+            $employeeProfile = $this->createEmployeeProfile($user, $values);
+            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+            $this->createEmployeeContract($employeeProfile, $values);
+            //$this->mailService->sendEmployeeCreationMail($employeeProfile->id);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $employeeProfile;
@@ -178,16 +178,16 @@ class EmployeeService
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
-                $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
-                if ($existingEmpProfile->isEmpty()) {
-                    $user = $this->userService->createNewUser($values);
-                } else {
-                    $user = $existingEmpProfile->last();
-                }
-                $user->assignRole($values['role']);
-                $this->createCompanyUser($user, $company_id, $values['role']);
-                $employeeProfile = $this->createEmployeeProfile($user, $values);
-                $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+            if ($existingEmpProfile->isEmpty()) {
+                $user = $this->userService->createNewUser($values);
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+            $user->assignRole($values['role']);
+            $this->createCompanyUser($user, $company_id, $values['role']);
+            $employeeProfile = $this->createEmployeeProfile($user, $values);
+            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $user;
@@ -205,7 +205,7 @@ class EmployeeService
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
 
-                $existingEmpProfile = $this->userService->getUserById($values['user_id']);
+            $existingEmpProfile = $this->userService->getUserById($values['user_id']);
 
             if ($existingEmpProfile) {
                 $user = $this->userService->updateUser($values);
@@ -364,7 +364,7 @@ class EmployeeService
 
             return [
                 'minimumSalary' => formatToEuropeCurrency($minimumSalary),
-                'salary' => ucwords(str_replace("_", " ", $return_salary_type)),
+                'salary'        => ucwords(str_replace("_", " ", $return_salary_type)),
                 'salary_type'   => [
                     'value' => $salary_type,
                     'label' => $salary_type ? config('constants.SALARY_TYPES')[$salary_type] : null,
@@ -461,5 +461,94 @@ class EmployeeService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function getUserDetails()
+    {
+        try {
+            $userID = Auth::guard('web')->user()->id;
+            return $this->userService->getUserDetails($userID);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getEmployeeDetailsPlanning(array $employeeProfileId)
+    {
+        return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
+            'user',
+            'user.userBasicDetails',
+            'user.userContactDetails',
+            'user.userFamilyDetails',
+            'user.userBankAccount',
+            'employeeSocialSecretaryDetails'
+        ]);
+    }
+
+
+    public function getActiveContractEmployeesByWeek($weekNumber, $year)
+    {
+        $weekDates = getWeekDates($weekNumber, $year);
+        $startDateOfWeek = reset($weekDates);
+        $endDateOfWeek = end($weekDates);
+
+        $contracts = EmployeeContract::with('employeeProfile.user.userBasicDetails')->where(function ($query) use ($startDateOfWeek, $endDateOfWeek) {
+            $query->where(function ($query) use ($startDateOfWeek) {
+                $query->where('start_date', '<', $startDateOfWeek)
+                    ->where(function ($query) use ($startDateOfWeek) {
+                        $query->where('end_date', '>', $startDateOfWeek)
+                            ->orWhereNull('end_date');
+                    });
+            })->orWhere(function ($query) use ($endDateOfWeek) {
+                $query->where('start_date', '<', $endDateOfWeek)
+                    ->where(function ($query) use ($endDateOfWeek) {
+                        $query->where('end_date', '>', $endDateOfWeek)
+                            ->orWhereNull('end_date');
+                    });
+            });
+        })->get();
+
+        $activeEmployees = [];
+        foreach ($contracts as $contract) {
+            $activeEmployees[] = [
+                'value' => $contract->employeeProfile->id,
+                'label' => $contract->employeeProfile->user->userBasicDetails->first_name . ' ' . $contract->employeeProfile->user->userBasicDetails->last_name
+            ];
+        }
+        usort($activeEmployees, function ($a, $b) {
+            return strcmp($a['label'], $b['label']);
+        });
+        return $activeEmployees;
+    }
+
+    public function getEmployeeActiveTypesByDate($employeeId, $date)
+    {
+        $activeContracts = EmployeeContract::with(['employeeType', 'employeeFunctionDetails.functionTitle'])->where('employee_profile_id', $employeeId)->where(function ($query) use ($date) {
+            $query->where(function ($query) use ($date) {
+                $query->where('start_date', '<', $date)
+                    ->where(function ($query) use ($date) {
+                        $query->where('end_date', '>', $date)
+                            ->orWhereNull('end_date');
+                    });
+            });
+        })->get();
+        $activeTypes = [];
+        foreach ($activeContracts as $activeContract) {
+            $activeTypes[] = [
+                'value' => $activeContract->employeeType->id,
+                'label' => $activeContract->employeeType->name,
+            ];
+            foreach ($activeContract->employeeFunctionDetails as $employeeFunctionDetails) {
+                $activeFunctions[$activeContract->employeeType->id][] = [
+                    'value' => $employeeFunctionDetails->functionTitle->id,
+                    'label' => $employeeFunctionDetails->functionTitle->name
+                ];
+            }
+        }
+        return [
+            'employee_types' => $activeTypes,
+            'functions'      => $activeFunctions,
+        ];
     }
 }

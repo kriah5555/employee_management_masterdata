@@ -3,6 +3,7 @@
 namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
+use App\Models\EmployeeFunction\FunctionTitle;
 use App\Traits\UserAudit;
 
 class EmployeeFunctionDetails extends BaseModel
@@ -54,4 +55,12 @@ class EmployeeFunctionDetails extends BaseModel
         'function_id',
         'salary_id'
     ];
+    public function employeeContract()
+    {
+        return $this->belongsTo(EmployeeContract::class);
+    }
+    public function functionTitle()
+    {
+        return $this->belongsTo(FunctionTitle::class, 'function_id');
+    }
 }

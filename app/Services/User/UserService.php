@@ -130,22 +130,24 @@ class UserService
 
     public function updateUserBankAccount(User $user, $values)
     {
+        $existingAccountNumber = '';
         $values['user_id'] = $user->id;
-        $UserBankObject = $user->userBankDetails($user->id)->get()->first();
+        $UserBankObject = $user->userBankAccount;
 
+        // if ($UserBankObject)
         $newAccountNumber = $values['account_number'];
-
-        $existingAccountNumber = UserBankAccount::where('user_id', $values['user_id'])
-       ->pluck('account_number')
-       ->first();
-
-        $details =  $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
+        if(is_null($UserBankObject)) {
+            $UserBankObject = $this->createUserBankAccount($user, $values);
+        } else {
+            $existingAccountNumber = $UserBankObject->account_number;
+            $details =  $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
+        }
 
         if ($newAccountNumber != $existingAccountNumber) {
             $this->mailService->sendEmployeeAccountUpdateMail($values);
         }
 
-        return $details;
+
     }
 
     public function updateUserBasicDetails(User $user, $values)
@@ -153,7 +155,11 @@ class UserService
         $values['user_id'] = $user->id;
         $values['date_of_birth'] = date('Y-m-d', strtotime($values['date_of_birth']));
         $userDetailsObject = $user->userBasicDetailsById($user->id)->get()->first();
+        if(is_null($userDetailsObject)) {
+            $userBasicDetails = $this->createUserBasicDetails($user, $values);
+        }else {
         return $this->userBasicDetailsRepository->updateUserBasicDetails($userDetailsObject, $values);
+        }
     }
 
 
@@ -163,17 +169,24 @@ class UserService
 
         $userAddressObject = $user->userAddressById($user->id)->get()->first();
 
+        if(is_null($userAddressObject)) {
+            $userAddress = $this->createUserAddress($user, $values);
+        }else {
         return $this->userAddressRepository->updateUserAddress($userAddressObject, $values);
-    }
+    }}
 
     public function updateContactDetails(User $user, $values)
     {
         $values['user_id'] = $user->id;
 
         $userContactObject = $user->userContactById($user->id)->get()->first();
+        if(is_null($userContactObject)) {
+            $userAddress = $this->createUserContactDetails($user, $values);
+        }else {
 
         return $this->userContactDetailsRepository->updateUserContactDetails($userContactObject, $values);
     }
+}
 
     public function updateUser($values)
     {
@@ -211,4 +224,35 @@ class UserService
         $this->userFamilyDetailsRepository->updateUserFamilyDetails($user->userFamilyDetails, $values);
         $this->userBankAccountRepository->updateUserBankAccount($user->userBankAccount, $values);
     }
+
+    public function getUserDetails($userID)
+    {
+        $user = User::find($userID);
+
+        if (!$user) {
+            return ['error' => 'User not found'];
+        }
+
+        $userBasicDetails = $user->userBasicDetailsById($user->id)->get()->first();
+        $userAddressDetails = $user->userAddressById($user->id)->get()->first();
+        $userContactDetails = $user->userContactById($user->id)->get()->first();
+        $userBankAccountDetails = $user->userBankDetails($user->id)->get()->first();
+
+        // Check if each detail is not null before calling toApiReponseFormat()
+        $userBasicDetails = $userBasicDetails ? $userBasicDetails->toApiReponseFormat() : null;
+        $userAddressDetails = $userAddressDetails ? $userAddressDetails->toApiReponseFormat() : null;
+        $userContactDetails = $userContactDetails ? $userContactDetails->toApiReponseFormat() : null;
+        $userBankAccountDetails = $userBankAccountDetails ? $userBankAccountDetails->toApiReponseFormat() : null;
+
+        return array_merge(
+            $user->toArray(),
+            $userBasicDetails ?: [],
+            $userAddressDetails ?: [],
+            $userContactDetails ?: [],
+            $userBankAccountDetails ?: []
+        );
+    }
+
+
+
 }

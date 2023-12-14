@@ -7,6 +7,7 @@ use App\Traits\UserAudit;
 use App\Models\User\User;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Absence\Absence;
+
 class EmployeeProfile extends BaseModel
 {
     use UserAudit;

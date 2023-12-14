@@ -105,6 +105,28 @@ class EmployeeController extends Controller
         }
     }
 
+    public function getUserDetails()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getUserDetails(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+
     /**
      * Update the existing employeee type.
      */
@@ -362,6 +384,31 @@ class EmployeeController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    /**
+     * API to get list of all employee types.
+     */
+    public function getActiveContractEmployees(Request $request)
+    {
+        $weekNumber = $request->input('week_number');
+        $year = $request->input('year');
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getActiveContractEmployeesByWeek($weekNumber, $year)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }
