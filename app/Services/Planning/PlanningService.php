@@ -171,13 +171,13 @@ class PlanningService implements PlanningInterface
             }
             $planTimings = date('H:i', strtotime($plan['start_time'])) . ' ' . date('H:i', strtotime($plan['end_time']));
 
-            if (!isset($response[$plan['workstation_id']]['employee'][$profile][$planDate])) {
-                $response[$plan['workstation_id']]['employee'][$profile][$planDate]['planning_time'] = [];
-                $response[$plan['workstation_id']]['employee'][$profile][$planDate]['contract_hours'] = 0;
-                $response[$plan['workstation_id']]['employee'][$profile][$planDate]['cost'] = 0;
+            if (!isset($response[$plan['workstation_id']]['employee'][$profile]['plans'][$planDate])) {
+                $response[$plan['workstation_id']]['employee'][$profile]['plans'][$planDate]['planning_time'] = [];
+                $response[$plan['workstation_id']]['employee'][$profile]['plans'][$planDate]['contract_hours'] = 0;
+                $response[$plan['workstation_id']]['employee'][$profile]['plans'][$planDate]['cost'] = 0;
             }
-            $response[$plan['workstation_id']]['employee'][$profile][$planDate]['planning_time'][] = $planTimings;
-            $response[$plan['workstation_id']]['employee'][$profile][$planDate]['contract_hours'] += $plan['contract_hours'];
+            $response[$plan['workstation_id']]['employee'][$profile]['plans'][$planDate]['planning_time'][] = $planTimings;
+            $response[$plan['workstation_id']]['employee'][$profile]['plans'][$planDate]['contract_hours'] += $plan['contract_hours'];
             $response[$plan['workstation_id']]['employee'][$profile]['total']['contract_hours'] += $plan['contract_hours'];
         }
 
