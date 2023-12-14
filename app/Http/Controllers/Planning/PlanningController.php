@@ -55,8 +55,8 @@ class PlanningController extends Controller
     public function getMonthlyPlanning(Request $request)
     {
         try {
-            $input = $request->only(['locations', 'workstations', 'employee_types', 'year']);
-            $data = $this->planningService->getMonthlyPlanningService($input['year'], $input['locations'], $input['workstations'], $input['employee_types']);
+            $input = $request->only(['location', 'workstations', 'employee_types', 'year']);
+            $data = $this->planningService->getMonthlyPlanningService($input['year'], $input['location'], $input['workstations'], $input['employee_types']);
 
             return returnResponse(
                 [
