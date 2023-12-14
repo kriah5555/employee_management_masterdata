@@ -1,0 +1,176 @@
+<?php
+
+namespace App\Services\Employee;
+
+use App\Models\Company\Employee\EmployeeContract;
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Models\Company\Employee\LongTermEmployeeContract;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\User\CompanyUser;
+use App\Models\EmployeeFunction\FunctionTitle;
+use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
+use App\Services\CompanyService;
+use App\Services\User\UserService;
+use Illuminate\Support\Facades\DB;
+use Exception;
+use App\Repositories\Employee\EmployeeProfileRepository;
+use App\Models\User\User;
+use App\Services\EmployeeType\EmployeeTypeService;
+use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\Employee\EmployeeContractRepository;
+use App\Models\Company\Employee\EmployeeSalaryDetails;
+class EmployeeContractService
+{
+
+    public function __construct(
+        protected EmployeeProfileRepository $employeeProfileRepository,
+        protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
+        protected EmployeeContractRepository $employeeContractRepository,
+        protected EmployeeSalaryDetails $employeeSalaryDetails,
+    ) {
+    }
+
+    public function getEmployeeContracts($employee_id)
+    {
+        $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employee_id);
+        $employeeContracts = [
+            'active_contracts'  => [],
+            'expired_contracts' => []
+        ];
+        foreach ($employeeProfile->employeeContracts as $employeeContract) {
+            $employeeContract->employeeType;
+            $employeeContract->longTermEmployeeContract;
+            $contractDetails = $this->formatEmployeeContract($employeeContract);
+
+            if ($employeeContract->end_date == null || strtotime($employeeContract->end_date) > strtotime(date('Y-m-d'))) {
+                $employeeContracts['active_contracts'][] = $contractDetails;
+            } else {
+                $employeeContracts['expired_contracts'][] = $contractDetails;
+            }
+        }
+        return $employeeContracts;
+    }
+
+    public function formatEmployeeContract($employeeContract)
+    {
+        $contractDetails = [
+            'id'                        => $employeeContract->id,
+            'start_date'                => $employeeContract->start_date,
+            'end_date'                  => $employeeContract->end_date,
+            'employee_type'             => $employeeContract->employeeType->name,
+            'long_term'                 => false,
+            'employee_function_details' => [],
+        ];
+        if ($employeeContract->longTermEmployeeContract()->exists()) {
+            $contractDetails['long_term']                       = true;
+            $longTermEmployeeContract                           = $employeeContract->longTermEmployeeContract;
+            $contractDetails['sub_type']                        = config('constants.SUB_TYPE_OPTIONS')[$longTermEmployeeContract->sub_type];
+            $contractDetails['schedule_type']                   = config('constants.SCHEDULE_TYPE_OPTIONS')[$longTermEmployeeContract->schedule_type];
+            $contractDetails['employment_type']                 = config('constants.EMPLOYMENT_TYPE_OPTIONS')[$longTermEmployeeContract->employment_type];
+            $contractDetails['weekly_contract_hours']           = $longTermEmployeeContract->weekly_contract_hours;
+            $contractDetails['formatted_weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
+            $contractDetails['work_days_per_week']              = $longTermEmployeeContract->work_days_per_week;
+        }
+        foreach ($employeeContract->employeeFunctionDetails as $function) {
+            $contractDetails['employee_function_details'][] = [
+                'function_details_id' => $function->id,
+                'function_title'      => $function->functionTitle->name,
+                'function_title_id'   => $function->functionTitle->id,
+                'salary'              => $function->salary->salary,
+                'salary_european'     => $function->salary->salary_european,
+            ];
+        }   
+        return $contractDetails;
+    }
+
+    public function createEmployeeContract($values, $employee_profile_id = '')
+    {
+
+        try {
+            DB::connection('tenant')->beginTransaction();
+                $contractDetails                        = $values['employee_contract_details'];
+                $employee_profile_id                    = !empty($employee_profile_id) ? $employee_profile_id : $values['employee_profile_id'];
+                $contractDetails['employee_profile_id'] = $employee_profile_id;
+                $employeeType                           = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+                $employeeContract                       = $this->employeeContractRepository->createEmployeeContract($contractDetails);
+                if ($employeeType->employeeTypeCategory->id == config('constants.LONG_TERM_CONTRACT_ID')) {
+                    $employeeContract->longTermEmployeeContract()->create($contractDetails);
+                }
+
+                $employeeFunctionDetailsData = $values['employee_function_details'];
+
+                foreach ($employeeFunctionDetailsData as $function_details) {
+                    $function_details['employee_profile_id'] = $employee_profile_id;
+                    $function_details['salary_id']           = $this->employeeSalaryDetails::create($function_details)->id;
+                    $employeeContract->employeeFunctionDetails()->create($function_details);
+                }
+
+            DB::connection('tenant')->commit();
+            return $employeeContract;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateEmployeeContract($values, $employee_contract_id)
+    {
+
+        try {
+            DB::connection('tenant')->beginTransaction();
+                $contractDetails     = $values['employee_contract_details'];
+                $employeeType        = EmployeeType::findOrFail($contractDetails['employee_type_id']);
+                $employeeContract    = $this->employeeContractRepository->getEmployeeContractById($employee_contract_id);
+                $employee_profile_id = $employeeContract->employee_profile_id;
+                if ($employeeType->employeeTypeCategory->id == config('constants.LONG_TERM_CONTRACT_ID')) {
+                    $employeeContract->load('longTermEmployeeContract'); // Load the relationship
+
+                    $employeeContract->longTermEmployeeContract()->updateOrCreate(
+                        ['id' => optional($employeeContract->longTermEmployeeContract)->id],
+                        $contractDetails
+                    );
+                } else {
+                    $employeeContract->longTermEmployeeContract()->delete();
+                }
+                
+                $employeeContract->employeeFunctionDetails()->delete();
+
+                // Delete all associated EmployeeSalaryDetails records
+                $employeeContract->employeeFunctionDetails()->each(function ($functionDetail) {
+                    $functionDetail->salary()->delete();
+                });
+
+                $employeeFunctionDetailsData = $values['employee_function_details'];
+
+                foreach ($employeeFunctionDetailsData as $function_details) {
+                    $function_details['employee_profile_id'] = $employee_profile_id;
+                    $function_details['salary_id']           = $this->employeeSalaryDetails::create($function_details)->id;
+                    $employeeContract->employeeFunctionDetails()->create($function_details);
+                }
+
+            DB::connection('tenant')->commit();
+            return $employeeContract;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function deleteEmployeeContract($employee_contract_id)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+                $this->employeeContractRepository->deleteEmployeeContract($employee_contract_id);
+            DB::connection('tenant')->commit();
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+}

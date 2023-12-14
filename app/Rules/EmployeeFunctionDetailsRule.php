@@ -12,10 +12,10 @@ class EmployeeFunctionDetailsRule implements ValidationRule
     protected $employeeTypeService;
 
     protected $functionService;
-    public function __construct(EmployeeTypeService $employeeTypeService, FunctionService $functionService)
+    public function __construct()
     {
-        $this->employeeTypeService = $employeeTypeService;
-        $this->functionService = $functionService;
+        $this->employeeTypeService = app(EmployeeTypeService::class);
+        $this->functionService     = app(FunctionService::class);
     }
     /**
      * Run the validation rule.

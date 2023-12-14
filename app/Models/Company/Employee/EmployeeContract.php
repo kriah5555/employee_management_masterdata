@@ -3,8 +3,9 @@
 namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
-use App\Models\EmployeeType\EmployeeType;
 use App\Traits\UserAudit;
+use Illuminate\Support\Carbon;
+use App\Models\EmployeeType\EmployeeType;
 use App\Models\Company\Employee\LongTermEmployeeContract;
 
 class EmployeeContract extends BaseModel
@@ -61,6 +62,7 @@ class EmployeeContract extends BaseModel
         'start_date',
         'end_date'
     ];
+    
     protected $apiValues = [
         'employee_profile_id',
         'employee_type_id',
@@ -73,16 +75,29 @@ class EmployeeContract extends BaseModel
     {
         return $this->belongsTo(EmployeeType::class);
     }
+
     public function longTermEmployeeContract()
     {
         return $this->hasOne(LongTermEmployeeContract::class);
     }
+
     public function employeeProfile()
     {
         return $this->belongsTo(EmployeeProfile::class);
     }
+    
     public function employeeFunctionDetails()
     {
         return $this->hasMany(EmployeeFunctionDetails::class);
+    }
+
+    public function getStartDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+
+    public function getEndDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
     }
 }

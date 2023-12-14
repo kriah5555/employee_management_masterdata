@@ -50,6 +50,8 @@ return [
         'monthly' => 'Monthly'
     ],
 
+    'LONG_TERM_CONTRACT_ID' => 1,
+
     'DEFAULT_DATE_FORMAT'          => 'd-m-Y',
 
     # 24 hours time format like 11:00

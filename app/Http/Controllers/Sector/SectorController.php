@@ -11,17 +11,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Services\EmployeeFunction\FunctionService;
 
 class SectorController extends Controller
 {
-    protected $sectorService;
-
-    protected $employeeTypeService;
-    public function __construct(SectorService $sectorService, EmployeeTypeService $employeeTypeService, CompanyService $companyService)
+    public function __construct(
+        protected SectorService $sectorService, 
+        protected EmployeeTypeService $employeeTypeService, 
+        protected CompanyService $companyService,
+        protected FunctionService $functionService
+        )
     {
-        $this->sectorService = $sectorService;
-        $this->employeeTypeService = $employeeTypeService;
-        $this->companyService = $companyService;
     }
     /**
      * Display a listing of the resource.
@@ -156,7 +156,7 @@ class SectorController extends Controller
                 [
                     'success' => true,
                     'data'    => [
-                        'functions' => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
+                        'functions' => $this->functionService->getCompanyFunctionTitles(getCompanyId()),
                     ]
                 ],
                 JsonResponse::HTTP_OK,

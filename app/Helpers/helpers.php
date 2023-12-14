@@ -249,6 +249,20 @@ if (!function_exists('formatToEuropeCurrency')) { # will convert number format t
     }
 }
 
+if (!function_exists('formatToEuropeHours')) { # will convert number format to europe currency format
+    function formatToEuropeHours($currency)
+    {
+        return str_replace('.', ',', $currency);
+    }
+}
+
+if (!function_exists('formatToCommonHours')) { # will convert number format to europe currency format
+    function formatToCommonHours($currency)
+    {
+        return str_replace(',', '.', $currency);
+    }
+}
+
 if (!function_exists('formatToNumber')) { # will convert europe currency format to number format
     function formatToNumber($number)
     {

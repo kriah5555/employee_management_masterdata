@@ -60,37 +60,24 @@ class FunctionService
 
     public function getCompanyFunctionTitles($company_id)
     {
-        // Retrieve the data using the existing query
-        $companyData = Company::with([
+        return Company::with([
             'sectors' => function ($query) {
-                // Filter the sectors to only include active ones
                 $query->where('status', true);
-
                 $query->with([
                     'functionCategories' => function ($query) {
-                        // Filter the function categories to only include active ones
                         $query->where('status', true);
-
-                        $query->with([
-                            'functionTitles' => function ($query) {
-                                // Filter the function titles to only include active ones
-                                $query->where('status', true);
-                            }
-                        ]);
+                        $query->with('functionTitles');
                     },
                 ]);
             },
-        ])->find($company_id);
-
-        // Extract function titles from the loaded data
-        $functionTitles = [];
-        foreach ($companyData->sectors as $sector) {
-            foreach ($sector->functionCategories as $category) {
-                $functionTitles = array_merge($functionTitles, $category->functionTitles->toArray());
-            }
-        }
-
-        return $functionTitles;
+        ])->find($company_id)
+            ->sectors
+            ->flatMap(function ($sector) {
+                return $sector->functionCategories->flatMap(function ($functionCategory) {
+                    return $functionCategory->functionTitles;
+                });
+            })
+            ->toArray();
     }
 
     public function getCompanyFunctionTitlesOptions($company_id)

@@ -19,8 +19,6 @@ class Absence extends BaseModel
 
     protected $table = 'absence';
 
-    protected $dateFormat = 'd-m-Y'; // Use 'd-m-Y' format for the date attribute
-
     protected $fillable = [
         'absence_type', # [1 => Holiday, 2 -> Leave]
         'duration_type', #  [1 => 'First half',2 => 'Second half',3 => 'Multiple codes',4 => 'Multiple codes first half',5 => 'Multiple codes half',6 => 'First and second half', # will have two holiday codes, 7 => 'Multiple dates', # will have two holiday codes],

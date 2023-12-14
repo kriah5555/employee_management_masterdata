@@ -9,9 +9,9 @@ use App\Services\EmployeeType\EmployeeTypeService;
 class EmployeeContractDetailsRule implements ValidationRule
 {
     protected $employeeTypeService;
-    public function __construct(EmployeeTypeService $employeeTypeService)
+    public function __construct()
     {
-        $this->employeeTypeService = $employeeTypeService;
+        $this->employeeTypeService = app(EmployeeTypeService::class);;
     }
     /**
      * Run the validation rule.
