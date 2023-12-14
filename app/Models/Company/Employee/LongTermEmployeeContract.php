@@ -76,8 +76,8 @@ class LongTermEmployeeContract extends BaseModel
     {
         parent::boot();
 
-        static::creating(function ($longTermEmployeeContract) {
-            $longTermEmployeeContract->weekly_contract_hours =  formatToCommonHours($longTermEmployeeContract->weekly_contract_hours);
+        static::saving(function ($longTermEmployeeContract) {
+            $longTermEmployeeContract->weekly_contract_hours = formatToCommonHours($longTermEmployeeContract->weekly_contract_hours);
         });
     }
 
