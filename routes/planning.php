@@ -49,5 +49,6 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
                 Route::POST($api['path'], $api['function']);
             }
         });
-    Route::get('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
+    Route::post('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
+    Route::post('save-plans', [PlanningCreateEditController::class, 'savePlans']);
 });

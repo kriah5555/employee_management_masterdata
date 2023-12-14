@@ -2,18 +2,17 @@
 
 namespace App\Models\Planning;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\{Workstation, Location};
 use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Planning\{PlanningBreak, PlanningContracts, PlanningDimona, TimeRegistration};
+use App\Models\BaseModel;
+use App\Traits\UserAudit;
 
 
-class PlanningBase extends Model
+class PlanningBase extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    use UserAudit;
 
     protected $connection = 'tenant';
 
@@ -55,7 +54,7 @@ class PlanningBase extends Model
      * @var array
      */
 
-     protected $fillable = [
+    protected $fillable = [
         'location_id',
         'workstation_id',
         'function_id',
@@ -145,22 +144,22 @@ class PlanningBase extends Model
             ->whereNull('deleted_at')
             ->groupBy(DB::raw('start_date_time::date'));
 
-            if (!empty($year)) {
-                $query->whereYear('start_date_time', '=', $year);
-            }
+        if (!empty($year)) {
+            $query->whereYear('start_date_time', '=', $year);
+        }
 
-            if (!empty($locations)) {
-                $query->whereIn('location_id', (array)$locations);
-            }
+        if (!empty($locations)) {
+            $query->whereIn('location_id', (array) $locations);
+        }
 
-            if (!empty($workstations)) {
-                $query->whereIn('workstation_id', (array)$workstations);
-            }
+        if (!empty($workstations)) {
+            $query->whereIn('workstation_id', (array) $workstations);
+        }
 
-            if (!empty($employee_types)) {
-                $query->whereIn('employee_type_id', $employee_types);
-            }
-            return $query->get()->toArray();
+        if (!empty($employee_types)) {
+            $query->whereIn('employee_type_id', $employee_types);
+        }
+        return $query->get()->toArray();
     }
 
     /**
@@ -175,16 +174,16 @@ class PlanningBase extends Model
      */
     public function weeklyPlanning($locations, $workstations, $employee_types, $weekNo, $year)
     {
-        $query =  $this->select(
-                [
-                    'planning_base.*', 'w.*', 'l.*', 'ep.*', 
-                    DB::raw("EXTRACT('week' FROM start_date_time) as week_number"),
-                    DB::raw("start_date_time::date as start_date"),
-                    DB::raw("start_date_time::time as start_time"),
-                    DB::raw("end_date_time::date as end_date"),
-                    DB::raw("end_date_time::time as end_time"),
-                ]
-            )
+        $query = $this->select(
+            [
+                'planning_base.*', 'w.*', 'l.*', 'ep.*',
+                DB::raw("EXTRACT('week' FROM start_date_time) as week_number"),
+                DB::raw("start_date_time::date as start_date"),
+                DB::raw("start_date_time::time as start_time"),
+                DB::raw("end_date_time::date as end_date"),
+                DB::raw("end_date_time::time as end_time"),
+            ]
+        )
             ->join('workstations as w', 'w.id', '=', 'planning_base.workstation_id')
             ->join('locations as l', 'l.id', '=', 'planning_base.location_id')
             ->join('employee_profiles as ep', 'ep.id', '=', 'planning_base.employee_profile_id');
@@ -194,11 +193,11 @@ class PlanningBase extends Model
         }
 
         if (!empty($locations)) {
-            $query->whereIn('location_id', (array)$locations);
+            $query->whereIn('location_id', (array) $locations);
         }
 
         if (!empty($workstations)) {
-            $query->whereIn('workstation_id', (array)$workstations);
+            $query->whereIn('workstation_id', (array) $workstations);
         }
 
         if (!empty($employee_types)) {
@@ -220,21 +219,21 @@ class PlanningBase extends Model
      * @param  [type] $date
      * @return object
      */
-    public function dayPlanning($locations, $workstations, $employee_types, $date) :mixed
+    public function dayPlanning($locations, $workstations, $employee_types, $date): mixed
     {
         // Assuming you have an instance of PlanningBase model
-        $query= $this->whereDate('start_date_time', $date);
+        $query = $this->whereDate('start_date_time', $date);
 
         if (!empty($employee_types)) {
             $query->whereIn('employee_type_id', (array) $employee_types);
         }
 
         if (!empty($locations)) {
-            $query->whereIn('location_id', (array)$locations);
+            $query->whereIn('location_id', (array) $locations);
         }
 
         if (!empty($workstations)) {
-            $query->whereIn('workstation_id', (array)$workstations);
+            $query->whereIn('workstation_id', (array) $workstations);
         }
 
         return $query->get();

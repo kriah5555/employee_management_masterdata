@@ -524,6 +524,7 @@ class EmployeeService
 
     public function getEmployeeActiveTypesByDate($employeeId, $date)
     {
+        $activeFunctions = $activeTypes = [];
         $activeContracts = EmployeeContract::with(['employeeType', 'employeeFunctionDetails.functionTitle'])->where('employee_profile_id', $employeeId)->where(function ($query) use ($date) {
             $query->where(function ($query) use ($date) {
                 $query->where('start_date', '<', $date)
@@ -533,7 +534,6 @@ class EmployeeService
                     });
             });
         })->get();
-        $activeTypes = [];
         foreach ($activeContracts as $activeContract) {
             $activeTypes[] = [
                 'value' => $activeContract->employeeType->id,

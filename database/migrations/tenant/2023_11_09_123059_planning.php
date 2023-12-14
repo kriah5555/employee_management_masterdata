@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,14 +21,14 @@ return new class extends Migration
             $table->integer('employee_type_id');
             $table->integer('plan_type'); //OTH, front end, cloned, mobile app, event planning, openshift.
             $table->foreignId('employee_profile_id')->references('id')->on('employee_profiles');
-            $table->integer('mail_status');
-            $table->integer('contract_status');
-            $table->integer('dimona_status');
-            $table->integer('status');
+            $table->integer('mail_status')->default(0);
+            $table->integer('contract_status')->default(0);
+            $table->integer('dimona_status')->default(0);
+            $table->integer('status')->default(0);
             $table->timestamps();
             $table->softDeletes();
-            $table->integer('created_by');
-            $table->integer('updated_by');
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
         });
 
         Schema::create('event_details', function (Blueprint $table) {
