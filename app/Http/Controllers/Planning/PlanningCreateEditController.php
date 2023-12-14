@@ -10,6 +10,7 @@ use App\Services\Planning\PlanningCreateEditService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class PlanningCreateEditController extends Controller
 {
@@ -76,9 +77,30 @@ class PlanningCreateEditController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePlanningRequest $request)
+    public function savePlans(StorePlanningRequest $request)
     {
-        //
+        try {
+            $this->planningCreateEditService->savePlans($request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => "Plans saved",
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (HttpResponseException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                    'file'    => $e->getFile(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
