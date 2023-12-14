@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\Employee\EmployeeService;
 use App\Services\Employee\CommuteTypeService;
 use App\Http\Requests\Employee\EmployeeRequest;
-use App\Models\Company\Employee\EmployeeProfile;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
 

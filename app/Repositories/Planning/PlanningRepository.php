@@ -44,4 +44,20 @@ class PlanningRepository implements PlanningRepositoryInterface
             throw new ModelUpdateFailedException('Failed to update planning');
         }
     }
+
+    public function getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, $relations = [])
+    {
+        $startDateOfWeek = date('Y-m-d 00:00:00', strtotime($startDateOfWeek));
+        $endDateOfWeek = date('Y-m-d 23:59:59', strtotime($endDateOfWeek));
+        $query = PlanningBase::where('location_id', $location);
+        $query->with($relations);
+        if (!empty($workstations)) {
+            $query->whereIn('workstation_id', $workstations);
+        }
+        if (!empty($employee_types)) {
+            $query->whereIn('employee_type_id', $employee_types);
+        }
+        $query->whereBetween('start_date_time', [$startDateOfWeek, $endDateOfWeek]);
+        return $query->get();
+    }
 }

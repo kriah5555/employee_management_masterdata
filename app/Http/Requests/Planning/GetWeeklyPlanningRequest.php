@@ -31,7 +31,7 @@ class GetWeeklyPlanningRequest extends ApiRequest
             'employee_types.*' => [
                 'bail',
                 'integer',
-                Rule::exists('employee_types', 'id'),
+                Rule::exists('master.employee_types', 'id'),
             ],
             'week'             => 'required|integer',
             'year'             => 'required|integer',
