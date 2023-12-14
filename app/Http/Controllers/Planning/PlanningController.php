@@ -85,11 +85,10 @@ class PlanningController extends Controller
     public function getWeeklyPlanning(GetWeeklyPlanningRequest $request)
     {
         try {
-            $output = $this->planningService->getWeeklyPlanningService($request->input('location'), $request->input('workstations'), $request->input('employee_types'), $request->input('week'), $request->input('year'));
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $output
+                    'data'    => $this->planningService->getWeeklyPlanningService($request->input('location'), $request->input('workstations'), $request->input('employee_types'), $request->input('week'), $request->input('year'))
                 ],
                 JsonResponse::HTTP_OK,
             );
