@@ -41,6 +41,7 @@ class StorePlanningRequest extends ApiRequest
             'timings.*.start_time'     => 'required|date_format:H:i',
             'timings.*.end_time'       => 'required|date_format:H:i',
             'timings.*.contract_hours' => 'required|string',
+            'timings.*.plan_id'        => 'required|integer',
         ];
 
     }
