@@ -174,7 +174,7 @@ class PlanningService implements PlanningInterface
             $planDetails = [
                 "plan_id"        => $plan->id,
                 "timings"        => date('H:i', strtotime($plan->start_date_time)) . ' ' . date('H:i', strtotime($plan->end_date_time)),
-                "contract_hours" => $plan->contract_hours,
+                "contract_hours" => number_format($contractHours, 2, ',', '.'),
             ];
 
             if (!isset($response[$workstationId]['employee'][$profile]['plans'][$planDate])) {
@@ -191,8 +191,12 @@ class PlanningService implements PlanningInterface
                 ];
             }
             $response[$workstationId]['employee'][$profile]['plans'][$planDate]['planning'][] = $planDetails;
-            $response[$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] += $contractHours;
-            $response[$workstationId]['employee'][$profile]['total']['contract_hours'] += $contractHours;
+            $response[$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response[$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours']) + $contractHours
+            );
+            $response[$workstationId]['employee'][$profile]['total']['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response[$workstationId]['employee'][$profile]['total']['contract_hours']) + $contractHours
+            );
         }
 
         $response = array_values($response);

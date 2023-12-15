@@ -41,7 +41,7 @@ class PlanningCreateEditService implements PlanningCreateEditInterface
                     'id'                  => $timing['plan_id'] ?? '',
                     'start_date_time'     => $startDateTime,
                     'end_date_time'       => $endDateTime,
-                    'contract_hours'      => formatToNumber($timing['contract_hours']),
+                    'contract_hours'      => europeanToNumeric($timing['contract_hours']),
                     'location_id'         => $values['location_id'],
                     'workstation_id'      => $values['workstation_id'],
                     'function_id'         => $values['function_id'],

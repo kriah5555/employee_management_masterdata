@@ -4,6 +4,7 @@ namespace App\Http\Requests\Planning;
 
 use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
+use App\Rules\BelgiumCurrencyFormatRule;
 
 class StorePlanningRequest extends ApiRequest
 {
@@ -40,7 +41,11 @@ class StorePlanningRequest extends ApiRequest
             'timings'                  => 'required|array',
             'timings.*.start_time'     => 'required|date_format:H:i',
             'timings.*.end_time'       => 'required|date_format:H:i',
-            'timings.*.contract_hours' => 'required|string',
+            'timings.*.contract_hours' => [
+                'required',
+                'string',
+                new BelgiumCurrencyFormatRule
+            ],
             'timings.*.plan_id'        => 'integer',
         ];
 
