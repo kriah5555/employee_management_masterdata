@@ -24,7 +24,7 @@ class PlanningBase extends BaseModel
      */
     protected $table = 'planning_base';
 
-    protected static $sort = ['start_date_time', 'end_date_time'];
+    // protected static $sort = ['start_date_time'];
     /**
      * The primary key associated with the table.
      *
@@ -144,8 +144,9 @@ class PlanningBase extends BaseModel
      *
      * @return array
      */
-    public function monthPlanning($year, $locations, $workstations, $employee_types)
+    public function monthPlanning($year, $month, $locations, $workstations, $employee_types)
     {
+        $monthDates = getStartAndEndDateOfMonth($month, $year);
         $query = $this->select(DB::raw('count(*) as count'), DB::raw('start_date_time::date as date'))
             ->whereNull('deleted_at')
             ->groupBy(DB::raw('start_date_time::date'));

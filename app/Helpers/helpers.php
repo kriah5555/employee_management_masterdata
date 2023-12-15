@@ -317,4 +317,40 @@ if (!function_exists('getWeekDates')) {
         return $dates;
     }
 }
+if (!function_exists('getStartAndEndDateOfMonth')) {
+    function getStartAndEndDateOfMonth($month, $year)
+    {
+        // Create a DateTime object for the first day of the month
+        $start_date = new DateTime("$year-$month-01");
 
+        // Get the last day of the month using the 't' format character
+        $last_day = $start_date->format('t');
+
+        // Create a DateTime object for the last day of the month
+        $end_date = new DateTime("$year-$month-$last_day");
+
+        // Return an associative array with start and end dates
+        return array(
+            'start_date' => $start_date->format('Y-m-d'),
+            'end_date'   => $end_date->format('Y-m-d')
+        );
+    }
+}
+
+if (!function_exists('getDatesByMonthYear')) {
+    function getDatesByMonthYear($month, $year)
+    {
+        $start_date = new DateTime("$year-$month-01");
+        $end_date = new DateTime("$year-$month-" . $start_date->format('t'));
+
+        $interval = new DateInterval('P1D'); // 1 day interval
+        $date_range = new DatePeriod($start_date, $interval, $end_date);
+
+        $dates = array();
+        foreach ($date_range as $date) {
+            $dates[] = $date->format('Y-m-d');
+        }
+
+        return $dates;
+    }
+}

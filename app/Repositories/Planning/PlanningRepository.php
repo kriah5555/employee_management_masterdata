@@ -58,6 +58,24 @@ class PlanningRepository implements PlanningRepositoryInterface
             $query->whereIn('employee_type_id', $employee_types);
         }
         $query->whereBetween('start_date_time', [$startDateOfWeek, $endDateOfWeek]);
+        $query->orderBy('start_date_time');
+        $query->orderBy('end_date_time');
+        return $query->get();
+    }
+
+    public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $startDateOfMonth, $endDateOfMonth)
+    {
+        $startDateOfMonth = date('Y-m-d 00:00:00', strtotime($startDateOfMonth));
+        $endDateOfMonth = date('Y-m-d 23:59:59', strtotime($endDateOfMonth));
+        $query = PlanningBase::where('location_id', $location);
+        if (!empty($workstations)) {
+            $query->whereIn('workstation_id', $workstations);
+        }
+        if (!empty($employee_types)) {
+            $query->whereIn('employee_type_id', $employee_types);
+        }
+        $query->whereBetween('start_date_time', [$startDateOfMonth, $endDateOfMonth]);
+        $query->selectRaw('DATE(start_date_time) as date, COUNT(*) as count')->groupBy('date');
         return $query->get();
     }
 }

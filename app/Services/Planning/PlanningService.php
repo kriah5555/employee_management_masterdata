@@ -109,13 +109,14 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
-    public function getMonthlyPlanningService($year, $locations, $workstations, $employee_types)
+    public function getMonthlyPlanningService($year, $month, $location, $workstations, $employee_types)
     {
         $response = [];
-        $data = $this->planningBase->monthPlanning($year, $locations, $workstations, $employee_types);
-        dd('here');
+        $data = $this->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year);
+        // $data = $this->planningBase->monthPlanning($year, $month, $location, $workstations, $employee_types);
         foreach ($data as $value) {
-            $response[$value['date']] = $value['count'];
+
+            $response[date('d-m-Y', strtotime($value['date']))] = $value['count'];
         }
         return $response;
     }
@@ -201,8 +202,8 @@ class PlanningService implements PlanningInterface
         $workstationsRaw = $this->location->with('workstationsValues')->get()->toArray();
         $workstationsRaw = $this->workStationFormat($workstationsRaw);
         foreach ($workstationsRaw[$location]['workstations'] as $value) {
-            $response[$value['value']]['id'] = $value['value'];
-            $response[$value['value']]['name'] = $value['label'];
+            $response[$value['value']]['workstation_id'] = $value['value'];
+            $response[$value['value']]['workstation_name'] = $value['label'];
             $response[$value['value']]['employee'] = [];
         }
 
@@ -316,5 +317,10 @@ class PlanningService implements PlanningInterface
         $startDateOfWeek = reset($weekDates);
         $endDateOfWeek = end($weekDates);
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, ['workStation', 'employeeProfile.user', 'employeeType']);
+    }
+    public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
+    {
+        $monthDates = getStartAndEndDateOfMonth($month, $year);
+        return $this->planningRepository->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $monthDates['start_date'], $monthDates['end_date']);
     }
 }

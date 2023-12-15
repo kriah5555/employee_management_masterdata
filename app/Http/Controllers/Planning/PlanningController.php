@@ -75,6 +75,7 @@ class PlanningController extends Controller
                     'integer',
                     Rule::exists('employee_types', 'id'),
                 ],
+                'month'            => 'required|min:1|max:12',
                 'year'             => 'required|digits:4',
             ];
 
@@ -97,8 +98,8 @@ class PlanningController extends Controller
                     JsonResponse::HTTP_BAD_REQUEST,
                 );
             }
-            $input = $request->only(['location', 'workstations', 'employee_types', 'year']);
-            $data = $this->planningService->getMonthlyPlanningService($input['year'], $input['location'], $input['workstations'], $input['employee_types']);
+            $input = $request->only(['location', 'workstations', 'employee_types', 'month', 'year']);
+            $data = $this->planningService->getMonthlyPlanningService($input['year'], $input['month'], $input['location'], $input['workstations'], $input['employee_types']);
 
             return returnResponse(
                 [
