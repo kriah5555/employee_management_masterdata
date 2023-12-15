@@ -3,20 +3,13 @@
 namespace App\Rules;
 
 use Closure;
+use App\Rules\CommuteTypeRule;
+use Illuminate\Support\Facades\Validator;
+use App\Rules\LocationLinkedToCompanyRule;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Services\EmployeeType\EmployeeTypeService;
-use App\Services\EmployeeFunction\FunctionService;
 
 class EmployeeCommuteDetailsRule implements ValidationRule
 {
-    protected $employeeTypeService;
-
-    protected $functionService;
-    public function __construct(EmployeeTypeService $employeeTypeService, FunctionService $functionService)
-    {
-        $this->employeeTypeService = $employeeTypeService;
-        $this->functionService = $functionService;
-    }
     /**
      * Run the validation rule.
      *
@@ -24,25 +17,29 @@ class EmployeeCommuteDetailsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $employeeContractDetails = request()->input('employee_contract');
-        if (is_array($employeeContractDetails) && isset($employeeContractDetails['employee_type_id'])) {
-            $usedFunction = [];
-            foreach ($value as $data) {
-                if (!array_key_exists('function_id', $data)) {
-                    $fail('Please select function');
-                } elseif (in_array($data['function_id'], $usedFunction)) {
-                    $fail('Cannot link same function twice');
-                } else {
-                    $functionTitle = $this->functionService->getFunctionTitleDetails($data['function_id']);
-                    $usedFunction[] = $functionTitle->id;
-                }
-                if (!array_key_exists('salary', $data) || !is_numeric(str_replace(',', '.', $data['salary']))) {
-                    $fail('Please enter correct salary');
-                }
-                if (array_key_exists('experience', $data) && !is_numeric(str_replace(',', '.', $data['experience']))) {
-                    $fail('Please enter correct experience');
+        $rules = [
+            "location_id"     =>  ['bail', 'integer', 'required', new LocationLinkedToCompanyRule()],
+            "commute_type_id" => ['bail', 'integer', 'required', new CommuteTypeRule()],
+            "distance" => "required|digits_between:1,5", 
+        ];
+
+        $location_ids = collect($value)->pluck('location_id')->toArray();
+
+        if (count($location_ids) != count(array_unique($location_ids))) {
+            $fail('Location ids cannot repeat');
+        }
+
+
+        foreach ($value as $index => $employee_commute_detail) {
+            $validator = Validator::make($employee_commute_detail, $rules);
+
+            if ($validator->fails()) {
+                foreach ($validator->errors()->toArray() as $errors) {
+                    foreach ($errors as $error) {
+                        $fail("Error at :attribute.$index : $error");
+                    }
                 }
             }
-        }
+        }   
     }
 }

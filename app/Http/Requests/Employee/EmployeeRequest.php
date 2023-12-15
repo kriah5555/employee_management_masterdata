@@ -69,6 +69,7 @@ class EmployeeRequest extends ApiRequest
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']), new DuplicateSocialSecurityNumberRule()];
                 $rules['employee_contract_details'] = ['bail', 'required', 'array', new EmployeeContractDetailsRule()];
                 $rules['employee_function_details'] = ['bail', 'required', 'array', new EmployeeFunctionDetailsRule()];
+                $rules['employee_commute_details'] = ['bail', 'nullable', 'array', new EmployeeCommuteDetailsRule()];
                 $rules['meal_voucher_id'] =  ['bail', 'integer', 'nullable',new MealVoucherRule()];
             } elseif ($this->isMethod('put')) {
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-'])];
