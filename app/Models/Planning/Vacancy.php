@@ -5,7 +5,14 @@ namespace App\Models\Planning;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Models\Company\Location;
+use App\Models\Company\Workstation;
+use App\Models\Planning\{
+    VacancyEmployeeTypes,
+    VacancyFunctions,
+    VacancyPostEmployees,
+    VacancyRepeat
+};
 
 class Vacancy extends Model
 {
@@ -53,24 +60,48 @@ class Vacancy extends Model
 
      protected $fillable = [
         'location_id',
-        'department',
-        'function',
-        'employee_type',
-        'start_date_time',
-        'end_date_time',
+        'start_date',
+        'end_date',
+        'start_time',
+        'end_time',
         'vacancy_count',
         'approval_type',
         'extra_info',
         'status',
-        'created_at',
-        'updated_at',
+        'repeat_type',
         'created_by',
         'updated_by',
-        'deleted_at',
+        'workstation_id',
+        'function_id'
     ];
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(Location::class);
     }
+
+    public function workstations()
+    {
+        return $this->belongsTo(Workstation::class, 'workstation_id');
+    }
+
+    // public function functions()
+    // {
+    //     return $this->hasMany(VacancyFunctions::class);
+    // }
+
+    public function employeeTypes()
+    {
+        return $this->hasMany(VacancyEmployeeTypes::class);
+    }
+
+    public function vacancyPostEmployees()
+    {
+        return $this->hasMany(VacancyPostEmployees::class);
+    }
+
+    // public function vacancyRepeat()
+    // {
+    //     return $this->hasOne(VacancyRepeat::class);
+    // }
 }
