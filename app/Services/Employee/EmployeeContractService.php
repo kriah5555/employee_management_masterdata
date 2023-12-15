@@ -2,32 +2,20 @@
 
 namespace App\Services\Employee;
 
-use App\Models\Company\Employee\EmployeeContract;
-use App\Models\Company\Employee\EmployeeProfile;
-use App\Models\Company\Employee\LongTermEmployeeContract;
-use App\Models\EmployeeType\EmployeeType;
-use App\Models\User\CompanyUser;
-use App\Models\EmployeeFunction\FunctionTitle;
-use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
-use App\Services\CompanyService;
-use App\Services\User\UserService;
-use Illuminate\Support\Facades\DB;
 use Exception;
-use App\Repositories\Employee\EmployeeProfileRepository;
-use App\Models\User\User;
-use App\Services\EmployeeType\EmployeeTypeService;
-use App\Repositories\Employee\EmployeeSocialSecretaryDetailsRepository;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use App\Repositories\Employee\EmployeeContractRepository;
+use Illuminate\Support\Facades\DB;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeSalaryDetails;
+use App\Repositories\Employee\EmployeeProfileRepository;
+use App\Repositories\Employee\EmployeeContractRepository;
+
+
 class EmployeeContractService
 {
 
     public function __construct(
         protected EmployeeProfileRepository $employeeProfileRepository,
-        protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
         protected EmployeeContractRepository $employeeContractRepository,
         protected EmployeeSalaryDetails $employeeSalaryDetails,
     ) {
@@ -172,5 +160,40 @@ class EmployeeContractService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function getActiveContractEmployeesByWeek($weekNumber, $year)
+    {
+        $weekDates = getWeekDates($weekNumber, $year);
+        $startDateOfWeek = reset($weekDates);
+        $endDateOfWeek = end($weekDates);
+
+        $contracts = EmployeeContract::with('employeeProfile.user.userBasicDetails')->where(function ($query) use ($startDateOfWeek, $endDateOfWeek) {
+            $query->where(function ($query) use ($startDateOfWeek) {
+                $query->where('start_date', '<', $startDateOfWeek)
+                    ->where(function ($query) use ($startDateOfWeek) {
+                        $query->where('end_date', '>', $startDateOfWeek)
+                            ->orWhereNull('end_date');
+                    });
+            })->orWhere(function ($query) use ($endDateOfWeek) {
+                $query->where('start_date', '<', $endDateOfWeek)
+                    ->where(function ($query) use ($endDateOfWeek) {
+                        $query->where('end_date', '>', $endDateOfWeek)
+                            ->orWhereNull('end_date');
+                    });
+            });
+        })->get();
+
+        $activeEmployees = [];
+        foreach ($contracts as $contract) {
+            $activeEmployees[] = [
+                'value' => $contract->employeeProfile->id,
+                'label' => $contract->employeeProfile->user->userBasicDetails->first_name . ' ' . $contract->employeeProfile->user->userBasicDetails->last_name
+            ];
+        }
+        usort($activeEmployees, function ($a, $b) {
+            return strcmp($a['label'], $b['label']);
+        });
+        return $activeEmployees;
     }
 }

@@ -52,7 +52,7 @@ class BaseModel extends Model
 
     protected $apiValues = [];
 
-    public function toApiReponseFormat()
+    public function toApiResponseFormat()
     {
         $data = $this->toArray();
         $values = [];

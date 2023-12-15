@@ -22,17 +22,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Email\MailService;
 use App\Services\Employee\EmployeeContractService;
+use App\Services\Employee\EmployeeBenefitService;
 
 class EmployeeService
 {
 
     public function __construct(
+        protected UserService $userService,
+        protected MailService $mailService,
+        protected CompanyService $companyService,
+        protected EmployeeBenefitService $employeeBenefitService,
+        protected EmployeeContractService $employeeContractService,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
-        protected UserService $userService,
-        protected CompanyService $companyService,
-        protected MailService $mailService,
-        protected EmployeeContractService $employeeContractService,
     ) {
     }
     /**
@@ -116,18 +118,18 @@ class EmployeeService
 
     public function formatEmployeeData($employee)
     {
-        $userBasicDetails = $employee->user->userBasicDetails->toApiReponseFormat();
+        $userBasicDetails = $employee->user->userBasicDetails->toApiResponseFormat();
         $userBasicDetails['social_security_number'] = $employee->user->social_security_number;
         $userBasicDetails['date_of_birth'] = date('d-m-Y', strtotime($userBasicDetails['date_of_birth']));
         $userBasicDetails['license_expiry_date'] = $userBasicDetails['license_expiry_date'] != null ? date('d-m-Y', strtotime($userBasicDetails['license_expiry_date'])) : null;
-        $userBasicDetails['gender'] = $employee->user->userBasicDetails->gender->toApiReponseFormat();
+        $userBasicDetails['gender'] = $employee->user->userBasicDetails->gender->toApiResponseFormat();
         $userBasicDetails['language'] = [
             'id'   => $userBasicDetails['language'],
             'name' => config('constants.LANGUAGE_OPTIONS')[$userBasicDetails['language']]
         ];
-        $userAddressDetails = $employee->user->userAddress->toApiReponseFormat();
-        $userContactDetails = $employee->user->userContactDetails->toApiReponseFormat();
-        $userBankAccountDetails = $employee->user->userBankAccount->toApiReponseFormat();
+        $userAddressDetails = $employee->user->userAddress->toApiResponseFormat();
+        $userContactDetails = $employee->user->userContactDetails->toApiResponseFormat();
+        $userBankAccountDetails = $employee->user->userBankAccount->toApiResponseFormat();
         $employee->user->userFamilyDetails->dependent_spouse = 'no';
         if ($employee->user->userFamilyDetails->dependent_spouse) {
             $dependentSpouse = [
@@ -139,7 +141,7 @@ class EmployeeService
         }
         $userFamilyDetails = [
             'dependent_spouse' => $dependentSpouse,
-            'marital_status'   => $employee->user->userFamilyDetails->maritalStatus->toApiReponseFormat(),
+            'marital_status'   => $employee->user->userFamilyDetails->maritalStatus->toApiResponseFormat(),
             'children'         => 0
         ];
         return array_merge($userBasicDetails, $userAddressDetails, $userContactDetails, $userBankAccountDetails, $userFamilyDetails);
@@ -163,6 +165,8 @@ class EmployeeService
                 $employeeProfile = $this->createEmployeeProfile($user, $values);
                 $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
                 $this->employeeContractService->createEmployeeContract($values, $employeeProfile->id);
+                $this->employeeBenefitService->createEmployeeBenefits($values, $employeeProfile->id);
+                
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             DB::connection('tenant')->commit();
@@ -362,27 +366,6 @@ class EmployeeService
         return $this->employeeProfileRepository->checkEmployeeExistsInCompany($company_id, $socialSecurityNumber);
     }
 
-    public function getEmployeeContracts($employeeId)
-    {
-        $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeId);
-        $employeeContracts = [
-            'active'  => [],
-            'expired' => []
-        ];
-        foreach ($employeeProfile->employeeContracts as $employeeContract) {
-            $employeeContract->employeeType;
-            $employeeContract->longTermEmployeeContract;
-            $contractDetails = $this->formatEmployeeContract($employeeContract);
-
-            if ($employeeContract->end_date == null || strtotime($employeeContract->end_date) > strtotime(date('Y-m-d'))) {
-                $employeeContracts['active'][] = $contractDetails;
-            } else {
-                $employeeContracts['expired'][] = $contractDetails;
-            }
-        }
-        return $employeeContracts;
-    }
-
     public function formatEmployeeContract($employeeContract)
     {
         $contractDetails = [
@@ -461,42 +444,6 @@ class EmployeeService
             'user.userBankAccount',
             'employeeSocialSecretaryDetails'
         ]);
-    }
-
-
-    public function getActiveContractEmployeesByWeek($weekNumber, $year)
-    {
-        $weekDates = getWeekDates($weekNumber, $year);
-        $startDateOfWeek = reset($weekDates);
-        $endDateOfWeek = end($weekDates);
-
-        $contracts = EmployeeContract::with('employeeProfile.user.userBasicDetails')->where(function ($query) use ($startDateOfWeek, $endDateOfWeek) {
-            $query->where(function ($query) use ($startDateOfWeek) {
-                $query->where('start_date', '<', $startDateOfWeek)
-                    ->where(function ($query) use ($startDateOfWeek) {
-                        $query->where('end_date', '>', $startDateOfWeek)
-                            ->orWhereNull('end_date');
-                    });
-            })->orWhere(function ($query) use ($endDateOfWeek) {
-                $query->where('start_date', '<', $endDateOfWeek)
-                    ->where(function ($query) use ($endDateOfWeek) {
-                        $query->where('end_date', '>', $endDateOfWeek)
-                            ->orWhereNull('end_date');
-                    });
-            });
-        })->get();
-
-        $activeEmployees = [];
-        foreach ($contracts as $contract) {
-            $activeEmployees[] = [
-                'value' => $contract->employeeProfile->id,
-                'label' => $contract->employeeProfile->user->userBasicDetails->first_name . ' ' . $contract->employeeProfile->user->userBasicDetails->last_name
-            ];
-        }
-        usort($activeEmployees, function ($a, $b) {
-            return strcmp($a['label'], $b['label']);
-        });
-        return $activeEmployees;
     }
 
     public function getEmployeeActiveTypesByDate($employeeId, $date)
