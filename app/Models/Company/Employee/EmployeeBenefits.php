@@ -4,6 +4,7 @@ namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\Company\Employee\EmployeeProfile;
 
 class EmployeeBenefits extends BaseModel
 {
@@ -56,4 +57,25 @@ class EmployeeBenefits extends BaseModel
         'clothing_size',
         'status',
     ];
+
+    public function employeeProfile()
+    {
+        return $this->belongsTo(EmployeeProfile::class, 'employee_profile_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($employeeBenefits) {
+            $employeeBenefits->clothing_compensation = formatToCommonHours($employeeBenefits->clothing_compensation);
+        });
+    }
+
+    protected $appends = ['clothing_compensation_european'];
+
+    public function getClothingCompensationEuropeanAttribute()
+    {
+        return formatToEuropeCurrency($this->clothing_compensation);
+    }
 }

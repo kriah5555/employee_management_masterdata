@@ -238,11 +238,11 @@ class UserService
         $userContactDetails = $user->userContactById($user->id)->get()->first();
         $userBankAccountDetails = $user->userBankDetails($user->id)->get()->first();
 
-        // Check if each detail is not null before calling toApiReponseFormat()
-        $userBasicDetails = $userBasicDetails ? $userBasicDetails->toApiReponseFormat() : null;
-        $userAddressDetails = $userAddressDetails ? $userAddressDetails->toApiReponseFormat() : null;
-        $userContactDetails = $userContactDetails ? $userContactDetails->toApiReponseFormat() : null;
-        $userBankAccountDetails = $userBankAccountDetails ? $userBankAccountDetails->toApiReponseFormat() : null;
+        // Check if each detail is not null before calling toApiResponseFormat()
+        $userBasicDetails = $userBasicDetails ? $userBasicDetails->toApiResponseFormat() : null;
+        $userAddressDetails = $userAddressDetails ? $userAddressDetails->toApiResponseFormat() : null;
+        $userContactDetails = $userContactDetails ? $userContactDetails->toApiResponseFormat() : null;
+        $userBankAccountDetails = $userBankAccountDetails ? $userBankAccountDetails->toApiResponseFormat() : null;
 
         return array_merge(
             $user->toArray(),

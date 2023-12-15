@@ -244,7 +244,7 @@ if (!function_exists('formatToEuropeCurrency')) { # will convert number format t
         //     $decimal = strlen($parts[1]);
         // }
 
-        $currency = str_replace(',', '.', $currency);
+        $currency = str_replace(',', '.', $currency ?? 0);
         return number_format($currency, 4, ',', '.');
     }
 }

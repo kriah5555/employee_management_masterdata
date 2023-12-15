@@ -25,6 +25,7 @@ use App\Http\Controllers\Holiday\{
 use App\Http\Controllers\Employee\{
     EmployeeController,
     EmployeeContractController,
+    EmployeeBenefitsController,
     EmployeeAccessController,
     ResponsiblePersonController,
 };
@@ -113,6 +114,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeContractController::class,
                 'methods'    => ['show', 'store', 'update', 'destroy', 'create']
             ],
+            'employee-benefits'                  => [
+                'controller' => EmployeeBenefitsController::class,
+                'methods'    => ['show', 'update', 'create']
+            ],
         ];
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
@@ -133,8 +138,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
 
             Route::get('employee-commute/create', 'createEmployeeCommute');
-
-            Route::get('employee-benefits/create', 'createEmployeeBenefits');
 
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
 

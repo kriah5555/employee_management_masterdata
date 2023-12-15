@@ -263,26 +263,6 @@ class EmployeeController extends Controller
         }
     }
 
-    public function createEmployeeBenefits()
-    {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'meal_vouchers' => $this->mealVoucherService->getActiveMealVouchers(),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function updatePersonalDetails(UpdateEmployeePersonalDetailsRequest $request)
     {
         try {
@@ -291,25 +271,6 @@ class EmployeeController extends Controller
                 [
                     'success' => true,
                     'message' => 'Employee personal details updated successfully'
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function getEmployeeContracts($employeeId)
-    {
-        try {
-
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => $this->employeeService->getEmployeeContracts($employeeId)
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -339,27 +300,4 @@ class EmployeeController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // public function getActiveContractEmployees(Request $request)
-    // {
-    //     $weekNumber = $request->input('week_number');
-    //     $year = $request->input('year');
-    //     try {
-    //         return returnResponse(
-    //             [
-    //                 'success' => true,
-    //                 'data'    => $this->employeeService->getActiveContractEmployeesByWeek($weekNumber, $year)
-    //             ],
-    //             JsonResponse::HTTP_OK,
-    //         );
-    //     } catch (Exception $e) {
-    //         return returnResponse(
-    //             [
-    //                 'success' => false,
-    //                 'message' => $e->getMessage(),
-    //             ],
-    //             JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-    //         );
-    //     }
-    // }
 }
