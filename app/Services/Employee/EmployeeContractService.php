@@ -79,8 +79,8 @@ class EmployeeContractService
                 'function_details_id' => $function->id,
                 'function_title'      => $function->functionTitle->name,
                 'function_title_id'   => $function->functionTitle->id,
-                'salary'              => $function->salary->salary,
-                'salary_european'     => $function->salary->salary_european,
+                'salary'              => ($function->salary) ? $function->salary->salary : null,
+                'salary_european'     => ($function->salary) ? $function->salary->salary_european : null,
             ];
         }   
         return $contractDetails;
