@@ -2,6 +2,7 @@
 
 namespace App\Models\Planning;
 
+use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\EmployeeType\EmployeeType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\{Workstation, Location};
@@ -106,6 +107,10 @@ class PlanningBase extends BaseModel
     public function employeeProfile()
     {
         return $this->belongsTo(EmployeeProfile::class, 'employee_profile_id');
+    }
+    public function functionTitle()
+    {
+        return $this->belongsTo(FunctionTitle::class, 'function_id');
     }
 
 

@@ -182,6 +182,14 @@ class PlanningService implements PlanningInterface
                 $response[$workstationId]['employee'][$profile]['plans'][$planDate]['planning'] = [];
                 $response[$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] = 0;
                 $response[$workstationId]['employee'][$profile]['plans'][$planDate]['cost'] = 0;
+                $response[$workstationId]['employee'][$profile]['plans'][$planDate]['employee_type'] = [
+                    'value' => $plan->employeeType->id,
+                    'label' => $plan->employeeType->name,
+                ];
+                $response[$workstationId]['employee'][$profile]['plans'][$planDate]['function'] = [
+                    'value' => $plan->functionTitle->id,
+                    'label' => $plan->functionTitle->name,
+                ];
             }
             $response[$workstationId]['employee'][$profile]['plans'][$planDate]['planning'][] = $planDetails;
             $response[$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] += $contractHours;
@@ -316,7 +324,7 @@ class PlanningService implements PlanningInterface
         $weekDates = getWeekDates($weekNumber, $year);
         $startDateOfWeek = reset($weekDates);
         $endDateOfWeek = end($weekDates);
-        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, '', ['workStation', 'employeeProfile.user', 'employeeType']);
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
     {

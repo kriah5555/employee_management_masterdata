@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Planning\GetWeeklyPlanningRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Planning\GetDayPlanningRequest;
 
 
 class PlanningController extends Controller
@@ -151,18 +152,18 @@ class PlanningController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return json
      */
-    public function getDayPlanning(Request $request)
+    public function getDayPlanning(GetDayPlanningRequest $request)
     {
-        $input = $data = [];
         try {
-            $input = $request->only(['locations', 'workstations', 'employee_types', 'date']);
-            $data = $this->planningService->getDayPlanningService($input['locations'], $input['workstations'], $input['employee_types'], $input['date']);
-
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Day planning response',
-                    'data'    => $data
+                    'data'    => $this->planningService->getDayPlanningService(
+                        $request->input('location'),
+                        $request->input('workstations'),
+                        $request->input('employee_types'),
+                        date('Y-m-d', strtotime($request->input('date')))
+                    )
                 ],
                 JsonResponse::HTTP_OK,
             );
