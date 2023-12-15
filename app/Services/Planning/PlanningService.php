@@ -316,7 +316,7 @@ class PlanningService implements PlanningInterface
         $weekDates = getWeekDates($weekNumber, $year);
         $startDateOfWeek = reset($weekDates);
         $endDateOfWeek = end($weekDates);
-        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, ['workStation', 'employeeProfile.user', 'employeeType']);
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, '', ['workStation', 'employeeProfile.user', 'employeeType']);
     }
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
     {
