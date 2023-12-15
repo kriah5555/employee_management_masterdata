@@ -7,8 +7,12 @@ use App\Traits\UserAudit;
 
 class MealVoucher extends BaseModel
 {
+    protected $connection = 'master';
+
     use UserAudit;
+
     protected static $sort = ['sort_order', 'name'];
+    
     protected $columnsToLog = [
         'sort_order',
         'name',
@@ -20,7 +24,6 @@ class MealVoucher extends BaseModel
      *
      * @var string
      */
-    protected $connection = 'master';
     protected $table = 'meal_vouchers';
 
     /**

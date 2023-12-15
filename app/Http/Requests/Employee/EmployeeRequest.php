@@ -12,6 +12,7 @@ use App\Rules\EmployeeContractDetailsRule;
 use App\Rules\EmployeeFunctionDetailsRule;
 use App\Rules\User\GenderRule;
 use App\Rules\EmployeeCommuteDetailsRule;
+use App\Rules\MealVoucherRule;
 
 class EmployeeRequest extends ApiRequest
 {
@@ -68,6 +69,7 @@ class EmployeeRequest extends ApiRequest
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']), new DuplicateSocialSecurityNumberRule()];
                 $rules['employee_contract_details'] = ['bail', 'required', 'array', new EmployeeContractDetailsRule()];
                 $rules['employee_function_details'] = ['bail', 'required', 'array', new EmployeeFunctionDetailsRule()];
+                $rules['meal_voucher_id'] =  ['bail', 'integer', 'nullable',new MealVoucherRule()];
             } elseif ($this->isMethod('put')) {
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-'])];
             }

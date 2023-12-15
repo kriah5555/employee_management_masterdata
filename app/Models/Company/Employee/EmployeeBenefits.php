@@ -5,7 +5,7 @@ namespace App\Models\Company\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\Company\Employee\EmployeeProfile;
-
+use App\Models\MealVoucher;
 class EmployeeBenefits extends BaseModel
 {
     use UserAudit;
@@ -18,6 +18,7 @@ class EmployeeBenefits extends BaseModel
         'employee_profile_id',
         'fuel_card',
         'company_car',
+        'meal_voucher_id',
         'clothing_compensation',
         'clothing_size',
         'status',
@@ -37,7 +38,6 @@ class EmployeeBenefits extends BaseModel
      */
     public $timestamps = true;
 
-
     protected $dates = [
         'created_at',
         'updated_at',
@@ -55,8 +55,16 @@ class EmployeeBenefits extends BaseModel
         'company_car',
         'clothing_compensation',
         'clothing_size',
+        'meal_voucher_id',
         'status',
     ];
+
+    protected $with = ['mealVoucher'];
+
+    public function mealVoucher()
+    {
+        return $this->belongsTo(MealVoucher::class, 'meal_voucher_id');
+    }
 
     public function employeeProfile()
     {
