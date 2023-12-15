@@ -124,4 +124,16 @@ class PlanningCreateEditService implements PlanningCreateEditInterface
         }
 
     }
+    public function deleteWeekPlans($values)
+    {
+        $weekDates = getWeekDates($values['week'], $values['year']);
+        $startDateOfWeek = reset($weekDates);
+        $endDateOfWeek = end($weekDates);
+        $plans = $this->planningRepository->getPlansBetweenDates($values['location_id'], [$values['workstation_id']], '', $startDateOfWeek, $endDateOfWeek, $values['employee_id']);
+        DB::connection('tenant')->beginTransaction();
+        $plans->each(function ($plan) {
+            $plan->delete();
+        });
+        DB::connection('tenant')->commit();
+    }
 }

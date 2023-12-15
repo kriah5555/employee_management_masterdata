@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class PlanningCreateEditController extends Controller
 {
@@ -138,6 +139,66 @@ class PlanningCreateEditController extends Controller
         try {
             $planning = $this->planningService->getPlanningById($plan_id);
             $this->planningCreateEditService->deletePlan($planning);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => "Plan deleted",
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                    'file'    => $e->getFile(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    public function deleteWeekPlans()
+    {
+        try {
+            $rules = [
+                'employee_id'    => [
+                    'required',
+                    'integer',
+                    Rule::exists('employee_profiles', 'id'),
+                ],
+                'location_id'    => [
+                    'required',
+                    'integer',
+                    Rule::exists('locations', 'id'),
+                ],
+                'workstation_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('workstations', 'id'),
+                ],
+                'week'           => 'required|min:1|max:53',
+                'year'           => 'required|digits:4',
+            ];
+
+            $customMessages = [
+                'employee_id.required' => 'Please select employee',
+                'employee_id.integer'  => 'Employee ID must be an integer.',
+                'date.integer'         => 'Date required.',
+                'date.date'            => 'Incorrect date format.',
+            ];
+
+            $validator = Validator::make(request()->all(), $rules, $customMessages);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+            $this->planningCreateEditService->deleteWeekPlans($validator->validated());
             return returnResponse(
                 [
                     'success' => true,

@@ -151,7 +151,6 @@ class PlanningService implements PlanningInterface
     // public function formatWeeklyData(array $plannings, array $employeeTypes, array $employeeData, &$response)
     public function formatWeeklyData($plannings, &$response)
     {
-
         foreach ($plannings as $plan) {
             $workstationId = $plan->workstation_id;
             $contractHours = $plan->contract_hours;
@@ -182,6 +181,14 @@ class PlanningService implements PlanningInterface
                 $response[$workstationId]['employee'][$profile]['plans'][$planDate]['planning'] = [];
                 $response[$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] = 0;
                 $response[$workstationId]['employee'][$profile]['plans'][$planDate]['cost'] = 0;
+                $response[$workstationId]['employee'][$profile]['plans'][$planDate]['employee_type'] = [
+                    'value' => $plan->employeeType->id,
+                    'label' => $plan->employeeType->name,
+                ];
+                $response[$workstationId]['employee'][$profile]['plans'][$planDate]['function'] = [
+                    'value' => $plan->functionTitle->id,
+                    'label' => $plan->functionTitle->name,
+                ];
             }
             $response[$workstationId]['employee'][$profile]['plans'][$planDate]['planning'][] = $planDetails;
             $response[$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] += $contractHours;
@@ -217,89 +224,33 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
-    public function getDayPlanningService($locations, $workstations, $employee_types, $date)
+    public function getDayPlanningService($location, $workstations, $employee_types, $date)
+    {
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        return $this->formatDayPlanning($plannings);
+    }
+
+    public function formatDayPlanning($plannings)
     {
         $response = [];
-        $planningRaw = $this->planningBase->dayPlanning($locations, $workstations, $employee_types, $date);
-
-        $plannings = (count($planningRaw->all()) > 0) ? $planningRaw->toArray() : [];
-        // getting required info.
-        if (count($plannings) > 0) {
-            $workstations = array_unique(array_column($plannings, 'workstation_id'));
-            $employeeTypes = array_unique(array_column($plannings, 'employee_type_id'));
-            $employeeProfiles = array_unique(array_column($plannings, 'employee_profile_id'));
-            $functions = array_unique(array_column($plannings, 'function_id'));
-
-            //Employee type details.
-            $employeeTypeDetails = $this->employeeTypeFormat(
-                $this->employeeType->getEmployeeTypeDetails($employeeTypes)
-            );
-
-            //Employee profiles.
-            $employeeProfilesData = $this->employeeProfilesFormat(
-                $this->employeeService->getEmployeeDetailsPlanning($employeeProfiles)->toArray()
-            );
-
-            //Function details.
-            $functionDetails = $this->functionFormat($this->functionTitle->getFunctionDetails($functions));
+        foreach ($plannings as $plan) {
+            if (!isset($response[$plan->employee_profile_id])) {
+                $response[$plan->employee_profile_id] = [
+                    'employee_id'   => $plan->employeeProfile->id,
+                    'employee_name' => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name,
+                    'plans'         => []
+                ];
+            }
+            $response[$plan->employee_profile_id]['plans'][] = [
+                'start_time'       => date('H:i', strtotime($plan->start_date_time)),
+                'end_time'         => date('H:i', strtotime($plan->end_date_time)),
+                'contract_hours'   => $plan->contract_hours,
+                'workstation_name' => $plan->workStation->workstation_name,
+                'function_name'    => $plan->functionTitle->name,
+            ];
         }
-
-        foreach ($planningRaw->all() as $planning) {
-            $this->formatDayPlanning($planning, $employeeProfilesData, $functionDetails, $employeeTypeDetails, $response);
-        }
-        return $response;
+        return array_values($response);
     }
-
-    public function formatDayPlanning($planningBase, $employeeInfo, $functionInfo, $employeeTypeInfo, &$response)
-    {
-        // $array = $planningBase->toArray();
-        $data = [];
-        $planningId = $planningBase->id;
-        $data['id'] = $planningBase->id;
-        $data['location_id'] = $planningBase->location_id;
-        $data['workstation_id'] = $planningBase->workstation_id;
-        $data['function_id'] = $planningBase->function_id;
-        $data['employee_type_id'] = $planningBase->employee_type_id;
-        $data['employee_profile_id'] = $planningBase->employee_profile_id;
-        $data['start_date_time'] = $planningBase->start_date_time;
-        $data['end_date_time'] = $planningBase->end_date_time;
-        $data['function'] = ['id' => $planningBase->function_id, 'name' => $functionInfo[$planningBase->function_id]['name']];
-        $data['employee_type'] = $employeeTypeInfo[$planningBase->employee_type_id];
-        $data['employee_details'] = $employeeInfo[$planningBase->employee_profile_id];
-
-        // Getting information from relations.
-        //    $location = $planningBase->location->toArray();
-        //    $workstation = $planningBase->workStation->toArray();
-        //    $employeeProfile = $planningBase->employeeProfile->toArray();
-
-        $timeRegistrations = $planningBase->timeRegistrations->toArray();
-        // Accessing data from TimeRegistration models
-        foreach ($timeRegistrations as $timeRegistration) {
-            $startTime = $timeRegistration['actual_start_time'];
-            $endTime = $timeRegistration['actual_end_time'];
-        }
-
-        $contracts = $planningBase->contracts->toArray();
-        // Accessing data from PlanningContracts models
-        foreach ($contracts as $contract) {
-            $contractStatus = $contract['contract_status'];
-            // Access other properties as needed
-        }
-
-        $breaks = $planningBase->breaks->toArray();
-        // Accessing data from PlanningBreak models
-        foreach ($breaks as $break) {
-            $breakStartTime = $break['break_start_time'];
-            $breakEndTime = $break['break_end_time'];
-        }
-        $data['actions'] = [
-            'plan'     => ['action' => 'start', 'status' => 'active'],
-            'contract' => ['action' => 'sign', 'status' => 'active'],
-            'break'    => ['actions' => 'start', 'status' => 'active'],
-        ];
-        $response[] = $data;
-    }
-
 
     public function planningCreateOptionsService($workstation, $employeeId)
     {
@@ -316,7 +267,11 @@ class PlanningService implements PlanningInterface
         $weekDates = getWeekDates($weekNumber, $year);
         $startDateOfWeek = reset($weekDates);
         $endDateOfWeek = end($weekDates);
-        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, ['workStation', 'employeeProfile.user', 'employeeType']);
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
+    }
+    public function getDayPlannings($location, $workstations, $employee_types, $date)
+    {
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
     {

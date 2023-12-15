@@ -52,4 +52,5 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
     Route::post('save-plans', [PlanningCreateEditController::class, 'savePlans']);
     Route::delete('delete-plan/{plan_id}', [PlanningCreateEditController::class, 'destroy']);
+    Route::post('delete-week-plans', [PlanningCreateEditController::class, 'deleteWeekPlans']);
 });

@@ -5,7 +5,7 @@ namespace App\Http\Requests\Planning;
 use App\Http\Requests\ApiRequest;
 use Illuminate\Validation\Rule;
 
-class GetWeeklyPlanningRequest extends ApiRequest
+class GetDayPlanningRequest extends ApiRequest
 {
 
     /**
@@ -33,7 +33,7 @@ class GetWeeklyPlanningRequest extends ApiRequest
                 'integer',
                 Rule::exists('master.employee_types', 'id'),
             ],
-            'week'             => 'required|integer',
+            'date'             => 'required|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
             'year'             => 'required|digits:4',
         ];
 
