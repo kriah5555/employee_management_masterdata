@@ -368,3 +368,21 @@ if (!function_exists('getDatesByMonthYear')) {
         return $dates;
     }
 }
+
+if (!function_exists('europeanToNumeric')) {
+    function europeanToNumeric($europeanNumber)
+    {
+        // Replace dot with an empty string and replace comma with a dot
+        return str_replace(',', '.', str_replace('.', '', $europeanNumber));
+    }
+}
+if (!function_exists('numericToEuropean')) {
+    // Function to convert numeric format to European number format
+    function numericToEuropean($numericNumber)
+    {
+        // Format the number with European number format
+        return number_format($numericNumber, 2, ',', '.');
+    }
+
+}
+
