@@ -5,7 +5,7 @@ namespace App\Models\Company\Employee;
 use App\Models\BaseModel;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Traits\UserAudit;
-
+use App\Models\Company\Employee\EmployeeSalaryDetails;
 class EmployeeFunctionDetails extends BaseModel
 {
     use UserAudit;
@@ -30,12 +30,7 @@ class EmployeeFunctionDetails extends BaseModel
      * @var string
      */
     protected $primaryKey = 'id';
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
+    
     public $timestamps = true;
 
 
@@ -45,22 +40,25 @@ class EmployeeFunctionDetails extends BaseModel
         'deleted_at'
     ];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'employee_contract_id',
+        'experience',
         'function_id',
         'salary_id'
     ];
+    
     public function employeeContract()
     {
         return $this->belongsTo(EmployeeContract::class);
     }
+
     public function functionTitle()
     {
         return $this->belongsTo(FunctionTitle::class, 'function_id');
+    }
+
+    public function salary()
+    {
+        return $this->belongsTo(EmployeeSalaryDetails::class, 'salary_id');
     }
 }

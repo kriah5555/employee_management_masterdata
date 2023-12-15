@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+
         // Schema::create('employee_contact_details', function (Blueprint $table) {
         //     $table->id();
         //     $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
@@ -44,6 +45,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+
         Schema::create('employee_social_secretary_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
@@ -55,6 +57,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+
         Schema::create('employee_contract', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->references('id')->on('employee_profiles')->onDelete('cascade');
@@ -67,6 +70,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+
         Schema::create('long_term_employee_contract', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_contract_id')->references('id')->on('employee_contract')->onDelete('cascade');
@@ -81,6 +85,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+        
         Schema::create('employee_commute', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
@@ -93,6 +98,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+        
         Schema::create('employee_salary_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
@@ -103,6 +109,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+
         Schema::create('employee_function_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_contract_id')->references('id')->on('employee_contract')->onDelete('cascade');

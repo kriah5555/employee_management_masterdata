@@ -242,52 +242,6 @@ class EmployeeController extends Controller
         }
     }
 
-    public function createEmployeeContract()
-    {
-        try {
-            $companyId = getCompanyId();
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
-                        'sub_types'                 => associativeToDictionaryFormat($this->employeeService->getSubTypeOptions(), 'key', 'value'),
-                        'schedule_types'            => associativeToDictionaryFormat($this->employeeService->getScheduleTypeOptions(), 'key', 'value'),
-                        'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions(), 'key', 'value'),
-                        'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions(), 'key', 'value'),
-                        'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-    public function createEmployeeContractFunctions()
-    {
-        try {
-            $companyId = getCompanyId();
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'functions' => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function createEmployeeCommute()
     {
         try {
@@ -385,29 +339,27 @@ class EmployeeController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    /**
-     * API to get list of all employee types.
-     */
-    public function getActiveContractEmployees(Request $request)
-    {
-        $weekNumber = $request->input('week_number');
-        $year = $request->input('year');
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => $this->employeeService->getActiveContractEmployeesByWeek($weekNumber, $year)
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
-    }
+    
+    // public function getActiveContractEmployees(Request $request)
+    // {
+    //     $weekNumber = $request->input('week_number');
+    //     $year = $request->input('year');
+    //     try {
+    //         return returnResponse(
+    //             [
+    //                 'success' => true,
+    //                 'data'    => $this->employeeService->getActiveContractEmployeesByWeek($weekNumber, $year)
+    //             ],
+    //             JsonResponse::HTTP_OK,
+    //         );
+    //     } catch (Exception $e) {
+    //         return returnResponse(
+    //             [
+    //                 'success' => false,
+    //                 'message' => $e->getMessage(),
+    //             ],
+    //             JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+    //         );
+    //     }
+    // }
 }

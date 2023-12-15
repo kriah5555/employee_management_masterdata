@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Email\MailService;
+use App\Services\Employee\EmployeeContractService;
 
 class EmployeeService
 {
@@ -30,7 +31,8 @@ class EmployeeService
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
         protected UserService $userService,
         protected CompanyService $companyService,
-        protected MailService $mailService
+        protected MailService $mailService,
+        protected EmployeeContractService $employeeContractService,
     ) {
     }
     /**
@@ -97,7 +99,6 @@ class EmployeeService
         $employeeDetails['phone_number'] = $employee->user->userContactDetails->phone_number;
         $employeeDetails['email'] = $employee->user->userContactDetails->email;
         $employeeDetails['social_security_number'] = $employee->user->social_security_number;
-        // $employeeDetails['test'] = $employee;
         return $employeeDetails;
     }
 
@@ -150,6 +151,7 @@ class EmployeeService
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
+            DB::connection('tenant')->beginTransaction();
                 $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
                 if ($existingEmpProfile->isEmpty()) {
                     $user = $this->userService->createNewUser($values);
@@ -160,15 +162,17 @@ class EmployeeService
                 $this->createCompanyUser($user, $company_id, 'employee');
                 $employeeProfile = $this->createEmployeeProfile($user, $values);
                 $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-                $this->createEmployeeContract($employeeProfile, $values);
+                $this->employeeContractService->createEmployeeContract($values, $employeeProfile->id);
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
+            DB::connection('tenant')->commit();
             // $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
 
             return $employeeProfile;
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -256,33 +260,6 @@ class EmployeeService
         return app(EmployeeSocialSecretaryDetailsRepository::class)->createEmployeeSocialSecretaryDetails($values);
     }
 
-    public function createEmployeeContract($employeeProfile, $values)
-    {
-        $contractDetails = $values['employee_contract_details'];
-        $functionDetails = $values['employee_function_details'];
-        $contractDetails['employee_profile_id'] = $employeeProfile->id;
-        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
-        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
-        $contractDetails['start_date'] = date('Y-m-d', strtotime($contractDetails['start_date']));
-        if (array_key_exists('end_date', $contractDetails) && $contractDetails['end_date'] != '') {
-            $contractDetails['end_date'] = date('Y-m-d', strtotime($contractDetails['end_date']));
-        }
-        $employeeContract = EmployeeContract::create($contractDetails);
-        if ($employeeType->employeeTypeCategory->id == 1) {
-            $contractDetails['employee_contract_id'] = $employeeContract->id;
-            LongTermEmployeeContract::create($contractDetails);
-        }
-
-        foreach ($functionDetails as $function) {
-            $this->createEmployeeFunctionDetails($employeeContract, $function);
-        }
-    }
-    public function createEmployeeFunctionDetails(EmployeeContract $employeeContract, $values)
-    {
-        $values['employee_contract_id'] = $employeeContract->id;
-        return $this->employeeFunctionDetailsRepository->createEmployeeFunctionDetails($values);
-    }
-
     public function createUser($values)
     {
         $username = $values['first_name'] . $values['last_name'];
@@ -322,7 +299,7 @@ class EmployeeService
             $employeeType = app(EmployeeTypeService::class)->getEmployeeTypeDetails($employee_type_id);
             $salary_type = $employeeType->salary_type['value'];
             # for all employee types hourly salary will be returned, 1 => if teh employee type has long term contract with servant sub type then monthly salary will be returned
-            $return_salary_type = ($employeeType->employeeTypeCategory->id == 1 && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
+            $return_salary_type = ($employeeType->employeeTypeCategory->id == config('constants.LONG_TERM_CONTRACT_ID') && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
 
             $minimumSalary = 0;
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {

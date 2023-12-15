@@ -150,15 +150,6 @@ class CompanyService implements CompanyServiceInterface
         ];
     }
 
-    public function getFunctionsForCompany(Company $company)
-    {
-        return $company->sectors->flatMap(function ($sector) {
-            return $sector->functionCategories->flatMap(function ($functionCategory) {
-                return $functionCategory->functionTitles;
-            });
-        });
-    }
-
     public function getCompanyDetails($companyId): Company
     {
         return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails.socialSecretary', 'interimAgencies']);

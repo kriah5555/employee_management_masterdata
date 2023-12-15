@@ -10,8 +10,6 @@ use Illuminate\Validation\Rule;
 use App\Rules\CurrencyFormatRule;
 use App\Rules\EmployeeContractDetailsRule;
 use App\Rules\EmployeeFunctionDetailsRule;
-use App\Services\EmployeeType\EmployeeTypeService;
-use App\Services\EmployeeFunction\FunctionService;
 use App\Rules\User\GenderRule;
 use App\Rules\EmployeeCommuteDetailsRule;
 
@@ -36,7 +34,7 @@ class EmployeeRequest extends ApiRequest
                     'integer',
                     new GenderRule(),
                 ],
-                'date_of_birth'       => 'required|date',
+                'date_of_birth'       => 'required|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
                 'place_of_birth'      => 'string|max:255',
                 'street_house_no'     => 'required|string|max:255',
                 'postal_code'         => 'required|string|max:50',
@@ -47,7 +45,7 @@ class EmployeeRequest extends ApiRequest
                 'longitude'           => 'nullable|numeric',
                 'phone_number'        => 'required|string|max:20',
                 'email'               => 'required|email',
-                'license_expiry_date' => 'nullable|date',
+                'license_expiry_date' => 'nullable|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
                 'bank_account_number' => 'nullable|string|max:255',
                 'language'            => ['required', 'string', 'in:' . implode(',', $allowedLanguageValues)],
                 'marital_status_id'   => [
@@ -68,8 +66,8 @@ class EmployeeRequest extends ApiRequest
                 $rules['social_secretary_number'] = 'nullable|string|max:255';
                 $rules['contract_number'] = 'nullable|string|max:255';
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']), new DuplicateSocialSecurityNumberRule()];
-                $rules['employee_contract_details'] = ['bail', 'required', 'array', new EmployeeContractDetailsRule(app(EmployeeTypeService::class))];
-                $rules['employee_function_details'] = ['bail', 'required', 'array', new EmployeeFunctionDetailsRule(app(EmployeeTypeService::class), app(FunctionService::class))];
+                $rules['employee_contract_details'] = ['bail', 'required', 'array', new EmployeeContractDetailsRule()];
+                $rules['employee_function_details'] = ['bail', 'required', 'array', new EmployeeFunctionDetailsRule()];
             } elseif ($this->isMethod('put')) {
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-'])];
             }
