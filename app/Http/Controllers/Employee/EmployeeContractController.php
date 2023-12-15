@@ -3,20 +3,9 @@
 namespace App\Http\Controllers\Employee;
 
 use Exception;
-use Illuminate\Http\Request;
 use App\Services\CompanyService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Services\MealVoucherService;
-use Illuminate\Support\Facades\Auth;
-use App\Models\EmployeeType\EmployeeType;
-use App\Services\Company\LocationService;
-use Illuminate\Support\Facades\Validator;
-use App\Services\Employee\CommuteTypeService;
-use App\Models\Company\Employee\EmployeeProfile;
-use App\Http\Requests\Employee\UpdateEmployeeRequest;
-use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
-
 use App\Services\Employee\EmployeeService;
 use App\Services\EmployeeFunction\FunctionService;
 use App\Services\Employee\EmployeeContractService;
@@ -30,9 +19,6 @@ class EmployeeContractController extends Controller
         protected EmployeeService $employeeService,
         protected EmployeeContractService $employeeContractService,
         protected CompanyService $companyService,
-        protected CommuteTypeService $commuteTypeService,
-        protected MealVoucherService $mealVoucherService,
-        protected LocationService $locationService,
         protected FunctionService $functionService,
     ) {
     }

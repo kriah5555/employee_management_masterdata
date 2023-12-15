@@ -111,7 +111,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             ],
             'employee-contracts'                  => [
                 'controller' => EmployeeContractController::class,
-                'methods'    => ['index', 'show', 'store', 'update', 'destroy']
+                'methods'    => ['show', 'store', 'update', 'destroy', 'create']
             ],
         ];
 
