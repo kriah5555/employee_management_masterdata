@@ -11,7 +11,7 @@ use App\Models\Company\Employee\EmployeeSalaryDetails;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Repositories\Employee\EmployeeContractRepository;
 
-class EmployeeContractService
+class   
 {
 
     public function __construct(
@@ -66,7 +66,7 @@ class EmployeeContractService
             $contractDetails['work_days_per_week']              = $longTermEmployeeContract->work_days_per_week;
         }
         foreach ($employeeContract->employeeFunctionDetails as $function) {
-            $experience_in_months = ($function->salary) ? $function->experience : null;
+            $experience_in_months = ($function->salary) ? $function->experience : 0;
             $contractDetails['employee_function_details'][] = [
                 'function_details_id' => $function->id,
                 'function_title'      => $function->functionTitle->name,
