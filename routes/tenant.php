@@ -120,7 +120,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeBenefitsController::class,
                 'methods'    => ['show', 'update', 'create']
             ],
-            'employee-commute'                  => [
+            'employee-commute'           => [
                 'controller' => EmployeeCommuteController::class,
                 'methods'    => ['show', 'update', 'create']
             ],
@@ -146,6 +146,12 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
 
             Route::put('employee-update', 'updateEmployee');
+
+            Route::post('get-active-contract-employees', 'getActiveContractEmployees');
+
+        });
+
+        Route::controller(EmployeeContractController::class)->group(function () {
 
             Route::post('get-active-contract-employees', 'getActiveContractEmployees');
 
