@@ -8,6 +8,7 @@ use App\Http\Controllers\Planning\
     LongtermPlanningController,
     PlanningController,
     PlanningCreateEditController,
+    PlanningStartStopController,
     TimeRegistrationController
 };
 use App\Http\Middleware\InitializeTenancy;
@@ -53,4 +54,5 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('save-plans', [PlanningCreateEditController::class, 'savePlans']);
     Route::delete('delete-plan/{plan_id}', [PlanningCreateEditController::class, 'destroy']);
     Route::post('delete-week-plans', [PlanningCreateEditController::class, 'deleteWeekPlans']);
+    Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
 });
