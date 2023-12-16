@@ -96,10 +96,94 @@ class VacancyService implements VacancyInterface
         return $data;
     }
 
-
-
-    public function getVacancies()
+    public function filterVacancies(&$vacancies, $filters)
     {
-        Vacancy::with('location', 'workstations', 'employeeTypes.employeeType')->get()
+        // Filter by location
+        if (isset($filters['location']) && count($filters['location']) > 0) {
+            $vacancies->whereIn('location_id', $filters['location']);
+        }
+
+        // Filter by functions
+        if (isset($filters['functions']) && count($filters['functions']) > 0) {
+            $vacancies->whereIn('function_id', $filters['functions']);
+        }
+
+        // Filter by employee types
+        if (isset($filters['employee_types']) && count($filters['employee_types']) > 0) {
+            $employeeTypesFilter = $filters['employee_types'];
+            $vacancies->whereHas('employeeTypes', function ($query) use ($employeeTypesFilter) {
+                $query->whereIn('employee_types_id', $employeeTypesFilter);
+            });
+        }
+
+        // Filter by status
+        if (isset($filters['status']) && !empty($filters['status'])) {
+            $vacancies->where('status', $filters['status']);
+        }
+
+        // Filter by start date range
+        // if (isset($filters['start_date']) && !empty($filters['start_date'])) {
+        //     $vacancies->where('start_date', '>=', $filters['start_date'])
+        //     ->orWhere('end_date', '>=', $filters['start_date']);
+        //     $vacancies->orWhere('start_date', '>=', $filters['start_date']);
+        // }
+
+        if (isset($filters['order_by']) && !empty($filters['order_by']) > 0) {
+            $order = $filters['order_type'] ?? 'asc';
+            $vacancies->orderBy($filters['order_by'], $order);
+        }
+    }
+
+    public function getVacancies($filters)
+    {
+        $response = $vacanciesRaw = [];
+        $vacancies = $this->vacancy->getVacancy();
+
+        $this->filterVacancies($vacancies, $filters);
+        $vacanciesRaw = $vacancies->get()->toArray();
+        //Formating the data
+        $this->formatVacancies($vacanciesRaw, $response);
+
+        return $response;
+    }
+
+    public function formatVacancies($data, &$response)
+    {
+        if (count($data) > 0) {
+            foreach ($data as $value) {
+                $temp = [];
+                $temp['location_id'] = $value['location_id'];
+                $temp['location_name'] = $value['location'] ? $value['location']['location_name'] ?? '': '';
+                $temp['workstation_id'] = $value['workstations'] ? $value['workstations']['location_name'] ?? '' : '';
+                $temp['workstation_name'] = $value['workstations'] ? $value['workstations']['workstation_name'] ?? '' : '';
+                $temp['employee_types'] = array_map(function($employeeType) {
+                    return [
+                        'label' => $employeeType['employee_type']['name'],
+                        'value' => $employeeType['employee_types_id'],
+                    ];
+                }, $value['employee_types']);
+                $temp['extra_info'] = $value['extra_info'];
+                $temp['vacancy_count'] = $value['vacancy_count'];
+                $temp['status'] = $value['status'];
+                $temp['start_date'] = $value['start_date'];
+                $temp['start_time'] = $value['start_time'];
+                $temp['end_time'] = $value['end_time'];
+                $temp['repeat_type'] = $value['repeat_type'];
+                $temp['function_id'] = $value['function_id'];
+                $temp['function_name'] = $value['functions']['name'];
+                $temp['employees'] = array_map(function($data) {
+                        $employee_basic_details = $data['employee_profile']['employee_basic_details'];
+                        return [
+                            'value' => $data['employee_profile_id'],
+                            'label' => $employee_basic_details['first_name']. ' '.$employee_basic_details['last_name'],
+                            'status' => $data['request_status'],
+                            'request_at' => $data['request_at'],
+                            'responded_by' => $data['responded_by'],
+                        ];
+                     }, $value['vacancy_post_employees']
+                );
+                $response[] = $temp;
+            }
+        }
     }
 }

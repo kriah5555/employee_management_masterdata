@@ -5,6 +5,7 @@ namespace App\Models\Company\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\User\User;
+use App\Models\User\UserBasicDetails;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Absence\Absence;
 
@@ -74,5 +75,10 @@ class EmployeeProfile extends BaseModel
     public function absences()
     {
         return $this->hasMany(Absence::class);
+    }
+
+    public function employeeBasicDetails()
+    {
+        return $this->belongsTo(UserBasicDetails::class, 'user_id', 'user_id');
     }
 }

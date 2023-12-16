@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\Location;
 use App\Models\Company\Workstation;
+use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Planning\{
     VacancyEmployeeTypes,
     VacancyFunctions,
@@ -85,10 +86,10 @@ class Vacancy extends Model
         return $this->belongsTo(Workstation::class, 'workstation_id');
     }
 
-    // public function functions()
-    // {
-    //     return $this->hasMany(VacancyFunctions::class);
-    // }
+    public function functions()
+    {
+        return $this->belongsTo(FunctionTitle::class, 'function_id', 'id');
+    }
 
     public function employeeTypes()
     {
@@ -100,8 +101,15 @@ class Vacancy extends Model
         return $this->hasMany(VacancyPostEmployees::class);
     }
 
-    // public function vacancyRepeat()
-    // {
-    //     return $this->hasOne(VacancyRepeat::class);
-    // }
+    public function getVacancy()
+    {
+        return $this->with(
+            [
+                'location',
+                'workstations',
+                'functions',
+                'employeeTypes.employeeType',
+                'vacancyPostEmployees.employeeProfile.employeeBasicDetails'
+            ]);
+    }
 }

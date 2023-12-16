@@ -63,6 +63,6 @@ class VacancyEmployeeTypes extends Model
 
     public function employeeType()
     {
-        return $this->belongsTo(EmployeeType::class, 'employee_type_id');
+        return $this->belongsTo(EmployeeType::class, 'employee_types_id');
     }
 }

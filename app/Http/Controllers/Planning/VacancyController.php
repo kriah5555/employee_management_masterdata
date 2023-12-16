@@ -38,61 +38,6 @@ class VacancyController extends Controller
         }
     }
 
-    public function filterVacancies(&$vacancies, $request)
-    {
-        // Filter by location
-        if ($locationId = $request->get('location_id')) {
-            $vacancies->where('location_id', $locationId);
-        }
-
-        // Filter by functions
-        if ($functionIds = $request->get('functions')) {
-            $vacancies->whereHas('functions', function ($query) use ($functionIds) {
-                $query->whereIn('id', $functionIds);
-            });
-        }
-
-        // Filter by employee types
-        if ($employeeTypeIds = $request->get('employee_types')) {
-            $vacancies->whereHas('employeeTypes', function ($query) use ($employeeTypeIds) {
-                $query->whereIn('id', $employeeTypeIds);
-            });
-        }
-
-        // Filter by status
-        if ($status = $request->get('status')) {
-            $vacancies->where('status', $status);
-        }
-
-        // Filter by start date range
-        if ($startDate = $request->get('start_date_from')) {
-            $vacancies->where('start_date_time', '>=', $startDate);
-        }
-
-        if ($endDate = $request->get('start_date_to')) {
-            $vacancies->where('start_date_time', '<=', $endDate);
-        }
-
-        // Filter by end date range
-        if ($endDate = $request->get('end_date_from')) {
-            $vacancies->where('end_date_time', '>=', $endDate);
-        }
-
-        if ($endDate = $request->get('end_date_to')) {
-            $vacancies->where('end_date_time', '<=', $endDate);
-        }
-    }
-
-    public function orderVacancies(&$vacancies, $request)
-    {
-        $orderBy = $request->get('order_by');
-        $direction = $request->get('order_direction', 'asc');
-    
-        if ($orderBy) {
-            $vacancies->orderBy($orderBy, $direction);
-        }
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -101,18 +46,25 @@ class VacancyController extends Controller
      */
     public function index(Request $request)
     {
-        $vacancies = Vacancy::with('location', 'workstations', 'employeeTypes.employeeType')->get();
-
-        // Filter by parameters
-        // $this->filterVacancies($vacancies, $request);
-
-        // Order by
-        // $this->orderVacancies($vacancies, $request);
-
-        // Pagination
-        // $vacancies = $vacancies->paginate($request->get('per_page') ?? 10);
-
-        return response()->json($vacancies, 200);
+        $filters = $request->all();
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Vacancies created successfully'),
+                    'data'    => $this->vacancyService->getVacancies($filters)
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -195,17 +147,7 @@ class VacancyController extends Controller
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
-        // $vacancy = Vacancy::findOrFail($id);
-
-        // $validator = Validator::make($request->all(), );
-
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 400);
-        // }
-
-
-
-        return response()->json($vacancy, 200);
+        // return response()->json($vacancy, 200);
     }
 
     public function destroy($id)

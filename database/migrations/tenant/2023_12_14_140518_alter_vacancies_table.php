@@ -26,9 +26,12 @@ return new class extends Migration
                 $table->integer('updated_by')->nullable()->change();
             });
         }
-        if (schema::hasTable('vacancy_post_employee')){
+        if (schema::hasTable('vacancy_post_employee') && !Schema::hasColumns('vacancy_post_employee', ['vacancy_date']) ){
             Schema::table('vacancy_post_employee', function (Blueprint $table) {
                 $table->date('vacancy_date');
+                $table->integer('responded_by')->nullable()->change();
+                $table->timestamp('responded_at')->nullable()->change();
+                $table->integer('plan_id')->nullable()->change();
             });
         }
         if (schema::hasTable('vacancy_employee_types')){
