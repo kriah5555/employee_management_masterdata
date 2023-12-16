@@ -11,7 +11,7 @@ use App\Models\Company\Employee\EmployeeSalaryDetails;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Repositories\Employee\EmployeeContractRepository;
 
-class   
+class EmployeeContractService
 {
 
     public function __construct(
