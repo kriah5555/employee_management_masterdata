@@ -5,19 +5,20 @@ namespace App\Services\Employee;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeType\EmployeeType;
+use App\Services\Employee\EmployeeService;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeSalaryDetails;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Repositories\Employee\EmployeeContractRepository;
 
-
 class EmployeeContractService
 {
 
     public function __construct(
+        protected EmployeeService $employeeService,
+        protected EmployeeSalaryDetails $employeeSalaryDetails,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected EmployeeContractRepository $employeeContractRepository,
-        protected EmployeeSalaryDetails $employeeSalaryDetails,
     ) {
     }
 
@@ -52,23 +53,28 @@ class EmployeeContractService
             'long_term'                 => false,
             'employee_function_details' => [],
         ];
+        $employee_sub_type = '';
         if ($employeeContract->longTermEmployeeContract()->exists()) {
-            $contractDetails['long_term']                       = true;
             $longTermEmployeeContract                           = $employeeContract->longTermEmployeeContract;
-            $contractDetails['sub_type']                        = config('constants.SUB_TYPE_OPTIONS')[$longTermEmployeeContract->sub_type];
-            $contractDetails['schedule_type']                   = config('constants.SCHEDULE_TYPE_OPTIONS')[$longTermEmployeeContract->schedule_type];
-            $contractDetails['employment_type']                 = config('constants.EMPLOYMENT_TYPE_OPTIONS')[$longTermEmployeeContract->employment_type];
+            $employee_sub_type                                  = config('constants.SUB_TYPE_OPTIONS')[$longTermEmployeeContract->sub_type];
+            $contractDetails['long_term']                       = true;
+            $contractDetails['sub_type']                        = $employee_sub_type;
+            $contractDetails['schedule_type']                   = config('constants.SCHEDULE_TYPE_OPTIONS')[$longTermEmployeeContract->schedule_type] ?? null;
+            $contractDetails['employment_type']                 = config('constants.EMPLOYMENT_TYPE_OPTIONS')[$longTermEmployeeContract->employment_type] ?? null;
             $contractDetails['weekly_contract_hours']           = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['formatted_weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['work_days_per_week']              = $longTermEmployeeContract->work_days_per_week;
         }
         foreach ($employeeContract->employeeFunctionDetails as $function) {
+            $experience_in_months = ($function->salary) ? $function->experience : null;
             $contractDetails['employee_function_details'][] = [
                 'function_details_id' => $function->id,
                 'function_title'      => $function->functionTitle->name,
                 'function_title_id'   => $function->functionTitle->id,
                 'salary'              => ($function->salary) ? $function->salary->salary : null,
                 'salary_european'     => ($function->salary) ? $function->salary->salary_european : null,
+                'experience'          => $experience_in_months,
+                'minimum_salary'      => $this->employeeService->getSalary($employeeContract->employee_type_id, $function->functionTitle->id, $experience_in_months, $employee_sub_type),
             ];
         }   
         return $contractDetails;
