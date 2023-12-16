@@ -34,6 +34,7 @@ use App\Http\Controllers\Employee\{
 use App\Http\Controllers\{
     Sector\SectorController,
 };
+use App\Http\Controllers\ReasonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,11 +112,11 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeController::class,
                 'methods'    => ['index', 'show', 'store', 'update', 'destroy']
             ],
-            'employee-contracts'                  => [
+            'employee-contracts'         => [
                 'controller' => EmployeeContractController::class,
                 'methods'    => ['show', 'store', 'update', 'destroy', 'create']
             ],
-            'employee-benefits'                  => [
+            'employee-benefits'          => [
                 'controller' => EmployeeBenefitsController::class,
                 'methods'    => ['show', 'update', 'create']
             ],
@@ -161,5 +162,12 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
 
         Route::get('get-company-linked-functions', [SectorController::class, 'getCompanyLinkedFunctions']);
+
+        Route::controller(ReasonController::class)->group(function () {
+
+            Route::get('start-plan-reasons', 'getStartPlanReasons');
+
+            Route::get('stop-plan-reasons', 'getStopPlanReasons');
+        });
     });
 });

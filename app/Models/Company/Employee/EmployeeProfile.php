@@ -5,6 +5,7 @@ namespace App\Models\Company\Employee;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\User\User;
+use App\Models\User\UserBasicDetails;
 use App\Models\Company\Absence\Absence;
 use App\Models\Company\Employee\EmployeeCommute;
 use App\Models\Company\Employee\EmployeeContract;
@@ -86,5 +87,9 @@ class EmployeeProfile extends BaseModel
     public function employeeCommute()
     {
         return $this->hasMany(EmployeeCommute::class);
+    }
+    public function employeeBasicDetails()
+    {
+        return $this->belongsTo(UserBasicDetails::class, 'user_id', 'user_id');
     }
 }
