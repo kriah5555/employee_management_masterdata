@@ -4,6 +4,9 @@ namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\Company\Employee\CommuteType;
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Models\Company\Location;
 
 class EmployeeCommute extends BaseModel
 {
@@ -58,4 +61,21 @@ class EmployeeCommute extends BaseModel
         'distance',
         'status',
     ];
+
+    
+    public function employeeProfile()
+    {
+        return $this->belongsTo(EmployeeProfile::class, 'employee_profile_id');
+    }
+
+
+    public function commuteType()
+    {
+        return $this->belongsTo(CommuteType::class, 'commute_type_id');
+    }
+
+    function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
 }

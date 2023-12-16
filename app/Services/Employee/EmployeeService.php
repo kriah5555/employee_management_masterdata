@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\Email\MailService;
 use App\Services\Employee\EmployeeContractService;
 use App\Services\Employee\EmployeeBenefitService;
+use App\Services\Employee\EmployeeCommuteService;
 
 class EmployeeService
 {
@@ -31,8 +32,6 @@ class EmployeeService
         protected UserService $userService,
         protected MailService $mailService,
         protected CompanyService $companyService,
-        protected EmployeeBenefitService $employeeBenefitService,
-        protected EmployeeContractService $employeeContractService,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
     ) {
@@ -164,8 +163,9 @@ class EmployeeService
                 $this->createCompanyUser($user, $company_id, 'employee');
                 $employeeProfile = $this->createEmployeeProfile($user, $values);
                 $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-                $this->employeeContractService->createEmployeeContract($values, $employeeProfile->id);
-                $this->employeeBenefitService->createEmployeeBenefits($values, $employeeProfile->id);
+                app(EmployeeContractService::class)->createEmployeeContract($values, $employeeProfile->id);
+                app(EmployeeBenefitService::class)->createEmployeeBenefits($values, $employeeProfile->id);
+                app(EmployeeCommuteService::class)->createEmployeeCommuteDetails($values, $employeeProfile->id);
                 
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
