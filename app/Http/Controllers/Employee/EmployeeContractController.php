@@ -29,7 +29,7 @@ class EmployeeContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee contract successfully',
+                    'message' => 'Employee contract created successfully',
                     'data'    => $this->employeeContractService->createEmployeeContract($request->all()),
                 ],
                 JsonResponse::HTTP_OK,
@@ -119,7 +119,7 @@ class EmployeeContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee contract successfully',
+                    'message' => 'Employee contract updated successfully',
                     'data'    => $this->employeeContractService->updateEmployeeContract($request->all(), $employee_contract_id),
                 ],
                 JsonResponse::HTTP_OK,

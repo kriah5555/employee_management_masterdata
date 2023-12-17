@@ -92,7 +92,7 @@ class EmployeeBenefitsController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee contract successfully',
+                    'message' => 'Employee benefits updated successfully',
                     'data'    => $this->employeeBenefitService->updateEmployeeBenefits($request->validated(), $employee_profile_id),
                 ],
                 JsonResponse::HTTP_OK,
