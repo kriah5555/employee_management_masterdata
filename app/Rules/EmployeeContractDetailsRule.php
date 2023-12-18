@@ -20,29 +20,47 @@ class EmployeeContractDetailsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!array_key_exists('employee_type_id', $value) || $value['employee_type_id'] == '') {
+        $employee_category_id = $value['employee_type_id'];
+        if (!array_key_exists('employee_type_id', $value) || $employee_category_id == '') {
             $fail('Please select employee type');
         } else {
-            $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($value['employee_type_id']);
-            if ($employeeType->employeeTypeCategory->sub_category_types && !array_key_exists('sub_type', $value)) {
-                $fail('Please select sub type');
-            } elseif (!in_array($value['sub_type'], array_keys(config('constants.SUB_TYPE_OPTIONS')))) {
-                $fail('Incorrect sub type');
+            $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($employee_category_id);
+            if ($employeeType->employeeTypeCategory->sub_category_types) {
+                if (!array_key_exists('sub_type', $value)) {
+                    $fail('Please select sub type');
+                } elseif (!in_array($value['sub_type'], array_keys(config('constants.SUB_TYPE_OPTIONS')))) {
+                    $fail('Incorrect sub type');
+                }
             }
-            if ($employeeType->employeeTypeCategory->schedule_types && !array_key_exists('schedule_type', $value)) {
-                $fail('Please select schedule type');
-            } elseif (!in_array($value['schedule_type'], array_keys(config('constants.SCHEDULE_TYPE_OPTIONS')))) {
-                $fail('Incorrect schedule type');
+
+            if ($employeeType->employeeTypeCategory->schedule_types) {
+                if (!array_key_exists('schedule_type', $value)) {
+                    $fail('Please select schedule type');
+                } elseif (!in_array($value['schedule_type'], array_keys(config('constants.SCHEDULE_TYPE_OPTIONS')))) {
+                    $fail('Incorrect schedule type');
+                }
             }
-            if ($employeeType->employeeTypeCategory->employment_types && !array_key_exists('employment_type', $value)) {
-                $fail('Please select employment type');
-            } elseif (!in_array($value['employment_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
-                $fail('Incorrect employment type');
+
+            if ($employeeType->employeeTypeCategory->employment_types) {
+                if (!array_key_exists('employment_type', $value)) {
+                    $fail('Please select employment type');
+                } elseif (!in_array($value['employment_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
+                    $fail('Incorrect employment type');
+                }
             }
-            if ($employeeType->id == 1 && !array_key_exists('weekly_contract_hours', $value)) {
-                $fail('Please enter weekly contract hours');
-            } elseif (!is_numeric(str_replace(',', '.', $value['weekly_contract_hours']))) {
-                $fail('Incorrect weekly contract hours');
+            
+            if ($employee_category_id == config('constants.LONG_TERM_CONTRACT_ID') && !array_key_exists('weekly_contract_hours', $value)) {
+                if (!array_key_exists('weekly_contract_hours', $value)) {
+                    $fail('Please enter weekly contract hours');
+                } elseif (!is_numeric(str_replace(',', '.', $value['weekly_contract_hours']))) {
+                    $fail('Incorrect weekly contract hours');
+                }
+
+                if (!array_key_exists('work_days_per_week', $value)) {
+                    $fail('Please enter work days per week');
+                } elseif (!is_int(is_numeric($value['weekly_contract_hours'])) || $value['weekly_contract_hours'] > 7) {
+                    $fail('Incorrect work days per week');
+                }
             }
         }
         

@@ -71,9 +71,13 @@ class PlanningService implements PlanningInterface
      * @param  [type] $data
      * @return array
      */
-    public function workStationFormat($data)
+    public function getWorkstations()
     {
-        $response = [];
+        $data = $response = [];
+        $data = $this->location->with(['workstationsValues' => function($query) {
+                $query->orderBy('workstation_name', 'ASC');
+            }])->get()->toArray();
+        
         foreach ($data as $value) {
             $response[$value['id']]['id'] = $value['id'];
             $response[$value['id']]['name'] = $value['location_name'];
@@ -100,10 +104,9 @@ class PlanningService implements PlanningInterface
     public function getPlanningOverviewFilterService($companyId)
     {
         $output['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
-        $output['workstations'] = $this->location->with('workstationsValues')->get()->toArray();
 
         $response['locations'] = $this->optionsFormat($output['locations']);
-        $response['workstations'] = $this->workStationFormat($output['workstations']);
+        $response['workstations'] = $this->getWorkstations();
         $response['employee_types'] = $this->getEmployeeTypes($companyId);
 
         return $response;

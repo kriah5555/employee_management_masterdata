@@ -29,7 +29,7 @@ class EmployeeContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee contract successfully',
+                    'message' => 'Employee contract created successfully',
                     'data'    => $this->employeeContractService->createEmployeeContract($request->all()),
                 ],
                 JsonResponse::HTTP_OK,
@@ -101,7 +101,7 @@ class EmployeeContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee contracts deleted successfully' 
+                    'message' => 'Employee contracts deleted successfully'
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -119,8 +119,33 @@ class EmployeeContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee contract successfully',
+                    'message' => 'Employee contract updated successfully',
                     'data'    => $this->employeeContractService->updateEmployeeContract($request->all(), $employee_contract_id),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    /**
+     * API to get list of all employee types.
+     */
+    public function getActiveContractEmployees(Request $request)
+    {
+        $weekNumber = $request->input('week_number');
+        $year = $request->input('year');
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeContractService->getActiveContractEmployeesByWeek($weekNumber, $year)
                 ],
                 JsonResponse::HTTP_OK,
             );

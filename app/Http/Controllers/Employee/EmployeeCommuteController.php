@@ -16,7 +16,7 @@ class EmployeeCommuteController extends Controller
         protected EmployeeCommuteService $employeeCommuteService,
     )
     {
-        
+
     }
     /**
      * Display a listing of the resource.

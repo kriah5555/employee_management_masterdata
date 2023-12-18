@@ -20,7 +20,7 @@ class EmployeeCommuteDetailsRule implements ValidationRule
         $rules = [
             "location_id"     =>  ['bail', 'integer', 'required', new LocationLinkedToCompanyRule()],
             "commute_type_id" => ['bail', 'integer', 'required', new CommuteTypeRule()],
-            "distance" => "required|digits_between:1,5", 
+            "distance"        => "required|digits_between:1,5", 
         ];
 
         $location_ids = collect($value)->pluck('location_id')->toArray();
