@@ -19,9 +19,9 @@ class EmployeeContractRequest extends ApiRequest
             'employee_function_details' => ['bail', 'required', 'array', new EmployeeFunctionDetailsRule()],
         ];
 
-        // if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-        //     unset($rules['employee_profile_id']);
-        // }
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            unset($rules['employee_profile_id']);
+        }
 
         return $rules;
     }
