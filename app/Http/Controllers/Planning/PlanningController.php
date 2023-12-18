@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePlanningRequest;
-use App\Http\Requests\UpdatePlanningRequest;
-use App\Models\Planning\PlanningBase;
 use App\Services\Planning\PlanningService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -194,6 +191,27 @@ class PlanningController extends Controller
                     'success' => true,
                     'message' => 'Employee options',
                     'data'    => $data
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getPlanDetails($planId)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee options',
+                    'data'    => $this->planningService->getPlanningById($planId)
                 ],
                 JsonResponse::HTTP_OK,
             );

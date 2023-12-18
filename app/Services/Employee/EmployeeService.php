@@ -153,20 +153,20 @@ class EmployeeService
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
             DB::connection('tenant')->beginTransaction();
-                $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
-                if ($existingEmpProfile->isEmpty()) {
-                    $user = $this->userService->createNewUser($values);
-                } else {
-                    $user = $existingEmpProfile->last();
-                }
-                $user->assignRole('employee');
-                $this->createCompanyUser($user, $company_id, 'employee');
-                $employeeProfile = $this->createEmployeeProfile($user, $values);
-                $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-                app(EmployeeContractService::class)->createEmployeeContract($values, $employeeProfile->id);
-                app(EmployeeBenefitService::class)->createEmployeeBenefits($values, $employeeProfile->id);
-                app(EmployeeCommuteService::class)->createEmployeeCommuteDetails($values, $employeeProfile->id);
-                
+            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+            if ($existingEmpProfile->isEmpty()) {
+                $user = $this->userService->createNewUser($values);
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+            $user->assignRole('employee');
+            $this->createCompanyUser($user, $company_id, 'employee');
+            $employeeProfile = $this->createEmployeeProfile($user, $values);
+            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+            app(EmployeeContractService::class)->createEmployeeContract($values, $employeeProfile->id);
+            app(EmployeeBenefitService::class)->createEmployeeBenefits($values, $employeeProfile->id);
+            app(EmployeeCommuteService::class)->createEmployeeCommuteDetails($values, $employeeProfile->id);
+
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             DB::connection('tenant')->commit();
