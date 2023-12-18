@@ -20,11 +20,11 @@ class EmployeeContractDetailsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $employee_category_id = $value['employee_type_id'];
-        if (!array_key_exists('employee_type_id', $value) || $employee_category_id == '') {
+        $employee_type_id = $value['employee_type_id'];
+        if (!array_key_exists('employee_type_id', $value) || $employee_type_id == '') {
             $fail('Please select employee type');
         } else {
-            $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($employee_category_id);
+            $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($employee_type_id);
             if ($employeeType->employeeTypeCategory->sub_category_types) {
                 if (!array_key_exists('sub_type', $value)) {
                     $fail('Please select sub type');
@@ -49,7 +49,7 @@ class EmployeeContractDetailsRule implements ValidationRule
                 }
             }
             
-            if ($employee_category_id == config('constants.LONG_TERM_CONTRACT_ID') && !array_key_exists('weekly_contract_hours', $value)) {
+            if ($employee_type_id == config('constants.LONG_TERM_CONTRACT_ID') && !array_key_exists('weekly_contract_hours', $value)) {
                 if (!array_key_exists('weekly_contract_hours', $value)) {
                     $fail('Please enter weekly contract hours');
                 } elseif (!is_numeric(str_replace(',', '.', $value['weekly_contract_hours']))) {
