@@ -49,6 +49,7 @@ class EmployeeContractService
             'id'                        => $employeeContract->id,
             'start_date'                => $employeeContract->start_date,
             'end_date'                  => $employeeContract->end_date,
+            'employee_type_id'          => $employeeContract->employee_type_id, # employee category id ling term, short term
             'employee_type'             => $employeeContract->employeeType->name,
             'long_term'                 => false,
             'employee_function_details' => [],
