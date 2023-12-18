@@ -170,8 +170,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
 
         Route::get('/translations/{key?}', 'index');
-
-        Route::post('/translations', 'store');
+        
+        Route::resource('translations', TranslationController::class)->only(['store', 'destroy']);
 
         Route::post('/translate', 'getStringTranslation');
     });

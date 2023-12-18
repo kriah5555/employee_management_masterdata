@@ -35,11 +35,11 @@ class HolidayRequest extends ApiRequest
                 'required',
                 'integer',
             ],
-            // 'manager_id' => [
-            //     'bail',
-            //     'required',
-            //     'integer',
-            // ],
+            'manager_id' => [
+                'bail',
+                'required',
+                'integer',
+            ],
             'reason' => 'required|string',
 
             'dates' => [

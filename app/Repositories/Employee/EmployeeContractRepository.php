@@ -18,9 +18,6 @@ class EmployeeContractRepository implements EmployeeContractRepositoryInterface
 
         $employeeContract = EmployeeContract::findOrFail($employeeContractId);
 
-        // Delete associated EmployeeFunctionDetails
-        
-        // Delete associated EmployeeSalaryDetails
         $employeeContract->employeeFunctionDetails()->delete();
         
         $employeeContract->employeeFunctionDetails()->delete();

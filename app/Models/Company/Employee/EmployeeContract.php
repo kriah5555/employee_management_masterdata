@@ -98,6 +98,6 @@ class EmployeeContract extends BaseModel
 
     public function getEndDateAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y');
+        return $value ? Carbon::parse($value)->format('d-m-Y') : null;
     }
 }
