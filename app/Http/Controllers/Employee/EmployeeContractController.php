@@ -10,6 +10,7 @@ use App\Services\Employee\EmployeeService;
 use App\Services\EmployeeFunction\FunctionService;
 use App\Services\Employee\EmployeeContractService;
 use App\Http\Requests\Employee\EmployeeContractRequest;
+use Illuminate\Http\Request;
 
 
 class EmployeeContractController extends Controller
