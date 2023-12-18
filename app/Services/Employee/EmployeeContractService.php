@@ -49,7 +49,7 @@ class EmployeeContractService
             'id'                        => $employeeContract->id,
             'start_date'                => $employeeContract->start_date,
             'end_date'                  => $employeeContract->end_date,
-            'employee_type_id'          => $employeeContract->employee_type_id, # employee category id ling term, short term
+            'employee_type_id'          => $employeeContract->employeeType->id, 
             'employee_type'             => $employeeContract->employeeType->name,
             'long_term'                 => false,
             'employee_function_details' => [],
@@ -60,8 +60,8 @@ class EmployeeContractService
             $employee_sub_type                                  = config('constants.SUB_TYPE_OPTIONS')[$longTermEmployeeContract->sub_type] ?? null;
             $contractDetails['long_term']                       = true;
             $contractDetails['sub_type']                        = $employee_sub_type;
-            $contractDetails['schedule_type']                   = config('constants.SCHEDULE_TYPE_OPTIONS')[$longTermEmployeeContract->schedule_type] ?? null;
-            $contractDetails['employment_type']                 = config('constants.EMPLOYMENT_TYPE_OPTIONS')[$longTermEmployeeContract->employment_type] ?? null;
+            $contractDetails['schedule_type']                   = $longTermEmployeeContract->schedule_type ?? null;
+            $contractDetails['employment_type']                 = $longTermEmployeeContract->employment_type ?? null;
             $contractDetails['weekly_contract_hours']           = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['formatted_weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['work_days_per_week']              = $longTermEmployeeContract->work_days_per_week;

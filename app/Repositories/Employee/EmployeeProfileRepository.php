@@ -7,6 +7,7 @@ use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\User\User;
+use App\Models\EmployeeType\EmployeeType;
 
 class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 {
@@ -35,11 +36,6 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         return EmployeeProfile::whereId($employeeProfileId)->update($newDetails);
     }
 
-    public function getAllEmployeeProfilesByCompany(string $companyId)
-    {
-        return EmployeeProfile::where('company_id', '=', $companyId)->get();
-    }
-
     public function getEmployeeProfileInCompanyBySsn(string $companyId, string $socialSecurityNumber)
     {
         return EmployeeProfile::where('company_id', '=', $companyId)
@@ -61,5 +57,19 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
     public function getEmployeeProfileBySsn(string $socialSecurityNumber)
     {
         return EmployeeProfile::whereRaw("REPLACE(REPLACE(social_security_number, '.', ''), '-', '') = ?", [$socialSecurityNumber])->get();
+    }
+
+    public function getEmployeesForHoliday()
+    {
+
+        $employee_types_with_holiday_access = EmployeeType::with()->get();
+        // Use the "with" method to eager load the necessary relationships
+        $employees = EmployeeProfile::with('employeeContracts.employeeType.employeeTypeConfig')
+            ->whereHas('employeeContracts.employeeType.employeeTypeConfig', function ($query) {
+                $query->where('holiday_access', true);
+            })
+            ->get();
+    
+        return $employees;
     }
 }

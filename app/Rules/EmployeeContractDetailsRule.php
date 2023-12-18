@@ -20,11 +20,12 @@ class EmployeeContractDetailsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $employee_category_id = $value['employee_type_id'];
         if (!array_key_exists('employee_type_id', $value) || $employee_category_id == '') {
             $fail('Please select employee type');
         } else {
             $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($employee_category_id);
+            $employee_category_id = $employeeType->employeeTypeCategory->id;
+
             if ($employeeType->employeeTypeCategory->sub_category_types) {
                 if (!array_key_exists('sub_type', $value)) {
                     $fail('Please select sub type');

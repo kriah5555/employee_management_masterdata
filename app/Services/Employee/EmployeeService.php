@@ -475,14 +475,4 @@ class EmployeeService
             'functions'      => $activeFunctions,
         ];
     }
-
-    public function getEmployeesForHoliday()
-    {
-
-    }
-
-    public function getEmployeesForLeave()
-    {
-        
-    }
 }

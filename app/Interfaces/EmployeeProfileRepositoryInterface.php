@@ -14,7 +14,6 @@ interface EmployeeProfileRepositoryInterface
 
     public function updateEmployeeProfile(string $employeeProfileId, array $newDetails);
 
-    public function getAllEmployeeProfilesByCompany(string $companyId);
 
     public function getEmployeeProfileInCompanyBySsn(string $companyId, string $socialSecurityNumber);
     public function checkEmployeeExistsInCompany(string $companyId, string $socialSecurityNumber);
