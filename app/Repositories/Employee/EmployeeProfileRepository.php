@@ -62,13 +62,14 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
     public function getEmployeesForHoliday()
     {
 
-        $employee_types_with_holiday_access = EmployeeType::with()->get();
+        $employee_types_with_holiday_access = EmployeeType::with('')->get();
+        
         // Use the "with" method to eager load the necessary relationships
-        $employees = EmployeeProfile::with('employeeContracts.employeeType.employeeTypeConfig')
-            ->whereHas('employeeContracts.employeeType.employeeTypeConfig', function ($query) {
-                $query->where('holiday_access', true);
-            })
-            ->get();
+        // $employees = EmployeeProfile::with('employeeContracts.employeeType.employeeTypeConfig')
+        //     ->whereHas('employeeContracts.employeeType.employeeTypeConfig', function ($query) {
+        //         $query->where('holiday_access', true);
+        //     })
+        //     ->get();
     
         return $employees;
     }
