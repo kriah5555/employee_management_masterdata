@@ -143,7 +143,7 @@ class ContractTemplateController extends Controller
 
             $htmlOutput = shell_exec("pdftohtml -i -noframes -stdout '$pdfFilePath'");
             
-            $htmlOutput = html_entity_decode($htmlOutput, ENT_QUOTES, 'UTF-8'); # Decode HTML entities
+            // $htmlOutput = html_entity_decode($htmlOutput, ENT_QUOTES, 'UTF-8'); # Decode HTML entities
 
             // dd($htmlOutput);
 
