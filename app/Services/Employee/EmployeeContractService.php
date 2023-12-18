@@ -130,21 +130,33 @@ class EmployeeContractService
                 } else {
                     $employeeContract->longTermEmployeeContract()->delete();
                 }
-                
-                $employeeContract->employeeFunctionDetails()->delete();
-
-                // Delete all associated EmployeeSalaryDetails records
-                $employeeContract->employeeFunctionDetails()->each(function ($functionDetail) {
-                    $functionDetail->salary()->delete();
-                });
 
                 $employeeFunctionDetailsData = $values['employee_function_details'];
 
+                $employee_function_detail_ids = [];
                 foreach ($employeeFunctionDetailsData as $function_details) {
                     $function_details['employee_profile_id'] = $employee_profile_id;
-                    $function_details['salary_id']           = $this->employeeSalaryDetails::create($function_details)->id;
-                    $employeeContract->employeeFunctionDetails()->create($function_details);
+
+                    $existingRecord = $employeeContract->employeeFunctionDetails()
+                                    ->where('function_id', $function_details['function_id'])
+                                    ->first();
+                
+                    if ($existingRecord) {
+                        $employee_function_detail_ids[] = $existingRecord->id;
+                        $existingRecord->salary()->update(['salary' => $function_details['salary'] ]);
+                    } else {
+                        $function_details['salary_id']  = $this->employeeSalaryDetails::create($function_details)->id;
+                        $employee_function_detail_ids[] = $employeeContract->employeeFunctionDetails()->create($function_details)->id;
+                    }
                 }
+                
+                $employee_contracts_to_delete = $employeeContract->employeeFunctionDetails()->whereNotIn('id', $employee_function_detail_ids);
+
+                $employee_contracts_to_delete->each(function ($functionDetail) {
+                    $functionDetail->salary()->delete();
+                });
+
+                $employee_contracts_to_delete->delete();# Delete records that are not in $employee_function_detail_ids
 
             DB::connection('tenant')->commit();
             return $employeeContract;
