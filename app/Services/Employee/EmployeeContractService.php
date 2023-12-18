@@ -70,7 +70,7 @@ class EmployeeContractService
             $contractDetails['employee_function_details'][] = [
                 'function_details_id' => $function->id,
                 'function_title'      => $function->functionTitle->name,
-                'function_title_id'   => $function->functionTitle->id,
+                'function_id'         => $function->functionTitle->id, # function title id
                 'salary'              => ($function->salary) ? $function->salary->salary : null,
                 'salary_european'     => ($function->salary) ? $function->salary->salary_european : null,
                 'experience'          => $experience_in_months,
