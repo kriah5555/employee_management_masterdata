@@ -40,7 +40,7 @@ class HolidayCodeDurationTypeRule implements ValidationRule
 
         $durationTypeRule = [
             'holiday_code'  => ['required', 'integer', new HolidayCodeLinkedToCompanyRule($companyId)],
-            'duration_type' => '',
+            'duration_type' => 'nullable|in:1,2',
         ];
 
         switch ($this->durationType) {
