@@ -7,6 +7,8 @@ use App\Models\Company\Absence\Absence;
 use App\Services\BaseService;
 use App\Repositories\Company\Absence\LeaveRepository;
 use App\Services\Company\Absence\AbsenceService;
+use App\Services\Holiday\HolidayCodeService;
+use App\Repositories\Employee\EmployeeProfileRepository;
 use Exception;
 use DateTime;
 
@@ -140,6 +142,19 @@ class LeaveService
             $leave = $this->leave_repository->getLeaveById($leaveId);
             $this->absence_service->deleteAbsence($leave);
             return;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getOptionsToCreate($company_id)
+    {
+        try {
+            return [
+                'leave_codes'   => app(HolidayCodeService::class)->getCompanyLeaveCodes($company_id),
+                'employees'     => app(EmployeeProfileRepository::class)->getEmployeesForHoliday(),
+            ];
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

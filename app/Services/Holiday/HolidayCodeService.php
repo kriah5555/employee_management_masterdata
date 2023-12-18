@@ -34,7 +34,7 @@ class HolidayCodeService
             $query->where('company_id', $company_id);
         })
             ->where('status', true)
-            ->where('type', config('absence.HOLIDAY'))
+            ->where('type', config('absence.LEAVE'))
             ->get();
     }
 

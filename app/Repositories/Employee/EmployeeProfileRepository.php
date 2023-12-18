@@ -62,15 +62,37 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
     public function getEmployeesForHoliday()
     {
 
-        $employee_types_with_holiday_access = EmployeeType::with('')->get();
-        
-        // Use the "with" method to eager load the necessary relationships
-        // $employees = EmployeeProfile::with('employeeContracts.employeeType.employeeTypeConfig')
-        //     ->whereHas('employeeContracts.employeeType.employeeTypeConfig', function ($query) {
-        //         $query->where('holiday_access', true);
-        //     })
-        //     ->get();
-    
+        $employee_types_with_holiday_access = EmployeeType::with(['employeeTypeConfig' => function ($employeeTypeConfig) {
+            $employeeTypeConfig->where('holiday_access', true);
+        }])->get();
+
+        $employee_type_ids_with_holiday_access = $employee_types_with_holiday_access->pluck('id');
+
+        $employees = EmployeeProfile::with([
+            'user',
+            'user.userBasicDetails',
+            'employeeContracts' => function ($employeeContracts) use ($employee_type_ids_with_holiday_access) {
+            $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
+        }])->get();
+
+        return $employees;
+    }
+
+    public function getEmployeesForLeave()
+    {
+        $employee_types_with_holiday_access = EmployeeType::with(['employeeTypeConfig' => function ($employeeTypeConfig) {
+            $employeeTypeConfig->where('leave_access', true);
+        }])->get();
+
+        $employee_type_ids_with_holiday_access = $employee_types_with_holiday_access->pluck('id');
+
+        $employees = EmployeeProfile::with([
+            'user',
+            'user.userBasicDetails',
+            'employeeContracts' => function ($employeeContracts) use ($employee_type_ids_with_holiday_access) {
+            $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
+        }])->get();
+
         return $employees;
     }
 }
