@@ -28,6 +28,16 @@ class HolidayCodeService
             ->get();
     }
 
+    public function getCompanyLeaveCodes($company_id) # will return all holiday codes
+    {
+        return $this->model::whereHas('companies', function ($query) use ($company_id) {
+            $query->where('company_id', $company_id);
+        })
+            ->where('status', true)
+            ->where('type', config('absence.HOLIDAY'))
+            ->get();
+    }
+
     public function getHolidayCodeDetails($id)
     {
         $holidayCode = $this->holidayCodeRepository->getHolidayCodeById($id);

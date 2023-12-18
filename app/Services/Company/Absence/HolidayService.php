@@ -146,6 +146,19 @@ class HolidayService
         }
     }
 
+    public function getOptionsToCreate($company_id)
+    {
+        try {
+            return [
+                'holiday_codes' => $this->holiday_code_service->getCompanyHolidayCodes($company_id),
+                'employees'     => '',
+            ];
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
     // public function getHolidayAbsenceStatusOptions()
     // {
     //     return getValueLabelOptionsFromConfig('absence.STATUS');

@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('absence', function (Blueprint $table) {
-            $table->date('applied_date')->nullable(); 
+	    if (!Schema::hasColumn('absence', 'applied_date')) {
+                $table->date('applied_date')->nullable();
+            }
         });
     }
 

@@ -152,7 +152,7 @@ class CompanyService implements CompanyServiceInterface
 
     public function getCompanyDetails($companyId): Company
     {
-        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails.socialSecretary', 'interimAgencies']);
+        return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails.socialSecretary', 'interimAgencies', 'logoFile']);
     }
 
     public function getCompanyById($companyId): Company

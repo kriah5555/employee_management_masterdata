@@ -64,6 +64,7 @@ class CompanyRequest extends ApiRequest
                 ],
                 'oauth_key'               => 'nullable|string',
                 'status'                  => 'boolean',
+                'logo'                    => '',
             ];
             if ($this->isMethod('post')) {
                 $rules['vat_number'] = [

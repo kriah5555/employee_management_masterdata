@@ -79,8 +79,8 @@ class UserBasicDetails extends BaseModel
         'last_name',
         'nationality',
         'date_of_birth',
-	'place_of_birth',
-	'gender_id',
+        'place_of_birth',
+        'gender_id',
         'license_expiry_date',
         'language',
         'extra_info'

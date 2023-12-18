@@ -49,6 +49,7 @@ class EmployeeContractService
             'id'                        => $employeeContract->id,
             'start_date'                => $employeeContract->start_date,
             'end_date'                  => $employeeContract->end_date,
+            'employee_type_id'          => $employeeContract->employee_type_id, # employee category id ling term, short term
             'employee_type'             => $employeeContract->employeeType->name,
             'long_term'                 => false,
             'employee_function_details' => [],
@@ -70,7 +71,7 @@ class EmployeeContractService
             $contractDetails['employee_function_details'][] = [
                 'function_details_id' => $function->id,
                 'function_title'      => $function->functionTitle->name,
-                'function_title_id'   => $function->functionTitle->id,
+                'function_id'         => $function->functionTitle->id, # function title id
                 'salary'              => ($function->salary) ? $function->salary->salary : null,
                 'salary_european'     => ($function->salary) ? $function->salary->salary_european : null,
                 'experience'          => $experience_in_months,
