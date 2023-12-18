@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (schema::hasTable('vacancies') && !Schema::hasColumns('vacancies', ['workstation_id', 'function_id']) ) {
             Schema::table('vacancies', function (Blueprint $table) {
-                $table->foreignId('workstation_id')->references('id')->on('workstations');
+               # $table->foreignId('workstation_id')->references('id')->on('workstations')->change();
                 $table->integer('function_id');
                 $table->dropColumn('start_date_time');
                 $table->dropColumn('end_date_time');
