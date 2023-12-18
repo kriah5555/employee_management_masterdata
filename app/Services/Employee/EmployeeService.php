@@ -390,7 +390,7 @@ class EmployeeService
     public function getResponsibleCompaniesForUser($user)
     {
         $companies = [];
-        if ($user->hasPermissionTo('Access all companies')) {
+        if ($user->is_admin || $user->is_moderator) {
             $companies = $this->companyService->getActiveCompanies();
         } else {
             $companyUsers = CompanyUser::where('user_id', $user->id)->get();
