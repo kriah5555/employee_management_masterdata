@@ -47,7 +47,7 @@ class MailService
     }
 
 
-    private function getEmployeeTokensData($employee_id)
+    private function getEmployeeTokensData($values)
     {
         return [
             '{employee_first_name}'    => $values['first_name'],
