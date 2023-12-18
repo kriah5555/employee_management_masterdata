@@ -57,7 +57,7 @@ class EmployeeContractService
         $employee_sub_type = '';
         if ($employeeContract->longTermEmployeeContract()->exists()) {
             $longTermEmployeeContract                           = $employeeContract->longTermEmployeeContract;
-            $employee_sub_type                                  = config('constants.SUB_TYPE_OPTIONS')[$longTermEmployeeContract->sub_type] ?? null;
+            $employee_sub_type                                  = $longTermEmployeeContract->sub_type ?? null;
             $contractDetails['long_term']                       = true;
             $contractDetails['sub_type']                        = $employee_sub_type;
             $contractDetails['schedule_type']                   = $longTermEmployeeContract->schedule_type ?? null;
