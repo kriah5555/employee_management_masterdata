@@ -271,7 +271,16 @@ class PlanningService implements PlanningInterface
 
     public function getPlanningById($planId)
     {
-        return $this->planningRepository->getPlanningById($planId);
+        return $this->planningRepository->getPlanningById($planId, [
+            'employeeType',
+            'workstation',
+            'functionTitle',
+            'employeeProfile',
+            'employeeProfile.user.userBasicDetails',
+            'timeRegistrations',
+            'contracts',
+            'breaks'
+        ]);
     }
 
     public function getWeeklyPlannings($location, $workstations, $employee_types, $weekNumber, $year)

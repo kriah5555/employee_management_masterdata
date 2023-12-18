@@ -34,7 +34,7 @@ Route::get('/check', function () {
 });
 
 Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(function () {
-    
+
     Route::controller(PlanningController::class)
         ->middleware(['initialize-tenancy'])
         ->prefix('planning')
@@ -45,7 +45,8 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
                 ['path' => 'get-monthly-planning', 'function' => 'getMonthlyPlanning'],
                 ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning'],
                 ['path' => 'get-day-planning', 'function' => 'getDayPlanning'],
-                ['path' => 'get-planning-create', 'function' => 'planningCreateOptions']
+                ['path' => 'get-planning-create', 'function' => 'planningCreateOptions'],
+                ['path' => 'details/{plan_id}', 'function' => 'getPlanDetails']
             ];
 
             foreach ($planningResouces as $api) {
