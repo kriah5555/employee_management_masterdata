@@ -36,7 +36,7 @@ class EmployeeRequest extends ApiRequest
                     new GenderRule(),
                 ],
                 'date_of_birth'       => 'required|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-                'place_of_birth'      => 'string|max:255',
+                'place_of_birth'      => 'nullable|string|max:255',
                 'street_house_no'     => 'required|string|max:255',
                 'postal_code'         => 'required|string|max:50',
                 'city'                => 'required|string|max:50',

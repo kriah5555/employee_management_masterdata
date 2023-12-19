@@ -33,6 +33,7 @@ use App\Http\Controllers\Employee\{
 
 use App\Http\Controllers\{
     Sector\SectorController,
+    Contract\ContractController
 };
 use App\Http\Controllers\ReasonController;
 
@@ -125,6 +126,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'methods'    => ['show', 'update', 'create']
             ],
         ];
+
+        // Route:resource('contracts', ContractController::class);
+        
+        Route::post('contracts', [ContractController::class, 'generateContract']);
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
