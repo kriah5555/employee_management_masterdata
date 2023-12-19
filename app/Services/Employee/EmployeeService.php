@@ -459,19 +459,22 @@ class EmployeeService
             });
         })->get();
         foreach ($activeContracts as $activeContract) {
-            $activeTypes[] = [
+            $activeTypes[$activeContract->employeeType->id] = [
                 'value' => $activeContract->employeeType->id,
                 'label' => $activeContract->employeeType->name,
             ];
             foreach ($activeContract->employeeFunctionDetails as $employeeFunctionDetails) {
-                $activeFunctions[$activeContract->employeeType->id][] = [
+                $activeFunctions[$activeContract->employeeType->id][$employeeFunctionDetails->functionTitle->id] = [
                     'value' => $employeeFunctionDetails->functionTitle->id,
                     'label' => $employeeFunctionDetails->functionTitle->name
                 ];
             }
         }
+        foreach ($activeFunctions as $key => $activeFunction) {
+            $activeFunctions[$key] = array_values($activeFunctions[$key]);
+        }
         return [
-            'employee_types' => $activeTypes,
+            'employee_types' => array_values($activeTypes),
             'functions'      => $activeFunctions,
         ];
     }
