@@ -137,6 +137,7 @@ if (!function_exists('microserviceRequest')) {
     {
         $apiGatewayUrl = config('app.service_gateway_url');
         $url = $apiGatewayUrl . $route;
+        $headers['authorization'] = request()->headers->get('authorization');
         return makeApiRequest($url, $method, $data, $headers);
     }
 }
@@ -386,3 +387,15 @@ if (!function_exists('numericToEuropean')) {
 
 }
 
+if (!function_exists('replaceContractTokens')) {
+    function replaceContractTokens($template, $data)
+    {
+        // Iterate through the data and replace tokens in the template
+        foreach ($data as $key => $value) {
+            $token = '{' . $key . '}';
+            $template = str_replace($token, $value, $template);
+        }
+
+        return $template;
+    }
+}

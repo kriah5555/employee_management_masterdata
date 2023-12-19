@@ -9,6 +9,7 @@ use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Sector\SectorService;
 use App\Services\CompanyService;
 use App\Services\EmployeeType\EmployeeTypeService;
+use App\Models\EmployeeType\EmployeeType;
 
 class ContractTemplateService
 {
@@ -84,5 +85,10 @@ class ContractTemplateService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function getTemplateForEmployeeType(EmployeeType $employeeType)
+    {
+        return ContractTemplate::where('employee_type_id', $employeeType->id)->first();
     }
 }
