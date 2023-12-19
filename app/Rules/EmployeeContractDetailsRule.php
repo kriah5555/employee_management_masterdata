@@ -40,7 +40,7 @@ class EmployeeContractDetailsRule implements ValidationRule
 
                 if (!array_key_exists('work_days_per_week', $value)) {
                     $fail('Please enter work days per week');
-                } elseif (!is_int($value['work_days_per_week']) || $value['work_days_per_week'] > 7) {
+                } elseif ($value['work_days_per_week'] > 7) {
                     $fail('Incorrect work days per week');
                 }
 
