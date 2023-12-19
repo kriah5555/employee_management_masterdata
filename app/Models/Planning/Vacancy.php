@@ -112,4 +112,5 @@ class Vacancy extends Model
                 'vacancyPostEmployees.employeeProfile.employeeBasicDetails'
             ]);
     }
+
 }

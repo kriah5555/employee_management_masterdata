@@ -3,14 +3,16 @@
 namespace App\Services\Planning;
 
 use App\Interfaces\Planning\VacancyInterface;
-use App\Models\Company\Company;
-use App\Models\Company\Location;
-use App\Models\Company\Workstation;
-use App\Models\Company\WorkstationToFunctions;
-use App\Models\Planning\{Vacancy, VacancyEmployeeTypes};
+use App\Models\Company\{
+    Company,
+    Location,
+    Workstation,
+    WorkstationToFunctions,
+    Employee\EmployeeProfile
+};
+use App\Models\Planning\{Vacancy, VacancyEmployeeTypes, VacancyPostEmployees};
 
-
-
+use function PHPUnit\Framework\throwException;
 
 class VacancyService implements VacancyInterface
 {
@@ -19,7 +21,8 @@ class VacancyService implements VacancyInterface
         protected Workstation $workStation,
         protected Company $company,
         protected Location $location,
-        protected PlanningService $planningService
+        protected PlanningService $planningService,
+        protected VacancyPostEmployees $vacancyPostEmployees
     ) {}
 
     public function formatCreateVacancy(&$data)
@@ -147,9 +150,28 @@ class VacancyService implements VacancyInterface
         return $response;
     }
 
+    public function getVacancyById($vacancies)
+    {
+        $response = $vacanciesRaw =[];
+        if (!empty($vacancies)) {
+            $query = $this->vacancy->with(
+                    'location',
+                    'workstations',
+                    'functions',
+                    'employeeTypes.employeeType',
+                    'vacancyPostEmployees.employeeProfile.employeeBasicDetails'
+                );
+            $query->findOrFail($vacancies);
+            $vacanciesRaw = $query->get()->toArray();
+            $this->formatVacancies($vacanciesRaw, $response);
+        }
+        return $response[0] ?? $response;
+    }
+
     public function formatVacancies($data, &$response)
     {
         if (count($data) > 0) {
+
             foreach ($data as $value) {
                 $temp = [];
                 $temp['location_id'] = $value['location_id'];
@@ -171,11 +193,19 @@ class VacancyService implements VacancyInterface
                 $temp['repeat_type'] = $value['repeat_type'];
                 $temp['function_id'] = $value['function_id'];
                 $temp['function_name'] = $value['functions']['name'];
+                $temp['total'] = $value['vacancy_count'];
+                $temp['applied'] = count($value['vacancy_post_employees']);
+                $temp['responded'] = array_filter($value['vacancy_post_employees'], function($employee) {
+                    return $employee['request_status']!= 0;
+                });
+                $temp['responded'] = count($temp['responded']);
                 $temp['employees'] = array_map(function($data) {
                         $employee_basic_details = $data['employee_profile']['employee_basic_details'];
                         return [
-                            'value' => $data['employee_profile_id'],
-                            'label' => $employee_basic_details['first_name']. ' '.$employee_basic_details['last_name'],
+                            'application_id' => $data['id'],
+                            'vacancy_id' => $data['vacancy_id'],
+                            'employee_id' => $data['employee_profile_id'],
+                            'employee_name' => $employee_basic_details['first_name']. ' '.$employee_basic_details['last_name'],
                             'status' => $data['request_status'],
                             'request_at' => $data['request_at'],
                             'responded_by' => $data['responded_by'],
@@ -185,5 +215,45 @@ class VacancyService implements VacancyInterface
                 $response[] = $temp;
             }
         }
+    }
+
+    public function getEmployeeProfileFromUserAndCompanyId($userId, $companyId)
+    {
+        return EmployeeProfile::select('id')
+        ->where('user_id', $userId)
+        ->get()
+        ->all();
+    }
+
+    public function applyVacancyService($data)
+    {
+        $userId = $companyId = '';
+        if (empty($data['employee_profile_id'])) {
+            $userId = $data['user_id'];
+            $companyId = $data['company_id'] ?? 0;
+            if (empty($companyId) || !connectCompanyDataBase($data['company_id'])) {
+              throw new \Exception('Issue with company Id');
+            }
+            $employeeProfileId = $this->getEmployeeProfileFromUserAndCompanyId($data['user_id'], $data['company_id']);
+            unset($data['user_id'], $data['company_id']);
+            $data['employee_profile_id'] = $employeeProfileId[0]->id ?? 0;
+            $data['request_at'] = now()->format('Y-m-d H:i:s');
+            $data['vacancy_date'] = date('Y-m-d', strtotime($data['vacancy_date']));
+        }
+        return $this->vacancyPostEmployees->updateOrCreate(
+            [
+                'vacancy_date' => $data['vacancy_date'],
+                'vacancy_id' => $data['vacancy_id'],
+                'employee_profile_id' => $data['employee_profile_id'],
+            ],
+            $data
+        );
+    }
+
+    public function replyToVacancyService($data)
+    {
+        $query = $this->vacancyPostEmployees->findOrFail($data['id']);
+        $data['responded_at'] = now()->format('Y-m-d H:i:s');
+        return $query->update($data);
     }
 }

@@ -59,7 +59,12 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
     Route::get('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
+    Route::post('/vacancy/reply-to-vacancy', [VacancyController::class, 'replyToVacancy']);
 });
+
+Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
+Route::post('/vacancy/employee', [VacancyController::class, 'getEmployeeJobsOverview']);
+
 
 // Route::controller(VacancyController::class)
 // ->middleware(['initialize-tenancy'])
