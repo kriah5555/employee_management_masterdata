@@ -35,20 +35,10 @@ class EmployeeContract extends BaseModel
      */
     protected $primaryKey = 'id';
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = true;
-
-
     protected $dates = [
         'created_at',
         'updated_at',
         'deleted_at',
-        'start_date',
-        'end_date'
     ];
 
     /**
@@ -70,6 +60,16 @@ class EmployeeContract extends BaseModel
         'end_date'
     ];
 
+
+    public function setStartDateAttribute($value)
+    {
+        $this->attributes['start_date'] = Carbon::createFromFormat('d-m-Y', $value)->format('Y-m-d');
+    }
+
+    public function setEndDateAttribute($value)
+    {
+        $this->attributes['end_date'] = $value ? Carbon::createFromFormat('d-m-Y', $value)->format('Y-m-d') : null;
+    }
 
     public function employeeType()
     {
