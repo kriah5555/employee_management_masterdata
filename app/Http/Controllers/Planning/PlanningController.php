@@ -210,7 +210,6 @@ class PlanningController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee options',
                     'data'    => $this->planningService->getPlanningById($planId)
                 ],
                 JsonResponse::HTTP_OK,
