@@ -55,21 +55,8 @@ class EmployeeContract extends BaseModel
     
     protected $apiValues = [
         'employee_profile_id',
-        'employee_type_id',
-        'start_date',
-        'end_date'
+        'employee_type_id'
     ];
-
-
-    public function setStartDateAttribute($value)
-    {
-        $this->attributes['start_date'] = Carbon::createFromFormat('d-m-Y', $value)->format('Y-m-d');
-    }
-
-    public function setEndDateAttribute($value)
-    {
-        $this->attributes['end_date'] = $value ? Carbon::createFromFormat('d-m-Y', $value)->format('Y-m-d') : null;
-    }
 
     public function employeeType()
     {

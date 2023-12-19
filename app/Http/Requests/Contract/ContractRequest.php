@@ -15,7 +15,13 @@ class ContractRequest extends FormRequest
                 'required',
                 'integer',
                 new EmployeeLinkedToCompanyRule()
-            ]
+            ],
+            'employee_contract_id' => [
+                'bail',
+                'integer',
+                'required',
+            ],
+            'contract_status' => 'bail|required|integer|in' . implode(',', array_keys(config('contracts.CONTRACT_STATUS')))
         ];
     }
 }
