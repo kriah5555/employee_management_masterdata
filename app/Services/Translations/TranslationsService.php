@@ -87,6 +87,7 @@ class TranslationsService extends BaseService
             $availableLanguages = config('app.available_locales');
 
             foreach ($strings as $index => $string) {
+                $translations[$index]['key'] = $string;
                 foreach ($availableLanguages as $language) {
                     $translations[$index][$language] = t($string, $language);
                 }
