@@ -7,12 +7,12 @@ use App\Rules\DuplicateSocialSecurityNumberRule;
 use App\Rules\ValidateLengthIgnoringSymbolsRule;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use Illuminate\Validation\Rule;
-use App\Rules\CurrencyFormatRule;
 use App\Rules\EmployeeContractDetailsRule;
 use App\Rules\EmployeeFunctionDetailsRule;
 use App\Rules\User\GenderRule;
 use App\Rules\EmployeeCommuteDetailsRule;
 use App\Rules\MealVoucherRule;
+use App\Rules\BelgiumCurrencyFormatRule;
 
 class EmployeeRequest extends ApiRequest
 {
@@ -63,7 +63,7 @@ class EmployeeRequest extends ApiRequest
                 $rules['fuel_card'] = 'required|boolean';
                 $rules['company_car'] = 'required|boolean';
                 $rules['extra_info'] = 'nullable|string';
-                $rules['clothing_compensation'] = ['required', new CurrencyFormatRule];
+                $rules['clothing_compensation'] = ['required', new BelgiumCurrencyFormatRule];
                 $rules['social_secretary_number'] = 'nullable|string|max:255';
                 $rules['contract_number'] = 'nullable|string|max:255';
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']), new DuplicateSocialSecurityNumberRule()];
