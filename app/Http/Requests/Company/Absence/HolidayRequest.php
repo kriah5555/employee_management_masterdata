@@ -34,6 +34,7 @@ class HolidayRequest extends ApiRequest
                 'bail',
                 'required',
                 'integer',
+                new EmployeeLinkedToCompanyRule()
             ],
             'manager_id' => [
                 'bail',

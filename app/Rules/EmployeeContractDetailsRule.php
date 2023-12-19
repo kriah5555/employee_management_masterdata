@@ -25,31 +25,13 @@ class EmployeeContractDetailsRule implements ValidationRule
             $fail('Please select employee type');
         } else {
             $employeeType = $this->employeeTypeService->getEmployeeTypeDetails($employee_type_id);
-            if ($employeeType->employeeTypeCategory->sub_category_types) {
+            if ($employeeType->employeeTypeCategory->id == config('constants.LONG_TERM_CONTRACT_ID')) {
                 if (!array_key_exists('sub_type', $value)) {
                     $fail('Please select sub type');
                 } elseif (!in_array($value['sub_type'], array_keys(config('constants.SUB_TYPE_OPTIONS')))) {
                     $fail('Incorrect sub type');
                 }
-            }
 
-            if ($employeeType->employeeTypeCategory->schedule_types) {
-                if (!array_key_exists('schedule_type', $value)) {
-                    $fail('Please select schedule type');
-                } elseif (!in_array($value['schedule_type'], array_keys(config('constants.SCHEDULE_TYPE_OPTIONS')))) {
-                    $fail('Incorrect schedule type');
-                }
-            }
-
-            if ($employeeType->employeeTypeCategory->employment_types) {
-                if (!array_key_exists('employment_type', $value)) {
-                    $fail('Please select employment type');
-                } elseif (!in_array($value['employment_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
-                    $fail('Incorrect employment type');
-                }
-            }
-            
-            if ($employee_type_id == config('constants.LONG_TERM_CONTRACT_ID') && !array_key_exists('weekly_contract_hours', $value)) {
                 if (!array_key_exists('weekly_contract_hours', $value)) {
                     $fail('Please enter weekly contract hours');
                 } elseif (!is_numeric(str_replace(',', '.', $value['weekly_contract_hours']))) {
@@ -58,9 +40,22 @@ class EmployeeContractDetailsRule implements ValidationRule
 
                 if (!array_key_exists('work_days_per_week', $value)) {
                     $fail('Please enter work days per week');
-                } elseif (!is_int(is_numeric($value['weekly_contract_hours'])) || $value['weekly_contract_hours'] > 7) {
+                } elseif (!is_int($value['work_days_per_week']) || $value['work_days_per_week'] > 7) {
                     $fail('Incorrect work days per week');
                 }
+
+                if (!array_key_exists('schedule_type', $value)) {
+                    $fail('Please select schedule type');
+                } elseif (!in_array($value['schedule_type'], array_keys(config('constants.SCHEDULE_TYPE_OPTIONS')))) {
+                    $fail('Incorrect schedule type');
+                }
+
+            }
+
+            if (!array_key_exists('employment_type', $value)) {
+                $fail('Please select employment type');
+            } elseif (!in_array($value['employment_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
+                $fail('Incorrect employment type'); 
             }
         }
         

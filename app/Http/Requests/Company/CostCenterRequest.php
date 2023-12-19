@@ -55,7 +55,7 @@ class CostCenterRequest extends ApiRequest
                 'bail',
                 'integer',
                 Rule::exists('employee_profiles', 'id')->where('status', 1),
-                new EmployeeLinkedToCompanyRule(request()->header('Company-Id')),
+                new EmployeeLinkedToCompanyRule(),
             ],
         ];
         return $rules;
