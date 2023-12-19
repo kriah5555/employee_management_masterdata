@@ -2,6 +2,8 @@
 
 namespace App\Models\Planning;
 
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -51,7 +53,7 @@ class TimeRegistration extends Model
      * @var array
      */
 
-     protected $fillable = [
+    protected $fillable = [
         'plan_id',
         'actual_start_time',
         'actual_end_time',
@@ -61,7 +63,7 @@ class TimeRegistration extends Model
         'started_by',
         'ended_by'
     ];
-    
+
     public function planningBase()
     {
         return $this->belongsTo(PlanningBase::class, 'plan_id');
@@ -70,5 +72,15 @@ class TimeRegistration extends Model
     public function overtime()
     {
         return $this->hasOne(Overtime::class, 'time_registration_id');
+    }
+
+    public function startedBy()
+    {
+        return $this->belongsTo(User::class, 'started_by');
+    }
+
+    public function endedBy()
+    {
+        return $this->belongsTo(User::class, 'ended_by');
     }
 }

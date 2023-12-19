@@ -46,7 +46,6 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
                 ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning'],
                 ['path' => 'get-day-planning', 'function' => 'getDayPlanning'],
                 ['path' => 'get-planning-create', 'function' => 'planningCreateOptions'],
-                ['path' => 'details/{plan_id}', 'function' => 'getPlanDetails']
             ];
 
             foreach ($planningResouces as $api) {
@@ -58,7 +57,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::delete('delete-plan/{plan_id}', [PlanningCreateEditController::class, 'destroy']);
     Route::post('delete-week-plans', [PlanningCreateEditController::class, 'deleteWeekPlans']);
     Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
-    Route::get('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
+    Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
 });
 

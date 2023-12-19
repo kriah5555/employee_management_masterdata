@@ -254,6 +254,7 @@ class PlanningService implements PlanningInterface
                 ];
             }
             $response[$plan->employee_profile_id]['plans'][] = [
+                'plan_id'          => $plan->id,
                 'start_time'       => date('H:i', strtotime($plan->start_date_time)),
                 'end_time'         => date('H:i', strtotime($plan->end_date_time)),
                 'contract_hours'   => $plan->contract_hours,
@@ -271,16 +272,50 @@ class PlanningService implements PlanningInterface
 
     public function getPlanningById($planId)
     {
-        return $this->planningRepository->getPlanningById($planId, [
-            'employeeType',
-            'workstation',
-            'functionTitle',
-            'employeeProfile',
-            'employeeProfile.user.userBasicDetails',
-            'timeRegistrations',
-            'contracts',
-            'breaks'
-        ]);
+        return $this->formatPlanDetails(
+            $this->planningRepository->getPlanningById($planId, [
+                'employeeType',
+                'workstation',
+                'functionTitle',
+                'employeeProfile',
+                'employeeProfile.user.userBasicDetails',
+                'timeRegistrations',
+                'timeRegistrations.startedBy',
+                'timeRegistrations.endedBy',
+                'contracts',
+                'breaks'
+            ])
+        );
+    }
+
+    public function formatPlanDetails($details)
+    {
+        $startPlan = true;
+        $stopPlan = false;
+        $activity = [];
+        foreach ($details->timeRegistrations as $timeRegistrations) {
+            $startPlan = false;
+            $stopPlan = true;
+            $startedByFullName = $timeRegistrations->startedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->startedBy->userBasicDetails->last_name;
+            $activity[] = "Plan started by " . $startedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_start_time));
+            if ($timeRegistrations->actual_end_time) {
+                $startPlan = true;
+                $stopPlan = false;
+                $endedByFullName = $timeRegistrations->endedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->endedBy->userBasicDetails->last_name;
+                $activity[] = "Plan stopped by " . $endedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_end_time));
+            }
+        }
+        $response = [
+            'start_time'    => date('H:i', strtotime($details->start_date_time)),
+            'end_time'      => date('H:i', strtotime($details->end_date_time)),
+            'employee_type' => $details->employeeType->name,
+            'function'      => $details->functionTitle->name,
+            'workstation'   => $details->workstation->workstation_name,
+            'start_plan'    => $startPlan,
+            'stop_plan'     => $stopPlan,
+            'activity'      => $activity,
+        ];
+        return $response;
     }
 
     public function getWeeklyPlannings($location, $workstations, $employee_types, $weekNumber, $year)
