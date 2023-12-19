@@ -13,6 +13,7 @@ use App\Models\Company\Company;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Services\Employee\EmployeeService;
+use App\Services\Planning\PlanningContractService;
 
 
 class PlanningService implements PlanningInterface
@@ -25,7 +26,8 @@ class PlanningService implements PlanningInterface
         protected EmployeeType $employeeType,
         protected FunctionTitle $functionTitle,
         protected EmployeeService $employeeService,
-        protected PlanningRepository $planningRepository
+        protected PlanningRepository $planningRepository,
+        protected PlanningContractService $planningContractService,
     ) {
     }
 
@@ -292,7 +294,17 @@ class PlanningService implements PlanningInterface
     {
         $startPlan = true;
         $stopPlan = false;
-        $activity = [];
+        $response = [
+            'start_time'    => date('H:i', strtotime($details->start_date_time)),
+            'end_time'      => date('H:i', strtotime($details->end_date_time)),
+            'employee_type' => $details->employeeType->name,
+            'function'      => $details->functionTitle->name,
+            'workstation'   => $details->workstation->workstation_name,
+            'start_plan'    => $startPlan,
+            'stop_plan'     => $stopPlan,
+            'contract'      => $this->planningContractService->getPlanningContractContract($details)
+        ];
+        $response['activity'] = [];
         foreach ($details->timeRegistrations as $timeRegistrations) {
             $startPlan = false;
             $stopPlan = true;
@@ -302,19 +314,9 @@ class PlanningService implements PlanningInterface
                 $startPlan = true;
                 $stopPlan = false;
                 $endedByFullName = $timeRegistrations->endedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->endedBy->userBasicDetails->last_name;
-                $activity[] = "Plan stopped by " . $endedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_end_time));
+                $response['activity'][] = "Plan stopped by " . $endedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_end_time));
             }
         }
-        $response = [
-            'start_time'    => date('H:i', strtotime($details->start_date_time)),
-            'end_time'      => date('H:i', strtotime($details->end_date_time)),
-            'employee_type' => $details->employeeType->name,
-            'function'      => $details->functionTitle->name,
-            'workstation'   => $details->workstation->workstation_name,
-            'start_plan'    => $startPlan,
-            'stop_plan'     => $stopPlan,
-            'activity'      => $activity,
-        ];
         return $response;
     }
 

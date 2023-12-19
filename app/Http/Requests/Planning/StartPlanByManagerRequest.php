@@ -11,32 +11,18 @@ class StartPlanByManagerRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'plan_id'              => [
+            'plan_id'    => [
                 'required',
                 'integer',
                 Rule::exists('planning_base', 'id'),
             ],
-            'reason'         => [
-                'required',
+            'reason_id'  => [
+                'nullable',
                 'integer',
                 // Rule::exists('employee_types', 'id'),
             ],
-            'function_id'              => [
-                'required',
-                'integer',
-                // Rule::exists('function_titles', 'id'),
-            ],
-            'dates'                    => 'nullable|array',
-            'dates.*'                  => 'bail|date_format:d-m-Y',
-            'timings'                  => 'required|array',
-            'timings.*.start_time'     => 'required|date_format:H:i',
-            'timings.*.end_time'       => 'required|date_format:H:i',
-            'timings.*.contract_hours' => [
-                'required',
-                'string',
-                new BelgiumCurrencyFormatRule
-            ],
-            'timings.*.plan_id'        => 'integer',
+            'reason'     => 'required_if:reason_id,null:string',
+            'start_time' => 'required|date_format:H:i',
         ];
 
     }
