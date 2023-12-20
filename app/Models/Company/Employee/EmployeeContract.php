@@ -6,6 +6,7 @@ use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use Illuminate\Support\Carbon;
 use App\Models\EmployeeType\EmployeeType;
+use App\Models\Company\Employee\EmployeeContractFile;
 use App\Models\Company\Employee\LongTermEmployeeContract;
 
 class EmployeeContract extends BaseModel
@@ -73,6 +74,11 @@ class EmployeeContract extends BaseModel
     public function employeeProfile()
     {
         return $this->belongsTo(EmployeeProfile::class);
+    }
+
+    public function employeeContractFile()
+    {
+        return $this->hasMany(EmployeeContractFile::class)->where('status', true);
     }
     
     public function employeeFunctionDetails()

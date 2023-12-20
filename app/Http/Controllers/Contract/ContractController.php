@@ -17,8 +17,26 @@ class ContractController extends Controller
         
     }
 
-    public function index()
+    public function index($employee_profile_id, $status)
     {
+        try {
+            $contract_status = config('contracts.'.strtoupper($status));
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->contractService->getEmployeeContractFiles($employee_profile_id, $contract_status),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
         
     }
 
@@ -34,7 +52,7 @@ class ContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->contractService->generateEmployeeContract($request->employee_contract_id, $contract_status),
+                    'data'    => $this->contractService->generateEmployeeContract($request->employee_profile_id, $request->employee_contract_id, $contract_status),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -53,7 +71,7 @@ class ContractController extends Controller
     {
         if (str_contains($path, "/contracts")) {
             return config('contracts.CONTRACT_STATUS_UNSIGNED');
-        } elseif (str_contains($path, "/sign-contracts")) {
+        } elseif (str_contains($path, "/sign-contract")) {
             return config('contracts.CONTRACT_STATUS_SIGNED');
         }
 

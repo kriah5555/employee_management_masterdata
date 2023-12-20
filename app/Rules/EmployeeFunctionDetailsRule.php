@@ -26,7 +26,7 @@ class EmployeeFunctionDetailsRule implements ValidationRule
     {
         $usedFunction = [];
         foreach ($value as $data) {
-            if (!array_key_exists('function_id', $data)) {
+            if (!array_key_exists('function_id', $data) || empty($data['function_id'])) {
                 $fail('Please select function');
             } elseif (in_array($data['function_id'], $usedFunction)) {
                 $fail('Cannot link same function twice');

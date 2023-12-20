@@ -127,11 +127,15 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             ],
         ];
 
-        Route::post('contracts', [ContractController::class, 'generateContract']);
+        Route::controller(ContractController::class)->group(function () {
 
-        Route::resource('contracts', ContractController::class)->only(['show']);
+            Route::post('contracts', 'generateContract');
 
-        Route::post('sign-contract', [ContractController::class, 'store']);
+            Route::get('get-employee-contracts/{employee_id}/{status}', 'index')
+            ->where(['status' => '(signed|unsigned)']);
+
+
+        }); 
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);

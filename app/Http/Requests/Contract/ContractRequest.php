@@ -11,12 +11,12 @@ class ContractRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            // 'employee_profile_id' => [
-            //     'bail',
-            //     'required',
-            //     'integer',
-            //     new EmployeeLinkedToCompanyRule()
-            // ],
+            'employee_profile_id' => [
+                'bail',
+                'required',
+                'integer',
+                new EmployeeLinkedToCompanyRule()
+            ],
             'employee_contract_id' => [
                 'bail',
                 'integer',
