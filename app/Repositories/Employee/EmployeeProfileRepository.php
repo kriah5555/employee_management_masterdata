@@ -59,6 +59,37 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         return EmployeeProfile::whereRaw("REPLACE(REPLACE(social_security_number, '.', ''), '-', '') = ?", [$socialSecurityNumber])->get();
     }
 
+    public function getEmployeeOptions()
+    {
+        try {
+            $employees = $this->getAllEmployeeProfiles([
+                'user',
+                'user.userBasicDetails',
+                'user.userContactDetails',
+            ]);
+
+            return $this->formatEmployees($employees);
+            
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function formatEmployees($employees)
+    {
+        return $employees->map(function ($employee) {
+            if ($employee->user) {
+                return [
+                    'employee_profile_id' => $employee->id,
+                    'first_name'          => $employee->user->userBasicDetails->first_name,
+                    'last_name'           => $employee->user->userBasicDetails->last_name,
+                    'full_name'           => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
+                ];
+            }
+        });
+    }
+
     public function getEmployeesForHoliday()
     {
 
@@ -75,7 +106,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
         }])->get();
 
-        return $employees;
+        return $this->formatEmployees($employees);
     }
 
     public function getEmployeesForLeave()
@@ -93,6 +124,6 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
         }])->get();
 
-        return $employees;
+        return $this->formatEmployees($employees);
     }
 }

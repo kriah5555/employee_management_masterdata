@@ -40,9 +40,10 @@ class EmployeeService
      * Function to get all the employee types
      */
 
-    public function getAllEmployees()
+    public function getEmployeeOptions()
     {
         try {
+            return $this->employeeProfileRepository->getEmployeeOptions(); 
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
