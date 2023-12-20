@@ -38,13 +38,11 @@ class PlanningContractService implements PlanningInterface
                     'employee_last_name'  => $plan->employeeProfile->user->userBasicDetails->last_name
                 ];
                 $template = replaceContractTokens($template->toArray()['body']['nl'], $tokenData);
-                $url = '/service/contracts/create_contract';
-                // dd($url, "POST", ['body' => $template]);
-                $files = microserviceRequest($url, "POST", ['body' => $template]);
-                $contractPdfUrl = env('CONTRACTS_URL') . '/' . $files['pdf_file_path'];
-                return $contractPdfUrl;
-            } else {
-                throw new Exception("Contract template not found");
+                // $url = '/service/contracts/create_contract';
+                // $files = microserviceRequest($url, "POST", ['body' => $template]);
+                $url = env('CONTRACTS_URL') . '/create_contract';
+                $files = makeApiRequest($url, 'POST', ['body' => $template]);
+                return env('CONTRACTS_URL') . '/' . $files['pdf_file_path'];
             }
         }
     }
