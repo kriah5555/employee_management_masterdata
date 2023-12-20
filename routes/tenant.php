@@ -131,12 +131,15 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::post('contracts', [ContractController::class, 'generateContract']);
 
+        Route::resource('contracts', ContractController::class)->only(['show', 'store']);
+
+        Route::post('sign-contract', [ContractController::class, 'store']);
+
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
         }
 
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
-
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 

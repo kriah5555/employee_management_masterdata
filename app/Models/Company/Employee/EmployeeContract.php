@@ -35,20 +35,10 @@ class EmployeeContract extends BaseModel
      */
     protected $primaryKey = 'id';
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = true;
-
-
     protected $dates = [
         'created_at',
         'updated_at',
         'deleted_at',
-        'start_date',
-        'end_date'
     ];
 
     /**
@@ -65,11 +55,8 @@ class EmployeeContract extends BaseModel
     
     protected $apiValues = [
         'employee_profile_id',
-        'employee_type_id',
-        'start_date',
-        'end_date'
+        'employee_type_id'
     ];
-
 
     public function employeeType()
     {

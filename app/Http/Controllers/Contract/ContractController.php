@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Contract\ContractService;
+use App\Http\Requests\Contract\ContractRequest;
 
 class ContractController extends Controller
 {
@@ -26,20 +27,62 @@ class ContractController extends Controller
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(ContractRequest $request)
     {
-        
+        try {
+            
+            $contract_status = $this->getContractStatusByPath(request()->getPathInfo());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->contractService->generateEmployeeContract($request->employee_profile_id, $request->employee_contract_id, $contract_status),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    private function getContractStatusByPath($path)
+    {
+        if (str_contains($path, "/contracts")) {
+            return config('contracts.CONTRACT_STATUS_UNSIGNED');
+        } elseif (str_contains($path, "/sign-contracts")) {
+            return config('contracts.CONTRACT_STATUS_SIGNED');
+        }
+
+        return ''; // Default if no match is found
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $employee_profile_id)
     {
-        
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    // 'data'    => $this->contractService->generateEmployeeContract($employee_profile_id),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     /**
@@ -68,22 +111,6 @@ class ContractController extends Controller
 
     function generateContract(Request $request)
     {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => $this->contractService->generateEmployeeContract(),
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (\Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+        
     }
 }
