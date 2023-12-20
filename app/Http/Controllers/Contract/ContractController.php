@@ -30,12 +30,11 @@ class ContractController extends Controller
     public function store(ContractRequest $request)
     {
         try {
-            
             $contract_status = $this->getContractStatusByPath(request()->getPathInfo());
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->contractService->generateEmployeeContract($request->employee_profile_id, $request->employee_contract_id, $contract_status),
+                    'data'    => $this->contractService->generateEmployeeContract($request->employee_contract_id, $contract_status),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -70,7 +69,7 @@ class ContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    // 'data'    => $this->contractService->generateEmployeeContract($employee_profile_id),
+                    // 'data'    => $this->contractService->getEmployeeContractFiles($employee_profile_id),
                 ],
                 JsonResponse::HTTP_OK,
             );

@@ -52,7 +52,9 @@ return [
 
     'LONG_TERM_CONTRACT_ID' => 1,
 
-    'DEFAULT_DATE_FORMAT'          => 'd-m-Y',
+    'DEFAULT_DATE_FORMAT' => 'd-m-Y',
+
+    'DEFAULT_LANGUAGE'    => 'en',
 
     # 24 hours time format like 11:00
 
