@@ -128,7 +128,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         ];
 
         // Route:resource('contracts', ContractController::class);
-        
+
+        Route::post('contracts', [ContractController::class, 'generateContract']);
+
         Route::resource('contracts', ContractController::class)->only(['show', 'store']);
 
         Route::post('sign-contract', [ContractController::class, 'store']);

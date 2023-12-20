@@ -108,6 +108,7 @@ class EmployeeService
         return $this->formatEmployeeData($this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
             'user',
             'user.userBasicDetails',
+            'user.userBasicDetails.gender',
             'user.userContactDetails',
             'user.userFamilyDetails',
             'user.userBankAccount',
@@ -117,33 +118,52 @@ class EmployeeService
 
     public function formatEmployeeData($employee)
     {
-        $userBasicDetails = $employee->user->userBasicDetails->toApiResponseFormat();
-        $userBasicDetails['social_security_number'] = $employee->user->social_security_number;
-        $userBasicDetails['date_of_birth'] = date('d-m-Y', strtotime($userBasicDetails['date_of_birth']));
-        $userBasicDetails['license_expiry_date'] = $userBasicDetails['license_expiry_date'] != null ? date('d-m-Y', strtotime($userBasicDetails['license_expiry_date'])) : null;
-        $userBasicDetails['gender'] = $employee->user->userBasicDetails->gender->toApiResponseFormat();
-        $userBasicDetails['language'] = [
-            'id'   => $userBasicDetails['language'],
-            'name' => config('constants.LANGUAGE_OPTIONS')[$userBasicDetails['language']]
+        $userBasicDetails = [
+            "first_name"             => $employee->user->userBasicDetails->first_name,
+            "last_name"              => $employee->user->userBasicDetails->last_name,
+            "nationality"            => $employee->user->userBasicDetails->nationality,
+            "date_of_birth"          => $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null,
+            "place_of_birth"         => $employee->user->userBasicDetails->place_of_birth,
+            "license_expiry_date"    => $employee->user->userBasicDetails->license_expiry_date ? date('d-m-Y', strtotime($employee->user->userBasicDetails->license_expiry_date)) : null,
+            "extra_info"             => $employee->user->userBasicDetails->extra_info,
+            "social_security_number" => $employee->user->social_security_number,
+            "gender"                 => $employee->user->userBasicDetails->gender,
+            "street_house_no"        => $employee->user->userAddress ? $employee->user->userAddress->street_house_no : null,
+            "postal_code"            => $employee->user->userAddress ? $employee->user->userAddress->postal_code : null,
+            "city"                   => $employee->user->userAddress ? $employee->user->userAddress->city : null,
+            "country"                => $employee->user->userAddress ? $employee->user->userAddress->country : null,
+            "latitude"               => $employee->user->userAddress ? $employee->user->userAddress->latitude : null,
+            "longitude"              => $employee->user->userAddress ? $employee->user->userAddress->longitude : null,
+            "email"                  => $employee->user->userContactDetails ? $employee->user->userContactDetails->email : null,
+            "phone_number"           => $employee->user->userContactDetails ? $employee->user->userContactDetails->phone_number : null,
+            "account_number"         => $employee->user->userBankAccount ? $employee->user->userBankAccount->account_number : null,
+            "children"               => $employee->user->userFamilyDetails->children,
         ];
-        $userAddressDetails = $employee->user->userAddress->toApiResponseFormat();
-        $userContactDetails = $employee->user->userContactDetails->toApiResponseFormat();
-        $userBankAccountDetails = $employee->user->userBankAccount->toApiResponseFormat();
-        $employee->user->userFamilyDetails->dependent_spouse = 'no';
+        if ($employee->user->userBasicDetails->language) {
+            $userBasicDetails['language'] = [
+                'id'   => $employee->user->userBasicDetails->language,
+                'name' => config('constants.LANGUAGE_OPTIONS')[$employee->user->userBasicDetails->language]
+            ];
+        } else {
+            $userBasicDetails['language'] = null;
+        }
         if ($employee->user->userFamilyDetails->dependent_spouse) {
-            $dependentSpouse = [
+            $userBasicDetails['dependent_spouse'] = [
                 'id'   => $employee->user->userFamilyDetails->dependent_spouse,
                 'name' => $employee->user->userFamilyDetails->dependent_spouse ? config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse] : null
             ];
         } else {
-            $dependentSpouse = null;
+            $userBasicDetails['dependent_spouse'] = null;
         }
-        $userFamilyDetails = [
-            'dependent_spouse' => $dependentSpouse,
-            'marital_status'   => $employee->user->userFamilyDetails->maritalStatus->toApiResponseFormat(),
-            'children'         => 0
-        ];
-        return array_merge($userBasicDetails, $userAddressDetails, $userContactDetails, $userBankAccountDetails, $userFamilyDetails);
+        if ($employee->user->userFamilyDetails->maritalStatus) {
+            $userBasicDetails['marital_status'] = [
+                'id'   => $employee->user->userFamilyDetails->maritalStatus->id,
+                'name' => $employee->user->userFamilyDetails->maritalStatus->name
+            ];
+        } else {
+            $userBasicDetails['marital_status'] = null;
+        }
+        return $userBasicDetails;
     }
 
 
@@ -174,9 +194,6 @@ class EmployeeService
 
             return $employeeProfile;
         } catch (Exception $e) {
-            DB::connection('master')->rollback();
-            DB::connection('userdb')->rollback();
-            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
