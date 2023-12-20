@@ -47,7 +47,7 @@ class EmployeeRequest extends ApiRequest
                 'phone_number'        => 'required|string|max:20',
                 'email'               => 'required|email',
                 'license_expiry_date' => 'nullable|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-                'bank_account_number' => 'nullable|string|max:255',
+                'account_number'      => 'nullable|string|max:255',
                 'language'            => ['required', 'string', 'in:' . implode(',', $allowedLanguageValues)],
                 'marital_status_id'   => [
                     'bail',
@@ -59,18 +59,17 @@ class EmployeeRequest extends ApiRequest
                 'children'            => 'nullable|integer',
             ];
             if ($this->isMethod('post')) {
-                $rules['meal_voucher_id'] = ['bail', 'integer'];
-                $rules['fuel_card'] = 'required|boolean';
-                $rules['company_car'] = 'required|boolean';
+                $rules['fuel_card'] = 'nullable|boolean';
+                $rules['company_car'] = 'nullable|boolean';
                 $rules['extra_info'] = 'nullable|string';
-                $rules['clothing_compensation'] = ['required', new BelgiumCurrencyFormatRule];
+                $rules['clothing_compensation'] = [new BelgiumCurrencyFormatRule];
                 $rules['social_secretary_number'] = 'nullable|string|max:255';
                 $rules['contract_number'] = 'nullable|string|max:255';
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']), new DuplicateSocialSecurityNumberRule()];
                 $rules['employee_contract_details'] = ['bail', 'required', 'array', new EmployeeContractDetailsRule()];
                 $rules['employee_function_details'] = ['bail', 'required', 'array', new EmployeeFunctionDetailsRule()];
                 $rules['employee_commute_details'] = ['bail', 'nullable', 'array', new EmployeeCommuteDetailsRule()];
-                $rules['meal_voucher_id'] =  ['bail', 'integer', 'nullable',new MealVoucherRule()];
+                $rules['meal_voucher_id'] = ['bail', 'integer', 'nullable', new MealVoucherRule()];
             } elseif ($this->isMethod('put')) {
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-'])];
             }

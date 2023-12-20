@@ -128,7 +128,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         ];
 
         // Route:resource('contracts', ContractController::class);
-        
+
         Route::post('contracts', [ContractController::class, 'generateContract']);
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
