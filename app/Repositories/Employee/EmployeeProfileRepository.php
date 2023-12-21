@@ -7,6 +7,7 @@ use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\User\User;
+use App\Models\EmployeeType\EmployeeType;
 
 class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 {
@@ -35,11 +36,6 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         return EmployeeProfile::whereId($employeeProfileId)->update($newDetails);
     }
 
-    public function getAllEmployeeProfilesByCompany(string $companyId)
-    {
-        return EmployeeProfile::where('company_id', '=', $companyId)->get();
-    }
-
     public function getEmployeeProfileInCompanyBySsn(string $companyId, string $socialSecurityNumber)
     {
         return EmployeeProfile::where('company_id', '=', $companyId)
@@ -61,5 +57,73 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
     public function getEmployeeProfileBySsn(string $socialSecurityNumber)
     {
         return EmployeeProfile::whereRaw("REPLACE(REPLACE(social_security_number, '.', ''), '-', '') = ?", [$socialSecurityNumber])->get();
+    }
+
+    public function getEmployeeOptions()
+    {
+        try {
+            $employees = $this->getAllEmployeeProfiles([
+                'user',
+                'user.userBasicDetails',
+                'user.userContactDetails',
+            ]);
+
+            return $this->formatEmployees($employees);
+            
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function formatEmployees($employees)
+    {
+        return $employees->map(function ($employee) {
+            if ($employee->user) {
+                return [
+                    'employee_profile_id' => $employee->id,
+                    'first_name'          => $employee->user->userBasicDetails->first_name,
+                    'last_name'           => $employee->user->userBasicDetails->last_name,
+                    'full_name'           => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
+                ];
+            }
+        })->filter()->values();
+    }
+
+    public function getEmployeesForHoliday()
+    {
+
+        $employee_types_with_holiday_access = EmployeeType::with(['employeeTypeConfig' => function ($employeeTypeConfig) {
+            $employeeTypeConfig->where('holiday_access', true);
+        }])->get();
+
+        $employee_type_ids_with_holiday_access = $employee_types_with_holiday_access->pluck('id');
+
+        $employees = EmployeeProfile::with([
+            'user',
+            'user.userBasicDetails',
+            'employeeContracts' => function ($employeeContracts) use ($employee_type_ids_with_holiday_access) {
+            $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
+        }])->get();
+
+        return $this->formatEmployees($employees);
+    }
+
+    public function getEmployeesForLeave()
+    {
+        $employee_types_with_holiday_access = EmployeeType::with(['employeeTypeConfig' => function ($employeeTypeConfig) {
+            $employeeTypeConfig->where('leave_access', true);
+        }])->get();
+
+        $employee_type_ids_with_holiday_access = $employee_types_with_holiday_access->pluck('id');
+
+        $employees = EmployeeProfile::with([
+            'user',
+            'user.userBasicDetails',
+            'employeeContracts' => function ($employeeContracts) use ($employee_type_ids_with_holiday_access) {
+            $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
+        }])->get();
+
+        return $this->formatEmployees($employees);
     }
 }

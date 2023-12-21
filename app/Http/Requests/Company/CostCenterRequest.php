@@ -30,8 +30,8 @@ class CostCenterRequest extends ApiRequest
             'cost_center_number' => [
                 'required',
                 'string',
-                'max:255',
-                'regex:/^[0-9]{6}$/',
+                'min:1',
+                'max:6',
                 new UniqueCostCenterNumberInCompanyRule($this->route('cost_center')),           
             ],
             'location_id' => [
@@ -55,7 +55,7 @@ class CostCenterRequest extends ApiRequest
                 'bail',
                 'integer',
                 Rule::exists('employee_profiles', 'id')->where('status', 1),
-                new EmployeeLinkedToCompanyRule(request()->header('Company-Id')),
+                new EmployeeLinkedToCompanyRule(),
             ],
         ];
         return $rules;

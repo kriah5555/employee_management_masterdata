@@ -57,4 +57,14 @@ class ReasonService
     {
         return $this->reasonRepository->getReasonsByCategory($category);
     }
+
+    public function getStartPlanReasons()
+    {
+        return $this->reasonRepository->getReasonsByCategory('start_planning');
+    }
+
+    public function getStopPlanReasons()
+    {
+        return $this->reasonRepository->getReasonsByCategory('stop_planning');
+    }
 }

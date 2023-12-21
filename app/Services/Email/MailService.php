@@ -30,13 +30,13 @@ class MailService
 
     public function sendEmployeeAccountUpdateMail($values, $language = 'en')
     {
-        $email_template = $this->email_template_service->getEmailTemplateDetailsByType('Employee_account_update_mail');
+        $email_template = $this->email_template_service->getEmailTemplateDetailsByType('employee_account_update_mail');
         if ($email_template) {
             $subject = $email_template->getTranslation('subject', $language);
             $body    = $email_template->getTranslation('body', $language);
 
             // Get employee data
-            $employeeData = $this->getEmployeeData($values);
+            $employeeData = $this->getEmployeeTokensData($values);
 
             // Replace employee tokens in the body content using config tokens
             $configTokens = array_keys(config('tokens.EMPLOYEE_TOKENS'));
@@ -47,10 +47,8 @@ class MailService
     }
 
 
-    private function getEmployeeData($values)
+    private function getEmployeeTokensData($values)
     {
-        // Replace this with your actual employee data retrieval logic
-
         return [
             '{employee_first_name}'    => $values['first_name'],
             '{employee_last_name}'     => $values['last_name'],

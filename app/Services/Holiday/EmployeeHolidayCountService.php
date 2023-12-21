@@ -34,15 +34,10 @@ class EmployeeHolidayCountService extends BaseService
             ->get();
     }
 
-    public function getEmployeeHolidayCounts($employee_id)
+    public function getEmployeeHolidayCounts($employee_id, $company_id)
     {
         try {
-            $company_id          = request()->header('Company-Id');
-            $companyHolidayCodes = $this->holiday_code_service->model::whereHas('companies', function ($query) use ($company_id) {
-                $query->where('company_id', $company_id);
-            })
-                ->where('status', true)
-                ->get();
+            $companyHolidayCodes = $this->holiday_code_service->getCompanyHolidayCodes($company_id);
 
             $result = [];
 
@@ -51,10 +46,10 @@ class EmployeeHolidayCountService extends BaseService
                     ->where('holiday_code_id', $holidayCode->id)
                     ->first();
 
-                $count = $holidayCount ? $holidayCount->count : 0;
-                $firstReason = $holidayCount ? $holidayCount->reasons()->where('status', 1)->first() : null; # Get the first reason with status 1 for the current employee_holiday_count_id
-                $employee_holiday_count_id = $holidayCount ? $holidayCount->id : null; # Get the first reason with status 1 for the current employee_holiday_count_id
-                $reason = $firstReason ? $firstReason->reason : null;
+                $count                     = $holidayCount ? $holidayCount->count : 0;
+                $firstReason               = $holidayCount ? $holidayCount->reasons()->where('status', 1)->first() : null; # Get the first reason with status 1 for the current employee_holiday_count_id
+                $employee_holiday_count_id = $holidayCount ? $holidayCount->id : null;
+                $reason                    = $firstReason  ? $firstReason->reason : null;
 
                 $result[] = [
                     'holiday_code_id'           => $holidayCode->id,
@@ -77,8 +72,8 @@ class EmployeeHolidayCountService extends BaseService
 
     public function getOptionsToEdit($employee_id)
     {
-        $employee_details = $this->employeeProfileRepository->getEmployeeProfileById($employee_id);
-        $company_id = $employee_details->company_id;
+        $employee_details = $this->employeeProfileRepository->getEmployeeProfileById($employee_id, ['user', 'user.userBasicDetails']);
+        $company_id          = request()->header('Company-Id');
 
         $employee_holiday_counts = $this->getEmployeeHolidayCounts($employee_id, $company_id);
 

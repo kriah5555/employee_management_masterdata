@@ -3,13 +3,17 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Planning\
-    {
-        EventDetailsController,
-        LongtermPlanningController,
-        PlanningController,
-        PlanningCreateEditController,
-        TimeRegistrationController
-    };
+{
+    EventDetailsController,
+    LongtermPlanningController,
+    PlanningController,
+    PlanningCreateEditController,
+    PlanningStartStopController,
+    TimeRegistrationController,
+    VacancyController
+};
+use App\Http\Middleware\InitializeTenancy;
+use App\Http\Middleware\SetActiveUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,22 +29,51 @@ use App\Http\Controllers\Planning\
 #Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 #    return $request->user();
 #});
-Route::get('/check', function() {
+Route::get('/check', function () {
     return "Echo";
 });
 
-Route::controller(PlanningController::class)
-    ->middleware(['initialize-tenancy'])
-    ->prefix('planning')
-    ->group(function() {
+Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(function () {
 
-        $planningResouces = [
-            ['path' => 'get-planning-options', 'function' => 'getPlanningOverviewOptions'],
-            ['path' => 'get-monthly-planning', 'function' => 'getMonthlyPlanning'],
-            ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning']
-        ];
+    Route::controller(PlanningController::class)
+        ->middleware(['initialize-tenancy'])
+        ->prefix('planning')
+        ->group(function () {
 
-        foreach ($planningResouces as $api) {
-            Route::POST($api['path'], $api['function']);
-        }
+            $planningResouces = [
+                ['path' => 'get-planning-options', 'function' => 'getPlanningOverviewOptions'],
+                ['path' => 'get-monthly-planning', 'function' => 'getMonthlyPlanning'],
+                ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning'],
+                ['path' => 'get-day-planning', 'function' => 'getDayPlanning'],
+                ['path' => 'get-planning-create', 'function' => 'planningCreateOptions'],
+            ];
+
+            foreach ($planningResouces as $api) {
+                Route::POST($api['path'], $api['function']);
+            }
+        });
+    Route::post('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
+    Route::post('save-plans', [PlanningCreateEditController::class, 'savePlans']);
+    Route::delete('delete-plan/{plan_id}', [PlanningCreateEditController::class, 'destroy']);
+    Route::post('delete-week-plans', [PlanningCreateEditController::class, 'deleteWeekPlans']);
+    Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
+    Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
+    Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
 });
+
+// Route::controller(VacancyController::class)
+// ->middleware(['initialize-tenancy'])
+// ->prefix('vacancy')
+// ->group(function () {
+//     $apiList = [
+//         ['path' => 'options', 'function' => 'create'],
+//         ['path' => 'get-all-vacancies', 'function' => 'index'],
+//         ['path' => 'create', 'function' => 'store'],
+//         ['path' => 'get-vacancy/{vacancy}', 'function' => 'show'],
+//         ['path' => 'update/{vacancy}', 'function' => 'update'],
+//         ['path' => 'delete/{vacancy}', 'function' => 'destory'],
+//     ];
+//     foreach ($apiList as $api) {
+//         Route::POST($api['path'], $api['function']);
+//     }
+// });

@@ -137,6 +137,7 @@ if (!function_exists('microserviceRequest')) {
     {
         $apiGatewayUrl = config('app.service_gateway_url');
         $url = $apiGatewayUrl . $route;
+        $headers['authorization'] = request()->headers->get('authorization');
         return makeApiRequest($url, $method, $data, $headers);
     }
 }
@@ -238,19 +239,35 @@ if (!function_exists('getCompanyId')) {
 if (!function_exists('formatToEuropeCurrency')) { # will convert number format to europe currency format
     function formatToEuropeCurrency($currency)
     {
-        $parts = explode('.', $currency);
+        // $parts = explode('.', $currency);
         // $decimal = 0;
         // if (count($parts) == 2) {
         //     $decimal = strlen($parts[1]);
         // }
-        return number_format((float) $currency, 4, ',', '.');
+
+        $currency = str_replace(',', '.', $currency ?? 0);
+        return number_format($currency, 4, ',', '.');
+    }
+}
+
+if (!function_exists('formatToEuropeHours')) { # will convert number format to europe currency format
+    function formatToEuropeHours($currency)
+    {
+        return str_replace('.', ',', $currency);
+    }
+}
+
+if (!function_exists('formatToCommonHours')) { # will convert number format to europe currency format
+    function formatToCommonHours($currency)
+    {
+        return str_replace(',', '.', $currency);
     }
 }
 
 if (!function_exists('formatToNumber')) { # will convert europe currency format to number format
     function formatToNumber($number)
     {
-        return (float)str_replace(['.', ','], ['', '.'], $number);
+        return (float) str_replace(['.', ','], ['', '.'], $number);
     }
 }
 
@@ -295,7 +312,7 @@ if (!function_exists('getTenantFolderPath')) {
     {
         $tenantPath = storage_path() . '/company/' . $tenantName;
         if (!is_dir($tenantPath)) {
-        mkdir($tenantPath, 0777, true);
+            mkdir($tenantPath, 0777, true);
         }
         return $tenantPath;
     }
@@ -315,4 +332,70 @@ if (!function_exists('getWeekDates')) {
         return $dates;
     }
 }
+if (!function_exists('getStartAndEndDateOfMonth')) {
+    function getStartAndEndDateOfMonth($month, $year)
+    {
+        // Create a DateTime object for the first day of the month
+        $start_date = new DateTime("$year-$month-01");
 
+        // Get the last day of the month using the 't' format character
+        $last_day = $start_date->format('t');
+
+        // Create a DateTime object for the last day of the month
+        $end_date = new DateTime("$year-$month-$last_day");
+
+        // Return an associative array with start and end dates
+        return array(
+            'start_date' => $start_date->format('Y-m-d'),
+            'end_date'   => $end_date->format('Y-m-d')
+        );
+    }
+}
+
+if (!function_exists('getDatesByMonthYear')) {
+    function getDatesByMonthYear($month, $year)
+    {
+        $start_date = new DateTime("$year-$month-01");
+        $end_date = new DateTime("$year-$month-" . $start_date->format('t'));
+
+        $interval = new DateInterval('P1D'); // 1 day interval
+        $date_range = new DatePeriod($start_date, $interval, $end_date);
+
+        $dates = array();
+        foreach ($date_range as $date) {
+            $dates[] = $date->format('Y-m-d');
+        }
+
+        return $dates;
+    }
+}
+
+if (!function_exists('europeanToNumeric')) {
+    function europeanToNumeric($europeanNumber)
+    {
+        // Replace dot with an empty string and replace comma with a dot
+        return str_replace(',', '.', str_replace('.', '', $europeanNumber));
+    }
+}
+if (!function_exists('numericToEuropean')) {
+    // Function to convert numeric format to European number format
+    function numericToEuropean($numericNumber)
+    {
+        // Format the number with European number format
+        return number_format($numericNumber, 2, ',', '.');
+    }
+
+}
+
+if (!function_exists('replaceContractTokens')) {
+    function replaceContractTokens($template, $data)
+    {
+        // Iterate through the data and replace tokens in the template
+        foreach ($data as $key => $value) {
+            $token = '{' . $key . '}';
+            $template = str_replace($token, $value, $template);
+        }
+
+        return $template;
+    }
+}

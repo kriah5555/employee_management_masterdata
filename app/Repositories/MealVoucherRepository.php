@@ -34,7 +34,11 @@ class MealVoucherRepository implements MealVoucherRepositoryInterface
 
     public function updateMealVoucher(string $mealVoucherId, array $newDetails)
     {
-        return MealVoucher::whereId($mealVoucherId)->update($newDetails);
+        $mealVoucher = MealVoucher::find($mealVoucherId);
+        $mealVoucher->fill($newDetails); # will call the set attribute function
+        $mealVoucher->save();
+        return $mealVoucher;
+        // return MealVoucher::whereId($mealVoucherId)->update($newDetails);
     }
 }
 ;

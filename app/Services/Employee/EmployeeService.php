@@ -21,25 +21,29 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Email\MailService;
+use App\Services\Employee\EmployeeContractService;
+use App\Services\Employee\EmployeeBenefitService;
+use App\Services\Employee\EmployeeCommuteService;
 
 class EmployeeService
 {
 
     public function __construct(
+        protected UserService $userService,
+        protected MailService $mailService,
+        protected CompanyService $companyService,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
-        protected UserService $userService,
-        protected CompanyService $companyService,
-        protected MailService $mailService
     ) {
     }
     /**
      * Function to get all the employee types
      */
 
-    public function getAllEmployees()
+    public function getEmployeeOptions()
     {
         try {
+            return $this->employeeProfileRepository->getEmployeeOptions(); 
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -97,7 +101,6 @@ class EmployeeService
         $employeeDetails['phone_number'] = $employee->user->userContactDetails->phone_number;
         $employeeDetails['email'] = $employee->user->userContactDetails->email;
         $employeeDetails['social_security_number'] = $employee->user->social_security_number;
-        // $employeeDetails['test'] = $employee;
         return $employeeDetails;
     }
 
@@ -106,6 +109,7 @@ class EmployeeService
         return $this->formatEmployeeData($this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, [
             'user',
             'user.userBasicDetails',
+            'user.userBasicDetails.gender',
             'user.userContactDetails',
             'user.userFamilyDetails',
             'user.userBankAccount',
@@ -115,33 +119,52 @@ class EmployeeService
 
     public function formatEmployeeData($employee)
     {
-        $userBasicDetails = $employee->user->userBasicDetails->toApiReponseFormat();
-        $userBasicDetails['social_security_number'] = $employee->user->social_security_number;
-        $userBasicDetails['date_of_birth'] = date('d-m-Y', strtotime($userBasicDetails['date_of_birth']));
-        $userBasicDetails['license_expiry_date'] = $userBasicDetails['license_expiry_date'] != null ? date('d-m-Y', strtotime($userBasicDetails['license_expiry_date'])) : null;
-        $userBasicDetails['gender'] = $employee->user->userBasicDetails->gender->toApiReponseFormat();
-        $userBasicDetails['language'] = [
-            'id'   => $userBasicDetails['language'],
-            'name' => config('constants.LANGUAGE_OPTIONS')[$userBasicDetails['language']]
+        $userBasicDetails = [
+            "first_name"             => $employee->user->userBasicDetails->first_name,
+            "last_name"              => $employee->user->userBasicDetails->last_name,
+            "nationality"            => $employee->user->userBasicDetails->nationality,
+            "date_of_birth"          => $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null,
+            "place_of_birth"         => $employee->user->userBasicDetails->place_of_birth,
+            "license_expiry_date"    => $employee->user->userBasicDetails->license_expiry_date ? date('d-m-Y', strtotime($employee->user->userBasicDetails->license_expiry_date)) : null,
+            "extra_info"             => $employee->user->userBasicDetails->extra_info,
+            "social_security_number" => $employee->user->social_security_number,
+            "gender"                 => $employee->user->userBasicDetails->gender,
+            "street_house_no"        => $employee->user->userAddress ? $employee->user->userAddress->street_house_no : null,
+            "postal_code"            => $employee->user->userAddress ? $employee->user->userAddress->postal_code : null,
+            "city"                   => $employee->user->userAddress ? $employee->user->userAddress->city : null,
+            "country"                => $employee->user->userAddress ? $employee->user->userAddress->country : null,
+            "latitude"               => $employee->user->userAddress ? $employee->user->userAddress->latitude : null,
+            "longitude"              => $employee->user->userAddress ? $employee->user->userAddress->longitude : null,
+            "email"                  => $employee->user->userContactDetails ? $employee->user->userContactDetails->email : null,
+            "phone_number"           => $employee->user->userContactDetails ? $employee->user->userContactDetails->phone_number : null,
+            "account_number"         => $employee->user->userBankAccount ? $employee->user->userBankAccount->account_number : null,
+            "children"               => $employee->user->userFamilyDetails->children,
         ];
-        $userAddressDetails = $employee->user->userAddress->toApiReponseFormat();
-        $userContactDetails = $employee->user->userContactDetails->toApiReponseFormat();
-        $userBankAccountDetails = $employee->user->userBankAccount->toApiReponseFormat();
-        $employee->user->userFamilyDetails->dependent_spouse = 'no';
+        if ($employee->user->userBasicDetails->language) {
+            $userBasicDetails['language'] = [
+                'id'   => $employee->user->userBasicDetails->language,
+                'name' => config('constants.LANGUAGE_OPTIONS')[$employee->user->userBasicDetails->language]
+            ];
+        } else {
+            $userBasicDetails['language'] = null;
+        }
         if ($employee->user->userFamilyDetails->dependent_spouse) {
-            $dependentSpouse = [
+            $userBasicDetails['dependent_spouse'] = [
                 'id'   => $employee->user->userFamilyDetails->dependent_spouse,
                 'name' => $employee->user->userFamilyDetails->dependent_spouse ? config('constants.DEPENDENT_SPOUSE_OPTIONS')[$employee->user->userFamilyDetails->dependent_spouse] : null
             ];
         } else {
-            $dependentSpouse = null;
+            $userBasicDetails['dependent_spouse'] = null;
         }
-        $userFamilyDetails = [
-            'dependent_spouse' => $dependentSpouse,
-            'marital_status'   => $employee->user->userFamilyDetails->maritalStatus->toApiReponseFormat(),
-            'children'         => 0
-        ];
-        return array_merge($userBasicDetails, $userAddressDetails, $userContactDetails, $userBankAccountDetails, $userFamilyDetails);
+        if ($employee->user->userFamilyDetails->maritalStatus) {
+            $userBasicDetails['marital_status'] = [
+                'id'   => $employee->user->userFamilyDetails->maritalStatus->id,
+                'name' => $employee->user->userFamilyDetails->maritalStatus->name
+            ];
+        } else {
+            $userBasicDetails['marital_status'] = null;
+        }
+        return $userBasicDetails;
     }
 
 
@@ -150,6 +173,7 @@ class EmployeeService
         try {
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
+            DB::connection('tenant')->beginTransaction();
             $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
             if ($existingEmpProfile->isEmpty()) {
                 $user = $this->userService->createNewUser($values);
@@ -160,14 +184,17 @@ class EmployeeService
             $this->createCompanyUser($user, $company_id, 'employee');
             $employeeProfile = $this->createEmployeeProfile($user, $values);
             $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-            $this->createEmployeeContract($employeeProfile, $values);
-            //$this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+            app(EmployeeContractService::class)->createEmployeeContract($values, $employeeProfile->id);
+            app(EmployeeBenefitService::class)->createEmployeeBenefits($values, $employeeProfile->id);
+            app(EmployeeCommuteService::class)->createEmployeeCommuteDetails($values, $employeeProfile->id);
+
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
+            DB::connection('tenant')->commit();
+            // $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+
             return $employeeProfile;
         } catch (Exception $e) {
-            DB::connection('master')->rollback();
-            DB::connection('userdb')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -255,33 +282,6 @@ class EmployeeService
         return app(EmployeeSocialSecretaryDetailsRepository::class)->createEmployeeSocialSecretaryDetails($values);
     }
 
-    public function createEmployeeContract($employeeProfile, $values)
-    {
-        $contractDetails = $values['employee_contract_details'];
-        $functionDetails = $values['employee_function_details'];
-        $contractDetails['employee_profile_id'] = $employeeProfile->id;
-        $contractDetails['weekly_contract_hours'] = str_replace(',', '.', $contractDetails['weekly_contract_hours']);
-        $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
-        $contractDetails['start_date'] = date('Y-m-d', strtotime($contractDetails['start_date']));
-        if (array_key_exists('end_date', $contractDetails) && $contractDetails['end_date'] != '') {
-            $contractDetails['end_date'] = date('Y-m-d', strtotime($contractDetails['end_date']));
-        }
-        $employeeContract = EmployeeContract::create($contractDetails);
-        if ($employeeType->employeeTypeCategory->id == 1) {
-            $contractDetails['employee_contract_id'] = $employeeContract->id;
-            LongTermEmployeeContract::create($contractDetails);
-        }
-
-        foreach ($functionDetails as $function) {
-            $this->createEmployeeFunctionDetails($employeeContract, $function);
-        }
-    }
-    public function createEmployeeFunctionDetails(EmployeeContract $employeeContract, $values)
-    {
-        $values['employee_contract_id'] = $employeeContract->id;
-        return $this->employeeFunctionDetailsRepository->createEmployeeFunctionDetails($values);
-    }
-
     public function createUser($values)
     {
         $username = $values['first_name'] . $values['last_name'];
@@ -321,7 +321,7 @@ class EmployeeService
             $employeeType = app(EmployeeTypeService::class)->getEmployeeTypeDetails($employee_type_id);
             $salary_type = $employeeType->salary_type['value'];
             # for all employee types hourly salary will be returned, 1 => if teh employee type has long term contract with servant sub type then monthly salary will be returned
-            $return_salary_type = ($employeeType->employeeTypeCategory->id == 1 && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
+            $return_salary_type = ($employeeType->employeeTypeCategory->id == config('constants.LONG_TERM_CONTRACT_ID') && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
 
             $minimumSalary = 0;
             if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
@@ -384,27 +384,6 @@ class EmployeeService
         return $this->employeeProfileRepository->checkEmployeeExistsInCompany($company_id, $socialSecurityNumber);
     }
 
-    public function getEmployeeContracts($employeeId)
-    {
-        $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeId);
-        $employeeContracts = [
-            'active'  => [],
-            'expired' => []
-        ];
-        foreach ($employeeProfile->employeeContracts as $employeeContract) {
-            $employeeContract->employeeType;
-            $employeeContract->longTermEmployeeContract;
-            $contractDetails = $this->formatEmployeeContract($employeeContract);
-
-            if ($employeeContract->end_date == null || strtotime($employeeContract->end_date) > strtotime(date('Y-m-d'))) {
-                $employeeContracts['active'][] = $contractDetails;
-            } else {
-                $employeeContracts['expired'][] = $contractDetails;
-            }
-        }
-        return $employeeContracts;
-    }
-
     public function formatEmployeeContract($employeeContract)
     {
         $contractDetails = [
@@ -429,7 +408,7 @@ class EmployeeService
     public function getResponsibleCompaniesForUser($user)
     {
         $companies = [];
-        if ($user->hasPermissionTo('Access all companies')) {
+        if ($user->is_admin || $user->is_moderator) {
             $companies = $this->companyService->getActiveCompanies();
         } else {
             $companyUsers = CompanyUser::where('user_id', $user->id)->get();
@@ -483,5 +462,38 @@ class EmployeeService
             'user.userBankAccount',
             'employeeSocialSecretaryDetails'
         ]);
+    }
+
+    public function getEmployeeActiveTypesByDate($employeeId, $date)
+    {
+        $activeFunctions = $activeTypes = [];
+        $activeContracts = EmployeeContract::with(['employeeType', 'employeeFunctionDetails.functionTitle'])->where('employee_profile_id', $employeeId)->where(function ($query) use ($date) {
+            $query->where(function ($query) use ($date) {
+                $query->where('start_date', '<', $date)
+                    ->where(function ($query) use ($date) {
+                        $query->where('end_date', '>', $date)
+                            ->orWhereNull('end_date');
+                    });
+            });
+        })->get();
+        foreach ($activeContracts as $activeContract) {
+            $activeTypes[$activeContract->employeeType->id] = [
+                'value' => $activeContract->employeeType->id,
+                'label' => $activeContract->employeeType->name,
+            ];
+            foreach ($activeContract->employeeFunctionDetails as $employeeFunctionDetails) {
+                $activeFunctions[$activeContract->employeeType->id][$employeeFunctionDetails->functionTitle->id] = [
+                    'value' => $employeeFunctionDetails->functionTitle->id,
+                    'label' => $employeeFunctionDetails->functionTitle->name
+                ];
+            }
+        }
+        foreach ($activeFunctions as $key => $activeFunction) {
+            $activeFunctions[$key] = array_values($activeFunctions[$key]);
+        }
+        return [
+            'employee_types' => array_values($activeTypes),
+            'functions'      => $activeFunctions,
+        ];
     }
 }

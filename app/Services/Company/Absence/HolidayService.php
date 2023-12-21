@@ -7,6 +7,8 @@ use App\Models\Company\Absence\Absence;
 use App\Services\BaseService;
 use App\Repositories\Company\Absence\HolidayRepository;
 use App\Services\Company\Absence\AbsenceService;
+use App\Services\Holiday\HolidayCodeService;
+use App\Repositories\Employee\EmployeeProfileRepository;
 use Exception;
 use DateTime;
 
@@ -146,25 +148,16 @@ class HolidayService
         }
     }
 
-    // public function getHolidayAbsenceStatusOptions()
-    // {
-    //     return getValueLabelOptionsFromConfig('absence.STATUS');
-    // }
-
-    // public function getHolidayDurationTypesOptions()
-    // {
-    //     return getValueLabelOptionsFromConfig('absence.DURATION_TYPE');
-    // }
-    // public function getOptionsToCreate()
-    // {
-    //     try {
-    //         return [
-    //             'absence_status' => self::getHolidayAbsenceStatusOptions(),
-    //             'absence_type'   => self::getHolidayDurationTypesOptions()
-    //         ];
-    //     } catch (Exception $e) {
-    //         error_log($e->getMessage());
-    //         throw $e;
-    //     }
-    // }
+    public function getOptionsToCreate($company_id)
+    {
+        try {
+            return [
+                'holiday_codes' => app(HolidayCodeService::class)->getCompanyHolidayCodes($company_id),
+                'employees'     => app(EmployeeProfileRepository::class)->getEmployeesForHoliday(),
+            ];
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }

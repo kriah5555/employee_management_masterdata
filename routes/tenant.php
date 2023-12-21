@@ -25,12 +25,17 @@ use App\Http\Controllers\Holiday\{
 use App\Http\Controllers\Employee\{
     EmployeeController,
     EmployeeAccessController,
+    EmployeeCommuteController,
+    EmployeeContractController,
+    EmployeeBenefitsController,
     ResponsiblePersonController,
 };
 
 use App\Http\Controllers\{
     Sector\SectorController,
+    Contract\ContractController
 };
+use App\Http\Controllers\ReasonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,14 +113,35 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeController::class,
                 'methods'    => ['index', 'show', 'store', 'update', 'destroy']
             ],
+            'employee-contracts'         => [
+                'controller' => EmployeeContractController::class,
+                'methods'    => ['show', 'store', 'update', 'destroy', 'create']
+            ],
+            'employee-benefits'          => [
+                'controller' => EmployeeBenefitsController::class,
+                'methods'    => ['show', 'update', 'create']
+            ],
+            'employee-commute'           => [
+                'controller' => EmployeeCommuteController::class,
+                'methods'    => ['show', 'update', 'create']
+            ],
         ];
+
+        Route::controller(ContractController::class)->group(function () {
+
+            Route::post('contracts', 'generateContract');
+
+            Route::get('get-employee-contracts/{employee_id}/{status}', 'index')
+            ->where(['status' => '(signed|unsigned)']);
+
+
+        }); 
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);
         }
 
         Route::resource('employee-holiday-count', EmployeeHolidayCountController::class)->only(['edit', 'store', 'show']);
-
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
@@ -127,19 +153,15 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
 
-            Route::get('employee-contract/create', 'createEmployeeContract');
-
-            Route::get('employee-contract-functions/create', 'createEmployeeContractFunctions');
-
-            Route::get('employee-commute/create', 'createEmployeeCommute');
-
-            Route::get('employee-benefits/create', 'createEmployeeBenefits');
-
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
 
-            Route::get('employees/contracts/{employeeId}', 'getEmployeeContracts');
-
             Route::put('employee-update', 'updateEmployee');
+
+        });
+
+        Route::controller(EmployeeContractController::class)->group(function () {
+
+            Route::post('get-active-contract-employees', 'getActiveContractEmployees');
 
         });
 
@@ -154,5 +176,12 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
 
         Route::get('get-company-linked-functions', [SectorController::class, 'getCompanyLinkedFunctions']);
+
+        Route::controller(ReasonController::class)->group(function () {
+
+            Route::get('start-plan-reasons', 'getStartPlanReasons');
+
+            Route::get('stop-plan-reasons', 'getStopPlanReasons');
+        });
     });
 });

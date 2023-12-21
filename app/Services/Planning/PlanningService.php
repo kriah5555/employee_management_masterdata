@@ -4,6 +4,7 @@ namespace App\Services\Planning;
 
 use App\Models\Planning\PlanningBase;
 use App\Interfaces\Planning\PlanningInterface;
+use App\Repositories\Planning\PlanningRepository;
 use App\Services\WorkstationService;
 use App\Services\EmployeeFunction\FunctionService;
 use App\Models\Company\Workstation;
@@ -12,6 +13,7 @@ use App\Models\Company\Company;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Services\Employee\EmployeeService;
+use App\Services\Planning\PlanningContractService;
 
 
 class PlanningService implements PlanningInterface
@@ -19,14 +21,22 @@ class PlanningService implements PlanningInterface
 
     public function __construct(
         protected PlanningBase $planningBase,
-        protected Workstation $wf,
         protected Location $location,
         protected Company $company,
         protected EmployeeType $employeeType,
         protected FunctionTitle $functionTitle,
-        protected EmployeeService $employeeService
-    ) {}
+        protected EmployeeService $employeeService,
+        protected PlanningRepository $planningRepository,
+        protected PlanningContractService $planningContractService,
+    ) {
+    }
 
+    /**
+     * Get employee type of the company
+     *
+     * @param  [type] $companyId
+     * @return array
+     */
     public function getEmployeeTypes($companyId)
     {
         $response = [];
@@ -42,6 +52,12 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
+    /**
+     * Formating the options
+     *
+     * @param  [type] $data
+     * @return array
+     */
     public function optionsFormat($data)
     {
         $response = [];
@@ -51,9 +67,19 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
-    public function workStationFormat($data) 
+    /**
+     * Workstations data format.
+     *
+     * @param  [type] $data
+     * @return array
+     */
+    public function getWorkstations()
     {
-        $response = [];
+        $data = $response = [];
+        $data = $this->location->with(['workstationsValues' => function ($query) {
+            $query->orderBy('workstation_name', 'ASC');
+        }])->get()->toArray();
+
         foreach ($data as $value) {
             $response[$value['id']]['id'] = $value['id'];
             $response[$value['id']]['name'] = $value['location_name'];
@@ -62,145 +88,252 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
+    /**
+     * Function indexing by id
+     *
+     * @param  [type] $data
+     * @return array
+     */
+    public function functionFormat($data)
+    {
+        $response = [];
+        foreach ($data as $value) {
+            $response[$value['id']] = $value;
+        }
+        return $response;
+    }
+
     public function getPlanningOverviewFilterService($companyId)
     {
         $output['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
-        $output['workstations'] = $this->location->with('workstationsValues')->get()->toArray();
 
         $response['locations'] = $this->optionsFormat($output['locations']);
-        $response['workstations'] = $this->workStationFormat($output['workstations']);
+        $response['workstations'] = $this->getWorkstations();
         $response['employee_types'] = $this->getEmployeeTypes($companyId);
 
         return $response;
     }
 
-    public function getMonthlyPlanningService($year, $locations, $workstations, $employee_types)
+    public function getMonthlyPlanningService($year, $month, $location, $workstations, $employee_types)
     {
         $response = [];
-        $data = $this->planningBase->monthPlanning($year, $locations, $workstations, $employee_types);
+        $data = $this->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year);
+        // $data = $this->planningBase->monthPlanning($year, $month, $location, $workstations, $employee_types);
         foreach ($data as $value) {
-            $response[$value['date']] = $value['count'];
+
+            $response[date('d-m-Y', strtotime($value['date']))] = $value['count'];
         }
         return $response;
     }
 
     public function employeeTypeFormat(array $employeeTypeDetails)
     {
-        $formatedEmployeeDetails = [];
-        foreach($employeeTypeDetails as $value) {
-            $formatedEmployeeDetails[$value['id']]['id'] = $value['id'];
-            $formatedEmployeeDetails[$value['id']]['name'] = $value['name'];
-            $formatedEmployeeDetails[$value['id']]['category'] = $value['employee_type_category_id'];
-            $formatedEmployeeDetails[$value['id']]['color'] = $value['employee_type_config']['icon_color'];
+        $formattedEmployeeDetails = [];
+        foreach ($employeeTypeDetails as $value) {
+            $formattedEmployeeDetails[$value['id']]['id'] = $value['id'];
+            $formattedEmployeeDetails[$value['id']]['name'] = $value['name'];
+            $formattedEmployeeDetails[$value['id']]['category'] = $value['employee_type_category_id'];
+            $formattedEmployeeDetails[$value['id']]['color'] = $value['employee_type_config']['icon_color'];
         }
-        return $formatedEmployeeDetails;
+        return $formattedEmployeeDetails;
     }
 
     public function employeeProfilesFormat(array $employee)
     {
         $employeeFormat = [];
-        foreach($employee as $value) {
+        foreach ($employee as $value) {
             $user = $value['user'];
-            $name = $user['user_basic_details']['first_name']. ' ' . $user['user_basic_details']['last_name'];
-            $employeeFormat[$value['id']]['id'] = $value['id'];
-            $employeeFormat[$value['id']]['user_id'] = $value['user_id'];
-            $employeeFormat[$value['id']]['social_security_number'] = $user['social_security_number'];
+            $name = $user['user_basic_details']['first_name'] . ' ' . $user['user_basic_details']['last_name'];
+            $employeeFormat[$value['id']]['employee_id'] = $value['id'];
+            // $employeeFormat[$value['id']]['user_id'] = $value['user_id'];
+            // $employeeFormat[$value['id']]['social_security_number'] = $user['social_security_number'];
             $employeeFormat[$value['id']]['employee_name'] = $name;
-            $employeeFormat[$value['id']]['gender'] = $user['user_basic_details']['gender_id'];
+            // $employeeFormat[$value['id']]['gender'] = $user['user_basic_details']['gender_id'];
         }
         return $employeeFormat;
     }
 
-    public function formatWeeklyData(array $plannings, array $employeeTypes, array $employeeData, array $dates, &$response)
+    public function formatWeeklyData($plannings, &$response)
     {
-        foreach ($plannings as $plan) 
-        {
+        foreach ($plannings as $plan) {
+            $workstationId = $plan->workstation_id;
+            $contractHours = $plan->contract_hours;
+            $planDate = date('d-m-Y', strtotime($plan->start_date_time));
             //Initializing.
-            $type = $plan['employee_type_id'];
-            $profile = $plan['employee_profile_id'];
-
-            //Workstations details.
-            if (!isset($response[$plan['workstation_id']])) {
-                $response[$plan['workstation_id']]['workstation_id'] = $plan['workstation_id'];
-                $response[$plan['workstation_id']]['workstation_name'] = $plan['workstation_name'];
-            }
+            $profile = $plan->employee_profile_id;
 
             //Employee details.
-            if (!isset($response[$plan['workstation_id']]['employee'][$profile])) {
-                $response[$plan['workstation_id']]['employee'][$profile] = $employeeData[$profile];
-                $response[$plan['workstation_id']]['employee'][$profile]['employee_type_name'] = $employeeTypes[$type]['name'];
-                $response[$plan['workstation_id']]['employee'][$profile]['employee_type_color'] = $employeeTypes[$type]['color'];
-                foreach ($dates as $date) {
-                    $response[$plan['workstation_id']]['employee'][$profile][$date] = [];
-                }
-                $response[$plan['workstation_id']]['employee'][$profile]['total'] = 0;
+            if (!isset($response['workstation_data'][$workstationId]['employee'][$profile])) {
+                $response['workstation_data'][$workstationId]['employee'][$profile] = [
+                    'employee_id'   => $plan->employeeProfile->id,
+                    'employee_name' => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name
+                ];
+                $response['workstation_data'][$workstationId]['employee'][$profile]['total'] = [
+                    'cost'           => 0,
+                    'contract_hours' => 0
+                ];
             }
-
-            $planTemp = [];
-            $planTemp = [
-                'start_date' => $plan['start_date'],
-                'start_time' => $plan['start_time'],
-                'end_date' => $plan['end_date'],
-                'end_date' => $plan['end_time'],
-                'contract_hours' => $plan['contract_hours'],
+            $planDetails = [
+                "plan_id"        => $plan->id,
+                "timings"        => date('H:i', strtotime($plan->start_date_time)) . ' ' . date('H:i', strtotime($plan->end_date_time)),
+                "contract_hours" => number_format($contractHours, 2, ',', '.'),
             ];
 
-            $response[$plan['workstation_id']]['employee'][$profile][$plan['start_date']][] = $planTemp;
-            $response[$plan['workstation_id']]['employee'][$profile]['total'] += $plan['contract_hours'];
+            if (!isset($response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate])) {
+                $response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['planning'] = [];
+                $response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] = 0;
+                $response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['cost'] = 0;
+                $response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['employee_type'] = [
+                    'value' => $plan->employeeType->id,
+                    'label' => $plan->employeeType->name,
+                ];
+                $response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['function'] = [
+                    'value' => $plan->functionTitle->id,
+                    'label' => $plan->functionTitle->name,
+                ];
+            }
+            $response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['planning'][] = $planDetails;
+            $response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['workstation_data'][$workstationId]['employee'][$profile]['plans'][$planDate]['contract_hours']) + $contractHours
+            );
+            $response['workstation_data'][$workstationId]['employee'][$profile]['total']['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['workstation_data'][$workstationId]['employee'][$profile]['total']['contract_hours']) + $contractHours
+            );
+            if (!isset($response['total'][$planDate])) {
+                $response['total'][$planDate] = [
+                    'cost'           => 0,
+                    'contract_hours' => 0
+                ];
+            }
+            $response['total'][$planDate]['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['total'][$planDate]['contract_hours']) + $contractHours
+            );
         }
 
-        $response = array_values($response);
-        foreach ($response as $id => $value) {
-            $response[$id]['employee'] = array_values($value['employee']);
+        $response['workstation_data'] = array_values($response['workstation_data']);
+        foreach ($response['workstation_data'] as $id => $value) {
+            $response['workstation_data'][$id]['employee'] = array_values($value['employee']);
         }
-        return $response;
+        return $response['workstation_data'];
     }
 
-    public function getWeeklyPlanningService($locations, $workstations, $employee_types, $weekNo, $year)
+    public function getWeeklyPlanningService($location, $workstations, $employee_types, $weekNo, $year)
     {
-        $response = [];
-        //Weeek dates.
-        $dates = getWeekDates($weekNo, $year);
+        $response = [
+            'workstation_data' => [],
+            'total'            => [],
+        ];
+        //Week dates.
         $workstationsRaw = $this->location->with('workstationsValues')->get()->toArray();
-        $workstationsRaw = $this->workStationFormat($workstationsRaw);
-        foreach ($workstationsRaw[$locations]['workstations'] as $value) {
-            $response[$value['value']]['id'] = $value['value'];
-            $response[$value['value']]['name'] = $value['label'];
-            $response[$value['value']]['employee'] = [];
+        $workstationsRaw = $this->getWorkstations($workstationsRaw);
+        foreach ($workstationsRaw[$location]['workstations'] as $value) {
+            $response['workstation_data'][$value['value']]['workstation_id'] = $value['value'];
+            $response['workstation_data'][$value['value']]['workstation_name'] = $value['label'];
+            $response['workstation_data'][$value['value']]['employee'] = [];
         }
 
         //Getting the data from the query.
-        $planningRaw = $this->planningBase->weeklyPlanning($locations, $workstations, $employee_types, $weekNo, $year);
-        if (count($planningRaw) > 0) {
-            $functions = array_unique(array_column($planningRaw, 'function_id'));
-            $employeeTypes = array_unique(array_column($planningRaw, 'employee_type_id'));
-            $employeeProfiles = array_unique(array_column($planningRaw, 'employee_profile_id'));
+        $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year);
+        $response = $this->formatWeeklyData($plannings, $response);
+        return $response;
+    }
 
-            //Employee type details.
-            $employeeTypeDetails = $this->employeeTypeFormat(
-                $this->employeeType->getEmployeeTypeDetails($employeeTypes)
-            );
+    public function getDayPlanningService($location, $workstations, $employee_types, $date)
+    {
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        return $this->formatDayPlanning($plannings);
+    }
 
-            //Employee profiles.
-            $employeeProfilesData = $this->employeeProfilesFormat(
-                $this->employeeService->getEmployeeDetailsPlanning($employeeProfiles)->toArray()
-            );
+    public function formatDayPlanning($plannings)
+    {
+        $response = [];
+        foreach ($plannings as $plan) {
+            if (!isset($response[$plan->employee_profile_id])) {
+                $response[$plan->employee_profile_id] = [
+                    'employee_id'   => $plan->employeeProfile->id,
+                    'employee_name' => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name,
+                    'plans'         => []
+                ];
+            }
+            $response[$plan->employee_profile_id]['plans'][] = [
+                'plan_id'          => $plan->id,
+                'start_time'       => date('H:i', strtotime($plan->start_date_time)),
+                'end_time'         => date('H:i', strtotime($plan->end_date_time)),
+                'contract_hours'   => $plan->contract_hours,
+                'workstation_name' => $plan->workStation->workstation_name,
+                'function_name'    => $plan->functionTitle->name,
+            ];
+        }
+        return array_values($response);
+    }
 
-            //Function details.
-            // $functionDetails = $this->functionTitle->getFunctionDetails($functions);
+    public function planningCreateOptionsService($workstation, $employeeId)
+    {
 
-            //Format the weekly data
-            $this->formatWeeklyData($planningRaw, $employeeTypeDetails, $employeeProfilesData, $dates, $response);
+    }
+
+    public function getPlanningById($planId)
+    {
+        return $this->formatPlanDetails(
+            $this->planningRepository->getPlanningById($planId, [
+                'employeeType',
+                'workstation',
+                'functionTitle',
+                'employeeProfile',
+                'employeeProfile.user.userBasicDetails',
+                'timeRegistrations',
+                'timeRegistrations.startedBy',
+                'timeRegistrations.endedBy',
+                'contracts',
+                'breaks'
+            ])
+        );
+    }
+
+    public function formatPlanDetails($details)
+    {
+        $startPlan = true;
+        $stopPlan = false;
+        $response = [
+            'start_time'    => date('H:i', strtotime($details->start_date_time)),
+            'end_time'      => date('H:i', strtotime($details->end_date_time)),
+            'employee_type' => $details->employeeType->name,
+            'function'      => $details->functionTitle->name,
+            'workstation'   => $details->workstation->workstation_name,
+            'start_plan'    => $startPlan,
+            'stop_plan'     => $stopPlan,
+            'contract'      => $this->planningContractService->getPlanningContractContract($details)
+        ];
+        $response['activity'] = [];
+        foreach ($details->timeRegistrations as $timeRegistrations) {
+            $startPlan = false;
+            $stopPlan = true;
+            $startedByFullName = $timeRegistrations->startedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->startedBy->userBasicDetails->last_name;
+            $activity[] = "Plan started by " . $startedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_start_time));
+            if ($timeRegistrations->actual_end_time) {
+                $startPlan = true;
+                $stopPlan = false;
+                $endedByFullName = $timeRegistrations->endedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->endedBy->userBasicDetails->last_name;
+                $response['activity'][] = "Plan stopped by " . $endedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_end_time));
+            }
         }
         return $response;
     }
 
-    public function getDayPlanningService()
+    public function getWeeklyPlannings($location, $workstations, $employee_types, $weekNumber, $year)
     {
-        
+        $weekDates = getWeekDates($weekNumber, $year);
+        $startDateOfWeek = reset($weekDates);
+        $endDateOfWeek = end($weekDates);
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
-    public function getAllPlanning()
+    public function getDayPlannings($location, $workstations, $employee_types, $date)
     {
-
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
+    }
+    public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
+    {
+        $monthDates = getStartAndEndDateOfMonth($month, $year);
+        return $this->planningRepository->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $monthDates['start_date'], $monthDates['end_date']);
     }
 }

@@ -3,8 +3,10 @@
 namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
-use App\Models\EmployeeType\EmployeeType;
 use App\Traits\UserAudit;
+use Illuminate\Support\Carbon;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\Company\Employee\EmployeeContractFile;
 use App\Models\Company\Employee\LongTermEmployeeContract;
 
 class EmployeeContract extends BaseModel
@@ -34,20 +36,12 @@ class EmployeeContract extends BaseModel
      */
     protected $primaryKey = 'id';
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = true;
-
-
     protected $dates = [
         'created_at',
         'updated_at',
         'deleted_at',
         'start_date',
-        'end_date'
+        'end_date',
     ];
 
     /**
@@ -61,20 +55,44 @@ class EmployeeContract extends BaseModel
         'start_date',
         'end_date'
     ];
+    
     protected $apiValues = [
         'employee_profile_id',
-        'employee_type_id',
-        'start_date',
-        'end_date'
+        'employee_type_id'
     ];
-
 
     public function employeeType()
     {
         return $this->belongsTo(EmployeeType::class);
     }
+
     public function longTermEmployeeContract()
     {
         return $this->hasOne(LongTermEmployeeContract::class);
+    }
+
+    public function employeeProfile()
+    {
+        return $this->belongsTo(EmployeeProfile::class);
+    }
+
+    public function employeeContractFile()
+    {
+        return $this->hasMany(EmployeeContractFile::class)->where('status', true);
+    }
+    
+    public function employeeFunctionDetails()
+    {
+        return $this->hasMany(EmployeeFunctionDetails::class);
+    }
+
+    public function getStartDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+
+    public function getEndDateAttribute($value)
+    {
+        return $value ? Carbon::parse($value)->format('d-m-Y') : null;
     }
 }

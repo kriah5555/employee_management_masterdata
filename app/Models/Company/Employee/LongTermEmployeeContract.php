@@ -64,6 +64,22 @@ class LongTermEmployeeContract extends BaseModel
         'status'
     ];
 
+    protected $appends  = ['formatted_weekly_contract_hours'];
+
+
+    public function getFormattedWeeklyContractHoursAttribute()
+    {
+        return formatToEuropeHours($this->weekly_contract_hours);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($longTermEmployeeContract) {
+            $longTermEmployeeContract->weekly_contract_hours = formatToCommonHours($longTermEmployeeContract->weekly_contract_hours);
+        });
+    }
 
     public function employeeContract()
     {

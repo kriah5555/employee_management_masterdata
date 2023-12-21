@@ -72,7 +72,7 @@ class LeaveController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    // 'data'    => $this->leave_service->getOptionsToCreate()
+                    'data'    => $this->leave_service->getOptionsToCreate(getCompanyId())
                 ],
                 JsonResponse::HTTP_CREATED,
             );

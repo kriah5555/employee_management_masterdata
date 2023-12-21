@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\Employee\EmployeeService;
 use App\Services\Employee\CommuteTypeService;
 use App\Http\Requests\Employee\EmployeeRequest;
-use App\Models\Company\Employee\EmployeeProfile;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
 
@@ -243,52 +242,6 @@ class EmployeeController extends Controller
         }
     }
 
-    public function createEmployeeContract()
-    {
-        try {
-            $companyId = getCompanyId();
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'employee_contract_options' => $this->companyService->getEmployeeContractOptionsForCreation($companyId),
-                        'sub_types'                 => associativeToDictionaryFormat($this->employeeService->getSubTypeOptions(), 'key', 'value'),
-                        'schedule_types'            => associativeToDictionaryFormat($this->employeeService->getScheduleTypeOptions(), 'key', 'value'),
-                        'employment_types'          => associativeToDictionaryFormat($this->employeeService->getEmploymentTypeOptions(), 'key', 'value'),
-                        'salary_types'              => associativeToDictionaryFormat($this->employeeService->getEmployeeSalaryTypeOptions(), 'key', 'value'),
-                        'functions'                 => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-    public function createEmployeeContractFunctions()
-    {
-        try {
-            $companyId = getCompanyId();
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'functions' => $this->companyService->getFunctionsForCompany($this->companyService->getCompanyDetails($companyId)),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function createEmployeeCommute()
     {
         try {
@@ -310,26 +263,6 @@ class EmployeeController extends Controller
         }
     }
 
-    public function createEmployeeBenefits()
-    {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => [
-                        'meal_vouchers' => $this->mealVoucherService->getActiveMealVouchers(),
-                    ]
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function updatePersonalDetails(UpdateEmployeePersonalDetailsRequest $request)
     {
         try {
@@ -338,25 +271,6 @@ class EmployeeController extends Controller
                 [
                     'success' => true,
                     'message' => 'Employee personal details updated successfully'
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function getEmployeeContracts($employeeId)
-    {
-        try {
-
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => $this->employeeService->getEmployeeContracts($employeeId)
                 ],
                 JsonResponse::HTTP_OK,
             );

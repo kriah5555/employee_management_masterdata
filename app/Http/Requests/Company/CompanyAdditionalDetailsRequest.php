@@ -24,6 +24,7 @@ class CompanyAdditionalDetailsRequest extends ApiRequest
             'responsible_persons'                          => ['nullable', 'array'],
             'responsible_persons.*.first_name'             => ['required', 'string'],
             'responsible_persons.*.last_name'              => ['required', 'string'],
+            'responsible_persons.*.date_of_birth'          => 'required|date_format:d-m-Y',
             'responsible_persons.*.email'                  => [
                 'bail',
                 'required',

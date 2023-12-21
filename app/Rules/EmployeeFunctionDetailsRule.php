@@ -12,10 +12,10 @@ class EmployeeFunctionDetailsRule implements ValidationRule
     protected $employeeTypeService;
 
     protected $functionService;
-    public function __construct(EmployeeTypeService $employeeTypeService, FunctionService $functionService)
+    public function __construct()
     {
-        $this->employeeTypeService = $employeeTypeService;
-        $this->functionService = $functionService;
+        $this->employeeTypeService = app(EmployeeTypeService::class);
+        $this->functionService     = app(FunctionService::class);
     }
     /**
      * Run the validation rule.
@@ -24,24 +24,21 @@ class EmployeeFunctionDetailsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $employeeContractDetails = request()->input('employee_contract');
-        if (is_array($employeeContractDetails) && isset($employeeContractDetails['employee_type_id'])) {
-            $usedFunction = [];
-            foreach ($value as $data) {
-                if (!array_key_exists('function_id', $data)) {
-                    $fail('Please select function');
-                } elseif (in_array($data['function_id'], $usedFunction)) {
-                    $fail('Cannot link same function twice');
-                } else {
-                    $functionTitle = $this->functionService->getFunctionTitleDetails($data['function_id']);
-                    $usedFunction[] = $functionTitle->id;
-                }
-                if (!array_key_exists('salary', $data) || !is_numeric(str_replace(',', '.', $data['salary']))) {
-                    $fail('Please enter correct salary');
-                }
-                if (array_key_exists('experience', $data) && !is_numeric(str_replace(',', '.', $data['experience']))) {
-                    $fail('Please enter correct experience');
-                }
+        $usedFunction = [];
+        foreach ($value as $data) {
+            if (!array_key_exists('function_id', $data) || empty($data['function_id'])) {
+                $fail('Please select function');
+            } elseif (in_array($data['function_id'], $usedFunction)) {
+                $fail('Cannot link same function twice');
+            } else {
+                $functionTitle = $this->functionService->getFunctionTitleDetails($data['function_id']);
+                $usedFunction[] = $functionTitle->id;
+            }
+            if (!array_key_exists('salary', $data) || !is_numeric(str_replace(',', '.', $data['salary']))) {
+                $fail('Please enter correct salary');
+            }
+            if (array_key_exists('experience', $data) && !is_numeric(str_replace(',', '.', $data['experience']))) {
+                $fail('Please enter correct experience');
             }
         }
     }

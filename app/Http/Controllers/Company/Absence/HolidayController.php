@@ -96,7 +96,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getOptionsToCreate()
+                    'data'    => $this->holidayService->getOptionsToCreate(getCompanyId())
                 ],
                 JsonResponse::HTTP_CREATED,
             );

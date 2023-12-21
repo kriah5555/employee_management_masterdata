@@ -24,7 +24,6 @@ class Company extends BaseModel
         'sender_number',
         'vat_number',
         'social_secretary_id',
-        // 'interim_agency_id',
         'oauth_key',
         'username',
         'email',
@@ -116,7 +115,7 @@ class Company extends BaseModel
 
     public function logoFile()
     {
-        return $this->belongsTo(Files::class, 'logo'); # php artisan storage:link  -> need to create symbolic link between storage and public folder
+        return $this->belongsTo(Files::class, 'logo_id'); # php artisan storage:link  -> need to create symbolic link between storage and public folder
     }
 
     # to link all the holiday codes to company when any new company are created

@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Employee;
 
 use App\Http\Requests\ApiRequest;
-use App\Rules\ValidateLengthIgnoringSymbols;
+use App\Rules\ValidateLengthIgnoringSymbolsRule;
 
 class ResponsiblePersonRequest extends ApiRequest
 {
@@ -15,9 +15,9 @@ class ResponsiblePersonRequest extends ApiRequest
      */
     public function rules(): array
     {
-        $rules =  [
-            'email'        => 'required|max:255|regex:' . config('regex.EMAIL_REGEX'),
-            'phone_number' => [
+        $rules = [
+            'email'                  => 'required|max:255|regex:' . config('regex.EMAIL_REGEX'),
+            'phone_number'           => [
                 'required',
                 'string',
                 'max:20',
@@ -25,9 +25,9 @@ class ResponsiblePersonRequest extends ApiRequest
             ],
             'first_name'             => 'required|string|max:255',
             'last_name'              => 'required|string|max:255',
-	    //'social_security_number' => 'required|' . config('constants.RSZ_NUMBER_VALIDATION'),
-	    'social_security_number' => 'required', 'string', new ValidateLengthIgnoringSymbols(11, 11, [',', '.', '-']),
+            'social_security_number' => 'required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']),
             'role'                   => 'required|in:' . implode(',', array_keys(config('roles_permissions.RESPONSIBLE_PERSON_ROLES'))),
+            'date_of_birth'          => 'required|date_format:d-m-Y',
         ];
         return $rules;
     }

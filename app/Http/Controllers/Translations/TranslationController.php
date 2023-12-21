@@ -45,7 +45,7 @@ class TranslationController extends Controller
             [
                 'success' => true,
                 'message' => t('Translations saved successfully'),
-                'data'    => $this->translation_service->create($request->all())
+                'data'    => $this->translation_service->create($request->validated())
             ],
             JsonResponse::HTTP_CREATED,
         );
@@ -68,7 +68,7 @@ class TranslationController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->translation_service->getTranslation($request->input('key'))
+                'data'    => $this->translation_service->getTranslation($request->input('keys'))
             ],
             JsonResponse::HTTP_OK,
         );

@@ -19,6 +19,7 @@ return [
         '{company_vat}'                => 'Company VAT number',
         '{company_responsible_person}' => 'Responsible person',
         '{company_address}'            => 'Address:Street + number Postal code City Country',
+        '{company_city}'               => 'City',
         '{company_pc_number}'          => 'Paritair committee number',
     ],
 
@@ -41,6 +42,7 @@ return [
 
     'ATTACHMENT_TOKENS' => [
         '{attachment_location_name}'               => 'Location name',
+        '{attachment_location_address}'            => 'Address:Street + number Postal code City Country',
         '{attachment_commute_type}'                => 'Commute type',
         '{attachment_distance_to_location_in_kms}' => 'Distance to location in kms',
         '{attachment_company_fuel_card}'           => 'Company fuel card',

@@ -15,7 +15,14 @@ class EmployeeContractRepository implements EmployeeContractRepositoryInterface
 
     public function deleteEmployeeContract(string $employeeContractId): bool
     {
-        return EmployeeContract::destroy($employeeContractId);
+
+        $employeeContract = EmployeeContract::findOrFail($employeeContractId);
+
+        $employeeContract->employeeFunctionDetails()->delete();
+        
+        $employeeContract->employeeFunctionDetails()->delete();
+
+        return $employeeContract->delete();
     }
 
     public function createEmployeeContract(array $extraBenefitsDetails): EmployeeContract

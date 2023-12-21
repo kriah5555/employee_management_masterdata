@@ -4,6 +4,7 @@ namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\Company\Employee\EmployeeCommute;
 
 class CommuteType extends BaseModel
 {

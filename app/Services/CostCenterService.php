@@ -7,7 +7,7 @@ use App\Services\BaseService;
 use App\Models\Company\CostCenter;
 use App\Services\WorkstationService;
 use App\Services\Company\LocationService;
-use App\Models\Company\Employee\EmployeeProfile;
+use App\Services\Employee\EmployeeService;
 
 class CostCenterService extends BaseService
 {
@@ -19,7 +19,7 @@ class CostCenterService extends BaseService
     {
         parent::__construct($costCenter);
         $this->workstationService = app(WorkstationService::class);
-        $this->employeeProfile    = app(EmployeeProfile::Class);
+        $this->employeeService    = app(EmployeeService::Class);
         $this->locationService    = app(LocationService::class);
     }
 
@@ -73,11 +73,13 @@ class CostCenterService extends BaseService
     {
         try {
             $options['locations'] = $this->locationService->getActiveLocations();
+            
             foreach ($options['locations'] as $location) {
                 $workstations = $this->locationService->getLocationWorkstations($location['id']);
                 $options['workstations'][$location['id']] = $workstations;
             }
-            $options['employees'] = [];
+            
+            $options['employees'] = $this->employeeService->getEmployeeOptions();
             return $options;
         } catch (Exception $e) {
             error_log($e->getMessage());

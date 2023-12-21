@@ -31,7 +31,7 @@ class EmployeeHolidayCountRequest extends ApiRequest
                 'bail',
                 'required',
                 'integer',
-                new EmployeeLinkedToCompanyRule(request()->header('Company-Id')),
+                new EmployeeLinkedToCompanyRule(),
             ],
             "holiday_code_counts" => [
                 'bail',
