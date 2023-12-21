@@ -71,7 +71,7 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                 $employee_holiday_hours_used = 0;
 
                 foreach ($absences as $absence) {
-                    $employee_holiday_hours_used = count($absence->absenceDates->absence_dates_array) * $absences->pluck('absenceHours')->flatten()->pluck('hours')->sum();
+                    $employee_holiday_hours_used = $absence->absenceDates ?  count($absence->absenceDates->absence_dates_array) * $absences->pluck('absenceHours')->flatten()->pluck('hours')->sum() : 0;
                 }
 
                 $remaining_holiday_count = $holiday_code_Count- $employee_holiday_hours_used;
