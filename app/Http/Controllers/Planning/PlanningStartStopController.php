@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Planning\StorePlanningRequest;
 use App\Http\Requests\Planning\UpdatePlanningRequest;
 use App\Models\Planning\PlanningBase as Planning;
-use App\Services\Planning\PlanningCreateEditService;
 use App\Services\Planning\PlanningService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
@@ -14,12 +13,13 @@ use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\Planning\StartPlanByManagerRequest;
+use App\Services\Planning\PlanningStartStopService;
 
 class PlanningStartStopController extends Controller
 {
     public function __construct(
-        protected PlanningCreateEditService $planningCreateEditService,
-        protected PlanningService $planningService
+        protected PlanningService $planningService,
+        protected PlanningStartStopService $planningStartStopService
     ) {
     }
 
@@ -28,7 +28,25 @@ class PlanningStartStopController extends Controller
      */
     public function startPlanByManager(StartPlanByManagerRequest $request)
     {
-        dd('here');
+        try {
+            $this->planningStartStopService->startPlanByManager($request->validated());
+            $companyId = $request->header('company-id');
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Planning options',
+                    'data'    => $this->planningService->getPlanningOverviewFilterService($companyId),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

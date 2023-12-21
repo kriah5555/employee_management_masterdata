@@ -59,6 +59,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
     Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
+    Route::get('uurrooster', [PlanningController::class, 'getPlanDetails']);
 });
 
 // Route::controller(VacancyController::class)
