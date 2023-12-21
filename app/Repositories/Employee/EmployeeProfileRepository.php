@@ -87,7 +87,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
                     'full_name'           => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
                 ];
             }
-        })->filter();
+        })->filter()->values();
     }
 
     public function getEmployeesForHoliday()
