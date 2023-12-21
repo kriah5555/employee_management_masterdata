@@ -399,3 +399,23 @@ if (!function_exists('replaceContractTokens')) {
         return $template;
     }
 }
+
+if (!function_exists('formatEmployees')) {
+    function formatEmployees($employees)
+    {
+        $employees->load('user');
+        return $employees->map(function ($employee) {
+            if ($employee->user) {
+                return [
+                    'employee_profile_id' => $employee->id,
+                    'first_name'          => $employee->user->userBasicDetails->first_name,
+                    'last_name'           => $employee->user->userBasicDetails->last_name,
+                    'full_name'           => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
+                    'user_id'             => $employee->user->id,
+                ];
+            }
+        })->filter()->values();
+    }
+}
+
+

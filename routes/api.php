@@ -8,6 +8,7 @@ use App\Http\Controllers\Company\{
     CostCenterController,
     WorkstationController,
     AvailabilityController,
+    AppSettingsController,
     Absence\LeaveController,
     Absence\HolidayController,
     Contract\ContractConfigurationController,

@@ -121,7 +121,7 @@ class HolidayController extends Controller
                 [
                     'success' => true,
                     'message' => t('Holiday created successfully'),
-                    'data'    => $this->holidayService->applyHoliday($request->validated())
+                    'data'    => $this->holidayService->applyHoliday($request->toArray()),
                 ],
                 JsonResponse::HTTP_CREATED,
             );

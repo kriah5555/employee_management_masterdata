@@ -68,7 +68,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
                 'user.userContactDetails',
             ]);
 
-            return $this->formatEmployees($employees);
+            return formatEmployees($employees);
             
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -78,6 +78,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 
     public function formatEmployees($employees)
     {
+        $employees->load('user');
         return $employees->map(function ($employee) {
             if ($employee->user) {
                 return [
@@ -106,7 +107,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
         }])->get();
 
-        return $this->formatEmployees($employees);
+        return formatEmployees($employees);
     }
 
     public function getEmployeesForLeave()
@@ -124,6 +125,6 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
         }])->get();
 
-        return $this->formatEmployees($employees);
+        return formatEmployees($employees);
     }
 }

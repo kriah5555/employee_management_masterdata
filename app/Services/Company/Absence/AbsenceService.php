@@ -42,9 +42,9 @@ class AbsenceService
         try {
                 if (array_key_exists($status, config('absence.STATUS'))) {
                     $absence->update(['absence_status' => $status]);
-                    if ($status == config('absence.CANCEL') || $status == config('absence.REJECT')) {
-                        $this->deleteAbsenceRelatedData($absence);
-                    }
+                    // if ($status == config('absence.CANCEL') || $status == config('absence.REJECT')) {
+                    //     $this->deleteAbsenceRelatedData($absence);
+                    // }
                 }
                 return $absence;
         } catch (Exception $e) {

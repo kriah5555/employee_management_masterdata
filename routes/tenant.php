@@ -149,6 +149,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
 
+        Route::get('responsible-persons-list', [ResponsiblePersonController::class, 'getResponsiblePersonList']);
+
         Route::controller(EmployeeController::class)->group(function () {
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
@@ -156,6 +158,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('employee/update-personal-details', 'updatePersonalDetails');
 
             Route::put('employee-update', 'updateEmployee');
+
+            Route::get('employee-list', 'getEmployeeList');
 
         });
 

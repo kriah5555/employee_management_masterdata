@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Company;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -15,35 +16,11 @@ class AvailabilityController extends Controller
     {
     }
 
-     /**
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'message' => $this->availabilityService->createAvailability($request->validated())
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    "success" => false,
-                    "message" => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
-    }
-
-
-
-    public function availableDateAndNOtAvailableDates()
-    {
-
         $rules = [
             'period' => 'required|regex:/^\d{2}-\d{4}$/',
         ];
@@ -98,7 +75,6 @@ class AvailabilityController extends Controller
      */
     public function show(string $id)
     {
-
     }
 
     /**

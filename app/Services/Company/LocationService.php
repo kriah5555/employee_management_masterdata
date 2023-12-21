@@ -90,7 +90,7 @@ class LocationService extends BaseService
     {
         return [
             'workstations'        => Workstation::where('status', true)->get(),
-            'responsible_persons' => app(ResponsiblePersonService::class)->getCompanyResponsiblePersons(getCompanyId()),
+            'responsible_persons' => app(ResponsiblePersonService::class)->getCompanyResponsiblePersonOptions(getCompanyId()),
         ];
     }
 }

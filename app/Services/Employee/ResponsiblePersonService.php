@@ -25,6 +25,16 @@ class ResponsiblePersonService
         }
     }
 
+    public function getCompanyResponsiblePersonOptions($company_id)
+    {
+        try {
+            return $this->responsiblePersonRepository->getCompanyResponsiblePersonOptions($company_id);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
     public function getResponsiblePersonById($user_id, $company_id)
     {
         try {

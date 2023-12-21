@@ -93,4 +93,10 @@ return [
 
     'COMPANY'          => 1,
     'LOCATIONS'        => 2,
+
+    'APP_SETTINGS_OPTIONS' => [
+        1 => 'NOTIFICATION',
+        2 => 'MAIL',
+        3 => 'MAIL_AND_NOTIFICATION'
+    ]
 ];
