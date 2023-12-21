@@ -35,6 +35,27 @@ class ResponsiblePersonController extends Controller
         }
     }
 
+    public function getResponsiblePersonList()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => ['responsible_persons' => $this->responsible_person_service->getCompanyResponsiblePersonOptions(getCompanyId())],
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      */

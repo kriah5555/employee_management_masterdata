@@ -2,14 +2,15 @@
 
 namespace App\Repositories\Employee;
 
-use App\Interfaces\Employee\ResponsiblePersonInterface;
 use App\Models\User\User;
 use App\Models\User\CompanyUser;
-use App\Exceptions\ModelDeleteFailedException;
-use App\Exceptions\ModelUpdateFailedException;
-use App\Services\Employee\EmployeeService;
 use App\Services\User\UserService;
 use App\Repositories\User\UserRepository;
+use App\Services\Employee\EmployeeService;
+use App\Exceptions\ModelDeleteFailedException;
+use App\Exceptions\ModelUpdateFailedException;
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Interfaces\Employee\ResponsiblePersonInterface;
 
 class ResponsiblePersonRepository implements ResponsiblePersonInterface
 {
@@ -38,6 +39,14 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
         //     $query->whereIn('name', $roles);
         // }])
         // ->where('company_id', $company_id)->get()->pluck('user_id');
+    }
+
+    public function getCompanyResponsiblePersonOptions($company_id)
+    {
+        $user_ids = $this->getCompanyResponsiblePersonUserIds($company_id);
+        return formatEmployees(EmployeeProfile::whereIn('user_id', $user_ids)
+        ->with(['user.userBasicDetails'])
+        ->get());
     }
 
     public function getCompanyResponsiblePersons($company_id)
