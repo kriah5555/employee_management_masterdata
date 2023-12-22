@@ -22,8 +22,15 @@ class UurroosterController extends Controller
     {
         try {
             $rules = [
-                'dashboard_token' => [
+                'date'            => [
                     'required',
+                    'date_format:d-m-Y',
+                ],
+                'location_id'     => [
+                    'required',
+                    'integer',
+                ],
+                'dashboard_token' => [
                     'string',
                 ],
             ];
@@ -42,11 +49,11 @@ class UurroosterController extends Controller
                     JsonResponse::HTTP_BAD_REQUEST,
                 );
             }
-            $input = $request->only(['dashboard_token']);
+            $input = $request->only(['date', 'location_id', 'dashboard_token']);
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->uurroosterService->getUurroosterData($request->get('dashboard_token'))
+                    'data'    => $this->uurroosterService->getUurroosterData($input)
                 ],
                 JsonResponse::HTTP_OK,
             );
