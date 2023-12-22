@@ -101,8 +101,7 @@ class TranslationsService
             ]
         ];
         if (
-            $languageLine->update([
-                'text' => $translationStrings])
+            $languageLine->update($translationStrings)
         ) {
             return true;
         } else {
