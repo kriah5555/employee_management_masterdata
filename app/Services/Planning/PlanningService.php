@@ -299,8 +299,16 @@ class PlanningService implements PlanningInterface
 
     public function formatPlanDetails($details)
     {
-        $startPlan = true;
-        $stopPlan = false;
+        $startPlan = $stopPlan = false;
+        if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
+            if ($details->plan_started) {
+                $startPlan = false;
+                $stopPlan = true;
+            } else {
+                $startPlan = true;
+                $stopPlan = false;
+            }
+        }
         $response = [
             'start_time'    => date('H:i', strtotime($details->start_date_time)),
             'end_time'      => date('H:i', strtotime($details->end_date_time)),
@@ -313,13 +321,9 @@ class PlanningService implements PlanningInterface
         ];
         $response['activity'] = [];
         foreach ($details->timeRegistrations as $timeRegistrations) {
-            $startPlan = false;
-            $stopPlan = true;
             $startedByFullName = $timeRegistrations->startedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->startedBy->userBasicDetails->last_name;
             $response['activity'][] = "Plan started by " . $startedByFullName . " at " . date('H:i', strtotime($timeRegistrations->actual_start_time));
             if ($timeRegistrations->actual_end_time) {
-                $startPlan = true;
-                $stopPlan = false;
                 $endedByFullName = $timeRegistrations->endedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->endedBy->userBasicDetails->last_name;
                 $response['activity'][] = "Plan stopped by " . $endedByFullName . " at " . date('H:i', strtotime($timeRegistrations->actual_end_time));
             }
