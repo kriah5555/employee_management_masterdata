@@ -61,12 +61,12 @@ class CostCenterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($cost_center_id)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->get($id, ['location', 'workstations'] ),
+                'data'    => $this->costCenterService->getCostCenters($cost_center_id, ['location', 'workstations', 'employees.employeeBasicDetails'] ),
             ],
             JsonResponse::HTTP_CREATED,
         );

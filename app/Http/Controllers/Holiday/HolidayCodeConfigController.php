@@ -24,6 +24,13 @@ class HolidayCodeConfigController extends Controller
      */
     public function index()
     {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->holiday_code_service->getHolidayCodesWithStatusForCompany(getCompanyId())
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -31,20 +38,21 @@ class HolidayCodeConfigController extends Controller
      */
     public function create()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => ['companies' => $this->company_service->getCompanies()]
-            ],
-            JsonResponse::HTTP_OK,
-        );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(HolidayCodeRequest $request, Company $company)
+    public function store(HolidayCodeConfigRequest $request)
     {
+        $this->holiday_code_service->updateHolidayCodesToCompany(getCompanyId(), $request->validated());
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Holiday code config updated successfully'),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -58,30 +66,17 @@ class HolidayCodeConfigController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($company_id)
+    public function edit()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->holiday_code_service->getHolidayCodesWithStatusForCompany($company_id)
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(HolidayCodeConfigRequest $request, $company_id)
+    public function update()
     {
-        $this->holiday_code_service->updateHolidayCodesToCompany($company_id, $request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => t('Holiday code config updated successfully'),
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        
     }
 
     /**

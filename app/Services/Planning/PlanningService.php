@@ -244,6 +244,13 @@ class PlanningService implements PlanningInterface
         return $this->formatDayPlanning($plannings);
     }
 
+    public function getEmployeeDayPlanningService($employee_profile_id, $date = '')
+    {
+        $date = $date == '' ? date('d-m-Y') : $date;
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        return $this->formatDayPlanning($plannings);
+    }
+
     public function formatDayPlanning($plannings)
     {
         $response = [];
@@ -327,10 +334,12 @@ class PlanningService implements PlanningInterface
         $endDateOfWeek = end($weekDates);
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
+
     public function getDayPlannings($location, $workstations, $employee_types, $date)
     {
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
+
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
     {
         $monthDates = getStartAndEndDateOfMonth($month, $year);

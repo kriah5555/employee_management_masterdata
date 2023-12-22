@@ -36,11 +36,11 @@ Route::get('/check', function () {
 Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(function () {
 
     Route::controller(PlanningController::class)
-        ->middleware(['initialize-tenancy'])
+        // ->middleware(['initialize-tenancy'])
         ->prefix('planning')
         ->group(function () {
 
-            $planningResouces = [
+            $planningResources = [
                 ['path' => 'get-planning-options', 'function' => 'getPlanningOverviewOptions'],
                 ['path' => 'get-monthly-planning', 'function' => 'getMonthlyPlanning'],
                 ['path' => 'get-week-planning', 'function' => 'getWeeklyPlanning'],
@@ -48,10 +48,14 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
                 ['path' => 'get-planning-create', 'function' => 'planningCreateOptions'],
             ];
 
-            foreach ($planningResouces as $api) {
+            foreach ($planningResources as $api) {
                 Route::POST($api['path'], $api['function']);
             }
         });
+
+        
+    Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
+
     Route::post('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
     Route::post('save-plans', [PlanningCreateEditController::class, 'savePlans']);
     Route::delete('delete-plan/{plan_id}', [PlanningCreateEditController::class, 'destroy']);
