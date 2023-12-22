@@ -316,12 +316,12 @@ class PlanningService implements PlanningInterface
             $startPlan = false;
             $stopPlan = true;
             $startedByFullName = $timeRegistrations->startedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->startedBy->userBasicDetails->last_name;
-            $activity[] = "Plan started by " . $startedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_start_time));
+            $response['activity'][] = "Plan started by " . $startedByFullName . " at " . date('H:i', strtotime($timeRegistrations->actual_start_time));
             if ($timeRegistrations->actual_end_time) {
                 $startPlan = true;
                 $stopPlan = false;
                 $endedByFullName = $timeRegistrations->endedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->endedBy->userBasicDetails->last_name;
-                $response['activity'][] = "Plan stopped by " . $endedByFullName . "at" . date('H:i', strtotime($timeRegistrations->actual_end_time));
+                $response['activity'][] = "Plan stopped by " . $endedByFullName . " at " . date('H:i', strtotime($timeRegistrations->actual_end_time));
             }
         }
         return $response;
