@@ -8,11 +8,17 @@ use App\Models\Company\Location;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
+use App\Services\Company\DashboardAccessService;
 
 class LocationController extends Controller
 {
-    public function __construct(protected LocationService $locationService)
-    {
+    public function __construct(
+        protected LocationService $locationService,
+        protected DashboardAccessService $dashboardAccessService
+    ) {
     }
 
     public function index()
@@ -150,5 +156,68 @@ class LocationController extends Controller
             'success' => true,
             'message' => t('Location deleted successfully')
         ]);
+    }
+
+    public function activateLocation(Request $request)
+    {
+        try {
+            $rules = [
+                'location_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('locations', 'id'),
+                ],
+            ];
+
+            $customMessages = [
+                'location.required' => 'Location id is required',
+            ];
+            $validator = Validator::make(request()->all(), $rules, $customMessages);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+            $location = $this->locationService->getLocationById($request->get('location_id'));
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->dashboardAccessService->activateLocation($location)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getLocationsList()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->locationService->getLocationsList(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

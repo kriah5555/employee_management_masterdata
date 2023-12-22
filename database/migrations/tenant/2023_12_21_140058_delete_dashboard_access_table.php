@@ -10,6 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::dropIfExists('dashboard_access');
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
         Schema::create('dashboard_access', function (Blueprint $table) {
             $table->id();
             $table->string('access_key');
@@ -18,13 +26,5 @@ return new class extends Migration {
             $table->unsignedBigInteger('location_id')->nullable();
             $table->timestamps();
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('dashboard_access');
     }
 };

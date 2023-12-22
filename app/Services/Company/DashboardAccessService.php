@@ -10,32 +10,33 @@ use Carbon\Carbon;
 
 class DashboardAccessService
 {
-    protected $locations=[];
+    protected $locations = [];
     public function getDashboardAccess($request)
     {
-        try{
+        try {
             $unique_key = $request->input('unique_key');
             $dashboardAccessData = DashboardAccess::where('unique_key', $unique_key)->get();
 
-            if($dashboardAccessData->pluck('type')->first() == config('constants.COMPANY')) {
-                $this->locations= Location::get();
-            } else if($dashboardAccessData->pluck('type')->first() == config('constants.LOCATIONS')) {
-                $this->locations= Location::where('id',$dashboardAccessData->pluck('location_id'))->get();
+            if ($dashboardAccessData->pluck('type')->first() == config('constants.COMPANY')) {
+                $this->locations = Location::get();
+            } else if ($dashboardAccessData->pluck('type')->first() == config('constants.LOCATIONS')) {
+                $this->locations = Location::where('id', $dashboardAccessData->pluck('location_id'))->get();
             }
             if ($this->locations->count() > 0) {
                 return $this->generateQrCodeWithLocations();
             }
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
         }
     }
 
-    public function generateQrCodeWithLocations(){
+    public function generateQrCodeWithLocations()
+    {
 
         $today = Carbon::now()->toDateString();
 
-        foreach($this->locations as $location){
+        foreach ($this->locations as $location) {
 
             $locationName = $location['location_name'];
 
@@ -69,5 +70,26 @@ class DashboardAccessService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function activateLocation(Location $location)
+    {
+        $companyId = getCompanyId();
+        $accessToken = encodeData([
+            'location_id' => $location->id,
+            'company_id'  => $companyId,
+        ]
+        );
+        DashboardAccess::create([
+            'access_key'  => $accessToken,
+            'company_id'  => $companyId,
+            'location_id' => $location->id,
+            'type'        => 2
+        ]);
+        return $accessToken;
+    }
+    public function deactivateLocation(string $access_key)
+    {
+        DashboardAccess::where('access_key', $access_key)->delete();
     }
 }

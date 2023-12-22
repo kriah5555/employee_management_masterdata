@@ -64,8 +64,14 @@ class CompanyUser extends BaseModel
     {
         return $this->belongsTo(User::class);
     }
+
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function getCompanyDetails($userId)
+    {
+        return $this->where('user_id', $userId);
     }
 }

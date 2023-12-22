@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Planning\UurroosterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Planning\
@@ -53,7 +54,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
             }
         });
 
-        
+
     Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
 
     Route::controller(PlanningCreateEditController::Class)->group(function () {
@@ -67,11 +68,20 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         Route::post('delete-week-plans', 'deleteWeekPlans');
 
     });
+    
+    Route::get('start-plan-options', [PlanningStartStopController::class, 'startPlanOptions']);
 
     Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
+    Route::post('stop-plan-by-manager', [PlanningStartStopController::class, 'stopPlanByManager']);
     Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
+    Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
+    Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
 });
+
+Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
+Route::post('/vacancy/employee', [VacancyController::class, 'getEmployeeJobsOverview']);
+
 
 // Route::controller(VacancyController::class)
 // ->middleware(['initialize-tenancy'])

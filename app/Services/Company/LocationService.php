@@ -56,9 +56,9 @@ class LocationService extends BaseService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-                $address = $this->addressService->createNewAddress($values['address']);
-                $values['address'] = $address->id;
-                $location = $this->locationRepository->createLocation($values);
+            $address = $this->addressService->createNewAddress($values['address']);
+            $values['address'] = $address->id;
+            $location = $this->locationRepository->createLocation($values);
             DB::connection('tenant')->commit();
             return $location;
         } catch (\Exception $e) {
@@ -72,11 +72,11 @@ class LocationService extends BaseService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-                $location = self::getLocationById($location_id);
-                $this->addressService->updateAddress($location->address, $values['address']);
-                unset($values['address']);
-                unset($values['company']);
-                $location->update($values);
+            $location = self::getLocationById($location_id);
+            $this->addressService->updateAddress($location->address, $values['address']);
+            unset($values['address']);
+            unset($values['company']);
+            $location->update($values);
             DB::connection('tenant')->commit();
             return $location;
         } catch (Exception $e) {
@@ -92,5 +92,17 @@ class LocationService extends BaseService
             'workstations'        => Workstation::where('status', true)->get(),
             'responsible_persons' => app(ResponsiblePersonService::class)->getCompanyResponsiblePersonOptions(getCompanyId()),
         ];
+    }
+    public function getLocationsList()
+    {
+        $locations = $this->locationRepository->getActiveLocations();
+        $locationsList = [];
+        foreach ($locations as $location) {
+            $locationsList[] = [
+                'value' => $location->id,
+                'label' => $location->location_name
+            ];
+        }
+        return $locationsList;
     }
 }
