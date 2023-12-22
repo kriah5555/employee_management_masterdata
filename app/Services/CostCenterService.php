@@ -88,7 +88,7 @@ class CostCenterService extends BaseService
                 $options['workstations'][$location['id']] = $workstations;
             }
             
-            $options['employees'] = $this->employeeService->getEmployeeOptions();
+            $options['employees'] = $this->employeeService->getEmployeeOptions()['employees'];
             return $options;
         } catch (Exception $e) {
             error_log($e->getMessage());

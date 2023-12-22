@@ -66,6 +66,39 @@ class PlanningRepository implements PlanningRepositoryInterface
         return $query->get();
     }
 
+    public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = '', $employee_id = '', $relations = [])
+    {
+        $query = PlanningBase::query();
+
+        $query->with($relations);
+
+        if (!empty($workstations)) {
+            $query->where('location_id', $location);
+        }
+
+        if (!empty($workstations)) {
+            $query->whereIn('workstation_id', $workstations);
+        }
+
+        if (!empty($employee_types)) {
+            $query->whereIn('employee_type_id', $employee_types);
+        }
+
+        if (!empty($employee_id)) {
+            $query->where('employee_profile_id', $employee_id);
+        }
+
+        if (!empty($from_date) && !empty($to_date)) {
+            $from_date = date('Y-m-d 00:00:00', strtotime($from_date));
+            $to_date   = date('Y-m-d 23:59:59', strtotime($to_date));
+            $query->whereBetween('start_date_time', [$from_date, $to_date]);
+        }
+            
+        $query->orderBy('start_date_time');
+        $query->orderBy('end_date_time');
+        return $query->get();
+    }
+
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $startDateOfMonth, $endDateOfMonth)
     {
         $startDateOfMonth = date('Y-m-d 00:00:00', strtotime($startDateOfMonth));

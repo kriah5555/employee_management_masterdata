@@ -180,7 +180,7 @@ class PlanningController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningService->getEmployeeDayPlanningService($employee_profile_id)
+                    'data'    => $this->planningService->getPlans(date('d-m-Y'), date('d-m-Y'), '', '', '', $employee_profile_id, ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle'])
                 ],
                 JsonResponse::HTTP_OK,
             );

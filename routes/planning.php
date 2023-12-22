@@ -56,10 +56,18 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         
     Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
 
-    Route::post('get-employee-plan-creation-options', [PlanningCreateEditController::class, 'create']);
-    Route::post('save-plans', [PlanningCreateEditController::class, 'savePlans']);
-    Route::delete('delete-plan/{plan_id}', [PlanningCreateEditController::class, 'destroy']);
-    Route::post('delete-week-plans', [PlanningCreateEditController::class, 'deleteWeekPlans']);
+    Route::controller(PlanningCreateEditController::Class)->group(function () {
+        
+        Route::post('get-employee-plan-creation-options', 'create');
+
+        Route::post('save-plans', 'savePlans');
+
+        Route::delete('delete-plan/{plan_id}', 'destroy');
+
+        Route::post('delete-week-plans', 'deleteWeekPlans');
+
+    });
+
     Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
     Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);

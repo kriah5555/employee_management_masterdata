@@ -340,6 +340,11 @@ class PlanningService implements PlanningInterface
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
 
+    public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = '', $employee_id = '', $relations = [])
+    {
+        return $this->planningRepository->getPlans($from_date, $to_date, $location, $workstations, $employee_types, $employee_id, $relations);
+    }
+
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
     {
         $monthDates = getStartAndEndDateOfMonth($month, $year);

@@ -88,6 +88,7 @@ class EmployeeProfile extends BaseModel
     {
         return $this->hasMany(EmployeeCommute::class);
     }
+    
     public function employeeBasicDetails()
     {
         return $this->belongsTo(UserBasicDetails::class, 'user_id', 'user_id');
