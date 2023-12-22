@@ -211,7 +211,7 @@ if (!function_exists('formatModelName')) {
 }
 
 if (!function_exists('setTenantDB')) {
-    function setTenantDB($tenant_id)
+    function setTenantDB($tenant_id) 
     {
         $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to get tenant id from header
         $tenant = Tenant::find($tenant_id);
@@ -384,7 +384,6 @@ if (!function_exists('numericToEuropean')) {
         // Format the number with European number format
         return number_format($numericNumber, 2, ',', '.');
     }
-
 }
 
 if (!function_exists('replaceContractTokens')) {
@@ -440,5 +439,18 @@ if (!function_exists('decodeData')) {
 
         // Convert JSON back to array
         return json_decode($jsonData, true);
+    }
+}
+
+if (!function_exists('connectCompanyDataBase')) {
+    function connectCompanyDataBase($companyId) {
+        $tenant = App\Models\Tenant::where('company_id', $companyId)->get()->first();
+        if ($tenant instanceof App\Models\Tenant && !empty($tenant)) {
+            tenancy()->initialize($tenant);
+            config(['database.connections.tenant_template.database' => $tenant->database_name]);
+            return true;
+        } else{
+            return false;
+        }
     }
 }

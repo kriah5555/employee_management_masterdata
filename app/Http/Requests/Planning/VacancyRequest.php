@@ -23,19 +23,20 @@ class VacancyRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'location' => 'required|integer|exists:locations,id',
-            'workstations' => 'required|integer|exists:workstations,id',
-            'functions' => 'required|integer',
+            'id'             => 'nullable',
+            'location'       => 'required|integer|exists:locations,id',
+            'workstations'   => 'required|integer|exists:workstations,id',
+            'functions'      => 'required|integer',
             'employee_types' => 'required|array',
-            'start_date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i',
-            'count' => 'required_if:status,1|integer|min:0',
-            'approval_type' => 'required|integer|in:0,1', // 0: Manual, 1: Auto
-            'extra_info' => 'nullable|string',
-            'status' => 'required|integer|in:0,1,2',// 1: Open, 0: deleted, 2: drafted
-            'repeat_type' => 'required|integer|int:0,1,2,3',//0: one time, 1: daily, 2: weekly, 4: monthly
-            'end_date' => 'nullable|date|after_or_equal:today'
+            'start_date'     => 'required|date|after_or_equal:today',
+            'start_time'     => 'required|date_format:H:i',
+            'end_time'       => 'required|date_format:H:i',
+            'count'          => 'required_if:status,1|integer|min:0',
+            'approval_type'  => 'required|integer|in:0,1', // 0: Manual, 1: Auto
+            'extra_info'     => 'nullable|string',
+            'status'         => 'required|integer|in:0,1,2',// 1: Open, 0: deleted, 2: drafted
+            'repeat_type'    => 'required|integer|int:0,1,2,3',//0: one time, 1: daily, 2: weekly, 4: monthly
+            'end_date'       => 'nullable|date|after_or_equal:today'
         ];
     }
 
