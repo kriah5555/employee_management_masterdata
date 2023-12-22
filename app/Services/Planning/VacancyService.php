@@ -11,6 +11,7 @@ use App\Models\Company\{
     Employee\EmployeeProfile
 };
 use App\Models\Planning\{Vacancy, VacancyEmployeeTypes, VacancyPostEmployees};
+use App\Models\User\CompanyUser;
 
 use function PHPUnit\Framework\throwException;
 
@@ -22,7 +23,8 @@ class VacancyService implements VacancyInterface
         protected Company $company,
         protected Location $location,
         protected PlanningService $planningService,
-        protected VacancyPostEmployees $vacancyPostEmployees
+        protected VacancyPostEmployees $vacancyPostEmployees,
+        protected CompanyUser $companyUser
     ) {}
 
     public function formatCreateVacancy(&$data)
@@ -255,5 +257,21 @@ class VacancyService implements VacancyInterface
         $query = $this->vacancyPostEmployees->findOrFail($data['id']);
         $data['responded_at'] = now()->format('Y-m-d H:i:s');
         return $query->update($data);
+    }
+
+    public function getAvailableJobsOfEmployee()
+    {
+
+    }
+
+    public function getEmployeeOverviewService($userId)
+    {
+        $userCompany = $this->companyUser->getCompanyDetails($userId)->get()->toArray();
+        foreach($userCompany as $value) {
+            if (empty($value['company_id']) || !connectCompanyDataBase($value['company_id'])) {
+                throw new \Exception('Issue with company Id');
+            }
+        }
+
     }
 }

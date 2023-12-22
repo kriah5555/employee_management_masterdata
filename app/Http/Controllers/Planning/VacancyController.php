@@ -239,11 +239,12 @@ class VacancyController extends Controller
         $data = $request->all();
         try {
             $data = $request->validate($rules, $messages);
+            // dd($data);
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Vacancies created successfully'),
-                    'data'    => $this->vacancyService->replyToVacancyService($data)
+                    'data'    => $this->vacancyService->getEmployeeOverviewService($data)
                 ],
                 JsonResponse::HTTP_CREATED
             );
