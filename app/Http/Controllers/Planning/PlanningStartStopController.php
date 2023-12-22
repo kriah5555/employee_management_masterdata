@@ -15,6 +15,7 @@ use Illuminate\Validation\Rule;
 use App\Http\Requests\Planning\StartPlanByManagerRequest;
 use App\Http\Requests\Planning\StopPlanByManagerRequest;
 use App\Services\Planning\PlanningStartStopService;
+use Illuminate\Support\Facades\Auth;
 
 class PlanningStartStopController extends Controller
 {
@@ -30,7 +31,9 @@ class PlanningStartStopController extends Controller
     public function startPlanByManager(StartPlanByManagerRequest $request)
     {
         try {
-            $this->planningStartStopService->startPlanByManager($request->validated());
+            $input = $request->validated();
+            $input['started_by'] = Auth::guard('web')->user()->id;
+            $this->planningStartStopService->startPlanByManager($input);
             return returnResponse(
                 [
                     'success' => true,
@@ -53,7 +56,9 @@ class PlanningStartStopController extends Controller
     public function stopPlanByManager(StopPlanByManagerRequest $request)
     {
         try {
-            $this->planningStartStopService->stopPlanByManager($request->validated());
+            $input = $request->validated();
+            $input['ended_by'] = Auth::guard('web')->user()->id;
+            $this->planningStartStopService->stopPlanByManager($input);
             return returnResponse(
                 [
                     'success' => true,

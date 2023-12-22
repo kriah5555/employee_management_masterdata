@@ -35,6 +35,7 @@ class PlanningStartStopService
             'plan_id'           => $plan->id,
             'actual_start_time' => date('Y-m-d H:i', strtotime($values['start_time'])),
             'status'            => true,
+            'started_by'        => $values['started_by']
         ]);
         DB::connection('tenant')->commit();
     }
@@ -43,6 +44,7 @@ class PlanningStartStopService
         DB::connection('tenant')->beginTransaction();
         $plan = $this->planningRepository->getPlanningById($values['plan_id']);
         $plan->plan_started = false;
+        $plan->ended_by = $values['ended_by'];
         $plan->save();
         $timeRegistration = $plan->timeRegistrations->last();
         $timeRegistration->actual_end_time = date('Y-m-d H:i', strtotime($values['stop_time']));
