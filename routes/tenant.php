@@ -92,6 +92,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::post('activate-location', 'activateLocation');
             Route::post('deactivate-location', 'deactivateLocation');
             Route::post('deactivate-location-on-all-system', 'deactivateLocationOnAllSystems');
+            Route::get('get-locations-list', 'getLocationsList');
 
         });
 

@@ -199,4 +199,25 @@ class LocationController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function getLocationsList()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->locationService->getLocationsList(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }
