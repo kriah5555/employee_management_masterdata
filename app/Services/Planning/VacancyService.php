@@ -85,7 +85,7 @@ class VacancyService implements VacancyInterface
                     ];
                 }
             }, $value['function_titles']);
-            $response[$value['id']] = $temp;
+            $response[$value['id']] = $temp['functions'];
         }
         return $response;
     }
@@ -94,7 +94,11 @@ class VacancyService implements VacancyInterface
     {
         $data = [];
         $data['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
-        $data['workstations'] = $this->planningService->getWorkstations();
+        
+        $data['workstations'] = array_map( function($workstations) {
+            return $workstations['workstations'] ?? [];
+        }, $this->planningService->getWorkstations());
+
         $data['workstationsFunctions'] = $this->getFormatedFunction();
         $data['employeeTypes'] = $this->planningService->getEmployeeTypes($companyId);
 
@@ -104,22 +108,22 @@ class VacancyService implements VacancyInterface
     public function filterVacancies(&$vacancies, $filters)
     {
         // Filter by location
-        if (isset($filters['location']) && count($filters['location']) > 0) {
-            $vacancies->whereIn('location_id', $filters['location']);
-        }
+        // if (isset($filters['location']) && count($filters['location']) > 0) {
+        //     $vacancies->whereIn('location_id', $filters['location']);
+        // }
 
         // Filter by functions
-        if (isset($filters['functions']) && count($filters['functions']) > 0) {
-            $vacancies->whereIn('function_id', $filters['functions']);
-        }
+        // if (isset($filters['functions']) && count($filters['functions']) > 0) {
+        //     $vacancies->whereIn('function_id', $filters['functions']);
+        // }
 
         // Filter by employee types
-        if (isset($filters['employee_types']) && count($filters['employee_types']) > 0) {
-            $employeeTypesFilter = $filters['employee_types'];
-            $vacancies->whereHas('employeeTypes', function ($query) use ($employeeTypesFilter) {
-                $query->whereIn('employee_types_id', $employeeTypesFilter);
-            });
-        }
+        // if (isset($filters['employee_types']) && count($filters['employee_types']) > 0) {
+        //     $employeeTypesFilter = $filters['employee_types'];
+        //     $vacancies->whereHas('employeeTypes', function ($query) use ($employeeTypesFilter) {
+        //         $query->whereIn('employee_types_id', $employeeTypesFilter);
+        //     });
+        // }
 
         // Filter by status
         if (isset($filters['status']) && !empty($filters['status'])) {
@@ -133,10 +137,10 @@ class VacancyService implements VacancyInterface
         //     $vacancies->orWhere('start_date', '>=', $filters['start_date']);
         // }
 
-        if (isset($filters['order_by']) && !empty($filters['order_by']) > 0) {
-            $order = $filters['order_type'] ?? 'asc';
-            $vacancies->orderBy($filters['order_by'], $order);
-        }
+        // if (isset($filters['order_by']) && !empty($filters['order_by']) > 0) {
+        //     $order = $filters['order_type'] ?? 'asc';
+        //     $vacancies->orderBy($filters['order_by'], $order);
+        // }
     }
 
     public function getVacancies($filters)
@@ -144,7 +148,7 @@ class VacancyService implements VacancyInterface
         $response = $vacanciesRaw = [];
         $vacancies = $this->vacancy->getVacancy();
 
-        $this->filterVacancies($vacancies, $filters);
+        // $this->filterVacancies($vacancies, $filters);
         $vacanciesRaw = $vacancies->get()->toArray();
         //Formating the data
         $this->formatVacancies($vacanciesRaw, $response);

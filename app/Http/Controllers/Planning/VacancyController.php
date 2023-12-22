@@ -200,7 +200,7 @@ class VacancyController extends Controller
         }
     }
 
-    public function replyToVacancy(VacancyEmployeeRequest $vacancyEmployeeRequest)
+    public function respondToVacancy(VacancyEmployeeRequest $vacancyEmployeeRequest)
     {
         $data = $vacancyEmployeeRequest->validated();
         try {

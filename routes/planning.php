@@ -66,7 +66,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
     Route::post('uurrooster-data', [UurroosterController::class, 'getUurroosterData']);
-    Route::post('/vacancy/reply-to-vacancy', [VacancyController::class, 'replyToVacancy']);
+    Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
 });
 
 Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
