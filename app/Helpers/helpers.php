@@ -418,4 +418,23 @@ if (!function_exists('formatEmployees')) {
     }
 }
 
+if (!function_exists('encodeData')) {
+    function encodeData($data)
+    {
+        $uniqueString = time() . '-' . json_encode($data);
+        return base64_encode($uniqueString);
+    }
+}
 
+if (!function_exists('decodeData')) {
+    function decodeData($encodedString)
+    {
+        $decodedString = base64_decode($encodedString);
+
+        // Split the timestamp and data
+        list($timestamp, $jsonData) = explode('-', $decodedString, 2);
+
+        // Convert JSON back to array
+        return json_decode($jsonData, true);
+    }
+}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Planning\UurroosterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Planning\
@@ -57,9 +58,10 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::delete('delete-plan/{plan_id}', [PlanningCreateEditController::class, 'destroy']);
     Route::post('delete-week-plans', [PlanningCreateEditController::class, 'deleteWeekPlans']);
     Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
+    Route::post('stop-plan-by-manager', [PlanningStartStopController::class, 'stopPlanByManager']);
     Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
-    Route::get('uurrooster', [PlanningController::class, 'getPlanDetails']);
+    Route::post('uurrooster-data', [UurroosterController::class, 'getUurroosterData']);
 });
 
 // Route::controller(VacancyController::class)

@@ -56,7 +56,7 @@ class EmployeeTypeRepository implements EmployeeTypeRepositoryInterface
     public function getCompanyEmployeeTypes($company_id)
     {
 
-        $company       = Company::findOrFail($company_id);
+        $company = Company::findOrFail($company_id);
         $employeeTypes = [];
         foreach ($company->sectors as $sector) {
             foreach ($sector->employeeTypes as $employeeType) {
@@ -67,4 +67,3 @@ class EmployeeTypeRepository implements EmployeeTypeRepositoryInterface
         return array_values($employeeTypes);
     }
 }
-    

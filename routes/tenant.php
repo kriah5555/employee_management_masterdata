@@ -89,6 +89,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
 
             Route::get('location-workstations/{location_id}', 'locationWorkstations')->where(['location_id' => $integerRule]);
+            Route::post('activate-location', 'activateLocation');
+            Route::post('deactivate-location', 'deactivateLocation');
+            Route::post('deactivate-location-on-all-system', 'deactivateLocationOnAllSystems');
 
         });
 
@@ -132,10 +135,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::post('contracts', 'generateContract');
 
             Route::get('get-employee-contracts/{employee_id}/{status}', 'index')
-            ->where(['status' => '(signed|unsigned)']);
+                ->where(['status' => '(signed|unsigned)']);
 
 
-        }); 
+        });
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
             Route::resource($uri, $controller)->only($methods);

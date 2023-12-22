@@ -4,16 +4,14 @@ namespace App\Services\Translations;
 
 use Illuminate\Support\Facades\DB;
 use Spatie\TranslationLoader\LanguageLine;
-use App\Services\BaseService;
 use Illuminate\Support\Facades\File;
+use App\Exceptions\ModelUpdateFailedException;
 
-class TranslationsService extends BaseService
+class TranslationsService
 {
-    protected $languageLine;
 
-    public function __construct(LanguageLine $languageLine)
+    public function __construct()
     {
-        parent::__construct($languageLine);
     }
 
     public function extractTranslatableStrings()
@@ -46,8 +44,8 @@ class TranslationsService extends BaseService
                 $createdTranslations = [];
                 foreach ($translations['translations'] as $key => $translationData) {
                     $group = 'custom';
-                    $key   = $translationData['key'];
-                    $text  = $translationData['text'];
+                    $key = $translationData['key'];
+                    $text = $translationData['text'];
 
                     $this->createTranslation($key, $text, $group);
                 }
@@ -68,19 +66,12 @@ class TranslationsService extends BaseService
         $translation->save();
     }
 
-    public function getAll(array $args = [])
+    public function index()
     {
-        $query = $this->model::query();
-
-        if (isset($args['key']) && $args['key'] != '') {
-            $key = $args['key'];
-            $query->where('key', 'ILIKE', "%$key%");
-        }
-
-        return $query->get();
+        return LanguageLine::all();
     }
 
-    public function getTranslation($strings) 
+    public function getTranslation($strings)
     {
         $translations = [];
         if ($strings) {
@@ -93,6 +84,29 @@ class TranslationsService extends BaseService
                 }
             }
         }
-        return array_values($translations); 
-    }   
+        return array_values($translations);
+    }
+
+    public function getTranslationById($id)
+    {
+        return LanguageLine::findOrFail($id);
+    }
+    public function update(LanguageLine $languageLine, $updatedValues)
+    {
+        $translationStrings = [
+            'text' => [
+                'en' => $updatedValues['en'] ?? '',
+                'fr' => $updatedValues['fr'] ?? '',
+                'nl' => $updatedValues['nl'] ?? '',
+            ]
+        ];
+        if (
+            $languageLine->update([
+                'text' => $translationStrings])
+        ) {
+            return true;
+        } else {
+            throw new ModelUpdateFailedException('Failed to update employee type');
+        }
+    }
 }
