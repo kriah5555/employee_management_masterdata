@@ -24,13 +24,7 @@ class HolidayCodeConfigController extends Controller
      */
     public function index()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->holiday_code_service->getHolidayCodesWithStatusForCompany(getCompanyId())
-            ],
-            JsonResponse::HTTP_OK,
-        );
+        
     }
 
     /**
@@ -45,22 +39,20 @@ class HolidayCodeConfigController extends Controller
      */
     public function store(HolidayCodeConfigRequest $request)
     {
-        $this->holiday_code_service->updateHolidayCodesToCompany(getCompanyId(), $request->validated());
-        return returnResponse(
-            [
-                'success' => true,
-                'message' => t('Holiday code config updated successfully'),
-            ],
-            JsonResponse::HTTP_OK,
-        );
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $company_id)
     {
-        //
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->holiday_code_service->getHolidayCodesWithStatusForCompany($company_id)
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
@@ -74,9 +66,16 @@ class HolidayCodeConfigController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update()
+    public function update(HolidayCodeConfigRequest $request, $company_id)
     {
-        
+        $this->holiday_code_service->updateHolidayCodesToCompany($company_id, $request->validated());
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => t('Holiday code config updated successfully'),
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     /**
