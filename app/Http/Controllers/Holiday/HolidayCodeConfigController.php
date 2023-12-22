@@ -24,6 +24,7 @@ class HolidayCodeConfigController extends Controller
      */
     public function index()
     {
+        
     }
 
     /**
@@ -31,34 +32,19 @@ class HolidayCodeConfigController extends Controller
      */
     public function create()
     {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => ['companies' => $this->company_service->getCompanies()]
-            ],
-            JsonResponse::HTTP_OK,
-        );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(HolidayCodeRequest $request, Company $company)
+    public function store(HolidayCodeConfigRequest $request)
     {
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($company_id)
+    public function show(string $company_id)
     {
         return returnResponse(
             [
@@ -67,6 +53,14 @@ class HolidayCodeConfigController extends Controller
             ],
             JsonResponse::HTTP_OK,
         );
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit()
+    {
+        
     }
 
     /**

@@ -130,9 +130,9 @@ class HolidayCodeService
             // Format the holiday codes with their status
             $formattedHolidayCodes = $allHolidayCodes->map(function ($holidayCode) use ($linkedHolidayCodesIds) {
                 return [
-                    'value'  => $holidayCode->id,
-                    'label'  => $holidayCode->holiday_code_name,
-                    'status' => in_array($holidayCode->id, $linkedHolidayCodesIds),
+                    'holiday_code_id'    => $holidayCode->id,
+                    'holiday_code_name'  => $holidayCode->holiday_code_name,
+                    'status'             => in_array($holidayCode->id, $linkedHolidayCodesIds),
                 ];
             });
 

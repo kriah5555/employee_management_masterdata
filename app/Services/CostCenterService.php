@@ -23,6 +23,15 @@ class CostCenterService extends BaseService
         $this->locationService    = app(LocationService::class);
     }
 
+    public function getCostCenters($id, $with = [])
+    {
+        if ($with) {
+            return $this->model::with($with)->findOrFail($id);
+        } else {
+            return $this->model::findOrFail($id);
+        }
+    }
+
     public function getAll(array $args = [])
     {
         return $this->model

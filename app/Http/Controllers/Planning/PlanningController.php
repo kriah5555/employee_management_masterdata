@@ -174,6 +174,26 @@ class PlanningController extends Controller
         }
     }
 
+    public function getEmployeeDayPlanning($employee_profile_id)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningService->getEmployeeDayPlanningService($employee_profile_id)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Get employee planning options by workstation and employeeId.
      *

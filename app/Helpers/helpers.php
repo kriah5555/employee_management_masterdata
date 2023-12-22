@@ -407,11 +407,15 @@ if (!function_exists('formatEmployees')) {
         return $employees->map(function ($employee) {
             if ($employee->user) {
                 return [
-                    'employee_profile_id' => $employee->id,
-                    'first_name'          => $employee->user->userBasicDetails->first_name,
-                    'last_name'           => $employee->user->userBasicDetails->last_name,
-                    'full_name'           => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
-                    'user_id'             => $employee->user->id,
+                    'employee_profile_id'    => $employee->id,
+                    'first_name'             => $employee->user->userBasicDetails->first_name,
+                    'last_name'              => $employee->user->userBasicDetails->last_name,
+                    'full_name'              => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
+                    'username'               => $employee->user->username,
+                    'social_security_number' => $employee->user->social_security_number,
+                    'social_security_number' => $employee->user->userContactDetails->phone_number,
+                    'email'                  => $employee->user->userContactDetails->email,
+                    'user_id'                => $employee->user->id,
                 ];
             }
         })->filter()->values();

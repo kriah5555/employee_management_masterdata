@@ -157,7 +157,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'holiday-code-config' => [
             'controller' => HolidayCodeConfigController::class,
-            'methods'    => ['edit', 'update', 'create']
+            'methods'    => ['show', 'update']
         ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
