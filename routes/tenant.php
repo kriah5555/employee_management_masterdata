@@ -29,6 +29,7 @@ use App\Http\Controllers\Employee\{
     EmployeeContractController,
     EmployeeBenefitsController,
     ResponsiblePersonController,
+    EmployeeRolesAndPermissionController,
 };
 
 use App\Http\Controllers\{
@@ -152,6 +153,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::resource('employee-access', EmployeeAccessController::class)->only(['create']);
 
         Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
+
+        Route::resource('employee-roles-permissions', EmployeeRolesAndPermissionController::class)->only('show', 'update');
 
         Route::get('responsible-persons-list', [ResponsiblePersonController::class, 'getResponsiblePersonList']);
 
