@@ -78,7 +78,7 @@ class UurroosterService implements PlanningInterface
                 $timeRegistrations['end_time'][] = $timeRegistration->actual_end_time ? date('H:i', strtotime($timeRegistration->actual_end_time)) : '';
                 $timeRegistrations['end_dimona_status'][] = null;
             }
-            $response['planning_data'][$planning->workStation->id]['plannings'] = [
+            $response['planning_data'][$planning->workStation->id]['plannings'][] = [
                 'employee_id'          => $planning->employeeProfile->id,
                 'employee_name'        => $employeeName,
                 'function_name'        => $planning->functionTitle->name,
