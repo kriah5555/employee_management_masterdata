@@ -289,7 +289,7 @@ class PlanningService implements PlanningInterface
 
     }
 
-    public function getPlanningById($planId)
+    public function getPlanningDetailsById($planId)
     {
         return $this->formatPlanDetails(
             $this->planningRepository->getPlanningById($planId, [
@@ -305,6 +305,21 @@ class PlanningService implements PlanningInterface
                 'breaks'
             ])
         );
+    }
+    public function getPlanningById($planId)
+    {
+        return $this->planningRepository->getPlanningById($planId, [
+            'employeeType',
+            'workstation',
+            'functionTitle',
+            'employeeProfile',
+            'employeeProfile.user.userBasicDetails',
+            'timeRegistrations',
+            'timeRegistrations.startedBy',
+            'timeRegistrations.endedBy',
+            'contracts',
+            'breaks'
+        ]);
     }
 
     public function formatPlanDetails($details)
