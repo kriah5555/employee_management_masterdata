@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('access_key');
             $table->tinyInteger('type'); # [1 => 'company', 2 => 'location']
-            $table->foreignId('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('location_id')->nullable();
             $table->timestamps();
         });

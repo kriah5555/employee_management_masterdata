@@ -13,6 +13,7 @@ use App\Http\Controllers\Planning\
     TimeRegistrationController,
     VacancyController
 };
+use App\Http\Controllers\Planning\PlanningShiftController;
 use App\Http\Middleware\InitializeTenancy;
 use App\Http\Middleware\SetActiveUser;
 
@@ -58,7 +59,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
 
     Route::controller(PlanningCreateEditController::Class)->group(function () {
-        
+
         Route::post('get-employee-plan-creation-options', 'create');
 
         Route::post('save-plans', 'savePlans');
@@ -68,7 +69,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         Route::post('delete-week-plans', 'deleteWeekPlans');
 
     });
-    
+
     Route::get('start-plan-options', [PlanningStartStopController::class, 'startPlanOptions']);
 
     Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
@@ -77,6 +78,16 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
+    Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
+    $resources = [
+        // 'planning-shifts' => [
+        //     'controller' => PlanningShiftController::class,
+        //     'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+        // ],
+    ];
+    foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
+        Route::resource($uri, $controller)->only($methods);
+    }
 });
 
 Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);

@@ -5,15 +5,13 @@ namespace App\Services\Planning;
 use App\Models\Planning\PlanningBase;
 use App\Interfaces\Planning\PlanningInterface;
 use App\Repositories\Planning\PlanningRepository;
-use App\Services\WorkstationService;
-use App\Services\EmployeeFunction\FunctionService;
-use App\Models\Company\Workstation;
 use App\Models\Company\Location;
 use App\Models\Company\Company;
 use App\Models\EmployeeType\EmployeeType;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Services\Employee\EmployeeService;
 use App\Services\Planning\PlanningContractService;
+use App\Services\Planning\PlanningShiftsService;
 
 
 class PlanningService implements PlanningInterface
@@ -28,6 +26,7 @@ class PlanningService implements PlanningInterface
         protected EmployeeService $employeeService,
         protected PlanningRepository $planningRepository,
         protected PlanningContractService $planningContractService,
+        protected PlanningShiftsService $planningShiftsService,
     ) {
     }
 
@@ -230,6 +229,17 @@ class PlanningService implements PlanningInterface
             $response['workstation_data'][$value['value']]['workstation_id'] = $value['value'];
             $response['workstation_data'][$value['value']]['workstation_name'] = $value['label'];
             $response['workstation_data'][$value['value']]['employee'] = [];
+            $shifts = $this->planningShiftsService->getPlanningShifts($location, $value['value']);
+            $shiftsFormatted = [];
+            foreach ($shifts as $shift) {
+                $shiftsFormatted[] = [
+                    'id'             => $shift->id,
+                    'start_time'     => $shift->start_time,
+                    'end_time'       => $shift->end_time,
+                    'contract_hours' => numericToEuropean($shift->contract_hours),
+                ];
+            }
+            $response['workstation_data'][$value['value']]['shifts'] = $shiftsFormatted;
         }
 
         //Getting the data from the query.

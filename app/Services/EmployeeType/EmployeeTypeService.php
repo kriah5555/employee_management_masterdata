@@ -111,7 +111,7 @@ class EmployeeTypeService
             return ['value' => $key, 'label' => $value];
         }, array_keys($options), $options);
     }
-    
+
     public function getEmployeeCategoryOptions()
     {
         return getValueLabelOptionsFromConfig('absence.HOLIDAY_EMPLOYEE_CATEGORY_OPTIONS');
@@ -122,9 +122,9 @@ class EmployeeTypeService
         return getValueLabelOptionsFromConfig('absence.HOLIDAY_CONTRACT_TYPE_OPTIONS');
     }
 
-    public function getCompanyEmployeeTypes($company_id) 
+    public function getCompanyEmployeeTypes($company_id)
     {
         return $this->employeeTypeRepository->getCompanyEmployeeTypes($company_id);
     }
-    
+
 }
