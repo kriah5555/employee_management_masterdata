@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Planning\
 {
     EventDetailsController,
-    LongtermPlanningController,
+    LongTermPlanningController,
     PlanningController,
     PlanningCreateEditController,
     PlanningStartStopController,
@@ -79,6 +79,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
+    Route::post('store-long-term-planning', [LongTermPlanningController::class, 'storeLongTermPlanning']);
     $resources = [
         // 'planning-shifts' => [
         //     'controller' => PlanningShiftController::class,

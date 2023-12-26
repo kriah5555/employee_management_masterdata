@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
-class LongtermPlanning extends Model
+class LongTermPlanningTimings extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -18,7 +18,7 @@ class LongtermPlanning extends Model
      *
      * @var string
      */
-    protected $table = 'longterm_planning';
+    protected $table = 'long_term_planning_timings';
 
     /**
      * The primary key associated with the table.
@@ -51,18 +51,18 @@ class LongtermPlanning extends Model
      * @var array
      */
 
-     protected $fillable = [
-        'employee_id',
-        'function_id',
-        'department_id',
-        'location_id',
-        'start_date',
-        'end_date',
-        'repeating_week'
+    protected $fillable = [
+        'longterm_planning_id',
+        'day',
+        'start_time',
+        'end_time',
+        'contract_hours',
+        'week_no',
+        'status'
     ];
-    
-    public function location()
+
+    public function longTermPlanning()
     {
-        return $this->belongsTo(Location::class, 'locatoin_id');
+        return $this->belongsTo(LongTermPlanning::class, 'longterm_planning_id');
     }
 }
