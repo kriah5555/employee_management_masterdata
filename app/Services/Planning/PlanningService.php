@@ -106,7 +106,8 @@ class PlanningService implements PlanningInterface
     {
         $output['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
 
-        $response['locations'] = $this->optionsFormat($output['locations']);
+        //$response['locations'] = $this->optionsFormat($output['locations']);
+        $response['locations'] = $output['locations'];
         $response['workstations'] = $this->getWorkstations();
         $response['employee_types'] = $this->getEmployeeTypes($companyId);
 
