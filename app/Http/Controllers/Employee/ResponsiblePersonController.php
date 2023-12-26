@@ -108,13 +108,13 @@ class ResponsiblePersonController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $user_id)
+    public function show(string $employeeProfileId)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->getResponsiblePersonById($user_id, getCompanyId()),
+                    'data'    => $this->responsible_person_service->getResponsiblePersonDetails($employeeProfileId, getCompanyId()),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -132,13 +132,13 @@ class ResponsiblePersonController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ResponsiblePersonRequest $request, string $user_id)
+    public function update(ResponsiblePersonRequest $request, string $employeeProfileId)
     {
         try {
+            $this->responsible_person_service->updateResponsiblePerson($employeeProfileId, $request->validated(), getCompanyId());
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->responsible_person_service->updateResponsiblePerson($user_id, $request->validated(), getCompanyId()),
                     'message' => 'Responsible person updated successfully',
                 ],
                 JsonResponse::HTTP_OK,

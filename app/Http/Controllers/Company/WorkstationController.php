@@ -18,10 +18,13 @@ class WorkstationController extends Controller
     public function index()
     {
         try {
-            return response()->json([
-                'success' => true,
-                'data'    => $this->workstation_service->getWorkstationsOfCompany(),
-            ]);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->workstation_service->getWorkstationsOfCompany(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
         } catch (Exception $e) {
             return returnResponse(
                 [
@@ -36,11 +39,14 @@ class WorkstationController extends Controller
     public function store(WorkstationRequest $request)
     {
         try {
-            return response()->json([
-                'success' => true,
-                'message' => 'Workstation created successfully',
-                'data'    => $this->workstation_service->create($request->validated()),
-            ], JsonResponse::HTTP_CREATED);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Workstation created successfully',
+                    'data'    => $this->workstation_service->create($request->validated()),
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
         } catch (Exception $e) {
             return returnResponse(
                 [
@@ -55,10 +61,13 @@ class WorkstationController extends Controller
     public function show($id)
     {
         try {
-            return response()->json([
-                'success' => true,
-                'data'    => $this->workstation_service->getWorkstationDetails($id),
-            ], JsonResponse::HTTP_CREATED);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->workstation_service->getWorkstationDetails($id),
+                ],
+                JsonResponse::HTTP_OK,
+            );
         } catch (Exception $e) {
             return returnResponse(
                 [
@@ -73,10 +82,13 @@ class WorkstationController extends Controller
     public function create()
     {
         try {
-            return response()->json([
-                'success' => true,
-                'data'    => $this->workstation_service->getOptionsToCreate(getCompanyId()),
-            ], JsonResponse::HTTP_CREATED);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->workstation_service->getOptionsToCreate(getCompanyId()),
+                ],
+                JsonResponse::HTTP_OK,
+            );
         } catch (Exception $e) {
             return returnResponse(
                 [
@@ -91,11 +103,14 @@ class WorkstationController extends Controller
     public function update(WorkstationRequest $request, $id)
     {
         try {
-            return response()->json([
-                'success' => true,
-                'message' => 'Workstation updated successfully',
-                'data'    => $this->workstation_service->updateWorkstation($id, $request->validated()),
-            ], JsonResponse::HTTP_CREATED);
+            $this->workstation_service->updateWorkstation($id, $request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Workstation updated successfully',
+                ],
+                JsonResponse::HTTP_OK,
+            );
         } catch (Exception $e) {
             return returnResponse(
                 [
@@ -109,10 +124,23 @@ class WorkstationController extends Controller
 
     public function destroy($workstation_id)
     {
-        $this->workstation_service->deleteWorkstation($workstation_id);
-        return response()->json([
-            'success' => true,
-            'message' => 'Workstation deleted successfully'
-        ]);
+        try {
+            $this->workstation_service->deleteWorkstation($workstation_id);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Workstation deleted successfully'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

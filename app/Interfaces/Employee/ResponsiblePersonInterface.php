@@ -12,7 +12,7 @@ interface ResponsiblePersonInterface
 
     public function deleteResponsiblePerson(string $responsible_person_id, string $company_id);
 
-    public function createResponsiblePerson(array $responsible_person_details, string$company_id);
+    public function createResponsiblePerson(array $responsible_person_details, string $company_id);
 
     public function updateResponsiblePerson(string $responsible_person_id, array $responsible_person_details, string $company_id);
 }

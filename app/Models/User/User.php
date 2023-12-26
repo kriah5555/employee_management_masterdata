@@ -90,6 +90,16 @@ class User extends Authenticatable
         return $this->hasMany(EmployeeProfile::class)
             ->where('status', true);
     }
+
+    public function employeeProfileForCompany()
+    {
+        return $this->hasOne(EmployeeProfile::class)
+            ->where('status', true);
+    }
+    public function companyUserByCompanyId($companyId)
+    {
+        return $this->hasOne(CompanyUser::class)->where('company_id', $companyId)->first();
+    }
     public function companyUser()
     {
         return $this->hasMany(CompanyUser::class);
@@ -113,7 +123,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
     }
-    
+
     public function deviceToken()
     {
         return $this->hasMany(DeviceToken::class);

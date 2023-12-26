@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Models\BaseModel;
 use App\Models\Company\Company;
+use App\Models\Company\Employee\EmployeeProfile;
 use App\Traits\UserAudit;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\HasPermissions;

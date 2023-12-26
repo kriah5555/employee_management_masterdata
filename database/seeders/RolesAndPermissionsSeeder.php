@@ -32,38 +32,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $roles = [
             [
                 'guard_name'  => 'api',
-                'name'        => 'superadmin',
-                'permissions' => [
-                    'Web app access',
-                    'Mobile app access',
-                    'Access all companies'
-                ]
-            ],
-            [
-                'guard_name'  => 'api',
-                'name'        => 'admin',
-                'permissions' => [
-                    'Web app access',
-                    'Mobile app access',
-                    'Access all companies'
-                ]
-            ],
-            [
-                'guard_name'  => 'api',
-                'name'        => 'moderator'
-                ,
-                'permissions' => [
-                    'Web app access',
-                    'Mobile app access',
-                    'permissions' => [
-                        'Web app access',
-                        'Mobile app access',
-                        'Access all companies'
-                    ]
-                ]
-            ],
-            [
-                'guard_name'  => 'api',
                 'name'        => 'customer_admin'
                 ,
                 'permissions' => [
