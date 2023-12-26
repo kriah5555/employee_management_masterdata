@@ -19,22 +19,21 @@ return [
         'staff'          => 'Staff'
     ],
 
-    'ROLES'                    => [
-        'admin',
-        'moderator',
-        'customer_admin',
-        'hr_manager',
-        'manager',
-        'planner',
-        'staff',
-        'employee',
-    ],
+    // 'ROLES'                    => [
+    //     'admin',
+    //     'moderator',
+    //     'customer_admin',
+    //     'hr_manager',
+    //     'manager',
+    //     'planner',
+    //     'staff',
+    //     'employee',
+    // ],
 
-    'PERMISSIONS'              => [
-        'Web app access',
-        'Mobile app access',
-        'Access all companies',
-        'Access company',
-    ],
-
+    // 'PERMISSIONS'              => [
+    //     'Web app access',
+    //     'Mobile app access',
+    //     'Access all companies',
+    //     'Access company',
+    // ],
 ];

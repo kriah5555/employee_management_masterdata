@@ -149,9 +149,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::resource('contract-configuration', ContractConfigurationController::class)->only(['index', 'store']);
 
-        Route::resource('employee-access', EmployeeAccessController::class)->only(['create']);
+        Route::resource('employee-access', EmployeeAccessController::class)->only(['show', 'update']);
 
         Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
+
 
         Route::get('responsible-persons-list', [ResponsiblePersonController::class, 'getResponsiblePersonList']);
 

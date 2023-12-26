@@ -43,7 +43,7 @@ class EmployeeService
     public function getEmployeeOptions()
     {
         try {
-            return ['employees' => $this->employeeProfileRepository->getEmployeeOptions()]; 
+            return ['employees' => $this->employeeProfileRepository->getEmployeeOptions()];
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -68,7 +68,6 @@ class EmployeeService
                 return Carbon::parse($employeeContract->start_date)->lessThanOrEqualTo($currentDate) &&
                     (is_null($employeeContract->start_date) || Carbon::parse($employeeContract->end_date)->greaterThanOrEqualTo($currentDate));
             });
-            $employeeDetails = $this->formatEmployeeListData($employee);
             if ($employeeContracts->isNotEmpty()) {
                 $currentContract = $employeeContracts->first();
                 if (!array_key_exists($currentContract->employeeType->id, $response)) {
@@ -77,7 +76,7 @@ class EmployeeService
                         'employees'     => []
                     ];
                 }
-                $response[$currentContract->employeeType->id]['employees'][] = $employeeDetails;
+                $response[$currentContract->employeeType->id]['employees'][] = $employee;
             } else {
                 if (!array_key_exists(999, $response)) {
                     $response[999] = [
@@ -85,23 +84,10 @@ class EmployeeService
                         'employees'     => []
                     ];
                 }
-                $response[999]['employees'][] = $employeeDetails;
+                $response[999]['employees'][] = $employee;
             }
         }
         return array_values($response);
-    }
-
-    public function formatEmployeeListData($employee)
-    {
-        return $employee;
-        $employeeDetails = [];
-        $employeeDetails['employee_profile_id'] = $employee->id;
-        $employeeDetails['first_name'] = $employee->user->userBasicDetails->first_name;
-        $employeeDetails['last_name'] = $employee->user->userBasicDetails->last_name;
-        $employeeDetails['phone_number'] = $employee->user->userContactDetails->phone_number;
-        $employeeDetails['email'] = $employee->user->userContactDetails->email;
-        $employeeDetails['social_security_number'] = $employee->user->social_security_number;
-        return $employeeDetails;
     }
 
     public function getEmployeeDetails(string $employeeProfileId)
@@ -180,7 +166,6 @@ class EmployeeService
             } else {
                 $user = $existingEmpProfile->last();
             }
-            $user->assignRole('employee');
             $this->createCompanyUser($user, $company_id, 'employee');
             $employeeProfile = $this->createEmployeeProfile($user, $values);
             $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
@@ -211,7 +196,6 @@ class EmployeeService
             } else {
                 $user = $existingEmpProfile->last();
             }
-            $user->assignRole($values['role']);
             $this->createCompanyUser($user, $company_id, $values['role']);
             $employeeProfile = $this->createEmployeeProfile($user, $values);
             $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);

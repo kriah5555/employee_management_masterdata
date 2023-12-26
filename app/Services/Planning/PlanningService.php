@@ -80,9 +80,9 @@ class PlanningService implements PlanningInterface
         }])->get()->toArray();
 
         foreach ($data as $value) {
-            $response[$value['id']]['id'] = $value['id'];
-            $response[$value['id']]['name'] = $value['location_name'];
-            $response[$value['id']]['workstations'] = $value['workstations_values'];
+            //$response[$value['id']]['id'] = $value['id'];
+            //$response[$value['id']]['name'] = $value['location_name'];
+            $response[$value['id']] = $value['workstations_values'];
         }
         return $response;
     }
@@ -106,7 +106,8 @@ class PlanningService implements PlanningInterface
     {
         $output['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
 
-        $response['locations'] = $this->optionsFormat($output['locations']);
+        //$response['locations'] = $this->optionsFormat($output['locations']);
+        $response['locations'] = $output['locations'];
         $response['workstations'] = $this->getWorkstations();
         $response['employee_types'] = $this->getEmployeeTypes($companyId);
 
@@ -225,7 +226,7 @@ class PlanningService implements PlanningInterface
         //Week dates.
         $workstationsRaw = $this->location->with('workstationsValues')->get()->toArray();
         $workstationsRaw = $this->getWorkstations($workstationsRaw);
-        foreach ($workstationsRaw[$location]['workstations'] as $value) {
+        foreach ($workstationsRaw[$location] as $value) {
             $response['workstation_data'][$value['value']]['workstation_id'] = $value['value'];
             $response['workstation_data'][$value['value']]['workstation_name'] = $value['label'];
             $response['workstation_data'][$value['value']]['employee'] = [];
@@ -289,7 +290,7 @@ class PlanningService implements PlanningInterface
 
     }
 
-    public function getPlanningById($planId)
+    public function getPlanningDetailsById($planId)
     {
         return $this->formatPlanDetails(
             $this->planningRepository->getPlanningById($planId, [
@@ -305,6 +306,21 @@ class PlanningService implements PlanningInterface
                 'breaks'
             ])
         );
+    }
+    public function getPlanningById($planId)
+    {
+        return $this->planningRepository->getPlanningById($planId, [
+            'employeeType',
+            'workstation',
+            'functionTitle',
+            'employeeProfile',
+            'employeeProfile.user.userBasicDetails',
+            'timeRegistrations',
+            'timeRegistrations.startedBy',
+            'timeRegistrations.endedBy',
+            'contracts',
+            'breaks'
+        ]);
     }
 
     public function formatPlanDetails($details)

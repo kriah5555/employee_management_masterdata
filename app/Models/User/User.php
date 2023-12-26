@@ -6,17 +6,15 @@ use App\Models\User\DeviceToken;
 use App\Models\User\UserBankAccount;
 use App\Models\User\UserBasicDetails;
 use App\Models\User\UserFamilyDetails;
-use Spatie\Permission\Traits\HasRoles;
 use App\Models\User\UserContactDetails;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasPermissions;
 use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, HasPermissions;
+    use HasFactory, Notifiable;
 
     protected $connection = 'userdb';
 
@@ -92,6 +90,16 @@ class User extends Authenticatable
         return $this->hasMany(EmployeeProfile::class)
             ->where('status', true);
     }
+
+    public function employeeProfileForCompany()
+    {
+        return $this->hasOne(EmployeeProfile::class)
+            ->where('status', true);
+    }
+    public function companyUserByCompanyId($companyId)
+    {
+        return $this->hasOne(CompanyUser::class)->where('company_id', $companyId)->first();
+    }
     public function companyUser()
     {
         return $this->hasMany(CompanyUser::class);
@@ -115,7 +123,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserContactDetails::class)->where('user_id', $user_id);
     }
-    
+
     public function deviceToken()
     {
         return $this->hasMany(DeviceToken::class);
