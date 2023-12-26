@@ -226,7 +226,7 @@ class PlanningService implements PlanningInterface
         //Week dates.
         $workstationsRaw = $this->location->with('workstationsValues')->get()->toArray();
         $workstationsRaw = $this->getWorkstations($workstationsRaw);
-        foreach ($workstationsRaw[$location]['workstations'] as $value) {
+        foreach ($workstationsRaw[$location] as $value) {
             $response['workstation_data'][$value['value']]['workstation_id'] = $value['value'];
             $response['workstation_data'][$value['value']]['workstation_name'] = $value['label'];
             $response['workstation_data'][$value['value']]['employee'] = [];
