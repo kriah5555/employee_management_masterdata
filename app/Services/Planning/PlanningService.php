@@ -80,9 +80,9 @@ class PlanningService implements PlanningInterface
         }])->get()->toArray();
 
         foreach ($data as $value) {
-            $response[$value['id']]['id'] = $value['id'];
-            $response[$value['id']]['name'] = $value['location_name'];
-            $response[$value['id']]['workstations'] = $value['workstations_values'];
+            //$response[$value['id']]['id'] = $value['id'];
+            //$response[$value['id']]['name'] = $value['location_name'];
+            $response[$value['id']] = $value['workstations_values'];
         }
         return $response;
     }
