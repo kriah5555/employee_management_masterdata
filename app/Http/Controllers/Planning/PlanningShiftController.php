@@ -95,7 +95,7 @@ class PlanningShiftController extends Controller
     }
     public function createShiftPlan(Request $request)
     {
-        try {
+        #try {
             $rules = [
                 'location_id'    => [
                     'required',
@@ -146,13 +146,13 @@ class PlanningShiftController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        #} catch (\Exception $e) {
+        #    return response()->json([
+        #        'success' => false,
+        #        'message' => $e->getMessage(),
+        #        'trace'   => $e->getTraceAsString(),
+        #        'file'    => $e->getFile(),
+        #    ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        #}
     }
 }

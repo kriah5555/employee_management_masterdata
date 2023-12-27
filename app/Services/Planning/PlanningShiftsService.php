@@ -6,7 +6,7 @@ use App\Repositories\Planning\PlanningShiftsRepository;
 use App\Services\Employee\EmployeeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Exceptions\HttpResponseException;
-
+use Illuminate\Http\JsonResponse;
 
 class PlanningShiftsService
 {
@@ -39,12 +39,12 @@ class PlanningShiftsService
         } else {
             throw new HttpResponseException(
                 response()->json([
-                    'success'      => false,
+                    'success'      => true,
                     'plan_created' => false,
                     'message'      => [
                         'Multiple employee type/function present'
                     ]
-                ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
+                ], JsonResponse::HTTP_OK)
             );
         }
         $shift = $this->planningShiftsRepository->getPlanningShiftById($values['shift_id']);
