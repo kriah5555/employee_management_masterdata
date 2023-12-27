@@ -87,23 +87,6 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         }
     }
 
-    public function getEmployeeMobileOptions()
-    {
-        try {
-            $employees = $this->getAllEmployeeProfiles([
-                'user',
-                'user.userBasicDetails',
-                'user.userContactDetails',
-            ]);
-
-            return formatEmployeesMobile($employees);
-            
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
     public function getEmployeesForHoliday()
     {
 
