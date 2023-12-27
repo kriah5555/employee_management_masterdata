@@ -7,7 +7,6 @@ use App\Http\Controllers\Company\{
     LocationController,
     CostCenterController,
     WorkstationController,
-    AvailabilityController,
     AppSettingsController,
     Absence\LeaveController,
     Absence\HolidayController,

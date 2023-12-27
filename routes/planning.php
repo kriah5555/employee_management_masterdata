@@ -79,6 +79,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
+    
     $resources = [
         // 'planning-shifts' => [
         //     'controller' => PlanningShiftController::class,

@@ -247,10 +247,13 @@ class EmployeeService
 
     public function createCompanyUser(User $user, $company_id, $role)
     {
-        $companyUser = CompanyUser::create([
-            'user_id'    => $user->id,
-            'company_id' => $company_id
-        ]);
+        $companyUser = CompanyUser::updateOrCreate(
+            [
+                'user_id'    => $user->id,
+                'company_id' => $company_id,
+            ],
+            []
+        );
         $companyUser->assignRole($role);
     }
 

@@ -28,7 +28,13 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
 
     public function createEmployeeProfile(array $employeeProfileDetails): EmployeeProfile
     {
-        return EmployeeProfile::create($employeeProfileDetails);
+        return EmployeeProfile::updateOrCreate(
+            [
+                'user_id' => $employeeProfileDetails['user_id'],
+            ],
+            []
+        );
+        // create($employeeProfileDetails);
     }
 
     public function updateEmployeeProfile(string $employeeProfileId, array $newDetails)
