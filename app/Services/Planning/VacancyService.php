@@ -33,7 +33,7 @@ class VacancyService implements VacancyInterface
         $response['location_id'] = $data['location'];
         $response['workstation_id'] = $data['workstations'];
         $response['function_id'] = $data['functions'];
-        $response['start_date'] = $data['start_date'];
+        $response['start_date'] = date('Y-m-d', strtotime($data['start_date']));
         $response['start_time'] = $data['start_time'].':00';
         $response['end_time'] = $data['end_time'].':00';
         $response['vacancy_count'] = $data['count'];
@@ -43,7 +43,7 @@ class VacancyService implements VacancyInterface
         $response['repeat_type'] = $data['repeat_type'];
 
         if (!empty($data['end_date'])) {
-            $response['end_date'] =  $data['end_date'];
+            $response['end_date'] =  date('Y-m-d', strtotime($data['end_date']));
         }
         foreach ($data['employee_types'] as $et) {
             $data['formated']['employee_types'][] = ['employee_types_id' => $et];
