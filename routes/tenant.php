@@ -129,6 +129,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeCommuteController::class,
                 'methods'    => ['show', 'update', 'create']
             ],
+            'availability' => [
+                'controller' => AvailabilityController::class,
+                'methods'    => ['index', 'store', 'update', 'destroy', 'create']
+            ],
         ];
 
         Route::controller(ContractController::class)->group(function () {
@@ -173,15 +177,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::post('get-active-contract-employees', 'getActiveContractEmployees');
 
         });
-
-        Route::post('employee-availability/{user_id}', [AvailabilityController::class, 'createAvailability']);
-
-        Route::get('/get-availability', [AvailabilityController::class, 'availableDateAndNOtAvailableDates']);
-
-        Route::put('/update-availability/{id}', [AvailabilityController::class, 'updateAvailability']);
-
-        Route::delete('/delete-availability', [AvailabilityController::class, 'deleteAvailability']);
-
+        
         Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
 
         Route::get('get-company-linked-functions', [SectorController::class, 'getCompanyLinkedFunctions']);
