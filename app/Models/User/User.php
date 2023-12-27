@@ -7,6 +7,7 @@ use App\Models\User\UserBankAccount;
 use App\Models\User\UserBasicDetails;
 use App\Models\User\UserFamilyDetails;
 use App\Models\User\UserContactDetails;
+use App\Models\User\UserProfilePicture;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -127,5 +128,10 @@ class User extends Authenticatable
     public function deviceToken()
     {
         return $this->hasMany(DeviceToken::class);
+    }
+
+    public function userProfilePicture()
+    {
+        return $this->hasOne(UserProfilePicture::class);
     }
 }
