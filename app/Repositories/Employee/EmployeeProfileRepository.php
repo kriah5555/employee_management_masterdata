@@ -76,19 +76,21 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         }
     }
 
-    public function formatEmployees($employees)
+    public function getEmployeeMobileOptions()
     {
-        $employees->load('user');
-        return $employees->map(function ($employee) {
-            if ($employee->user) {
-                return [
-                    'employee_profile_id' => $employee->id,
-                    'first_name'          => $employee->user->userBasicDetails->first_name,
-                    'last_name'           => $employee->user->userBasicDetails->last_name,
-                    'full_name'           => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
-                ];
-            }
-        })->filter()->values();
+        try {
+            $employees = $this->getAllEmployeeProfiles([
+                'user',
+                'user.userBasicDetails',
+                'user.userContactDetails',
+            ]);
+
+            return formatEmployeesMobile($employees);
+            
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function getEmployeesForHoliday()

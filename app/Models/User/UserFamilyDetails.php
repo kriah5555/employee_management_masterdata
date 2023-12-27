@@ -10,6 +10,7 @@ use App\Models\User\MaritalStatus;
 class UserFamilyDetails extends BaseModel
 {
     use UserAudit;
+    
     protected $columnsToLog = [
         'user_id',
         'marital_status_id',

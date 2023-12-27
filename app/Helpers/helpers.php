@@ -407,12 +407,13 @@ if (!function_exists('formatEmployees')) {
             if ($employee->user) {
                 return [
                     'employee_profile_id'    => $employee->id,
+                    'employee_profile'       => $employee->user->userProfilePicture,
                     'first_name'             => $employee->user->userBasicDetails->first_name,
                     'last_name'              => $employee->user->userBasicDetails->last_name,
                     'full_name'              => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
                     'username'               => $employee->user->username,
                     'social_security_number' => $employee->user->social_security_number,
-                    'social_security_number' => $employee->user->userContactDetails->phone_number,
+                    'phone_number'           => $employee->user->userContactDetails->phone_number,
                     'email'                  => $employee->user->userContactDetails->email,
                     'user_id'                => $employee->user->id,
                 ];
@@ -420,6 +421,25 @@ if (!function_exists('formatEmployees')) {
         })->filter()->values();
     }
 }
+
+if (!function_exists('formatEmployeesMobile')) {
+    function formatEmployeesMobile($employees)
+    {
+        $employees->load('user');
+        return $employees->map(function ($employee) {
+            if ($employee->user) {
+                return [
+                    'employee_profile_id'    => $employee->id,
+                    'employee_profile'       => $employee->user->userProfilePicture,
+                    'full_name'              => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
+                    'social_security_number' => $employee->user->social_security_number,
+                    'phone_number'           => $employee->user->userContactDetails->phone_number,
+                    'email'                  => $employee->user->userContactDetails->email,
+                ];
+            }
+        })->filter()->values();
+    }
+}   
 
 if (!function_exists('encodeData')) {
     function encodeData($data)
