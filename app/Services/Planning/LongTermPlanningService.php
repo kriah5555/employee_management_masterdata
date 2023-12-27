@@ -10,8 +10,10 @@ use App\Models\Planning\LongTermPlanningTimings;
 class LongTermPlanningService
 {
 
-    public function __construct(protected PlanningService $planningService)
-    {
+    public function __construct(
+        protected PlanningService $planningService,
+    ) {
+
     }
 
 }
