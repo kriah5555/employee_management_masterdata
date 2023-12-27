@@ -95,10 +95,10 @@ class VacancyService implements VacancyInterface
         $data = [];
         $data['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
         
-        $data['workstations'] = array_map( function($workstations) {
-            return $workstations['workstations'] ?? [];
-        }, $this->planningService->getWorkstations());
-
+        /*$data['workstations'] = array_map( function($workstations) {
+            return reset($workstations) ?? [];
+	}, $this->planningService->getWorkstations());*/
+        $data['workstations'] = $this->planningService->getWorkstations();
         $data['workstationsFunctions'] = $this->getFormatedFunction();
         $data['employeeTypes'] = $this->planningService->getEmployeeTypes($companyId);
 
