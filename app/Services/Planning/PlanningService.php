@@ -232,12 +232,13 @@ class PlanningService implements PlanningInterface
             $response['workstation_data'][$value['value']]['employee'] = [];
             $shifts = $this->planningShiftsService->getPlanningShifts($location, $value['value']);
             $shiftsFormatted = [];
-            foreach ($shifts as $shift) {
-                $shiftsFormatted[] = [
-                    'id'             => $shift->id,
-                    'start_time'     => $shift->start_time,
-                    'end_time'       => $shift->end_time,
+	    foreach ($shifts as $shift) {
+	        $shiftsFormatted[] = [
+	            'id'             => $shift->id,
+                    'start_time'     => date('H:i', strtotime($shift->start_time)),
+                    'end_time'       => date('H:i', strtotime($shift->end_time)),
                     'contract_hours' => numericToEuropean($shift->contract_hours),
+                    'time'           => date('H:i', strtotime($shift->start_time)) . '-' . date('H:i', strtotime($shift->end_time))
                 ];
             }
             $response['workstation_data'][$value['value']]['shifts'] = $shiftsFormatted;
