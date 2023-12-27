@@ -58,6 +58,7 @@ class EmployeeService
             'user.userBasicDetails',
             'user.userContactDetails',
         ]);
+        $noContractEmployees = [];
         foreach ($employees as $employee) {
             $employee->user;
             $employee->user->userBasicDetails;
@@ -78,14 +79,14 @@ class EmployeeService
                 }
                 $response[$currentContract->employeeType->id]['employees'][] = $employee;
             } else {
-                if (!array_key_exists(999, $response)) {
-                    $response[999] = [
-                        'employee_type' => 'No contracts',
-                        'employees'     => []
-                    ];
-                }
-                $response[999]['employees'][] = $employee;
+                $noContractEmployees[] = $employee;
             }
+        }
+        if (count($noContractEmployees)) {
+            $response[999] = [
+                'employee_type' => 'No contracts',
+                'employees'     => $noContractEmployees
+            ];
         }
         return array_values($response);
     }
