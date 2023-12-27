@@ -456,9 +456,9 @@ class EmployeeService
         $activeFunctions = $activeTypes = [];
         $activeContracts = EmployeeContract::with(['employeeType', 'employeeFunctionDetails.functionTitle'])->where('employee_profile_id', $employeeId)->where(function ($query) use ($date) {
             $query->where(function ($query) use ($date) {
-                $query->where('start_date', '<', $date)
+                $query->where('start_date', '<=', $date)
                     ->where(function ($query) use ($date) {
-                        $query->where('end_date', '>', $date)
+                        $query->where('end_date', '>=', $date)
                             ->orWhereNull('end_date');
                     });
             });
