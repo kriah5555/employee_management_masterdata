@@ -4,6 +4,7 @@ use App\Models\User\User;
 use Illuminate\Support\Facades\Http;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Request;
+use App\Services\CompanyService;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -215,6 +216,17 @@ if (!function_exists('setTenantDB')) {
     {
         $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to get tenant id from header
         $tenant = Tenant::find($tenant_id);
+        if ($tenant) {
+            tenancy()->initialize($tenant);
+            config(['database.connections.tenant_template.database' => $tenant->database_name]);
+        }
+    }
+}
+
+if (!function_exists('setTenantDBByCompanyId')) {
+    function setTenantDBByCompanyId($company_id) 
+    {
+        $tenant     = app(CompanyService::class)->getTenantByCompanyId($company_id);
         if ($tenant) {
             tenancy()->initialize($tenant);
             config(['database.connections.tenant_template.database' => $tenant->database_name]);
@@ -453,7 +465,6 @@ if (!function_exists('decodeData')) {
     function decodeData($encodedString)
     {
         $decodedString = base64_decode($encodedString);
-
         // Split the timestamp and data
         list($timestamp, $jsonData) = explode('-', $decodedString, 2);
 

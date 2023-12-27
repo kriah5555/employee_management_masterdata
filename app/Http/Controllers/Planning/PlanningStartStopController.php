@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\Planning\StartPlanByManagerRequest;
+use App\Http\Requests\Planning\StartPlanByEmployeeRequest;
 use App\Http\Requests\Planning\StopPlanByManagerRequest;
 use App\Services\Planning\PlanningStartStopService;
 use Illuminate\Support\Facades\Auth;
@@ -50,9 +51,30 @@ class PlanningStartStopController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    /**
-     * Display a listing of the resource.
-     */
+
+    public function startPlanByEmployee(StartPlanByEmployeeRequest $request)
+    {
+        try {
+            $input = $request->validated();
+            $input['started_by'] = $input['user_id'];
+            $this->planningStartStopService->startPlanByEmployee($input);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Plan started'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     public function stopPlanByManager(StopPlanByManagerRequest $request)
     {
         try {

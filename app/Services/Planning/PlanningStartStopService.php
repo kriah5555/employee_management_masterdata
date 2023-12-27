@@ -10,6 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\ModelDeleteFailedException;
 use App\Models\Planning\TimeRegistration;
+use Illuminate\Contracts\Validation\ValidationRule;
+use App\Repositories\Employee\EmployeeProfileRepository;
+
 
 class PlanningStartStopService
 {
@@ -28,18 +31,19 @@ class PlanningStartStopService
     public function startPlanByManager($values)
     {
         DB::connection('tenant')->beginTransaction();
-        $plan = $this->planningRepository->getPlanningById($values['plan_id']);
-        $plan->plan_started = true;
-        $plan->save();
-        TimeRegistration::create([
-            'plan_id'           => $plan->id,
-            'actual_start_time' => date('Y-m-d H:i', strtotime($values['start_time'])),
-            'status'            => true,
-            'started_by'        => $values['started_by'],
-            'start_reason_id'   => $values['reason_id']
-        ]);
+            $plan = $this->planningRepository->getPlanningById($values['plan_id']);
+            $plan->plan_started = true;
+            $plan->save();
+            TimeRegistration::create([
+                'plan_id'           => $plan->id,
+                'actual_start_time' => date('Y-m-d H:i', strtotime($values['start_time'])),
+                'status'            => true,
+                'started_by'        => $values['started_by'],
+                'start_reason_id'   => !empty($values['reason_id']) ? $values['reason_id'] : null
+            ]);
         DB::connection('tenant')->commit();
     }
+
     public function stopPlanByManager($values)
     {
         DB::connection('tenant')->beginTransaction();
@@ -49,9 +53,35 @@ class PlanningStartStopService
         $timeRegistration = $plan->timeRegistrations->last();
         $timeRegistration->actual_end_time = date('Y-m-d H:i', strtotime($values['stop_time']));
         $timeRegistration->ended_by = $values['ended_by'];
-        $timeRegistration->stop_reason_id = $values['reason_id'];
+        if (!empty($values['reason_id'])) {
+            $timeRegistration->stop_reason_id = $values['reason_id'];
+        }
         $timeRegistration->save();
         DB::connection('tenant')->commit();
+    }
+
+    public function startPlanByEmployee($values)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+
+                $qr_data = decodeData($values['QR_code']);
+
+                setTenantDBByCompanyId($qr_data['company_id']);
+
+                $employee_profile  = app(EmployeeProfileRepository::class)->getEmployeeProfileByUserId($values['user_id']);
+            
+                $plans             = app(PlanningRepository::class)->getPlans('', '', $qr_data['location_id'], '', '', $employee_profile->id, [], date('d-m-Y') . ' ' . $values['start_time'] . ':00', date('d-m-Y') . ' ' . $values['start_time'] . ':00');
+
+                $values['plan_id'] = $plans->first()->id;
+
+                $this->startPlanByManager($values);
+            DB::connection('tenant')->commit();
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
 }

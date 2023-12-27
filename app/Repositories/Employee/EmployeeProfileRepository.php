@@ -21,6 +21,11 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         return EmployeeProfile::with($relations)->findOrFail($id);
     }
 
+    public function getEmployeeProfileByUserId($user_id)
+    {
+        return EmployeeProfile::where(['user_id' => $user_id])->get()->first();
+    }
+
     public function deleteEmployeeProfile(string $employeeProfileId)
     {
         EmployeeProfile::destroy($employeeProfileId);
