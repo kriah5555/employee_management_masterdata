@@ -106,15 +106,18 @@ class ResponsiblePersonService
     {
         try {
             DB::connection('tenant')->beginTransaction();
+            DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
 
-            $data = $this->responsiblePersonRepository->updateResponsiblePerson($responsible_person_id, $responsible_person_details, $company_id);
+                $data = $this->responsiblePersonRepository->updateResponsiblePerson($responsible_person_id, $responsible_person_details, $company_id);
 
             DB::connection('tenant')->commit();
+            DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $data;
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
+            DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();
             error_log($e->getMessage());
             throw $e;

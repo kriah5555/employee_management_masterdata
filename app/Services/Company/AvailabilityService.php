@@ -7,6 +7,8 @@ use App\Models\Company\Availability;
 use App\Models\Company\AvailabilityRemarks;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Services\CompanyService;
+use App\Models\Company\Employee\EmployeeProfile;
 
 class AvailabilityService
 {
@@ -16,13 +18,21 @@ class AvailabilityService
     public function createAvailability($request)
     {
         try {
-            DB::connection('tenant')->beginTransaction();
+            $company_service = app(CompanyService::class);
+            foreach ($request['company_ids'] as $company_id) {
+                $tenant = $company_service->getTenantByCompanyId($company_id);
+                setTenantDB($tenant->id);
 
-            $groupedData = $this->dateMonthYearSeparator($request['dates']);
+                $request['employee_id'] = EmployeeProfile::where('user_id', $request['user_id'])->get()->first()->id;
+                DB::connection('tenant')->beginTransaction();
+                
+                    $groupedData = $this->dateMonthYearSeparator($request['dates']);
 
-            $createdData = $this->dateMonthYearStore($groupedData, $request);
+                    $createdData = $this->dateMonthYearStore($groupedData, $request);
 
-            DB::connection('tenant')->commit();
+                DB::connection('tenant')->commit();
+            }
+            
 
             return $createdData;
         } catch (\Exception $e) {

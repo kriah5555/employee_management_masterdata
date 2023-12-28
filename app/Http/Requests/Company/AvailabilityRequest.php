@@ -19,9 +19,10 @@ class AvailabilityRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'employee_id' => ['required' , 'int',  Rule::exists('employee_profiles', 'id'),],
-            'type' => 'required|between:0,1|bail',
-            'remark' => 'required|string|bail',
+            'user_id'     => ['required' , 'int',  Rule::exists('userdb.users', 'id'),],
+            'type'        => 'required|between:0,1|bail',
+            'remark'      => 'required|string|bail',
+            'company_ids' => ['bail', 'required', 'array', Rule::exists('master.companies', 'id')],
             'dates' => [
                 'required',
                 'array',
@@ -34,13 +35,6 @@ class AvailabilityRequest extends ApiRequest
     public function messages()
     {
         return [
-            'employee_id.required' => 'Employee is required.',
-            'company_id.required' => 'Please select the company.',
-            'type.required' => 'Please select the availability option.',
-            'remark.required' => 'The remark field is required.',
-            'dates.required' => 'Date is required.',
-            'dates.array' => 'Dates must be in an array.',
-            'dates.regex' => 'The date should be in the day-month-year format (e.g., 20-12-2023).',
         ];
     }
 

@@ -4,6 +4,7 @@ use App\Models\User\User;
 use Illuminate\Support\Facades\Http;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Request;
+use App\Services\CompanyService;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -222,6 +223,17 @@ if (!function_exists('setTenantDB')) {
     }
 }
 
+if (!function_exists('setTenantDBByCompanyId')) {
+    function setTenantDBByCompanyId($company_id) 
+    {
+        $tenant     = app(CompanyService::class)->getTenantByCompanyId($company_id);
+        if ($tenant) {
+            tenancy()->initialize($tenant);
+            config(['database.connections.tenant_template.database' => $tenant->database_name]);
+        }
+    }
+}
+
 if (!function_exists('getActiveTenantId')) {
     function getActiveTenantId()
     {
@@ -422,25 +434,6 @@ if (!function_exists('formatEmployees')) {
     }
 }
 
-if (!function_exists('formatEmployeesMobile')) {
-    function formatEmployeesMobile($employees)
-    {
-        $employees->load('user');
-        return $employees->map(function ($employee) {
-            if ($employee->user) {
-                return [
-                    'employee_profile_id'    => $employee->id,
-                    'employee_profile'       => $employee->user->userProfilePicture,
-                    'full_name'              => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
-                    'social_security_number' => $employee->user->social_security_number,
-                    'phone_number'           => $employee->user->userContactDetails->phone_number,
-                    'email'                  => $employee->user->userContactDetails->email,
-                ];
-            }
-        })->filter()->values();
-    }
-}   
-
 if (!function_exists('encodeData')) {
     function encodeData($data)
     {
@@ -453,7 +446,6 @@ if (!function_exists('decodeData')) {
     function decodeData($encodedString)
     {
         $decodedString = base64_decode($encodedString);
-
         // Split the timestamp and data
         list($timestamp, $jsonData) = explode('-', $decodedString, 2);
 

@@ -70,16 +70,25 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
 
     });
 
-    Route::get('start-plan-options', [PlanningStartStopController::class, 'startPlanOptions']);
+    Route::controller(PlanningStartStopController::class)->group(function () {
 
-    Route::post('start-plan-by-manager', [PlanningStartStopController::class, 'startPlanByManager']);
-    Route::post('stop-plan-by-manager', [PlanningStartStopController::class, 'stopPlanByManager']);
+        Route::get('start-plan-options', 'startPlanOptions');
+
+        Route::post('start-plan-by-manager', 'startPlanByManager');
+
+        Route::post('start-plan-by-employee', 'startPlanByEmployee');
+
+        Route::post('stop-plan-by-manager', 'stopPlanByManager');
+    });
+
+
     Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
     Route::post('store-long-term-planning', [LongTermPlanningController::class, 'storeLongTermPlanning']);
+    Route::post('create-shift-plan', [PlanningShiftController::class, 'createShiftPlan']);
     $resources = [
         // 'planning-shifts' => [
         //     'controller' => PlanningShiftController::class,

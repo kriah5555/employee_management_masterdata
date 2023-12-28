@@ -58,6 +58,7 @@ class EmployeeService
             'user.userBasicDetails',
             'user.userContactDetails',
         ]);
+        $noContractEmployees = [];
         foreach ($employees as $employee) {
             $employee->user;
             $employee->user->userBasicDetails;
@@ -78,14 +79,14 @@ class EmployeeService
                 }
                 $response[$currentContract->employeeType->id]['employees'][] = $employee;
             } else {
-                if (!array_key_exists(999, $response)) {
-                    $response[999] = [
-                        'employee_type' => 'No contracts',
-                        'employees'     => []
-                    ];
-                }
-                $response[999]['employees'][] = $employee;
+                $noContractEmployees[] = $employee;
             }
+        }
+        if (count($noContractEmployees)) {
+            $response[999] = [
+                'employee_type' => 'No contracts',
+                'employees'     => $noContractEmployees
+            ];
         }
         return array_values($response);
     }
@@ -247,10 +248,13 @@ class EmployeeService
 
     public function createCompanyUser(User $user, $company_id, $role)
     {
-        $companyUser = CompanyUser::create([
-            'user_id'    => $user->id,
-            'company_id' => $company_id
-        ]);
+        $companyUser = CompanyUser::updateOrCreate(
+            [
+                'user_id'    => $user->id,
+                'company_id' => $company_id,
+            ],
+            []
+        );
         $companyUser->assignRole($role);
     }
 
@@ -453,9 +457,9 @@ class EmployeeService
         $activeFunctions = $activeTypes = [];
         $activeContracts = EmployeeContract::with(['employeeType', 'employeeFunctionDetails.functionTitle'])->where('employee_profile_id', $employeeId)->where(function ($query) use ($date) {
             $query->where(function ($query) use ($date) {
-                $query->where('start_date', '<', $date)
+                $query->where('start_date', '<=', $date)
                     ->where(function ($query) use ($date) {
-                        $query->where('end_date', '>', $date)
+                        $query->where('end_date', '>=', $date)
                             ->orWhereNull('end_date');
                     });
             });

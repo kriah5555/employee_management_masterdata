@@ -93,4 +93,66 @@ class PlanningShiftController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    public function createShiftPlan(Request $request)
+    {
+        #try {
+            $rules = [
+                'location_id'    => [
+                    'required',
+                    'integer',
+                    Rule::exists('locations', 'id'),
+                ],
+                'workstation_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('workstations', 'id'),
+                ],
+                'employee_id'    => [
+                    'required',
+                    'integer',
+                    Rule::exists('employee_profiles', 'id'),
+                ],
+                'shift_id'       => [
+                    'required',
+                    'integer',
+                    Rule::exists('planning_shifts', 'id'),
+                ],
+                'date'           => 'required|date_format:d-m-Y',
+            ];
+
+            $customMessages = [
+                'employee_id.required' => 'Please select employee',
+                'employee_id.integer'  => 'Employee ID must be an integer.',
+                'date.integer'         => 'Date required.',
+                'date.date'            => 'Incorrect date format.',
+            ];
+
+            $validator = Validator::make(request()->all(), $rules, $customMessages);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+            $this->planningShiftsService->createShiftPlan($validator->validated());
+            return returnResponse(
+                [
+                    'success'      => true,
+                    'plan_created' => true,
+                    'message'      => 'Plan created',
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        #} catch (\Exception $e) {
+        #    return response()->json([
+        #        'success' => false,
+        #        'message' => $e->getMessage(),
+        #        'trace'   => $e->getTraceAsString(),
+        #        'file'    => $e->getFile(),
+        #    ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        #}
+    }
 }

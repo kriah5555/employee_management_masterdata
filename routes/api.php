@@ -7,7 +7,6 @@ use App\Http\Controllers\Company\{
     LocationController,
     CostCenterController,
     WorkstationController,
-    AvailabilityController,
     AppSettingsController,
     Absence\LeaveController,
     Absence\HolidayController,
@@ -215,4 +214,41 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::get('/user-details', [EmployeeController::class, 'getUserDetails']);
 
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
+});
+
+use App\Models\User\CompanyUser;
+use Illuminate\Support\Facades\DB;
+
+Route::get('/script', function () {
+    DB::connection('master')->beginTransaction();
+    $results = DB::connection('userdb')
+        ->table('model_has_roles')
+        ->select('*')  // You can replace '*' with specific column names if needed
+        ->where('model_type', '=', "App\Models\User\CompanyUser")
+        ->get();
+    foreach ($results as $val) {
+        if (in_array($val->role_id, [4, 5, 6, 7, 8, 9])) {
+            if ($val->role_id == 4) {
+                $role = 'customer_admin';
+            } elseif ($val->role_id == 5) {
+                $role = 'hr_manager';
+            } elseif ($val->role_id == 6) {
+                $role = 'manager';
+            } elseif ($val->role_id == 7) {
+                $role = 'planner';
+            } elseif ($val->role_id == 8) {
+                $role = 'staff';
+            } elseif ($val->role_id == 9) {
+                $role = 'employee';
+            }
+            $companyUser = CompanyUser::find($val->model_id);
+            if ($companyUser) {
+                $companyUser->assignRole($role);
+            }
+        }
+    }
+    DB::connection('master')->commit();
+    return response()->json([
+        'message' => 'Done'
+    ]);
 });

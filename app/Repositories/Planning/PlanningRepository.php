@@ -66,7 +66,7 @@ class PlanningRepository implements PlanningRepositoryInterface
         return $query->get();
     }
 
-    public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = '', $employee_id = '', $relations = [])
+    public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = '', $employee_id = '', $relations = [], $from_date_time = '', $to_date_time = '')
     {
         $query = PlanningBase::query();
 
@@ -92,6 +92,11 @@ class PlanningRepository implements PlanningRepositoryInterface
             $from_date = date('Y-m-d 00:00:00', strtotime($from_date));
             $to_date   = date('Y-m-d 23:59:59', strtotime($to_date));
             $query->whereBetween('start_date_time', [$from_date, $to_date]);
+        } elseif (!empty($from_date_time) && !empty($to_date_time)) {
+            $query->where(function ($query) use ($from_date_time, $to_date_time) {
+                $query->where('start_date_time', '<=', $from_date_time)
+                      ->where('end_date_time', '>=', $to_date_time);
+            });
         }
             
         $query->orderBy('start_date_time');
