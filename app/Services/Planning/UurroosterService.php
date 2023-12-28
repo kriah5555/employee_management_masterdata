@@ -60,7 +60,6 @@ class UurroosterService implements PlanningInterface
         //     $companyId = $tokenData['company_id'];
         //     $locationId = $tokenData['location_id'];
         // }
-        // dd($tokenData);
     }
     public function formatUurroosterData($plannings, $response)
     {

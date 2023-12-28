@@ -228,7 +228,6 @@ class VacancyController extends Controller
 
     public function getEmployeeJobsOverview(Request $request)
     {
-        // dd($request);
         $rules = [
                    'user_id' => 'required|integer|exists:company_users,user_id'
                 ];
@@ -239,7 +238,6 @@ class VacancyController extends Controller
         $data = $request->all();
         try {
             $data = $request->validate($rules, $messages);
-            // dd($data);
             return returnResponse(
                 [
                     'success' => true,
