@@ -284,20 +284,9 @@ if (!function_exists('formatToNumber')) { # will convert europe currency format 
 }
 
 if (!function_exists('replaceTokens')) {
-    /**
-     * Replace tokens in a string with corresponding values from an associative array.
-     *
-     * @param string $content The string containing tokens to be replaced.
-     * @param array $tokenData Associative array with tokens as keys and values as replacements.
-     * @return string The string after replacing tokens with values.
-     */
     function replaceTokens($content, $tokenData)
     {
-        $configTokens = array_keys(config('tokens.EMPLOYEE_TOKENS'));
-
-        $values = array_values($tokenData);
-
-        return str_replace($configTokens, $values, $content);
+        return str_replace(array_keys($tokenData), array_values($tokenData), $content);
     }
 }
 

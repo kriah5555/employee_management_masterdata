@@ -23,7 +23,7 @@ class EmployeeContractFile extends Model
         'status',
     ];
 
-    public function employeeContractFile()
+    public function employeeContract()
     {
         return $this->hasOne(EmployeeContract::class);
         // return $this->hasOne(EmployeeContract::class, 'employee_contract_id');

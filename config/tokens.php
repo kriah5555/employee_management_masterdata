@@ -12,6 +12,8 @@ return [
         '{employee_address}'       => 'Address:Street + number Postal code City Country',
         '{employee_nationality}'   => 'Nationality',
         '{employee_bank}'          => 'Bank account number',
+        '{employee_username}'      => 'username',
+        '{employee_password}'      => 'password',
     ],
 
     'COMPANY_TOKENS' => [
