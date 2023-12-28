@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Planning\
 {
     EventDetailsController,
-    LongtermPlanningController,
+    LongTermPlanningController,
     PlanningController,
     PlanningCreateEditController,
     PlanningStartStopController,
@@ -76,12 +76,14 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
 
         Route::post('start-plan-by-manager', 'startPlanByManager');
 
+        Route::post('start-plan-by-employee', 'startPlanByEmployee');
+
         Route::post('stop-plan-by-manager', 'stopPlanByManager');
-        
+
         Route::post('start-plan-by-employee', 'startPlanByEmployee');
 
         Route::post('stop-plan-by-employee', 'stopPlanByEmployee');
-        
+
     });
 
 
@@ -90,6 +92,8 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
+    Route::post('store-long-term-planning', [LongTermPlanningController::class, 'storeLongTermPlanning']);
+    Route::post('get-employee-long-term-plannings', [LongTermPlanningController::class, 'getEmployeeLongTermPlannings']);
     Route::post('create-shift-plan', [PlanningShiftController::class, 'createShiftPlan']);
     $resources = [
         // 'planning-shifts' => [
