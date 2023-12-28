@@ -79,6 +79,11 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         Route::post('start-plan-by-employee', 'startPlanByEmployee');
 
         Route::post('stop-plan-by-manager', 'stopPlanByManager');
+
+        Route::post('start-plan-by-employee', 'startPlanByEmployee');
+
+        Route::post('stop-plan-by-employee', 'stopPlanByEmployee');
+
     });
 
 

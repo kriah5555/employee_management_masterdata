@@ -72,7 +72,8 @@ class PlanningBase extends BaseModel
         'dimona_status',
         'status',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'plan_started',
     ];
 
     /**

@@ -14,6 +14,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\Planning\StartPlanByManagerRequest;
 use App\Http\Requests\Planning\StartPlanByEmployeeRequest;
+use App\Http\Requests\Planning\StopPlanByEmployeeRequest;
 use App\Http\Requests\Planning\StopPlanByManagerRequest;
 use App\Services\Planning\PlanningStartStopService;
 use Illuminate\Support\Facades\Auth;
@@ -81,6 +82,29 @@ class PlanningStartStopController extends Controller
             $input = $request->validated();
             $input['ended_by'] = Auth::guard('web')->user()->id;
             $this->planningStartStopService->stopPlanByManager($input);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Plan stopped'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function stopPlanByEmployee(StopPlanByEmployeeRequest $request)
+    {
+        try {
+            $input               = $request->validated();
+            $input['ended_by']   = $input['user_id'];
+            $this->planningStartStopService->stopPlanByEmployee($input);
             return returnResponse(
                 [
                     'success' => true,
