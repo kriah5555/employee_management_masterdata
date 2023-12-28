@@ -4,8 +4,9 @@ namespace App\Models\DimonaRequest;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Company\Employee\EmployeeContract;
 
-class DimonaResponse extends Model
+class EmployeeContractLongDimonas extends Model
 {
     use HasFactory;
 
@@ -16,7 +17,7 @@ class DimonaResponse extends Model
      *
      * @var string
      */
-    protected $table = 'dimona_responses';
+    protected $table = 'employee_contract_long_dimonas';
 
     /**
      * The primary key associated with the table.
@@ -49,15 +50,17 @@ class DimonaResponse extends Model
      * @var array
      */
      protected $fillable = [
+        'employee_contract_id',
         'dimona_base_id',
-        'result',
-        'dimona_period_id',
-        'registration_id',
-        'smals_response',
     ];
 
     public function dimonaBase()
     {
         return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
+    }
+
+    public function EmployeeContractDimonas()
+    {
+        return $this->belongsTo(EmployeeContract::class, 'employee_contract_id');
     }
 }

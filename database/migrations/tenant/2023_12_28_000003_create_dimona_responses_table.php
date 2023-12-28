@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('dimona_responses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('dimona_base_id')->references('id')->on('dimona_base')->onDelete('cascade');
+            $table->string('result');
+            $table->string('dimona_period_id');
+            $table->string('registration_id')->nullable();
+            $table->longText('smals_response')->nullable();
             $table->timestamps();
         });
     }

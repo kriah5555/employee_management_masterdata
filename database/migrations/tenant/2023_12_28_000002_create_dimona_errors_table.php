@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('dimona_errors', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('dimona_base_id')->references('id')->on('dimona_base')->onDelete('cascade');
+            $table->string('type')->default('error');
+            $table->string('error_code');
+            // $table->foreignId('location_id')->references('id')->on('locations');
             $table->timestamps();
         });
     }

@@ -4,12 +4,12 @@ namespace App\Models\Planning;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Models\Planning\PlanningBase;
+use App\Models\DimonaRequest\DimonaBase;
 
 class PlanningDimona extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $connection = 'tenant';
 
@@ -18,7 +18,7 @@ class PlanningDimona extends Model
      *
      * @var string
      */
-    protected $table = 'plan_dimona';
+    protected $table = 'planning_dimonas';
 
     /**
      * The primary key associated with the table.
@@ -50,20 +50,18 @@ class PlanningDimona extends Model
      *
      * @var array
      */
-
      protected $fillable = [
-        'plan_id',
-        'plan_dimona_id'
+        'planning_base_id',
+        'dimona_base_id',
     ];
+
+    public function dimonaBase()
+    {
+        return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
+    }
 
     public function planningBase()
     {
-        return $this->belongsTo(PlanningBase::class, 'plan_id');
+        return $this->belongsTo(PlanningBase::class, 'planning_base_id');
     }
-
-    public function timeRegistration()
-    {
-        return $this->belongsTo(TimeRegistration::class, 'plan_dimona_id');
-    }
-
 }

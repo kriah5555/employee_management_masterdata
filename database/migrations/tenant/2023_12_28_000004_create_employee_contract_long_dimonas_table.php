@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('long_term_dimonas', function (Blueprint $table) {
+        Schema::create('employee_contract_long_dimonas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('employee_contract_id')->references('id')->on('employee_contract')->onDelete('cascade');
+            $table->foreignId('dimona_base_id')->references('id')->on('dimona_base')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('long_term_dimonas');
+        Schema::dropIfExists('employee_contract_long_dimonas');
     }
 };
