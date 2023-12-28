@@ -21,6 +21,11 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         return EmployeeProfile::with($relations)->findOrFail($id);
     }
 
+    public function getEmployeeProfileByUserId($user_id)
+    {
+        return EmployeeProfile::where(['user_id' => $user_id])->get()->first();
+    }
+
     public function deleteEmployeeProfile(string $employeeProfileId)
     {
         EmployeeProfile::destroy($employeeProfileId);
@@ -75,23 +80,6 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             ]);
 
             return formatEmployees($employees);
-            
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function getEmployeeMobileOptions()
-    {
-        try {
-            $employees = $this->getAllEmployeeProfiles([
-                'user',
-                'user.userBasicDetails',
-                'user.userContactDetails',
-            ]);
-
-            return formatEmployeesMobile($employees);
             
         } catch (Exception $e) {
             error_log($e->getMessage());
