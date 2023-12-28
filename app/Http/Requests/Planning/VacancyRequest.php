@@ -34,8 +34,8 @@ class VacancyRequest extends ApiRequest
             'count'          => 'required_if:status,1|integer|min:0',
             'approval_type'  => 'required|integer|in:0,1', // 0: Manual, 1: Auto
             'extra_info'     => 'nullable|string',
-            'status'         => 'required|integer|in:0,1,2',// 1: Open, 0: deleted, 2: drafted
-            'repeat_type'    => 'required|integer|int:0,1,2,3',//0: one time, 1: daily, 2: weekly, 4: monthly
+            'status'         => 'required|integer|in:0,1,2', // 1: Open, 0: deleted, 2: drafted
+            'repeat_type'    => 'required|integer|int:0,1,2,3', //0: one time, 1: daily, 2: weekly, 4: monthly
             'end_date'       => 'nullable|date|after_or_equal:today'
         ];
     }
@@ -43,8 +43,8 @@ class VacancyRequest extends ApiRequest
     public function messages()
     {
         return [
-            'location_id.required'      => t('Location id is required.'),
-            'location_id.exists'        => t('Loction not found'),
+            'location_id.required' => t('Location id is required.'),
+            'location_id.exists'   => t('Loction not found'),
             // ''
             // 'name.max'           => 'Employee type cannot be greater than 255 characters.',
             // 'description.string' => 'Description must be a string.',

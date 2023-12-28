@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
+use App\Models\Planning\LongTermPlanning;
 use App\Services\Planning\LongTermPlanningService;
 use App\Services\Planning\PlanningService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Planning\GetWeeklyPlanningRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\Planning\GetDayPlanningRequest;
 use App\Rules\BelgiumCurrencyFormatRule;
+use Exception;
 
 
 class LongTermPlanningController extends Controller
@@ -38,9 +38,24 @@ class LongTermPlanningController extends Controller
                     Rule::exists('employee_profiles', 'id'),
                 ],
                 'start_date'                   => 'required|date_format:d-m-Y',
-                'end_date'                     => 'date_format:d-m-Y',
+                'end_date'                     => 'after:start_date|date_format:d-m-Y',
                 'repeating_week'               => 'required|integer',
-                'plannings.*'                  => 'required|array|min:1',
+                'location_id'                  => [
+                    'required',
+                    'integer',
+                    Rule::exists('locations', 'id'),
+                ],
+                'workstation_id'               => [
+                    'required',
+                    'integer',
+                    Rule::exists('workstations', 'id'),
+                ],
+                'function_id'                  => [
+                    'required',
+                    'integer',
+                    Rule::exists('master.function_titles', 'id'),
+                ],
+                'plannings.*'                  => 'required|array',
                 'plannings.*.*.day'            => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
                 'plannings.*.*.start_time'     => 'required|date_format:H:i',
                 'plannings.*.*.end_time'       => 'required|date_format:H:i',
@@ -49,16 +64,7 @@ class LongTermPlanningController extends Controller
                     'string',
                     new BelgiumCurrencyFormatRule
                 ],
-                'plannings.*.*.location_id'    => [
-                    'required',
-                    'integer',
-                    Rule::exists('locations', 'id'),
-                ],
-                'plannings.*.*.workstation_id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('workstations', 'id'),
-                ],
+                'auto_renew'                   => 'required|boolean',
             ];
 
             $customMessages = [
@@ -80,25 +86,95 @@ class LongTermPlanningController extends Controller
                     JsonResponse::HTTP_BAD_REQUEST,
                 );
             }
-            dd($request->only('employee_id', 'start_date', 'end_date', 'repeating_week', 'plannings'));
-            $input = $request->only(['location', 'workstations', 'employee_types', 'month', 'year']);
-            $data = $this->planningService->getMonthlyPlanningService($input['year'], $input['month'], $input['location'], $input['workstations'], $input['employee_types']);
+            $values = $validator->validated();
 
+            $values['start_date'] = $startDate = date('Y-m-d', strtotime($values['start_date']));
+            $values['end_date'] = $endDate = array_key_exists('end_time', $values) ? date('Y-m-d', strtotime($values['end_date'])) : date('Y-m-d', strtotime($values['start_date'] . '+1 year'));
+            $plans = LongTermPlanning::where('employee_profile_id', $values['employee_id'])
+                ->where('location_id', $values['location_id'])
+                ->where(function ($query) use ($startDate, $endDate) {
+                    $query->where(function ($query) use ($startDate) {
+                        $query->where('start_date', '<=', $startDate)
+                            ->where('end_date', '>=', $startDate);
+                    })->orWhere(function ($query) use ($endDate) {
+                        $query->where('start_date', '<=', $endDate)
+                            ->where('end_date', '>=', $endDate);
+                    })->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('start_date', '>=', $startDate)
+                            ->where('end_date', '<=', $endDate);
+                    });
+                })
+                ->get();
+            if (!$plans->isEmpty()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => 'Dates overlapping with other long term plannings',
+                    ],
+                    JsonResponse::HTTP_OK,
+                );
+            }
+            $this->longTermPlanningService->storeLongTermPlannings($values);
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Monthly planning',
-                    'data'    => $data
+                    'message' => 'Long term plannings saved',
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
                 'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getEmployeeLongTermPlannings()
+    {
+
+        try {
+            $rules = [
+                'employee_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('employee_profiles', 'id'),
+                ],
+            ];
+
+            $customMessages = [
+                'employee_id.required' => 'Please select employee',
+            ];
+
+            $validator = Validator::make(request()->all(), $rules, $customMessages);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->longTermPlanningService->getEmployeeLongTermPlannings($validator->validated()['employee_id']),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                    'file'    => $e->getFile(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }

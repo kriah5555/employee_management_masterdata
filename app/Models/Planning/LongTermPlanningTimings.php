@@ -52,17 +52,16 @@ class LongTermPlanningTimings extends Model
      */
 
     protected $fillable = [
-        'longterm_planning_id',
+        'long_term_planning_id',
         'day',
         'start_time',
         'end_time',
         'contract_hours',
-        'week_no',
-        'status'
+        'week_no'
     ];
 
     public function longTermPlanning()
     {
-        return $this->belongsTo(LongTermPlanning::class, 'longterm_planning_id');
+        return $this->belongsTo(LongTermPlanning::class, 'long_term_planning_id');
     }
 }

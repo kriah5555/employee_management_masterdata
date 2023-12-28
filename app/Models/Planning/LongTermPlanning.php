@@ -2,14 +2,16 @@
 
 namespace App\Models\Planning;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\BaseModel;
+use App\Models\Company\Workstation;
+use App\Models\EmployeeFunction\FunctionTitle;
+use App\Traits\UserAudit;
+use App\Models\Company\Location;
 
 
-class LongTermPlanning extends Model
+class LongTermPlanning extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    use UserAudit;
 
     protected $connection = 'tenant';
 
@@ -52,17 +54,32 @@ class LongTermPlanning extends Model
      */
 
     protected $fillable = [
-        'employee_id',
+        'employee_profile_id',
         'function_id',
-        'department_id',
+        'workstation_id',
         'location_id',
         'start_date',
         'end_date',
-        'repeating_week'
+        'repeating_week',
+        'auto_renew'
     ];
+    public function longTermPlanningTimings()
+    {
+        return $this->hasMany(LongTermPlanningTimings::class);
+    }
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'locatoin_id');
+        return $this->belongsTo(Location::class, 'location_id');
+    }
+
+    public function workstation()
+    {
+        return $this->belongsTo(Workstation::class, 'workstation_id');
+    }
+
+    public function functionTitle()
+    {
+        return $this->belongsTo(FunctionTitle::class, 'function_id');
     }
 }
