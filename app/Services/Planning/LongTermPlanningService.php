@@ -23,8 +23,6 @@ class LongTermPlanningService
 
     public function storeLongTermPlanning($values)
     {
-        $values['start_date'] = date('Y-m-d', strtotime($values['start_date']));
-        $values['end_date'] = array_key_exists('end_date', $values) ? date('Y-m-d', strtotime($values['end_date'])) : date('Y-m-d', strtotime($values['start_date'] . '+1 year'));
         DB::connection('master')->beginTransaction();
         $longTermPlanning = LongTermPlanning::create([
             'employee_profile_id' => $values['employee_id'],
@@ -216,8 +214,23 @@ class LongTermPlanningService
 
     public function updateLongTermPlanning($longTermPlanningId, $values)
     {
+        DB::connection('master')->beginTransaction();
         $longTermPlanning = $this->getLongTermPlanningById($longTermPlanningId);
-        dd([$longTermPlanning, $values]);
+        $this->deletePlanningsForLongTermPlanning($longTermPlanning);
+        $updateValues = [
+            'employee_profile_id' => $values['employee_id'],
+            'function_id'         => $values['function_id'],
+            'workstation_id'      => $values['workstation_id'],
+            'location_id'         => $values['location_id'],
+            'start_date'          => $values['start_date'],
+            'end_date'            => $values['end_date'],
+            'repeating_week'      => $values['repeating_week'],
+            'auto_renew'          => $values['auto_renew']
+        ];
+        $longTermPlanning->update($updateValues);
+        $longTermPlanning->savePlannings($values['plannings']);
+        $this->createPlanningsForLongTerm($longTermPlanning);
+        DB::connection('master')->commit();
     }
 
     public function getLongTermPlanningById(string $longTermPlanningId, array $relations = [])

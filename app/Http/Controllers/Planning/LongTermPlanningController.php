@@ -118,10 +118,11 @@ class LongTermPlanningController extends Controller
     public function update(LongTermPlanningRequest $request, $longTermPlanningId)
     {
         try {
+            $this->longTermPlanningService->updateLongTermPlanning($longTermPlanningId, $request->all());
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->longTermPlanningService->updateLongTermPlanning($longTermPlanningId, $request->validated())
+                    'message' => 'Long term plannings updated',
                 ],
                 JsonResponse::HTTP_OK,
             );

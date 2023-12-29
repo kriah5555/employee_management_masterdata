@@ -85,23 +85,42 @@ class LongTermPlanningRequest extends ApiRequest
         // $this->merge(['calculated_value' => $calculatedValue]);
     }
 
+    // protected function after()
+    // {
+    //     // dd($endDate);
+    //     // // Calculate a value and add it to the request
+    //     // $calculatedValue = $this->calculateValue();
+    //     // $this->merge(['calculated_value' => $calculatedValue]);
+    // }
+
     public function withValidator($validator)
     {
         // Additional custom validation logic
         $validator->after(function ($validator) {
+            $this->setEndDate();
             $this->validateDuration();
             $this->validateOverlap();
         });
     }
 
+    protected function setEndDate()
+    {
+        $startDate = date('Y-m-d', strtotime($this->input('start_date')));
+        $endDate = $this->input('end_date');
+        $endDate = $endDate ? date('Y-m-d', strtotime($endDate)) : date('Y-m-d', strtotime($startDate . '+1 year'));
+        $this->merge([
+            'start_date' => $startDate,
+            'end_date'   => $endDate
+        ]);
+    }
+
     protected function validateDuration()
     {
-        $startDate = $this->input('start_date');
-        $endDate = $this->input('end_date');
-        $startDate = date('Y-m-d', strtotime($startDate));
-        $endDate = $endDate ? date('Y-m-d', strtotime($endDate)) : date('Y-m-d', strtotime($startDate . '+1 year'));
-        $employeeProfileId = $this->input('employee_id');
-        $contract = $this->employeeContractService->checkContractExistForLongTermPlanning($employeeProfileId, $startDate, $endDate);
+        $contract = $this->employeeContractService->checkContractExistForLongTermPlanning(
+            $this->input('employee_id'),
+            $this->input('start_date'),
+            $this->input('end_date')
+        );
         if (!$contract) {
             $this->validator->errors()->add('start_date', "Employee doesn't have contract for selected dates");
         } else {
@@ -110,13 +129,14 @@ class LongTermPlanningRequest extends ApiRequest
     }
     public function validateOverlap()
     {
-        $startDate = $this->input('start_date');
-        $endDate = $this->input('end_date');
-        $startDate = date('Y-m-d', strtotime($startDate));
-        $endDate = $endDate ? date('Y-m-d', strtotime($endDate)) : date('Y-m-d', strtotime($startDate . '+1 year'));
         $employeeProfileId = $this->input('employee_id');
         $locationId = $this->input('location_id');
-        $longTermPlanning = $this->longTermPlanningService->getLongTermPlanningsByDate($employeeProfileId, $locationId, $startDate, $endDate);
+        $longTermPlanning = $this->longTermPlanningService->getLongTermPlanningsByDate(
+            $employeeProfileId,
+            $locationId,
+            $this->input('start_date'),
+            $this->input('end_date')
+        );
         if (!$longTermPlanning->isEmpty()) {
             $longTermPlanningId = $this->route('long_term_planning');
             if (
