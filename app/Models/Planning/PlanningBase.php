@@ -76,35 +76,43 @@ class PlanningBase extends BaseModel
         'plan_started',
     ];
 
-    /**
-     * Adding the inverse relation with Location models
-     *
-     * @return void
-     */
+    protected $appends = ['contract_hours_formatted', 'plan_date', 'start_time', 'end_time'];
+
+    public function getContractHoursFormattedAttribute()
+    {
+        return numericToEuropean($this->contract_hours);
+    }
+
+    public function getPlanDateAttribute()
+    {
+        return formatDate($this->start_date_time);
+    }
+
+    public function getStartTimeAttribute()
+    {
+        return formatTime($this->start_date_time);
+    }
+
+    public function getEndTimeAttribute()
+    {
+        return formatTime($this->end_date_time);
+    }
+
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
     }
+
     public function employeeType()
     {
         return $this->belongsTo(EmployeeType::class, 'employee_type_id');
     }
 
-    /**
-     * Adding the inverse relation with workstation models
-     *
-     * @return void
-     */
     public function workStation()
     {
         return $this->belongsTo(Workstation::class, 'workstation_id');
     }
 
-    /**
-     * Adding the inverse relation with employee profile models
-     *
-     * @return void
-     */
     public function employeeProfile()
     {
         return $this->belongsTo(EmployeeProfile::class, 'employee_profile_id');
@@ -114,42 +122,21 @@ class PlanningBase extends BaseModel
         return $this->belongsTo(FunctionTitle::class, 'function_id');
     }
 
-
-    /**
-     * Getting multiple records from one-to-many relationship with timeregistraions Model.
-     *
-     * @return void
-     */
     public function timeRegistrations()
     {
         return $this->hasMany(TimeRegistration::class, 'plan_id');
     }
 
-    /**
-     * Getting multiple records from one-to-many relationship with contract Model.
-     *
-     * @return void
-     */
     public function contracts()
     {
         return $this->hasMany(PlanningContracts::class, 'plan_id');
     }
 
-    /**
-     * Getting multiple records from one-to-many relationship with breaks Model.
-     *
-     * @return void
-     */
     public function breaks()
     {
         return $this->hasMany(PlanningBreak::class, 'plan_id');
     }
 
-    /**
-     * Get planning for the monthly overview.
-     *
-     * @return array
-     */
     public function monthPlanning($year, $month, $locations, $workstations, $employee_types)
     {
         $monthDates = getStartAndEndDateOfMonth($month, $year);

@@ -226,7 +226,7 @@ class CompanyService
         ];
     }
     
-    public function getCompanyDetails($companyId): Company
+    public function getCompanyDetails($companyId)
     {
         return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails.socialSecretary', 'interimAgencies']);
     }

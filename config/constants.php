@@ -54,6 +54,8 @@ return [
 
     'DEFAULT_DATE_FORMAT' => 'd-m-Y',
 
+    'DEFAULT_TIME_FORMAT' => 'H:i',
+
     'DEFAULT_LANGUAGE'    => 'en',
 
     # 24 hours time format like 11:00

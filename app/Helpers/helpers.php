@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Request;
 use App\Services\CompanyService;
+use App\Models\User\CompanyUser;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -453,5 +454,27 @@ if (!function_exists('connectCompanyDataBase')) {
         } else{
             return false;
         }
+    }
+}
+
+if (!function_exists('getUserCompanies')) {
+    function getUserCompanies($user_id) {
+        return CompanyUser::where('user_id', $user_id)->get()->pluck('company_id')->unique()->toArray();
+    }
+}
+
+if (!function_exists('formatDate')) {
+    function formatDate($date, $format = '')
+    {
+        $format = !empty($format) ? $format : config('constants.DEFAULT_DATE_FORMAT');
+        return date($format, strtotime($date));
+    }
+}
+
+if (!function_exists('formatTime')) { 
+    function formatTime($time, $format = '')
+    {
+        $format = !empty($format) ? $format : config('constants.DEFAULT_TIME_FORMAT');
+        return date($format, strtotime($time));
     }
 }

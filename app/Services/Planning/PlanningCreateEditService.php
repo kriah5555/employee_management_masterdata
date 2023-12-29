@@ -55,7 +55,7 @@ class PlanningCreateEditService implements PlanningCreateEditInterface
         }
         $currentPids = array_filter(array_unique($currentPids));
         if (
-            $this->hasOverlap($plans)
+            $this->PlanHasOverlapWithEachOther($plans)
             || $this->checkPlansOverlap($values['employee_id'], $values['location_id'], $plans, $currentPids)
         ) {
             throw new HttpResponseException(
@@ -88,7 +88,7 @@ class PlanningCreateEditService implements PlanningCreateEditInterface
         return $start1 < $end2 && $end1 > $start2;
     }
 
-    public function hasOverlap($plans)
+    public function PlanHasOverlapWithEachOther($plans)
     {
         $count = count($plans);
         for ($i = 0; $i < $count - 1; $i++) {
