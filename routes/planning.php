@@ -92,14 +92,13 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
-    Route::post('store-long-term-planning', [LongTermPlanningController::class, 'storeLongTermPlanning']);
-    Route::post('get-employee-long-term-plannings', [LongTermPlanningController::class, 'getEmployeeLongTermPlannings']);
+    Route::get('employee-long-term-plannings/{employee_id}', [LongTermPlanningController::class, 'getEmployeeLongTermPlannings']);
     Route::post('create-shift-plan', [PlanningShiftController::class, 'createShiftPlan']);
     $resources = [
-        // 'planning-shifts' => [
-        //     'controller' => PlanningShiftController::class,
-        //     'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
-        // ],
+        'long-term-planning' => [
+            'controller' => LongTermPlanningController::class,
+            'methods'    => ['show', 'create', 'store', 'update', 'destroy']
+        ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
         Route::resource($uri, $controller)->only($methods);

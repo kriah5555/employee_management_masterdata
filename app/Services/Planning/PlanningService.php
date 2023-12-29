@@ -75,9 +75,7 @@ class PlanningService implements PlanningInterface
     public function getWorkstations()
     {
         $data = $response = [];
-        $data = $this->location->with(['workstationsValues' => function ($query) {
-            $query->orderBy('workstation_name', 'ASC');
-        }])->get()->toArray();
+        $data = $this->location->with(['workstationsValues'])->get()->toArray();
 
         foreach ($data as $value) {
             //$response[$value['id']]['id'] = $value['id'];
@@ -232,9 +230,9 @@ class PlanningService implements PlanningInterface
             $response['workstation_data'][$value['value']]['employee'] = [];
             $shifts = $this->planningShiftsService->getPlanningShifts($location, $value['value']);
             $shiftsFormatted = [];
-	    foreach ($shifts as $shift) {
-	        $shiftsFormatted[] = [
-	            'id'             => $shift->id,
+            foreach ($shifts as $shift) {
+                $shiftsFormatted[] = [
+                    'id'             => $shift->id,
                     'start_time'     => date('H:i', strtotime($shift->start_time)),
                     'end_time'       => date('H:i', strtotime($shift->end_time)),
                     'contract_hours' => numericToEuropean($shift->contract_hours),
