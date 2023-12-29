@@ -10,10 +10,11 @@ use App\Models\Company\Location;
 use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\WorkstationToFunctions;
+use App\Models\BaseModel;
 
-class Workstation extends Model
+class Workstation extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    protected static $sort = ['sequence_number'];
 
     protected $connection = 'tenant';
 

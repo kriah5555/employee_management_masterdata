@@ -82,4 +82,22 @@ class LongTermPlanning extends BaseModel
     {
         return $this->belongsTo(FunctionTitle::class, 'function_id');
     }
+
+
+    public function savePlannings($plannings)
+    {
+        $this->longTermPlanningTimings()->delete();
+        foreach ($plannings as $key => $weekPlanning) {
+            foreach ($weekPlanning as $planning) {
+                LongTermPlanningTimings::create([
+                    'long_term_planning_id' => $this->id,
+                    'day'                   => $planning['day'],
+                    'start_time'            => $planning['start_time'],
+                    'end_time'              => $planning['end_time'],
+                    'contract_hours'        => europeanToNumeric($planning['contract_hours']),
+                    'week_no'               => $key + 1,
+                ]);
+            }
+        }
+    }
 }
