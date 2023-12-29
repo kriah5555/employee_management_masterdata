@@ -88,7 +88,6 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
 
 
     Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
-    Route::resource('vacancy', VacancyController::class)->only(['index', 'show', 'create', 'store', 'update', 'destroy']);
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
@@ -98,6 +97,10 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         'long-term-planning' => [
             'controller' => LongTermPlanningController::class,
             'methods'    => ['show', 'create', 'store', 'update', 'destroy']
+        ],
+        'vacancy'            => [
+            'controller' => VacancyController::class,
+            'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {

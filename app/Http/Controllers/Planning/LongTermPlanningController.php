@@ -28,7 +28,7 @@ class LongTermPlanningController extends Controller
     public function store(LongTermPlanningRequest $request)
     {
         try {
-            $this->longTermPlanningService->storeLongTermPlanning($request->validated());
+            $this->longTermPlanningService->storeLongTermPlanning($request->all());
             return returnResponse(
                 [
                     'success' => true,
@@ -135,6 +135,27 @@ class LongTermPlanningController extends Controller
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
+        }
+    }
+
+    public function create()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Planning options',
+                    'data'    => $this->planningService->getPlanningOverviewFilterService(getCompanyId()),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

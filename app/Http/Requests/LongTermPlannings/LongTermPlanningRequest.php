@@ -40,11 +40,11 @@ class LongTermPlanningRequest extends ApiRequest
                 'integer',
                 Rule::exists('workstations', 'id'),
             ],
-            'function_id'                  => [
-                'required',
-                'integer',
-                Rule::exists('master.function_titles', 'id'),
-            ],
+            // 'function_id'                  => [
+            //     'required',
+            //     'integer',
+            //     Rule::exists('master.function_titles', 'id'),
+            // ],
             'plannings.*'                  => 'required|array',
             'plannings.*.*.day'            => 'required|integer|min:1|max:7',
             'plannings.*.*.start_time'     => 'required|date_format:H:i',
@@ -77,6 +77,14 @@ class LongTermPlanningRequest extends ApiRequest
         ];
     }
 
+
+    protected function prepareForValidation()
+    {
+        // // Calculate a value and add it to the request
+        // $calculatedValue = $this->calculateValue();
+        // $this->merge(['calculated_value' => $calculatedValue]);
+    }
+
     public function withValidator($validator)
     {
         // Additional custom validation logic
@@ -96,6 +104,8 @@ class LongTermPlanningRequest extends ApiRequest
         $contract = $this->employeeContractService->checkContractExistForLongTermPlanning($employeeProfileId, $startDate, $endDate);
         if (!$contract) {
             $this->validator->errors()->add('start_date', "Employee doesn't have contract for selected dates");
+        } else {
+            $this->merge(['function_id' => $contract->employeeFunctionDetails->first()->function_id]);
         }
     }
     public function validateOverlap()
