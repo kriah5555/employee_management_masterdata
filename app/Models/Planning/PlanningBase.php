@@ -7,7 +7,8 @@ use App\Models\EmployeeType\EmployeeType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\{Workstation, Location};
 use App\Models\Company\Employee\EmployeeProfile;
-use App\Models\Planning\{PlanningBreak, PlanningContracts, PlanningDimona, TimeRegistration};
+use App\Models\Planning\{PlanningBreak, PlanningContracts, TimeRegistration};
+use App\Models\DimonaRequest\PlanningDimona;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
@@ -135,6 +136,10 @@ class PlanningBase extends BaseModel
         return $this->hasMany(PlanningContracts::class, 'plan_id');
     }
 
+    public function planningDimona()
+    {
+        return $this->hasMany(PlanningDimona::class, 'planning_base_id');
+    }
     /**
      * Getting multiple records from one-to-many relationship with breaks Model.
      *

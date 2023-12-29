@@ -11,23 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dimona_base', function (Blueprint $table) {
+        Schema::create('dimona_details', function (Blueprint $table) {
             $table->id();
-            $table->uuid('unique_id')->nullable();
-            $table->string('dimona_code');
-            $table->string('dimona_channel')->default('rest');
-            $table->string('employee_id');
-            $table->string('employee_rsz');
+            $table->foreignId('dimona_base_id')->references('id')->on('dimona_base')->onDelete('cascade');
+            $table->string('dimona_type');;
             $table->integer('status')->default(1);
+            $table->timestamp('start_date_time')->nullable();
+            $table->timestamp('end_date_time')->nullable();
             $table->timestamps();
-        });
-    }
+        });    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('dimona_base');
+        //
     }
 };

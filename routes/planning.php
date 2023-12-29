@@ -16,6 +16,7 @@ use App\Http\Controllers\Planning\
 use App\Http\Controllers\Planning\PlanningShiftController;
 use App\Http\Middleware\InitializeTenancy;
 use App\Http\Middleware\SetActiveUser;
+use App\Http\Controllers\Dimona\DimonaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +59,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
 
     Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
 
-    Route::controller(PlanningCreateEditController::Class)->group(function () {
+    Route::controller(PlanningCreateEditController::class)->group(function () {
 
         Route::post('get-employee-plan-creation-options', 'create');
 
@@ -104,6 +105,11 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
         Route::resource($uri, $controller)->only($methods);
     }
+    Route::controller(DimonaController::class)->group(function () {
+        Route::get('/dimona-test-plan/{dimonaType}/{planId}', [DimonaController::class, 'sendDimonaByPlan']);
+        Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
+        Route::get('/dimona-test-plan', [DimonaController::class, 'sendDimonaByPlan']);
+    });
 });
 
 Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
