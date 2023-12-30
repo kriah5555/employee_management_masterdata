@@ -25,7 +25,8 @@ class VacancyService implements VacancyInterface
         protected Location $location,
         protected PlanningService $planningService,
         protected VacancyPostEmployees $vacancyPostEmployees,
-        protected CompanyUser $companyUser
+        protected CompanyUser $companyUser,
+        protected EmployeeProfile $employeeProfile
     ) {}
 
     public function formatCreateVacancy(&$data)
@@ -133,12 +134,23 @@ class VacancyService implements VacancyInterface
             $vacancies->where('status', $filters['status']);
         }
 
-        // Filter by start date range
-        // if (isset($filters['start_date']) && !empty($filters['start_date'])) {
-        //     $vacancies->where('start_date', '>=', $filters['start_date'])
-        //     ->orWhere('end_date', '>=', $filters['start_date']);
-        //     $vacancies->orWhere('start_date', '>=', $filters['start_date']);
-        // }
+        // Filter by start date range.
+        if (isset($filters['start_date']) && !empty($filters['start_date'])) {
+            $startDate = $filters['start_date'];
+            $vacancies->where(function ($query) use ($startDate) {
+                $query->where('start_date', '>=', $startDate)
+                ->orWhere('end_date', '>=', $startDate)
+                ->orWhereNull('end_date');
+            });
+            // $vacancies->orWhere('start_date', '>=', $filters['start_date']);
+        }
+
+        if (isset($filters['employees']) && !empty($filters['employees'])) {
+            $employees = $filters['employees'];
+            $vacancies->whereHas('vacancyPostEmployees', function ($query) use ($employees) {
+                $query->orWhere('employee_profile_id', '=', $employees);
+            });
+        }
 
         // if (isset($filters['order_by']) && !empty($filters['order_by']) > 0) {
         //     $order = $filters['order_type'] ?? 'asc';
@@ -264,6 +276,12 @@ class VacancyService implements VacancyInterface
         );
     }
 
+    /**
+     * Update the job status
+     *
+     * @param  [type] $data
+     * @return void
+     */
     public function replyToVacancyService($data)
     {
         $query = $this->vacancyPostEmployees->findOrFail($data['id']);
@@ -272,19 +290,88 @@ class VacancyService implements VacancyInterface
         return $query->update($data);
     }
 
-    public function getAvailableJobsOfEmployee()
+    /**
+     * The function formate jobs data for the employee overview.
+     *
+     * @param  [type] $vacancies
+     * @param  [type] $employeeProfileId
+     * @param  [type] $response
+     *
+     */
+    public function formatEmployeeJobsOverview($vacancies, $employeeProfileId, &$response)
     {
+        foreach ($vacancies as $vacancy) {
+            $isNew = true;
+            $status = 0;
+            $job  = [];
+            if (count($vacancy['employees']) > 0) {
+                $job = array_filter($vacancy['employees'], function($employeeJob) use($employeeProfileId) {
+                        return ($employeeJob['employee_id'] == $employeeProfileId);
+                    }
+                );
+                if(count($job) > 0) {
+                    $job = reset($job);
+                    $vacancy['employees'] = $job;
+                    $status = isset($job['status']) ? $job['status'] : '';
+                    $isNew = false;
+                } else {
+                    unset($vacancy['employees']);
+                    $isNew = true;
+                }
+            }
 
+            if ($isNew == true) {
+                $response['new'][] = $vacancy;
+            } else {
+                // Applied, Approved, Rejected.
+                if ($status == 0 || $status == 1 || $status == 2) {
+                    $response['applied'][] = $vacancy;
+                }
+                // Saved
+                if ($status == 3) {
+                    $response['saved'][] = $vacancy;
+                }
+                //Ignored.
+                if ($status == 4) {
+                    $response['ignored'][] = $vacancy;
+                }
+            }
+        }
     }
 
+    /**
+     * Employee overview Service.
+     *
+     * @param  [type] $userId
+     * @return array
+     */
     public function getEmployeeOverviewService($userId)
     {
+        $response = ['new' => [], 'applied' => [], 'saved' => [], 'ignored' => []];
+
         $userCompany = $this->companyUser->getCompanyDetails($userId)->get()->toArray();
+
         foreach($userCompany as $value) {
             if (empty($value['company_id']) || !connectCompanyDataBase($value['company_id'])) {
                 throw new \Exception('Issue with company Id');
+            } else {
+                $employeeProfile = $this->employeeProfile->getEmployeeProfileByUserId($value['user_id'])->toArray();
+                if (count($employeeProfile) > 0) {
+                    $employeeProfile = reset($employeeProfile)['id'];
+                    $date = now()->format('Y-m-d');
+
+                    $filters = [
+                        'start_date' => $date,
+                        'status' => 1,
+                        'employees' =>$employeeProfile
+                    ];
+
+                    $availableJobs = $this->getVacancies($filters);
+
+                    $this->formatEmployeeJobsOverview($availableJobs, $employeeProfile, $response);
+                }
             }
         }
-
+        return $response;
     }
 }

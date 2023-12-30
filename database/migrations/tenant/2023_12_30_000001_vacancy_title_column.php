@@ -16,6 +16,12 @@ return new class extends Migration
                 $table->string('name')->default('title');
             });
         }
+
+        if (Schema::hasTable('vacancies') && Schema::hasColumns('vacancies', ['function', 'employee_type'])) {
+            Schema::table('vacancies', function (Blueprint $table) {
+                $table->dropColumn(['function', 'employee_type']);
+            });
+        }
     }
 
     /**

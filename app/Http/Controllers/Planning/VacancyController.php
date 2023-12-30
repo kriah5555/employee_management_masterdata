@@ -184,7 +184,7 @@ class VacancyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Vacancies created successfully'),
+                    'message' => t('Job applied successfully'),
                     'data'    => $this->vacancyService->applyVacancyService($data)
                 ],
                 JsonResponse::HTTP_CREATED,
@@ -210,7 +210,7 @@ class VacancyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Vacancies created successfully'),
+                    'message' => t('Application status updated successfully'),
                     'data'    => $this->vacancyService->replyToVacancyService($data)
                 ],
                 JsonResponse::HTTP_CREATED
@@ -241,7 +241,7 @@ class VacancyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Vacancies created successfully'),
+                    'message' => t('Employee vacancy overview successfully'),
                     'data'    => $this->vacancyService->getEmployeeOverviewService($data)
                 ],
                 JsonResponse::HTTP_CREATED
@@ -251,6 +251,7 @@ class VacancyController extends Controller
                 [
                     'success' => false,
                     'message' => $e->getMessage(),
+                    'trace'   =>  $e->getTraceAsString()
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR
             );
