@@ -125,13 +125,13 @@ class LeaveService
 
                 $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
 
-                return $leave;
+                // return $leave;
 
             DB::connection('tenant')->commit();
             return $leave;
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
-            error_log($e->getMessage());    
+            error_log($e->getMessage());
             throw $e;
         }
     }

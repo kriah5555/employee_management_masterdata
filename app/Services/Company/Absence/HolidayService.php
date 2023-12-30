@@ -125,7 +125,7 @@ class HolidayService
 
                 $this->absence_service->createAbsenceRelatedData($holiday, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
 
-                return $holiday;
+                // return $holiday;
 
             DB::connection('tenant')->commit();
             return $holiday;

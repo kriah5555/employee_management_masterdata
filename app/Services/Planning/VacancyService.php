@@ -13,10 +13,11 @@ use App\Models\Company\{
 use App\Models\Planning\{Vacancy, VacancyEmployeeTypes, VacancyPostEmployees};
 use App\Models\User\CompanyUser;
 
-use function PHPUnit\Framework\throwException;
-
 class VacancyService implements VacancyInterface
 {
+    const REPEAT_TYPE=[0 => 'No repeat', 1 => 'Daily', 2 =>  'Weekly', 3 => 'Monthly'];
+    const REQUEST_STATUS= [0 => 'Applied', 1 => 'Approved', 2 => 'Rejected', 3 => 'Saved', 4 => 'Ignored'];
+
     public function __construct(
         protected Vacancy $vacancy,
         protected Workstation $workStation,
@@ -30,6 +31,7 @@ class VacancyService implements VacancyInterface
     public function formatCreateVacancy(&$data)
     {
         $response = [];
+        $response['name'] = $data['name'] ?? 'title';
         $response['location_id'] = $data['location'];
         $response['workstation_id'] = $data['workstations'];
         $response['function_id'] = $data['functions'];
@@ -45,6 +47,7 @@ class VacancyService implements VacancyInterface
         if (!empty($data['end_date'])) {
             $response['end_date'] =  date('Y-m-d', strtotime($data['end_date']));
         }
+
         foreach ($data['employee_types'] as $et) {
             $data['formated']['employee_types'][] = ['employee_types_id' => $et];
         }
@@ -126,7 +129,7 @@ class VacancyService implements VacancyInterface
         // }
 
         // Filter by status
-        if (isset($filters['status']) && !empty($filters['status'])) {
+        if (isset($filters['status']) && $filters['status'] != '') {
             $vacancies->where('status', $filters['status']);
         }
 
@@ -148,7 +151,7 @@ class VacancyService implements VacancyInterface
         $response = $vacanciesRaw = [];
         $vacancies = $this->vacancy->getVacancy();
 
-        // $this->filterVacancies($vacancies, $filters);
+        $this->filterVacancies($vacancies, $filters);
         $vacanciesRaw = $vacancies->get()->toArray();
         //Formating the data
         $this->formatVacancies($vacanciesRaw, $response);
@@ -177,19 +180,14 @@ class VacancyService implements VacancyInterface
     public function formatVacancies($data, &$response)
     {
         if (count($data) > 0) {
-
             foreach ($data as $value) {
                 $temp = [];
+                $temp['vacancy_id'] = $value['id'];
+                $temp['name'] = $value['name'];
                 $temp['location_id'] = $value['location_id'];
                 $temp['location_name'] = $value['location'] ? $value['location']['location_name'] ?? '': '';
-                $temp['workstation_id'] = $value['workstations'] ? $value['workstations']['location_name'] ?? '' : '';
+                $temp['workstation_id'] = $value['workstations'] ? $value['workstations']['id'] ?? '' : '';
                 $temp['workstation_name'] = $value['workstations'] ? $value['workstations']['workstation_name'] ?? '' : '';
-                $temp['employee_types'] = array_map(function($employeeType) {
-                    return [
-                        'label' => $employeeType['employee_type']['name'],
-                        'value' => $employeeType['employee_types_id'],
-                    ];
-                }, $value['employee_types']);
                 $temp['extra_info'] = $value['extra_info'];
                 $temp['vacancy_count'] = $value['vacancy_count'];
                 $temp['status'] = $value['status'];
@@ -197,6 +195,7 @@ class VacancyService implements VacancyInterface
                 $temp['start_time'] = $value['start_time'];
                 $temp['end_time'] = $value['end_time'];
                 $temp['repeat_type'] = $value['repeat_type'];
+                $temp['repeat_title'] = self::REPEAT_TYPE[$value['repeat_type']];
                 $temp['function_id'] = $value['function_id'];
                 $temp['function_name'] = $value['functions']['name'];
                 $temp['total'] = $value['vacancy_count'];
@@ -205,6 +204,13 @@ class VacancyService implements VacancyInterface
                     return $employee['request_status']!= 0;
                 });
                 $temp['responded'] = count($temp['responded']);
+                $temp['employee_types'] = array_map(function($employeeType) {
+                    return [
+                        'label' => $employeeType['employee_type']['name'],
+                        'value' => $employeeType['employee_types_id'],
+                    ];
+                }, $value['employee_types']);
+
                 $temp['employees'] = array_map(function($data) {
                         $employee_basic_details = $data['employee_profile']['employee_basic_details'];
                         return [
@@ -212,12 +218,14 @@ class VacancyService implements VacancyInterface
                             'vacancy_id' => $data['vacancy_id'],
                             'employee_id' => $data['employee_profile_id'],
                             'employee_name' => $employee_basic_details['first_name']. ' '.$employee_basic_details['last_name'],
+                            'status_name' =>  self::REQUEST_STATUS[$data['request_status']],
                             'status' => $data['request_status'],
                             'request_at' => $data['request_at'],
                             'responded_by' => $data['responded_by'],
                         ];
                      }, $value['vacancy_post_employees']
                 );
+
                 $response[] = $temp;
             }
         }
@@ -259,6 +267,7 @@ class VacancyService implements VacancyInterface
     public function replyToVacancyService($data)
     {
         $query = $this->vacancyPostEmployees->findOrFail($data['id']);
+        // $data['responded_by'] = $data['responded_by'];
         $data['responded_at'] = now()->format('Y-m-d H:i:s');
         return $query->update($data);
     }
