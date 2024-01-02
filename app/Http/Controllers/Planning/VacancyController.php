@@ -10,10 +10,13 @@ use App\Services\Planning\VacancyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use App\Models\User\CompanyUser;
 
 class VacancyController extends Controller
 {
-    public function __construct(protected VacancyService $vacancyService) {}
+    public function __construct(protected VacancyService $vacancyService)
+    {
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -24,7 +27,6 @@ class VacancyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Vacancies options'),
                     'data'    => $this->vacancyService->vacancyOptions($companyId)
                 ],
                 JsonResponse::HTTP_CREATED,
@@ -53,7 +55,6 @@ class VacancyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Get all vacancies  successfully'),
                     'data'    => $this->vacancyService->getVacancies($filters)
                 ],
                 JsonResponse::HTTP_CREATED,
@@ -142,7 +143,7 @@ class VacancyController extends Controller
             if ($request->has('functions')) {
                 $vacancy->functions()->sync($inputData['functions']);
             }
-    
+
             if ($request->has('employeeTypes')) {
                 $vacancy->employeeTypes()->sync($inputData['employeeTypes']);
             }
@@ -180,7 +181,7 @@ class VacancyController extends Controller
         try {
             if (empty($data['company_id']) || !connectCompanyDataBase($data['company_id'])) {
                 throw new \Exception('Company Id is missing.');
-              }
+            }
             return returnResponse(
                 [
                     'success' => true,
@@ -229,11 +230,11 @@ class VacancyController extends Controller
     public function getEmployeeJobsOverview(Request $request)
     {
         $rules = [
-                   'user_id' => 'required|integer|exists:company_users,user_id'
-                ];
+            'user_id' => 'required|integer|exists:company_users,user_id'
+        ];
         $messages = [
-                    'user_id.exists' => 'User id not linked with companies.'
-                ];
+            'user_id.exists' => 'User id not linked with companies.'
+        ];
 
         $data = $request->all();
         try {
@@ -251,7 +252,7 @@ class VacancyController extends Controller
                 [
                     'success' => false,
                     'message' => $e->getMessage(),
-                    'trace'   =>  $e->getTraceAsString()
+                    'trace'   => $e->getTraceAsString()
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR
             );
