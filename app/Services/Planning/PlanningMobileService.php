@@ -91,6 +91,38 @@ class PlanningMobileService implements PlanningInterface
         return array_values($return);
     }
 
+    public function getDatesPlanningService($company_ids, $user_id, $dates)
+    {
+        $response = [];
     
+        $format = array_map(
+            function ($date) {
+                return [
+                    'plan_date'   => $date,
+                    'plan_shifts' => [],  
+                ];
+            },
+            $dates
+        );
+
+        $response = array_combine(array_column($format, 'plan_date'), $format); # will add keys as dates
+        
+        foreach ($company_ids as $company_id) {
+            setTenantDBByCompanyId($company_id);
+
+            $employee_profiles = EmployeeProfile::where('user_id', $user_id)->get()->first();
+
+            if (!empty($employee_profiles)) {
+
+                $company  = $this->companyRepository->getCompanyById($company_id);
+                foreach ($dates as $date) {
+                    $plans    = $this->planningService->getPlans($date, $date, '', '', '', $employee_profiles->id);
+                    $response = $this->formatWeeklyData($plans, $company, $response);
+                }
+            }
+        }
+        
+        return $response;
+    }
 
 }

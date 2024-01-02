@@ -364,7 +364,7 @@ class PlanningService implements PlanningInterface
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, $employee_profile_id, ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
 
-    public function getDayPlannings($location, $workstations, $employee_types, $date)
+    public function getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }

@@ -9,3 +9,5 @@ use App\Http\Controllers\Planning\
 
 Route::post('get-employee-week-planning', [PlanningMobileController::class, 'getWeeklyPlanning']);
 
+Route::post('get-employee-dates-planning', [PlanningMobileController::class, 'getDatesPlanning']);
+
