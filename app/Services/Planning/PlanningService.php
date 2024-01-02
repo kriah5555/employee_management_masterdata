@@ -358,9 +358,9 @@ class PlanningService implements PlanningInterface
 
     public function getWeeklyPlannings($location, $workstations, $employee_types, $weekNumber, $year, $employee_profile_id = '')
     {
-        $weekDates       = getWeekDates($weekNumber, $year);
+        $weekDates = getWeekDates($weekNumber, $year);
         $startDateOfWeek = reset($weekDates);
-        $endDateOfWeek   = end($weekDates);
+        $endDateOfWeek = end($weekDates);
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, $employee_profile_id, ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
 

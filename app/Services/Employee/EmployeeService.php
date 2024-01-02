@@ -161,28 +161,28 @@ class EmployeeService
             DB::connection('master')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
             DB::connection('tenant')->beginTransaction();
-                $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
-                $new_user = true;
-                if ($existingEmpProfile->isEmpty()) {
-                    $user = $this->userService->createNewUser($values);
-                } else {
-                    $user = $existingEmpProfile->last();
-                    $new_user = false;
-                }
-                $this->createCompanyUser($user, $company_id, 'employee');
-                $employeeProfile = $this->createEmployeeProfile($user, $values);
-                $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
-                app(EmployeeContractService::class)->createEmployeeContract($values, $employeeProfile->id);
-                app(EmployeeBenefitService::class)->createEmployeeBenefits($values, $employeeProfile->id);
-                app(EmployeeCommuteService::class)->createEmployeeCommuteDetails($values, $employeeProfile->id);
+            $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+            $new_user = true;
+            if ($existingEmpProfile->isEmpty()) {
+                $user = $this->userService->createNewUser($values);
+            } else {
+                $user = $existingEmpProfile->last();
+                $new_user = false;
+            }
+            $this->createCompanyUser($user, $company_id, 'employee');
+            $employeeProfile = $this->createEmployeeProfile($user, $values);
+            $this->createEmployeeSocialSecretaryDetails($employeeProfile, $values);
+            app(EmployeeContractService::class)->createEmployeeContract($values, $employeeProfile->id);
+            app(EmployeeBenefitService::class)->createEmployeeBenefits($values, $employeeProfile->id);
+            app(EmployeeCommuteService::class)->createEmployeeCommuteDetails($values, $employeeProfile->id);
 
-                
+
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             DB::connection('tenant')->commit();
 
-        $password = ucfirst($values['first_name']) . date('dmY', strtotime($values['date_of_birth']));
-        $this->mailService->sendEmployeeCreationMail($employeeProfile->id, $new_user, $values['language'], $password);
+            $password = ucfirst($values['first_name']) . date('dmY', strtotime($values['date_of_birth']));
+            $this->mailService->sendEmployeeCreationMail($employeeProfile->id, $new_user, $values['language'], $password);
 
             return $employeeProfile;
         } catch (Exception $e) {

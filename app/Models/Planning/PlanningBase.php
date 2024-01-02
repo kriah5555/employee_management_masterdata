@@ -74,6 +74,7 @@ class PlanningBase extends BaseModel
         'created_by',
         'updated_by',
         'plan_started',
+        'break_started',
     ];
 
     protected $appends = ['contract_hours_formatted', 'plan_date', 'start_time', 'end_time'];

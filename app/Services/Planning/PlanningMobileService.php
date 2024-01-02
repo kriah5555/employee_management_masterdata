@@ -29,8 +29,8 @@ class PlanningMobileService implements PlanningInterface
     public function getWeeklyPlanningService($location = '', $workstations = [], $employee_types = '', $weekNumber, $year, $company_ids, $user_id)
     {
         $response = [];
-    
-        $weekDates       = getWeekDates($weekNumber, $year);
+
+        $weekDates = getWeekDates($weekNumber, $year);
 
         $dates = app(DateService::class)->getDatesArray(formatDate(reset($weekDates)), formatDate(end($weekDates)));
 
@@ -38,14 +38,14 @@ class PlanningMobileService implements PlanningInterface
             function ($date) {
                 return [
                     'plan_date'   => $date,
-                    'plan_shifts' => [],  
+                    'plan_shifts' => [],
                 ];
             },
             $dates
         );
 
         $response = array_combine(array_column($format, 'plan_date'), $format); # will add keys as dates
-        
+
         foreach ($company_ids as $company_id) {
             setTenantDBByCompanyId($company_id);
 
@@ -53,19 +53,19 @@ class PlanningMobileService implements PlanningInterface
 
             if (!empty($employee_profiles)) {
 
-                $company  = $this->companyRepository->getCompanyById($company_id);
-                $plans    = $this->planningService->getWeeklyPlannings('', '', '', $weekNumber, $year, $employee_profiles->id);
+                $company = $this->companyRepository->getCompanyById($company_id);
+                $plans = $this->planningService->getWeeklyPlannings('', '', '', $weekNumber, $year, $employee_profiles->id);
                 $response = $this->formatWeeklyData($plans, $company, $response);
             }
         }
-        
+
         return $response;
     }
 
     public function formatWeeklyData($plans, $company, $format = [])
     {
-        $return       = !empty($format) ? $format : [];
-        $company_id   = $company->id;
+        $return = !empty($format) ? $format : [];
+        $company_id = $company->id;
         $company_name = $company->company_name;
 
         foreach ($plans as $index => $plan) {
@@ -94,19 +94,19 @@ class PlanningMobileService implements PlanningInterface
     public function getDatesPlanningService($company_ids, $user_id, $dates)
     {
         $response = [];
-    
+
         $format = array_map(
             function ($date) {
                 return [
                     'plan_date'   => $date,
-                    'plan_shifts' => [],  
+                    'plan_shifts' => [],
                 ];
             },
             $dates
         );
 
         $response = array_combine(array_column($format, 'plan_date'), $format); # will add keys as dates
-        
+
         foreach ($company_ids as $company_id) {
             setTenantDBByCompanyId($company_id);
 
@@ -114,15 +114,55 @@ class PlanningMobileService implements PlanningInterface
 
             if (!empty($employee_profiles)) {
 
-                $company  = $this->companyRepository->getCompanyById($company_id);
+                $company = $this->companyRepository->getCompanyById($company_id);
                 foreach ($dates as $date) {
-                    $plans    = $this->planningService->getPlans($date, $date, '', '', '', $employee_profiles->id);
+                    $plans = $this->planningService->getPlans($date, $date, '', '', '', $employee_profiles->id);
                     $response = $this->formatWeeklyData($plans, $company, $response);
                 }
             }
         }
-        
+
         return $response;
     }
 
+    public function getUserPlanningStatus($userId)
+    {
+        $companyIds = getUserCompanies($userId);
+        $status = [
+            'start' => 0,
+            'break' => 0,
+        ];
+        foreach ($companyIds as $companyId) {
+            connectCompanyDataBase($companyId);
+            $employeeProfile = getEmployeeProfileByUserId($userId);
+            if ($employeeProfile) {
+                $newStatus = $this->getEmployeePlanningStatus($employeeProfile->id);
+                $status['start'] = $newStatus['start'] ? 1 : $status['start'];
+                $status['break'] = $newStatus['break'] ? 1 : $status['break'];
+            }
+        }
+        return $status;
+    }
+
+    public function getEmployeePlanningStatus($employeeProfileId)
+    {
+        return $this->getEmployeeStartedPlanning($employeeProfileId);
+    }
+
+    public function getEmployeeStartedPlanning($employeeProfileId)
+    {
+        $response = [
+            'start' => 0,
+            'break' => 0,
+        ];
+        $plannings = PlanningBase::where('employee_profile_id', $employeeProfileId)
+            ->where('plan_started', true)->first();
+        if ($plannings) {
+            $response['start'] = 1;
+            if ($plannings->break_started) {
+                $response['break'] = 1;
+            }
+        }
+        return $response;
+    }
 }

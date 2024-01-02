@@ -15,7 +15,6 @@ class StartPlanByEmployeeRequest extends ApiRequest
         return [
             'QR_code'    => ['bail', 'required', 'string', new QRcodeRule,],
             'start_time' => ['required', 'date_format:H:i', new PlanStartQRExistRule(request()->input('user_id'), request()->input('QR_code'))],
-            'user_id'    => 'required|integer',
         ];
     }
     public function messages()

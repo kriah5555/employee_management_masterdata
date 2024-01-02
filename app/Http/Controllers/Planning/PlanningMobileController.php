@@ -8,28 +8,28 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Planning\PlanningMobileService;
+use Illuminate\Support\Facades\Auth;
 
 
 class PlanningMobileController extends Controller
 {
     public function __construct(
         protected PlanningMobileService $planningMobileService,
-        )
-    {
+    ) {
     }
 
     public function getWeeklyPlanning(Request $request)
     {
         try {
             $rules = [
-                'user_id'         => [
+                'user_id' => [
                     'bail',
                     'required',
                     'integer',
                     Rule::exists('userdb.users', 'id'),
                 ],
-                'week' => 'required|integer',
-                'year' => 'required|digits:4',
+                'week'    => 'required|integer',
+                'year'    => 'required|digits:4',
             ];
 
             $validator = Validator::make(request()->all(), $rules, []);
@@ -65,13 +65,13 @@ class PlanningMobileController extends Controller
     {
         try {
             $rules = [
-                'user_id'         => [
+                'user_id' => [
                     'bail',
                     'required',
                     'integer',
                     Rule::exists('userdb.users', 'id'),
                 ],
-                'dates' => 'array|required',
+                'dates'   => 'array|required',
                 'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
             ];
 
@@ -91,6 +91,26 @@ class PlanningMobileController extends Controller
                 [
                     'success' => true,
                     'data'    => $this->planningMobileService->getDatesPlanningService($company_ids, $request->input('user_id'), $request->input('dates'))
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getEmployeePlanningStatus()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningMobileService->getUserPlanningStatus(Auth::id())
                 ],
                 JsonResponse::HTTP_OK,
             );
