@@ -212,7 +212,7 @@ class PlanningService implements PlanningInterface
         foreach ($response['workstation_data'] as $id => $value) {
             $response['workstation_data'][$id]['employee'] = array_values($value['employee']);
         }
-        return $response['workstation_data'];
+        return $response;
     }
 
     public function getWeeklyPlanningService($location, $workstations, $employee_types, $weekNo, $year)

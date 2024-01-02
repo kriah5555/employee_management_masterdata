@@ -135,7 +135,7 @@ class VacancyService implements VacancyInterface
         }
 
         // Filter by start date range.
-        if (isset($filters['start_date']) && !empty($filters['start_date'])) {
+        /*if (isset($filters['start_date']) && !empty($filters['start_date'])) {
             $startDate = $filters['start_date'];
             $vacancies->where(function ($query) use ($startDate) {
                 $query->where('start_date', '>=', $startDate)
@@ -143,7 +143,7 @@ class VacancyService implements VacancyInterface
                 ->orWhereNull('end_date');
             });
             // $vacancies->orWhere('start_date', '>=', $filters['start_date']);
-        }
+	}*/
 
         if (isset($filters['employees']) && !empty($filters['employees'])) {
             $employees = $filters['employees'];
