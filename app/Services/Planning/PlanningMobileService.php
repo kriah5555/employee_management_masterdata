@@ -59,7 +59,7 @@ class PlanningMobileService implements PlanningInterface
         $company_id = $company->id;
         $company_name = $company->company_name;
 
-        foreach ($plans as $index => $plan) {
+        foreach ($plans as $plan) {
             $return[$plan->plan_date]['plan_shifts'][] = [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
@@ -79,7 +79,7 @@ class PlanningMobileService implements PlanningInterface
             ];
         }
 
-        return array_values($return);
+        return $return;
     }
 
     public function getDatesPlanningService($company_ids, $user_id, $dates)
@@ -113,7 +113,7 @@ class PlanningMobileService implements PlanningInterface
             }
         }
 
-        return $response;
+        return array_values($response);
     }
 
     public function getUserPlanningStatus($userId)

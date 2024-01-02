@@ -60,12 +60,6 @@ class PlanningMobileController extends Controller
     {
         try {
             $rules = [
-                'user_id' => [
-                    'bail',
-                    'required',
-                    'integer',
-                    Rule::exists('userdb.users', 'id'),
-                ],
                 'dates'   => 'array|required',
                 'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
             ];
@@ -81,11 +75,12 @@ class PlanningMobileController extends Controller
                 );
             }
 
-            $company_ids = getUserCompanies($request['user_id']);
+            $userId = Auth::guard('web')->user()->id;
+            $company_ids = getUserCompanies($userId);
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningMobileService->getDatesPlanningService($company_ids, $request->input('user_id'), $request->input('dates'))
+                    'data'    => $this->planningMobileService->getDatesPlanningService($company_ids, $userId, $request->input('dates'))
                 ],
                 JsonResponse::HTTP_OK,
             );
