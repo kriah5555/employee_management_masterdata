@@ -77,7 +77,7 @@ class EmployeeBenefitService
 
                 DB::connection('tenant')->commit();
                 return $employee_benefits;
-            return $employee_benefits;
+            // return $employee_benefits;
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
             error_log($e->getMessage());

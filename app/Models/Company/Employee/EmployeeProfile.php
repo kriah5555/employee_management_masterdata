@@ -93,4 +93,11 @@ class EmployeeProfile extends BaseModel
     {
         return $this->belongsTo(UserBasicDetails::class, 'user_id', 'user_id');
     }
+
+    public function getEmployeeProfileByUserId($userId)
+    {
+        return $this->where('user_id', $userId)
+        ->where('status', true)
+        ->get();
+    }
 }
