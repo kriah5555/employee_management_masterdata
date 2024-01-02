@@ -3,7 +3,6 @@
 namespace App\Models\Company\Absence;
 
 use App\Models\BaseModel;
-use App\Services\DateService;
 use App\Models\Holiday\HolidayCode;
 use App\Models\Company\Absence\Absence;
 use Illuminate\Database\Eloquent\SoftDeletes;

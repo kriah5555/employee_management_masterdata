@@ -3,7 +3,6 @@
 namespace App\Rules;
 
 use Closure;
-use App\Services\DateService;
 use App\Rules\FromAndToDateRule;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Absence\Absence;
@@ -25,8 +24,8 @@ class AbsenceDatesValidationRule implements ValidationRule
             if (isset($value['from_date']) && isset($value['to_date'])) {
                 $fromAndToDateRule = new FromAndToDateRule($value['from_date'], $value['to_date']);
                 $fromAndToDateRule->validate($attribute, $value, $fail);
-                
-                $absence_applied_dates = app(DateService::class)->getDatesArray($value['from_date'], $value['to_date']);
+
+                $absence_applied_dates = getDatesArray($value['from_date'], $value['to_date']);
             } else {
                 $fail("Please select From date and to date.");
                 return;
@@ -50,7 +49,7 @@ class AbsenceDatesValidationRule implements ValidationRule
 
         # employee can apply leave on only second half if the leave is applied on first half validation and vise versa
         $overlapping_dates_on_error = true;
-        if (in_array($this->duration_type,[config('absence.FIRST_HALF'), config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')])) {
+        if (in_array($this->duration_type, [config('absence.FIRST_HALF'), config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')])) {
 
             $query1 = clone $query;
             if (in_array($this->duration_type, [config('absence.SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')])) {
@@ -61,14 +60,14 @@ class AbsenceDatesValidationRule implements ValidationRule
 
             $absence_data_with_half_day_dates = $query1->get();
             $absence_data_with_half_day_dates = $absence_data_with_half_day_dates->pluck('absenceDates.absence_dates_array')->flatten()->all();
-            $overlapping_dates_on_error       = !empty(array_intersect($absence_applied_dates, $absence_data_with_half_day_dates));
+            $overlapping_dates_on_error = !empty(array_intersect($absence_applied_dates, $absence_data_with_half_day_dates));
         }
 
-        $overlapping_dates   = array_intersect($absence_applied_dates, $absence_dates_array);
+        $overlapping_dates = array_intersect($absence_applied_dates, $absence_dates_array);
         if (!empty($overlapping_dates) && $overlapping_dates_on_error) {
             $overlapping_dates = implode(', ', $overlapping_dates);
             $fail("Holiday Already applied for dates {$overlapping_dates}");
         }
-        
-    }   
+
+    }
 }

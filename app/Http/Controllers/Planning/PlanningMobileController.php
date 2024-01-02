@@ -22,14 +22,8 @@ class PlanningMobileController extends Controller
     {
         try {
             $rules = [
-                'user_id' => [
-                    'bail',
-                    'required',
-                    'integer',
-                    Rule::exists('userdb.users', 'id'),
-                ],
-                'week'    => 'required|integer',
-                'year'    => 'required|digits:4',
+                'week' => 'required|integer',
+                'year' => 'required|digits:4',
             ];
 
             $validator = Validator::make(request()->all(), $rules, []);
@@ -43,11 +37,12 @@ class PlanningMobileController extends Controller
                 );
             }
 
-            $company_ids = getUserCompanies($request['user_id']);
+            $userId = Auth::guard('web')->user()->id;
+            $company_ids = getUserCompanies($userId);
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningMobileService->getWeeklyPlanningService('', '', '', $request->input('week'), $request->input('year'), $company_ids, $request->input('user_id'))
+                    'data'    => $this->planningMobileService->getWeeklyPlanningService('', '', '', $request->input('week'), $request->input('year'), $company_ids, $userId)
                 ],
                 JsonResponse::HTTP_OK,
             );

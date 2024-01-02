@@ -3,7 +3,6 @@
 namespace App\Rules;
 
 use Closure;
-use App\Services\DateService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -62,7 +61,7 @@ class DateValidationRule implements ValidationRule
             ->select('absence_dates.dates', 'absence_dates.dates_type', 'absence.duration_type')
             ->where('absence.employee_profile_id', $employee_profile_id)
             ->whereNull('absence.deleted_at');
-            $query->when($absence_id > 0, function ($query) use ($absence_id) {
+        $query->when($absence_id > 0, function ($query) use ($absence_id) {
             $query->where('absence.id', '!=', $absence_id);
         });
 
@@ -71,9 +70,9 @@ class DateValidationRule implements ValidationRule
         $oldData = [];
         foreach ($result as $index => $data) {
             $oldData[$index] = [
-                'dates'          => json_decode(json_decode($data->dates, true)),
-                'dates_type'     => $data->dates_type,
-                'duration_type'  => $data->duration_type
+                'dates'         => json_decode(json_decode($data->dates, true)),
+                'dates_type'    => $data->dates_type,
+                'duration_type' => $data->duration_type
             ];
         }
         return $oldData;
@@ -90,6 +89,6 @@ class DateValidationRule implements ValidationRule
             $fromDate = $oldDate['dates']->from_date;
             $toDate = $oldDate['dates']->to_date;
         }
-        return (new DateService())->getDatesArray($fromDate, $toDate);
+        return getDatesArray($fromDate, $toDate);
     }
 }

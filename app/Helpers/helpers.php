@@ -487,3 +487,18 @@ if (!function_exists('getEmployeeProfileIdByUserId')) {
         return EmployeeProfile::where('user_id', $userId)->first();
     }
 }
+
+if (!function_exists('getDatesArray')) {
+    function getDatesArray($fromDate, $toDate, $format = 'd-m-Y')
+    {
+        $dates = [];
+        $current = strtotime($fromDate);
+        $toDate = strtotime($toDate);
+        $stepVal = '+1 day';
+        while ($current <= $toDate) {
+            $dates[] = date($format, $current);
+            $current = strtotime($stepVal, $current);
+        }
+        return $dates;
+    }
+}

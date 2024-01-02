@@ -4,18 +4,9 @@ namespace App\Services\Planning;
 
 use App\Models\Planning\PlanningBase;
 use App\Interfaces\Planning\PlanningInterface;
-use App\Repositories\Planning\PlanningRepository;
-use App\Models\Company\Location;
-use App\Models\Company\Company;
-use App\Models\EmployeeType\EmployeeType;
-use App\Models\EmployeeFunction\FunctionTitle;
-use App\Services\Employee\EmployeeService;
-use App\Services\Planning\PlanningContractService;
-use App\Services\Planning\PlanningShiftsService;
 use App\Services\Planning\PlanningService;
 use App\Repositories\Company\CompanyRepository;
 use App\Models\Company\Employee\EmployeeProfile;
-use App\Services\DateService;
 
 class PlanningMobileService implements PlanningInterface
 {
@@ -32,7 +23,7 @@ class PlanningMobileService implements PlanningInterface
 
         $weekDates = getWeekDates($weekNumber, $year);
 
-        $dates = app(DateService::class)->getDatesArray(formatDate(reset($weekDates)), formatDate(end($weekDates)));
+        $dates = getDatesArray(formatDate(reset($weekDates)), formatDate(end($weekDates)));
 
         $format = array_map(
             function ($date) {
