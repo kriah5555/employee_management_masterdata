@@ -24,14 +24,15 @@ class VacancyRequest extends ApiRequest
     {
         return [
             'id'             => 'nullable',
-            'location'       => 'required|integer|exists:locations,id',
+            'name'           => 'nullable|string',
+	    'location'       => 'required|integer|exists:locations,id',
             'workstations'   => 'required|integer|exists:workstations,id',
             'functions'      => 'required|integer',
             'employee_types' => 'required|array',
             'start_date'     => 'required|date|after_or_equal:today',
             'start_time'     => 'required|date_format:H:i',
             'end_time'       => 'required|date_format:H:i',
-            'count'          => 'required_if:status,1|integer|min:0',
+            'vacancy_count'  => 'required_if:status,1|integer|min:0',
             'approval_type'  => 'required|integer|in:0,1', // 0: Manual, 1: Auto
             'extra_info'     => 'nullable|string',
             'status'         => 'required|integer|in:0,1,2', // 1: Open, 0: deleted, 2: drafted
