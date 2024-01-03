@@ -111,7 +111,6 @@ class VacancyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Vacancy details returned successfully'),
                     'data'    => $this->vacancyService->getVacancyById($vacancy)
                 ],
                 JsonResponse::HTTP_CREATED,
@@ -182,6 +181,7 @@ class VacancyController extends Controller
             if (empty($data['company_id']) || !connectCompanyDataBase($data['company_id'])) {
                 throw new \Exception('Company Id is missing.');
             }
+            $data['user_id'] = getActiveUserId();
             return returnResponse(
                 [
                     'success' => true,

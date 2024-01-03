@@ -35,7 +35,7 @@ class EmployeeAvailabilityController extends Controller
                     "success" => false,
                     "message" => $e->getMessage(),
                 ],
-                HTTP_INTERNAL_SERVER_ERROR::HTTP_OK,
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
     }
@@ -134,7 +134,7 @@ class EmployeeAvailabilityController extends Controller
                     "success" => false,
                     "message" => $e->getMessage(),
                 ],
-                HTTP_INTERNAL_SERVER_ERROR::HTTP_OK,
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
     }
