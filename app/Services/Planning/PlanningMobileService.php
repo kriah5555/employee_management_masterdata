@@ -180,24 +180,39 @@ class PlanningMobileService implements PlanningInterface
     public function formatWorkedHours($plans, $company)
     {
         $return = [
-            'company_id'   => $company->id,
-            'company_name' => $company->company_name,
-            'total_hours'  => 0,
-            'overtime'     => 0,
-            'planned_hours'=> 0,
-            'break'        => 0,
-            'plans'        => [],
+            'company_id'           => $company->id,
+            'company_name'         => $company->company_name,
+            'total_worked_hours'   => 0,
+            'total_contract_hours' => 0,
+            'overtime'             => 0,
+            'break'                => 0,
+            'plans'                => [],
+            'employee_types'       => [],
         ];
 
         foreach ($plans as $plan) {
             $time_registrations = $plan->timeRegistrations;
             $breaks = $plan->breaks;
 
+            $contract_hours       = $plan->contract_hours;
+            $over_time            = 0;
+            $worked_hours         = ($time_registrations) ? formatToEuropeHours($time_registrations->flatten()->pluck('worked_hours')->sum()) : 0;
+            $break                = ($breaks) ? formatToEuropeHours($breaks->flatten()->pluck('break_hours')->sum()) : 0;
+
+            $is_employee_type_set = isset($return['employee_types'][$plan->employeeType->name]);
+            $return['employee_types'][$plan->employeeType->name] = [
+                'employee_type'        => $plan->employeeType->name,
+                'total_worked_hours'   => ($return['employee_types'][$plan->employeeType->name]['total_worked_hours'] ?? 0) + $worked_hours,
+                'overtime'             => ($return['employee_types'][$plan->employeeType->name]['overtime'] ?? 0) + $over_time,
+                'total_contract_hours' => ($return['employee_types'][$plan->employeeType->name]['total_contract_hours'] ?? 0) + $contract_hours,
+                'break'                => ($return['employee_types'][$plan->employeeType->name]['break'] ?? 0) + $break,
+            ];
+
             $return['plans'][$plan->plan_date][] = [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
                 'employee_profile_id'      => $plan->employee_profile_id,
-                'employee_profile_id'      => $plan->employeeType->name,
+                'employee_type'            => $plan->employeeType->name,
                 'location_id'              => $plan->location_id,
                 'location_name'            => $plan->location->location_name,
                 'workstation_id'           => $plan->location_id,
@@ -206,12 +221,12 @@ class PlanningMobileService implements PlanningInterface
                 'function_name'            => $plan->functionTitle->name,
                 'start_time'               => $plan->start_time,
                 'end_time'                 => $plan->end_time,
-                'contract_hours'           => $plan->contract_hours,
+                'contract_hours'           => $contract_hours,
                 'contract_hours_formatted' => $plan->contract_hours_formatted,
-                'worked_hours'             => ($time_registrations) ? formatToEuropeHours($time_registrations->flatten()->pluck('worked_hours')->sum()) : 0,
-                'worked_hours_formatted'   => ($time_registrations) ? formatToEuropeHours($time_registrations->flatten()->pluck('worked_hours')->sum()) : 0,
-                'break_hours'              => ($breaks) ? formatToEuropeHours($breaks->flatten()->pluck('break_hours')->sum()) : 0,
-                'break_hours_formatted'    => ($breaks) ? formatToEuropeHours($breaks->flatten()->pluck('break_hours')->sum()) : 0,
+                'worked_hours'             => $worked_hours,
+                'worked_hours_formatted'   => formatToEuropeHours($worked_hours),
+                'break_hours'              => $break,
+                'break_hours_formatted'    => formatToEuropeHours($break),
             ];
         }
 
@@ -222,6 +237,7 @@ class PlanningMobileService implements PlanningInterface
         $return['total_contract_hours'] = formatToEuropeHours($calculation->pluck('*.contract_hours')->flatten()->sum());
         $return['break']                = $calculation->pluck('*.break_hours')->flatten()->sum();
         $return['plans']                = array_values($return['plans']);
+        $return['employee_types']       = array_values($return['employee_types']);
 
         return $return;
     }

@@ -134,12 +134,12 @@ class PlanningMobileController extends Controller
                 );
             }
 
-            $user_id     = Auth::guard('web')->user()->id;
-            $company_ids = getUserCompanies($user_id);
+            $userId = Auth::guard('web')->user()->id;
+            $company_ids = getUserCompanies($userId);
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningMobileService->getEmployeeWorkedHours($company_ids, $user_id, $request->input('from_date'), $request->input('to_date'))
+                    'data'    => $this->planningMobileService->getEmployeeWorkedHours($company_ids, $userId, $request->input('from_date'), $request->input('to_date'))
                 ],
                 JsonResponse::HTTP_OK,
             );
