@@ -5,7 +5,7 @@ namespace App\Models\Planning;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Illuminate\Support\Carbon;
 
 class PlanningBreak extends Model
 {
@@ -63,5 +63,19 @@ class PlanningBreak extends Model
     public function planningBase()
     {
         return $this->belongsTo(PlanningBase::class, 'plan_id');
+    }
+
+    protected $appends = ['break_hours'];
+
+    public function getBreakHoursAttribute()
+    {
+        if ($this->break_end_time && $this->status) {
+            $start = Carbon::parse($this->break_start_time);
+            $end   = Carbon::parse($this->break_end_time);
+
+            return $start->diffInHours($end);
+        }
+        
+        return 0;
     }
 }

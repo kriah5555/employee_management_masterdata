@@ -48,14 +48,14 @@ class PlanningMobileService implements PlanningInterface
 
                 $company = $this->companyRepository->getCompanyById($company_id);
                 $plans = $this->planningService->getWeeklyPlannings('', '', '', $weekNumber, $year, $employee_profiles->id);
-                $response = $this->formatWeeklyData($plans, $company, $response);
+                $response = $this->formatPlans($plans, $company, $response);
             }
         }
 
         return $response;
     }
 
-    public function formatWeeklyData($plans, $company, $format = [])
+    public function formatPlans($plans, $company, $format = [])
     {
         $return = !empty($format) ? $format : [];
         $company_id = $company->id;
@@ -110,7 +110,7 @@ class PlanningMobileService implements PlanningInterface
                 $company = $this->companyRepository->getCompanyById($company_id);
                 foreach ($dates as $date) {
                     $plans = $this->planningService->getPlans($date, $date, '', '', '', $employee_profiles->id);
-                    $response = $this->formatWeeklyData($plans, $company, $response);
+                    $response = $this->formatPlans($plans, $company, $response);
                 }
             }
         }
@@ -159,6 +159,91 @@ class PlanningMobileService implements PlanningInterface
         return $response;
     }
 
+    public function getEmployeeWorkedHours($company_ids, $user_id, $from_date, $to_date)
+    {
+        $response = [];
+        foreach ($company_ids as $company_id) {
+            setTenantDBByCompanyId($company_id);
+
+            $employee_profiles = EmployeeProfile::where('user_id', $user_id)->get()->first();
+
+            if (!empty($employee_profiles)) {
+                $company = $this->companyRepository->getCompanyById($company_id);
+                $plans = $this->planningService->getPlans($from_date, $to_date, '', '', '', $employee_profiles->id);
+                if ($plans) { 
+                    $response = $this->formatWorkedHours($plans, $company, $response);
+                }
+            }
+        }
+
+        return $response;
+    }
+
+    public function formatWorkedHours($plans, $company)
+    {
+        $return = [
+            'company_id'           => $company->id,
+            'company_name'         => $company->company_name,
+            'total_worked_hours'   => 0,
+            'total_contract_hours' => 0,
+            'overtime'             => 0,
+            'break'                => 0,
+            'plans'                => [],
+            'employee_types'       => [],
+        ];
+
+        foreach ($plans as $plan) {
+            $time_registrations = $plan->timeRegistrations;
+            $breaks = $plan->breaks;
+
+            $contract_hours       = $plan->contract_hours;
+            $over_time            = 0;
+            $worked_hours         = ($time_registrations) ? formatToEuropeHours($time_registrations->flatten()->pluck('worked_hours')->sum()) : 0;
+            $break                = ($breaks) ? formatToEuropeHours($breaks->flatten()->pluck('break_hours')->sum()) : 0;
+
+            $is_employee_type_set = isset($return['employee_types'][$plan->employeeType->name]);
+            $return['employee_types'][$plan->employeeType->name] = [
+                'employee_type'        => $plan->employeeType->name,
+                'total_worked_hours'   => ($return['employee_types'][$plan->employeeType->name]['total_worked_hours'] ?? 0) + $worked_hours,
+                'overtime'             => ($return['employee_types'][$plan->employeeType->name]['overtime'] ?? 0) + $over_time,
+                'total_contract_hours' => ($return['employee_types'][$plan->employeeType->name]['total_contract_hours'] ?? 0) + $contract_hours,
+                'break'                => ($return['employee_types'][$plan->employeeType->name]['break'] ?? 0) + $break,
+            ];
+
+            $return['plans'][$plan->plan_date][] = [
+                'plan_id'                  => $plan->id,
+                'plan_date'                => $plan->plan_date,
+                'employee_profile_id'      => $plan->employee_profile_id,
+                'employee_type'            => $plan->employeeType->name,
+                'location_id'              => $plan->location_id,
+                'location_name'            => $plan->location->location_name,
+                'workstation_id'           => $plan->location_id,
+                'workstation_name'         => $plan->workStation->workstation_name,
+                'function_id'              => $plan->function_id,
+                'function_name'            => $plan->functionTitle->name,
+                'start_time'               => $plan->start_time,
+                'end_time'                 => $plan->end_time,
+                'contract_hours'           => $contract_hours,
+                'contract_hours_formatted' => $plan->contract_hours_formatted,
+                'worked_hours'             => $worked_hours,
+                'worked_hours_formatted'   => formatToEuropeHours($worked_hours),
+                'break_hours'              => $break,
+                'break_hours_formatted'    => formatToEuropeHours($break),
+            ];
+        }
+
+        $calculation = collect($return['plans']);
+
+        $return['total_worked_hours']   = formatToEuropeHours($calculation->pluck('*.worked_hours')->flatten()->sum());
+        $return['overtime']             = 0; 
+        $return['total_contract_hours'] = formatToEuropeHours($calculation->pluck('*.contract_hours')->flatten()->sum());
+        $return['break']                = $calculation->pluck('*.break_hours')->flatten()->sum();
+        $return['plans']                = array_values($return['plans']);
+        $return['employee_types']       = array_values($return['employee_types']);
+
+        return $return;
+    }
+
     public function getEmployeesToSwitchPlan($values)
     {
         $planId = $values['plan_id'];
@@ -184,5 +269,4 @@ class PlanningMobileService implements PlanningInterface
         }
         return $employeeDetails;
     }
-
 }

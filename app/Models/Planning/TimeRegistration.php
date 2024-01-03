@@ -7,6 +7,7 @@ use App\Models\User\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 
 class TimeRegistration extends Model
@@ -63,6 +64,20 @@ class TimeRegistration extends Model
         'started_by',
         'ended_by'
     ];
+
+    protected $appends = ['worked_hours'];
+
+    public function getWorkedHoursAttribute()
+    {
+        if ($this->actual_end_time && $this->status) {
+            $start = Carbon::parse($this->actual_start_time);
+            $end   = Carbon::parse($this->actual_end_time);
+
+            return $start->diffInHours($end);
+        }
+
+        return 0;
+    }
 
     public function planningBase()
     {

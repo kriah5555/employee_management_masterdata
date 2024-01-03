@@ -18,7 +18,7 @@ class PlanningMobileController extends Controller
     ) {
     }
 
-    public function getWeeklyPlanning(Request $request)
+    public function getEmployeeWeeklyPlanning(Request $request)
     {
         try {
             $rules = [
@@ -56,7 +56,7 @@ class PlanningMobileController extends Controller
         }
     }
 
-    public function getDatesPlanning(Request $request)
+    public function getEmployeeDatesPlanning(Request $request)
     {
         try {
             $rules = [
@@ -120,6 +120,45 @@ class PlanningMobileController extends Controller
                 [
                     'success' => true,
                     'data'    => $this->planningMobileService->getEmployeesToSwitchPlan($request->validated())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getEmployeeWorkedHours(Request $request)
+    {
+        try {
+            $rules = [
+                'from_date' => 'required|' . 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
+                'to_date'   => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT') . '|after_or_equal:from_date',
+            ];
+
+
+            $validator = Validator::make(request()->all(), $rules, []);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+
+            $userId = Auth::guard('web')->user()->id;
+            $company_ids = getUserCompanies($userId);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningMobileService->getEmployeeWorkedHours($company_ids, $userId, $request->input('from_date'), $request->input('to_date'))
                 ],
                 JsonResponse::HTTP_OK,
             );

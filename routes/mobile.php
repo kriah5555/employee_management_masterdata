@@ -14,9 +14,11 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
     Route::get('get-employee-planning-status', [PlanningMobileController::class, 'getEmployeePlanningStatus']);
 
-    Route::post('get-employee-week-planning', [PlanningMobileController::class, 'getWeeklyPlanning']);
+    Route::post('get-employee-week-planning', [PlanningMobileController::class, 'getEmployeeWeeklyPlanning']);
 
-    Route::post('get-employee-dates-planning', [PlanningMobileController::class, 'getDatesPlanning']);
+    Route::post('get-employee-dates-planning', [PlanningMobileController::class, 'getEmployeeDatesPlanning']);
+
+    Route::post('get-employee-worked-hours', [PlanningMobileController::class, 'getEmployeeWorkedHours']);
 
 
     Route::controller(PlanningStartStopController::class)->group(function () {
