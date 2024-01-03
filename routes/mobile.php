@@ -7,7 +7,9 @@ use App\Http\Controllers\Planning\
     PlanningMobileController,
 };
 
-Route::post('get-employee-week-planning', [PlanningMobileController::class, 'getWeeklyPlanning']);
+Route::post('get-employee-week-planning', [PlanningMobileController::class, 'getEmployeeWeeklyPlanning']);
 
-Route::post('get-employee-dates-planning', [PlanningMobileController::class, 'getDatesPlanning']);
+Route::post('get-employee-dates-planning', [PlanningMobileController::class, 'getEmployeeDatesPlanning']);
+
+Route::post('get-employee-worked-hours', [PlanningMobileController::class, 'getEmployeeWorkedHours']);
 

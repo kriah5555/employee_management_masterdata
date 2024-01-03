@@ -18,7 +18,7 @@ class PlanningMobileController extends Controller
     {
     }
 
-    public function getWeeklyPlanning(Request $request)
+    public function getEmployeeWeeklyPlanning(Request $request)
     {
         try {
             $rules = [
@@ -61,7 +61,7 @@ class PlanningMobileController extends Controller
         }
     }
 
-    public function getDatesPlanning(Request $request)
+    public function getEmployeeDatesPlanning(Request $request)
     {
         try {
             $rules = [
@@ -73,6 +73,49 @@ class PlanningMobileController extends Controller
                 ],
                 'dates' => 'array|required',
                 'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
+            ];
+
+            $validator = Validator::make(request()->all(), $rules, []);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+
+            $company_ids = getUserCompanies($request['user_id']);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningMobileService->getDatesPlanningService($company_ids, $request->input('user_id'), $request->input('dates'))
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getEmployeeWorkedHours(Request $request)
+    {
+        try {
+            $rules = [
+                'user_id'         => [
+                    'bail',
+                    'required',
+                    'integer',
+                    Rule::exists('userdb.users', 'id'),
+                ],
+                'from_date' => 'required',
+                'to_date'   => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT') . '|after_or_equal:from_date',
             ];
 
             $validator = Validator::make(request()->all(), $rules, []);
