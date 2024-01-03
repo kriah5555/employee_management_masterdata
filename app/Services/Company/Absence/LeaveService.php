@@ -31,14 +31,17 @@ class LeaveService
     public function formatLeaves($leaves, $status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
+            
             return $leaves->map(function ($leave) use ($status) {
-                $actions = [];
+                $actions = ['approve' => false, 'reject' => false, 'change_manager' => false, 'request_cancel' => false, 'cancel' => false];
     
                 if ($status == config('absence.PENDING')) {
-                    $actions = ['change_manager', 'approve'];
+                    $actions['change_manager'] = $actions['approve'] = $actions['reject'] = true;
+                } elseif ($status == config('absence.APPROVE')) {
+                    $actions['cancel'] = true;
                 }
-    
-                $leave->actions = ['change_manager', 'approve'];
+
+                $leave->actions = $actions;
     
                 return $leave;
             });

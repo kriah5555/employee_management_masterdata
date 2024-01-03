@@ -40,8 +40,6 @@ class HolidayController extends Controller
         }
     }
 
-
-
     public function employeeHolidays($employee_id, $status)
     {
         try {
@@ -49,7 +47,7 @@ class HolidayController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getHolidays($employee_id, $status),
+                    'data'    => $this->holidayService->getHolidays($employee_id, $status, true),
                 ],
                 JsonResponse::HTTP_OK,
             );

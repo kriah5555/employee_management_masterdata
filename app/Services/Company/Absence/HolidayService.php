@@ -18,10 +18,40 @@ class HolidayService
     {
     }
 
-    public function getHolidays($employee_id = '',$status = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    public function getHolidays($employee_id = '',$status = '', $employee_flow = false) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return $this->holiday_repository->getHolidays($employee_id, $status);
+            return $this->formatHoliday($this->holiday_repository->getHolidays($employee_id, $status), $status, $employee_flow);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function formatHoliday($holidays, $status, $employee_flow = false) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    {
+        try {
+            return $holidays->map(function ($holiday) use ($status, $employee_flow) {
+                $actions = ['approve' => false, 'reject' => false, 'change_manager' => false, 'request_cancel' => false, 'cancel' => false];
+    
+                if ($employee_flow) {
+                    if ($status == config('absence.PENDING')) {
+                        $actions['cancel'] = true;
+                    } elseif ($status == config('absence.APPROVE')) {
+                        $actions['request_cancel'] = true;
+                    }
+                } else {
+                    if ($status == config('absence.PENDING')) {
+                        $actions['approve'] = $actions['reject'] = $actions['change_manager'] = true;
+                    } elseif ($status == config('absence.APPROVE') || $status == config('absence.REQUEST_CANCEL')) {
+                        $actions['cancel'] = true;
+                    }
+                }
+                
+                $holiday->actions = $actions;
+    
+                return $holiday;
+            });
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
