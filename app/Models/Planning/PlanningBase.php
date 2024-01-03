@@ -11,6 +11,7 @@ use App\Models\Planning\{PlanningBreak, PlanningContracts, PlanningDimona, TimeR
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use Illuminate\Support\Carbon;
+use App\Models\Company\Employee\EmployeeContractFile;
 
 
 class PlanningBase extends BaseModel
@@ -139,7 +140,7 @@ class PlanningBase extends BaseModel
 
     public function contracts()
     {
-        return $this->hasMany(PlanningContracts::class, 'plan_id');
+        return $this->hasMany(EmployeeContractFile::class)->where('status', true);
     }
 
     public function breaks()

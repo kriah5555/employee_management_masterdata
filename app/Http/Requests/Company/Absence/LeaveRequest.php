@@ -12,7 +12,7 @@ use App\Rules\EmployeeHolidayBalanceRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
 
-class HolidayRequest extends ApiRequest
+class LeaveRequest extends ApiRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -37,10 +37,10 @@ class HolidayRequest extends ApiRequest
             ],
             'manager_id' => [
                 'bail',
-                'required',
+                'nullable',
                 'integer',
             ],
-            'reason' => 'required|string',
+            'reason' => 'nullable|string',
 
             'dates' => [
                 'bail',
