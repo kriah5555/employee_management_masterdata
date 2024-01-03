@@ -87,7 +87,6 @@ class MailService
         } catch (\Exception $e) {
             Log::error('Error sending email: ' . $e->getMessage());
             // You might want to throw the exception to propagate it to the calling code
-            throw 'Error sending email: ' . $e->getMessage();
         }
     }
 }
