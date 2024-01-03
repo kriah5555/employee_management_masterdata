@@ -12,6 +12,7 @@ use App\Models\Company\{
 };
 use App\Models\Planning\{Vacancy, VacancyEmployeeTypes, VacancyPostEmployees};
 use App\Models\User\CompanyUser;
+use App\Services\CompanyService;
 
 class VacancyService implements VacancyInterface
 {
@@ -145,12 +146,12 @@ class VacancyService implements VacancyInterface
             // $vacancies->orWhere('start_date', '>=', $filters['start_date']);
 	}*/
 
-        if (isset($filters['employees']) && !empty($filters['employees'])) {
+       /* if (isset($filters['employees']) && !empty($filters['employees'])) {
             $employees = $filters['employees'];
             $vacancies->whereHas('vacancyPostEmployees', function ($query) use ($employees) {
                 $query->orWhere('employee_profile_id', '=', $employees);
             });
-        }
+	}*/
 
         // if (isset($filters['order_by']) && !empty($filters['order_by']) > 0) {
         //     $order = $filters['order_type'] ?? 'asc';
@@ -298,7 +299,7 @@ class VacancyService implements VacancyInterface
      * @param  [type] $response
      *
      */
-    public function formatEmployeeJobsOverview($vacancies, $employeeProfileId, &$response)
+    public function formatEmployeeJobsOverview($companyDetails, $vacancies, $employeeProfileId, &$response)
     {
         foreach ($vacancies as $vacancy) {
             $isNew = true;
@@ -312,14 +313,22 @@ class VacancyService implements VacancyInterface
                 if(count($job) > 0) {
                     $job = reset($job);
                     $vacancy['employees'] = $job;
-                    $status = isset($job['status']) ? $job['status'] : '';
+		    $status = isset($job['status']) ? $job['status'] : '';
                     $isNew = false;
                 } else {
                     unset($vacancy['employees']);
                     $isNew = true;
                 }
-            }
+	    }
+	    $company = app(CompanyService::class)->getCompanyById($companyDetails['company_id']);
+	    $vacancy['company_id'] = $company->id;
+	    $vacancy['company_name'] = $company->company_name;
+	    $vacancy['company_logo'] = null;
 
+	    $vacancy['saved'] = $status == 3 ? 1 : 0;
+	    $vacancy['start_date'] = date('d-m-Y', strtotime($vacancy['start_date']));
+
+	    $vacancy['plan_available'] = 0;
             if ($isNew == true) {
                 $response['new'][] = $vacancy;
             } else {
@@ -328,7 +337,7 @@ class VacancyService implements VacancyInterface
                     $response['applied'][] = $vacancy;
                 }
                 // Saved
-                if ($status == 3) {
+		if ($status == 3) {
                     $response['saved'][] = $vacancy;
                 }
                 //Ignored.
@@ -368,7 +377,7 @@ class VacancyService implements VacancyInterface
 
                     $availableJobs = $this->getVacancies($filters);
 
-                    $this->formatEmployeeJobsOverview($availableJobs, $employeeProfile, $response);
+                    $this->formatEmployeeJobsOverview($value, $availableJobs, $employeeProfile, $response);
                 }
             }
         }
