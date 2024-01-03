@@ -502,3 +502,16 @@ if (!function_exists('getDatesArray')) {
         return $dates;
     }
 }
+
+if (!function_exists('getDateRangeByPeriod')) {
+    function getDateRangeByPeriod($period)
+    {
+        $period = explode('-', $period);
+        $startDate = $period[1] . '-' . $period[0] . '-01';
+        $endDate = date("Y-m-t", strtotime($startDate));
+        return [
+            'start_date' => $startDate,
+            'end_date'   => $endDate,
+        ];
+    }
+}

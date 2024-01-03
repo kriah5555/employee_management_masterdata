@@ -4,6 +4,7 @@ namespace App\Services\Planning;
 
 use App\Models\Planning\PlanningBase;
 use App\Interfaces\Planning\PlanningInterface;
+use App\Services\Employee\EmployeeContractService;
 use App\Services\Planning\PlanningService;
 use App\Repositories\Company\CompanyRepository;
 use App\Models\Company\Employee\EmployeeProfile;
@@ -14,6 +15,7 @@ class PlanningMobileService implements PlanningInterface
     public function __construct(
         protected PlanningService $planningService,
         protected CompanyRepository $companyRepository,
+        protected EmployeeContractService $employeeContractService,
     ) {
     }
 
@@ -240,5 +242,31 @@ class PlanningMobileService implements PlanningInterface
         $return['employee_types']       = array_values($return['employee_types']);
 
         return $return;
+    }
+
+    public function getEmployeesToSwitchPlan($values)
+    {
+        $planId = $values['plan_id'];
+        $planDetails = $this->planningService->getPlanningById($planId);
+        $employeeTypeId = $planDetails['employee_type_id'];
+        $functionId = $planDetails['function_id'];
+        $date = date('Y-m-d', strtotime($planDetails->start_date_time));
+        $employeeContracts = $this->employeeContractService->getEmployeeWithActiveType($date, $employeeTypeId, $functionId);
+        foreach ($employeeContracts as $employeeContract) {
+            $employeeDetails = [];
+            $employeeDetails['id'] = $employeeContract->employeeProfile->id;
+            $employeeDetails['name'] = $employeeContract->employeeProfile->user->userBasicDetails->first_name . ' ' .
+                $employeeContract->employeeProfile->user->userBasicDetails->last_name;
+            $plans = $employeeContract->employeeProfile->planningsForDate($date);
+            $plannings = [];
+            foreach ($plans as $plan) {
+                $plannings[] = [
+                    'plan_start_time' => date('H:i', strtotime($plan->start_date_time)),
+                    'plan_end_time'   => date('H:i', strtotime($plan->end_date_time))
+                ];
+            }
+            $employeeDetails['plannings'] = $plannings;
+        }
+        return $employeeDetails;
     }
 }

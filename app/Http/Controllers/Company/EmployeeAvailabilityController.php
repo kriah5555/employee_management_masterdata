@@ -2,60 +2,56 @@
 
 namespace App\Http\Controllers\Company;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use App\Services\Company\AvailabilityService;
-use App\Http\Requests\Company\AvailabilityRequest;
+use App\Services\Company\EmployeeAvailabilityService;
+use App\Http\Requests\Employee\EmployeeAvailabilityRequest;
+use Illuminate\Support\Facades\Auth;
 
-class AvailabilityController extends Controller
+class EmployeeAvailabilityController extends Controller
 {
 
-    public function __construct(protected AvailabilityService $availabilityService)
+    public function __construct(protected EmployeeAvailabilityService $employeeAvailabilityService)
     {
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(EmployeeAvailabilityRequest $request)
     {
-        $rules = [
-            'period' => 'required|regex:/^\d{2}-\d{4}$/',
-        ];
-
-        $validator = Validator::make(request()->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => $validator->errors()->first()], 400);
-        }
         try {
-            return response()->json([
-                'success' => true,
-                'available_dates' => $this->availabilityService->availableDates(request()),
-                'notAvailable_dates' => $this->availabilityService->notAvailableDates(request()),
-                'date_overview' => $this->availabilityService->dateOverView(request())
-            ], JsonResponse::HTTP_OK);
+            $userId = Auth::guard('web')->user()->id;
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeAvailabilityService->getEmployeeAvailabilityForAllCompanies($userId, $request->get('period')),
+                ],
+                JsonResponse::HTTP_OK,
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                "success" => false,
-                "message" => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    "success" => false,
+                    "message" => $e->getMessage(),
+                ],
+                HTTP_INTERNAL_SERVER_ERROR::HTTP_OK,
+            );
         }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AvailabilityRequest $request)
+    public function store(EmployeeAvailabilityRequest $request)
     {
         try {
+            $userId = Auth::guard('web')->user()->id;
+            $this->employeeAvailabilityService->createAvailability($userId, $request->validated());
             return returnResponse(
                 [
                     'success' => true,
                     'message' => 'Availability created successfully',
-                    'data'    => $this->availabilityService->createAvailability($request->validated()),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -80,13 +76,13 @@ class AvailabilityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AvailabilityRequest $request, $id)
+    public function update(EmployeeAvailabilityRequest $request, $id)
     {
         try {
             return response()->json(
                 [
                     'success' => true,
-                    'message' => $this->availabilityService->updateAvailability($request->validated(), $id)
+                    'message' => $this->employeeAvailabilityService->updateAvailability($request->validated(), $id)
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -107,7 +103,7 @@ class AvailabilityController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'message' => $this->availabilityService->deleteAvailability($id)
+                    'message' => $this->employeeAvailabilityService->deleteAvailability($id)
                 ],
                 JsonResponse::HTTP_OK,
             );

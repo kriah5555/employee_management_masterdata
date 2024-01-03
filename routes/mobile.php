@@ -30,6 +30,9 @@ Route::middleware([SetActiveUser::class])->group(function () {
     });
 
     Route::middleware([InitializeTenancy::class])->group(function () {
+
+        Route::get('get-employees-to-switch-plan', [PlanningMobileController::class, 'getEmployeesToSwitchPlan']);
+
     });
 
 });

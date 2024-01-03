@@ -11,7 +11,6 @@ use App\Http\Controllers\Company\{
     LocationController,
     CostCenterController,
     WorkstationController,
-    AvailabilityController,
     Absence\LeaveController,
     Absence\HolidayController,
     Contract\ContractConfigurationController,
@@ -128,10 +127,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             'employee-commute'           => [
                 'controller' => EmployeeCommuteController::class,
                 'methods'    => ['show', 'update', 'create']
-            ],
-            'availability'               => [
-                'controller' => AvailabilityController::class,
-                'methods'    => ['index', 'store', 'update', 'destroy', 'create']
             ],
         ];
 

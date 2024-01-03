@@ -2,25 +2,18 @@
 
 namespace App\Models\Company;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\BaseModel;
 use App\Models\Company\Company;
 use App\Models\Company\Employee\EmployeeProfile;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Availability extends Model
+class EmployeeAvailabilityRemarks extends BaseModel
 {
-    use HasFactory, SoftDeletes;
 
     protected $connection = 'tenant';
-    protected $table = 'availability';
-
+    protected $table = 'employee_availability_remarks';
     protected $fillable = [
-        'employee_id',
-        'type',
-        'year',
-        'month',
-        'dates'
+        'employee_availability_id',
+        'remark',
     ];
 
     public $timestamps = true;
@@ -31,13 +24,9 @@ class Availability extends Model
         'deleted_at'
     ];
 
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
-    }
-
     public function employeeProfile()
     {
         return $this->belongsTo(EmployeeProfile::class);
     }
+
 }

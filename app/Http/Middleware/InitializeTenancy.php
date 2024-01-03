@@ -25,7 +25,7 @@ class InitializeTenancy
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $companyId = $request->header('Company-Id');
+        $companyId = $request->header('Company-Id') ? $request->header('Company-Id') : request()->input('company_id');
         if ($companyId) {
             $tenant = $this->companyService->getTenantByCompanyId($companyId);
             if ($tenant instanceof Tenant) {

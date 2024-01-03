@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Planning;
 
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Planning\PlanningMobileService;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\Planning\SwitchPlanningRequest;
 
 
 class PlanningMobileController extends Controller
@@ -101,6 +101,25 @@ class PlanningMobileController extends Controller
                 [
                     'success' => true,
                     'data'    => $this->planningMobileService->getUserPlanningStatus(Auth::id())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function getEmployeesToSwitchPlan(SwitchPlanningRequest $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningMobileService->getEmployeesToSwitchPlan($request->validated())
                 ],
                 JsonResponse::HTTP_OK,
             );
