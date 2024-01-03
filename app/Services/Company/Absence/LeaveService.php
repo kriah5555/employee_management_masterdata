@@ -21,7 +21,7 @@ class LeaveService
     public function getLeaves($status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return formatLeaves($this->leave_repository->getLeaves('', $status), $status);
+            return $this->formatLeaves($this->leave_repository->getLeaves('', $status), $status);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -31,7 +31,17 @@ class LeaveService
     public function formatLeaves($leaves, $status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            
+            return $leaves->map(function ($leave) use ($status) {
+                $actions = [];
+    
+                if ($status == config('absence.PENDING')) {
+                    $actions = ['change_manager', 'approve'];
+                }
+    
+                $leave->actions = ['change_manager', 'approve'];
+    
+                return $leave;
+            });
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
