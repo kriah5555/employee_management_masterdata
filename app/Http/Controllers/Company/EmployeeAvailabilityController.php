@@ -114,4 +114,28 @@ class EmployeeAvailabilityController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * Display a listing of the resource.
+     */
+    public function getEmployeeAvailability(EmployeeAvailabilityRequest $request)
+    {
+        try {
+            $userId = Auth::guard('web')->user()->id;
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeAvailabilityService->getEmployeeAvailability($request->get('employee_profile_id'), $request->get('period')),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    "success" => false,
+                    "message" => $e->getMessage(),
+                ],
+                HTTP_INTERNAL_SERVER_ERROR::HTTP_OK,
+            );
+        }
+    }
 }

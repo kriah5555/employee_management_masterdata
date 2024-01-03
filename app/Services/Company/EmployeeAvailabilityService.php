@@ -20,25 +20,27 @@ class EmployeeAvailabilityService
         try {
             foreach ($request['company_ids'] as $companyId) {
                 connectCompanyDataBase($companyId);
-                DB::connection('tenant')->beginTransaction();
 
-                $employeeProfileId = EmployeeProfile::where('user_id', $userId)->first()->id;
-                foreach ($request['dates'] as $date) {
-                    $availability = EmployeeAvailability::firstOrCreate([
-                        'employee_profile_id' => $employeeProfileId,
-                        'date'                => date('Y-m-d', strtotime($date))
-                    ]);
-                    $availability->availability = $request['type'];
-                    $availability->save();
-                    if ($request['remark']) {
-                        $availability->employeeAvailabilityRemarks()->create([
-                            'remark' => $request['remark']
+                $employeeProfile = EmployeeProfile::where('user_id', $userId)->first();
+                if ($employeeProfile) {
+                    DB::connection('tenant')->beginTransaction();
+                    foreach ($request['dates'] as $date) {
+                        $availability = EmployeeAvailability::firstOrCreate([
+                            'employee_profile_id' => $employeeProfile->id,
+                            'date'                => date('Y-m-d', strtotime($date))
                         ]);
-                    } else {
-                        $availability->employeeAvailabilityRemarks()->delete();
+                        $availability->availability = $request['type'];
+                        $availability->save();
+                        if ($request['remark']) {
+                            $availability->employeeAvailabilityRemarks()->create([
+                                'remark' => $request['remark']
+                            ]);
+                        } else {
+                            $availability->employeeAvailabilityRemarks()->delete();
+                        }
                     }
+                    DB::connection('tenant')->commit();
                 }
-                DB::connection('tenant')->commit();
             }
         } catch (\Exception $e) {
             DB::connection('tenant')->rollback();
@@ -418,6 +420,27 @@ class EmployeeAvailabilityService
                     'type'    => $existingAvailabilityDate->availability,
                     'remark'  => $remarkString
                 ];
+            }
+        }
+        return $availability;
+    }
+
+    public function getEmployeeAvailability($employeeProfileId, $period)
+    {
+        $availability = [
+            'available_dates'     => [],
+            'not_available_dates' => [],
+        ];
+        $dateRange = getDateRangeByPeriod($period);
+        $existingAvailabilityDates = EmployeeAvailability::where('employee_profile_id', $employeeProfileId)
+            ->where('date', '>=', $dateRange['start_date'])
+            ->where('date', '<=', $dateRange['end_date'])
+            ->get();
+        foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
+            if ($existingAvailabilityDate->availability) {
+                $availability['available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+            } else {
+                $availability['not_available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
             }
         }
         return $availability;

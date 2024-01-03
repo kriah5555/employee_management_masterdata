@@ -492,4 +492,19 @@ class EmployeeService
             'functions'      => $activeFunctions,
         ];
     }
+
+    public function getEmployeeCompanies($user)
+    {
+        $companies = [];
+        $companyUsers = CompanyUser::where('user_id', $user->id)->get();
+        foreach ($companyUsers as $companyUser) {
+            if ($companyUser->hasRole('employee')) {
+                $companies[] = [
+                    'id'   => $companyUser->company->id,
+                    'name' => $companyUser->company->company_name,
+                ];
+            }
+        }
+        return $companies;
+    }
 }

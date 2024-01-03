@@ -4,14 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Company\{
     CompanyController,
-    LocationController,
-    CostCenterController,
-    WorkstationController,
-    AppSettingsController,
-    Absence\LeaveController,
-    Absence\HolidayController,
-    Contract\ContractConfigurationController,
-    Contract\CompanyContractTemplateController,
     EmployeeAvailabilityController,
 };
 
@@ -221,6 +213,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('employee-update', [EmployeeController::class, 'updateEmployee']);
 
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
+
+    Route::get('get-employee-companies', [EmployeeController::class, 'getEmployeeCompanies']);
 });
 
 use App\Models\User\CompanyUser;

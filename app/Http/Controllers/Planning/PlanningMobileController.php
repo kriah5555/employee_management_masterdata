@@ -30,7 +30,7 @@ class PlanningMobileController extends Controller
             if ($validator->fails()) {
                 return returnResponse(
                     [
-                        'success' => true,
+                        'success' => false,
                         'message' => $validator->errors()->all()
                     ],
                     JsonResponse::HTTP_BAD_REQUEST,
@@ -68,7 +68,7 @@ class PlanningMobileController extends Controller
             if ($validator->fails()) {
                 return returnResponse(
                     [
-                        'success' => true,
+                        'success' => false,
                         'message' => $validator->errors()->all()
                     ],
                     JsonResponse::HTTP_BAD_REQUEST,
@@ -146,7 +146,7 @@ class PlanningMobileController extends Controller
             if ($validator->fails()) {
                 return returnResponse(
                     [
-                        'success' => true,
+                        'success' => false,
                         'message' => $validator->errors()->all()
                     ],
                     JsonResponse::HTTP_BAD_REQUEST,
