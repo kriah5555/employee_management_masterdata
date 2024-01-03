@@ -52,6 +52,8 @@ return [
 
     'LONG_TERM_CONTRACT_ID' => 1,
 
+    'DAILY_CONTRACT_ID'     => 2,
+
     'DEFAULT_DATE_FORMAT' => 'd-m-Y',
 
     'DEFAULT_TIME_FORMAT' => 'H:i',
