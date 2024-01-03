@@ -3,6 +3,7 @@
 namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
+use App\Models\Planning\PlanningBase;
 use App\Traits\UserAudit;
 use App\Models\User\User;
 use App\Models\User\UserBasicDetails;
@@ -88,7 +89,7 @@ class EmployeeProfile extends BaseModel
     {
         return $this->hasMany(EmployeeCommute::class);
     }
-    
+
     public function employeeBasicDetails()
     {
         return $this->belongsTo(UserBasicDetails::class, 'user_id', 'user_id');
@@ -97,7 +98,21 @@ class EmployeeProfile extends BaseModel
     public function getEmployeeProfileByUserId($userId)
     {
         return $this->where('user_id', $userId)
-        ->where('status', true)
-        ->get();
+            ->where('status', true)
+            ->get();
+    }
+    public function planningsForDate($date)
+    {
+        return $this->hasMany(PlanningBase::class)
+            ->where('start_date_time', '>=', date('Y-m-d 00:00:00', strtotime($date)))
+            ->where('start_date_time', '<=', date('Y-m-d 23:59:59', strtotime($date)))
+            ->get();
+    }
+    public function availabilityForDate($date)
+    {
+        return $this->hasMany(PlanningBase::class)
+            ->where('start_date_time', '>=', date('Y-m-d 00:00:00', strtotime($date)))
+            ->where('start_date_time', '<=', date('Y-m-d 23:59:59', strtotime($date)))
+            ->get();
     }
 }

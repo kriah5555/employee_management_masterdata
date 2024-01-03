@@ -3,42 +3,47 @@
 namespace App\Services\Company;
 
 use DateTime;
-use App\Models\Company\Availability;
-use App\Models\Company\AvailabilityRemarks;
+use App\Models\Company\EmployeeAvailability;
+use App\Models\Company\EmployeeAvailabilityRemarks;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Services\CompanyService;
 use App\Models\Company\Employee\EmployeeProfile;
 
-class AvailabilityService
+class EmployeeAvailabilityService
 {
     public $availableDates = [];
     public $notAvailableDates = [];
 
-    public function createAvailability($request)
+    public function createAvailability($userId, $request)
     {
         try {
-            $company_service = app(CompanyService::class);
-            foreach ($request['company_ids'] as $company_id) {
-                $tenant = $company_service->getTenantByCompanyId($company_id);
-                setTenantDB($tenant->id);
-
-                $request['employee_id'] = EmployeeProfile::where('user_id', $request['user_id'])->get()->first()->id;
+            foreach ($request['company_ids'] as $companyId) {
+                connectCompanyDataBase($companyId);
                 DB::connection('tenant')->beginTransaction();
-                
-                    $groupedData = $this->dateMonthYearSeparator($request['dates']);
 
-                    $createdData = $this->dateMonthYearStore($groupedData, $request);
-
+                $employeeProfileId = EmployeeProfile::where('user_id', $userId)->first()->id;
+                foreach ($request['dates'] as $date) {
+                    $availability = EmployeeAvailability::firstOrCreate([
+                        'employee_profile_id' => $employeeProfileId,
+                        'date'                => date('Y-m-d', strtotime($date))
+                    ]);
+                    $availability->availability = $request['type'];
+                    $availability->save();
+                    if ($request['remark']) {
+                        $availability->employeeAvailabilityRemarks()->create([
+                            'remark' => $request['remark']
+                        ]);
+                    } else {
+                        $availability->employeeAvailabilityRemarks()->delete();
+                    }
+                }
                 DB::connection('tenant')->commit();
             }
-            
-
-            return $createdData;
         } catch (\Exception $e) {
             DB::connection('tenant')->rollback();
             error_log($e->getMessage());
-            throw $e;  // rethrow the caught exception to propagate it
+            throw $e;
         }
     }
 
@@ -54,9 +59,9 @@ class AvailabilityService
             $updateDateAsPerMonth = $this->dateMonthYearStore($groupedData, $request, true);
 
             $avalibilityTableDates = AvailabilityRemarks::where('id', $id)->update([
-                'dates' => json_encode(array_values(array_unique($request['dates']))),
-                'remark' => $request['remark'],
-                'type' => $request['type'],
+                'dates'       => json_encode(array_values(array_unique($request['dates']))),
+                'remark'      => $request['remark'],
+                'type'        => $request['type'],
                 'employee_id' => $request['employee_id']
             ]);
 
@@ -100,6 +105,7 @@ class AvailabilityService
 
     public function availableDates($request)
     {
+        dd($request);
         $date = $request->period;
 
         $carbonDate = Carbon::createFromFormat('m-Y', $date);
@@ -107,7 +113,7 @@ class AvailabilityService
         $month = intval($carbonDate->format('m'));
         $year = $carbonDate->format('Y');
 
-        $existingAvailabilityDates = Availability::where('year', $year)
+        $existingAvailabilityDates = EmployeeAvailability::where('year', $year)
             ->where('month', $month)
             ->where('type', 1)
             ->select('dates')
@@ -138,7 +144,7 @@ class AvailabilityService
         $month = intval($carbonDate->format('m'));
         $year = $carbonDate->format('Y');
 
-        $existingNotAvailabilityDates = Availability::where('year', $year)
+        $existingNotAvailabilityDates = EmployeeAvailability::where('year', $year)
             ->where('month', $month)
             ->where('type', 0)
             ->select('dates')
@@ -173,9 +179,9 @@ class AvailabilityService
                 if (in_array($date, $mothDates)) {
                     $dateObject = [
                         "employee_id" => $value->employee_id,
-                        "dates" => $date,
-                        "remark" => $value->remark,
-                        "type" => $value->type
+                        "dates"       => $date,
+                        "remark"      => $value->remark,
+                        "type"        => $value->type
                     ];
                     $matchingDates[] = $dateObject;
                 }
@@ -191,69 +197,70 @@ class AvailabilityService
 
     public function dateMonthYearStore($groupedData, $request, $update = false)
     {
-            $results = "";
-            global $remarkDetailsUpdate;
-            $remarkDetailsUpdate = false;
+        $results = "";
+        global $remarkDetailsUpdate;
+        $remarkDetailsUpdate = false;
 
-            foreach ($groupedData as $yearData) {
-                foreach ($yearData as $monthData) {
-                    $newDates = array_map('intval', $monthData['dates']);
+        foreach ($groupedData as $yearData) {
+            foreach ($yearData as $monthData) {
+                $newDates = array_map('intval', $monthData['dates']);
 
-                    $existingRecord = Availability::where('type', $request['type'])
-                        ->where('year', $monthData['year'])
-                        ->where('month', $monthData['month'])
-                        ->first();
+                $existingRecord = EmployeeAvailability::where('type', $request['type'])
+                    ->where('year', $monthData['year'])
+                    ->where('month', $monthData['month'])
+                    ->first();
 
-                    $dates = $existingRecord
-                        ? $this->mergeAvailabilityDates($existingRecord, $newDates, $request, $monthData)
-                        : $this->createAvailabilityData($request, $newDates, $monthData);
-                    if ($dates) $remarkDetailsUpdate = true;
-                }
+                $dates = $existingRecord
+                    ? $this->mergeAvailabilityDates($existingRecord, $newDates, $request, $monthData)
+                    : $this->createAvailabilityData($request, $newDates, $monthData);
+                if ($dates)
+                    $remarkDetailsUpdate = true;
             }
+        }
 
-            if ($remarkDetailsUpdate && !$update) {
-                return $this->creatingDateWithRemark($request);
-            }
-            return $results;
+        if ($remarkDetailsUpdate && !$update) {
+            return $this->creatingDateWithRemark($request);
+        }
+        return $results;
     }
 
     private function mergeAvailabilityDates(Availability $details, array $newDates, $request, $monthData)
     {
-            $checkType = ($request['type'] == 1) ? 0 : 1;
+        $checkType = ($request['type'] == 1) ? 0 : 1;
 
-            $datesData = Availability::where('type', $checkType)
-                ->where('month', intval($monthData['month']))
-                ->where('year', intval($monthData['year']))
-                ->select('dates')
-                ->get();
+        $datesData = EmployeeAvailability::where('type', $checkType)
+            ->where('month', intval($monthData['month']))
+            ->where('year', intval($monthData['year']))
+            ->select('dates')
+            ->get();
 
-            $datesArray = $datesData->pluck('dates')->map(function ($value) {
-                return json_decode($value, true);
-            })->flatten()->toArray();
+        $datesArray = $datesData->pluck('dates')->map(function ($value) {
+            return json_decode($value, true);
+        })->flatten()->toArray();
 
-            $commonDates = array_intersect($newDates, $datesArray);
+        $commonDates = array_intersect($newDates, $datesArray);
 
-            if (count($commonDates) === 0) {
-                $existingDates = json_decode($details->dates, true);
-                $valuesNotInArray = array_intersect($newDates, $existingDates);
+        if (count($commonDates) === 0) {
+            $existingDates = json_decode($details->dates, true);
+            $valuesNotInArray = array_intersect($newDates, $existingDates);
 
-                if (empty($valuesNotInArray)) {
-                    $newDates = array_unique(array_merge($existingDates, $newDates));
-                    $details->dates = json_encode(array_values($newDates));
-                    $details->save();
-                } else {
-                    throw new \Exception("Availability not created, please check the dates selected!");
-                }
+            if (empty($valuesNotInArray)) {
+                $newDates = array_unique(array_merge($existingDates, $newDates));
+                $details->dates = json_encode(array_values($newDates));
+                $details->save();
             } else {
                 throw new \Exception("Availability not created, please check the dates selected!");
             }
-            return true;
+        } else {
+            throw new \Exception("Availability not created, please check the dates selected!");
+        }
+        return true;
     }
 
     private function createAvailabilityData($request, $newDates, $monthData)
     {
         $checkType = ($request['type'] == 1) ? 0 : 1;
-        $datesData = Availability::where('type', $checkType)
+        $datesData = EmployeeAvailability::where('type', $checkType)
             ->select('dates')
             ->get();
 
@@ -264,13 +271,16 @@ class AvailabilityService
         $commonDates = array_intersect($newDates, $datesArray);
 
         if (count($commonDates) == 0) {
-            if (Availability::create([
-                'employee_id' => $request['employee_id'],
-                'type' => $request['type'],
-                'year' => $monthData['year'],
-                'month' => $monthData['month'],
-                'dates' => json_encode(array_values(array_unique($newDates))),
-            ])) return true;
+            if (
+                EmployeeAvailability::create([
+                    'employee_id' => $request['employee_id'],
+                    'type'        => $request['type'],
+                    'year'        => $monthData['year'],
+                    'month'       => $monthData['month'],
+                    'dates'       => json_encode(array_values(array_unique($newDates))),
+                ])
+            )
+                return true;
         } else {
             throw new \Exception("Availability not created, please check the dates selected!");
         }
@@ -291,7 +301,7 @@ class AvailabilityService
 
             if (!isset($groupedData[$year][$month])) {
                 $groupedData[$year][$month] = [
-                    'year' => $year,
+                    'year'  => $year,
                     'month' => $month,
                     'dates' => [],
                 ];
@@ -307,9 +317,9 @@ class AvailabilityService
     {
         return AvailabilityRemarks::create([
             'employee_id' => $request['employee_id'],
-            'type' => $request['type'],
-            'dates' => json_encode(array_values($request['dates'])),
-            'remark' => $request['remark']
+            'type'        => $request['type'],
+            'dates'       => json_encode(array_values($request['dates'])),
+            'remark'      => $request['remark']
         ]);
     }
 
@@ -348,7 +358,7 @@ class AvailabilityService
 
                 $removeDate = array_map('intval', $monthData['dates']);
 
-                $existingAvailabilityDates = Availability::where('year', $monthData['year'])
+                $existingAvailabilityDates = EmployeeAvailability::where('year', $monthData['year'])
                     ->where('month', $monthData['month'])
                     ->where('type', $avalibilityTableDates[0]->type)
                     ->select('dates')
@@ -362,7 +372,7 @@ class AvailabilityService
 
                 $dateArray = array_values(array_diff($oldDateArray, $removeDate));
 
-                $deleteDates = Availability::where('year', $monthData['year'])
+                $deleteDates = EmployeeAvailability::where('year', $monthData['year'])
                     ->where('month', $monthData['month'])
                     ->where('type', $avalibilityTableDates[0]->type)
                     ->update([
@@ -371,5 +381,46 @@ class AvailabilityService
             }
         }
         return $deleteDates;
+    }
+
+    public function getEmployeeAvailabilityForAllCompanies($userId, $period)
+    {
+        $availability = [
+            'available_dates'     => [],
+            'not_available_dates' => [],
+            'date_overview'       => [],
+        ];
+        $companyIds = getUserCompanies($userId);
+        $dateRange = getDateRangeByPeriod($period);
+        foreach ($companyIds as $companyId) {
+
+            $company = app(CompanyService::class)->getCompanyById($companyId);
+            connectCompanyDataBase($companyId);
+            $employeeProfile = getEmployeeProfileByUserId($userId);
+            $existingAvailabilityDates = EmployeeAvailability::with('employeeAvailabilityRemarks')
+                ->where('employee_profile_id', $employeeProfile->id)
+                ->where('date', '>=', $dateRange['start_date'])
+                ->where('date', '<=', $dateRange['end_date'])
+                ->get();
+            foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
+                if ($existingAvailabilityDate->availability) {
+                    $availability['available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+                } else {
+                    $availability['not_available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+                }
+                if ($existingAvailabilityDate->employeeAvailabilityRemarks) {
+                    $remarkString = $existingAvailabilityDate->employeeAvailabilityRemarks->remark;
+                } else {
+                    $remarkString = null;
+                }
+                $availability['date_overview'][] = [
+                    'company' => $company->company_name,
+                    'date'    => date('d-m-Y', strtotime($existingAvailabilityDate->date)),
+                    'type'    => $existingAvailabilityDate->availability,
+                    'remark'  => $remarkString
+                ];
+            }
+        }
+        return $availability;
     }
 }

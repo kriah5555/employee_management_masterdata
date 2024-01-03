@@ -12,6 +12,7 @@ use App\Http\Controllers\Company\{
     Absence\HolidayController,
     Contract\ContractConfigurationController,
     Contract\CompanyContractTemplateController,
+    EmployeeAvailabilityController,
 };
 
 use App\Http\Controllers\Holiday\{
@@ -157,6 +158,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         'holiday-code-config' => [
             'controller' => HolidayCodeConfigController::class,
             'methods'    => ['show', 'update']
+        ],
+        'availability'        => [
+            'controller' => EmployeeAvailabilityController::class,
+            'methods'    => ['index', 'store', 'update', 'create']
         ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {

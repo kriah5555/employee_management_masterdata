@@ -240,4 +240,19 @@ class EmployeeContractService
                 });
             })->first();
     }
+
+    public function getEmployeeWithActiveType($date, $employeeTypeId, $functionId)
+    {
+        return EmployeeContract::with('employeeProfile.user.userBasicDetails')
+            ->where('employee_type_id', $employeeTypeId)
+            ->where(function ($query) use ($date) {
+                $query->where(function ($query) use ($date) {
+                    $query->where('start_date', '<=', $date)
+                        ->where(function ($query) use ($date) {
+                            $query->where('end_date', '>=', $date)
+                                ->orWhereNull('end_date');
+                        });
+                });
+            })->get();
+    }
 }
