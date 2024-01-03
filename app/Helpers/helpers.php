@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Request;
 use App\Services\CompanyService;
 use App\Models\User\CompanyUser;
 use App\Models\Company\Employee\EmployeeProfile;
+use Illuminate\Support\Facades\Auth;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -513,5 +514,16 @@ if (!function_exists('getDateRangeByPeriod')) {
             'start_date' => $startDate,
             'end_date'   => $endDate,
         ];
+    }
+}
+
+if (!function_exists('getActiveUserId')) {
+    function getActiveUserId()
+    {
+        $user = Auth::guard('web')->user();
+        if ($user) {
+            return $user->id;
+        }
+        return null;
     }
 }
