@@ -118,15 +118,10 @@ class PlanningMobileController extends Controller
     {
         try {
             $rules = [
-                'user_id'         => [
-                    'bail',
-                    'required',
-                    'integer',
-                    Rule::exists('userdb.users', 'id'),
-                ],
-                'from_date' => 'required',
+                'from_date' => 'required|' . 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
                 'to_date'   => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT') . '|after_or_equal:from_date',
             ];
+
 
             $validator = Validator::make(request()->all(), $rules, []);
             if ($validator->fails()) {
@@ -139,11 +134,12 @@ class PlanningMobileController extends Controller
                 );
             }
 
-            $company_ids = getUserCompanies($request['user_id']);
+            $user_id     = Auth::guard('web')->user()->id;
+            $company_ids = getUserCompanies($user_id);
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningMobileService->getDatesPlanningService($company_ids, $request->input('user_id'), $request->input('dates'))
+                    'data'    => $this->planningMobileService->getEmployeeWorkedHours($company_ids, $user_id, $request->input('from_date'), $request->input('to_date'))
                 ],
                 JsonResponse::HTTP_OK,
             );
