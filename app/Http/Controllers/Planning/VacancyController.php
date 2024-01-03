@@ -111,7 +111,6 @@ class VacancyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Vacancy details returned successfully'),
                     'data'    => $this->vacancyService->getVacancyById($vacancy)
                 ],
                 JsonResponse::HTTP_CREATED,
