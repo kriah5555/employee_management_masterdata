@@ -4,14 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Company\{
     CompanyController,
-    LocationController,
-    CostCenterController,
-    WorkstationController,
-    AppSettingsController,
-    Absence\LeaveController,
-    Absence\HolidayController,
-    Contract\ContractConfigurationController,
-    Contract\CompanyContractTemplateController,
     EmployeeAvailabilityController,
 };
 

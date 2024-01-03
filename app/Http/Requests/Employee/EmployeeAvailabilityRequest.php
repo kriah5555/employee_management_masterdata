@@ -20,6 +20,13 @@ class EmployeeAvailabilityRequest extends ApiRequest
             $rules = [
                 'period' => 'required|regex:/^\d{2}-\d{4}$/',
             ];
+            if ($this->routeIs('get-employee-availability-manager')) {
+                $rules['employee_profile_id'] = [
+                    'bail',
+                    'required',
+                    Rule::exists('employee_profiles', 'id')
+                ];
+            }
         } elseif ($this->isMethod('post')) {
             $rules = [
                 'type'          => 'required|between:0,1|bail',

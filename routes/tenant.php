@@ -15,6 +15,7 @@ use App\Http\Controllers\Company\{
     Absence\HolidayController,
     Contract\ContractConfigurationController,
     Contract\CompanyContractTemplateController,
+    EmployeeAvailabilityController,
 };
 
 use App\Http\Controllers\Holiday\{
@@ -181,5 +182,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('stop-plan-reasons', 'getStopPlanReasons');
         });
+        Route::get('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
     });
 });

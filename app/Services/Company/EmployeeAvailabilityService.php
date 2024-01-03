@@ -425,4 +425,25 @@ class EmployeeAvailabilityService
         }
         return $availability;
     }
+
+    public function getEmployeeAvailability($employeeProfileId, $period)
+    {
+        $availability = [
+            'available_dates'     => [],
+            'not_available_dates' => [],
+        ];
+        $dateRange = getDateRangeByPeriod($period);
+        $existingAvailabilityDates = EmployeeAvailability::where('employee_profile_id', $employeeProfileId)
+            ->where('date', '>=', $dateRange['start_date'])
+            ->where('date', '<=', $dateRange['end_date'])
+            ->get();
+        foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
+            if ($existingAvailabilityDate->availability) {
+                $availability['available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+            } else {
+                $availability['not_available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+            }
+        }
+        return $availability;
+    }
 }
