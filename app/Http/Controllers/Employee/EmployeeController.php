@@ -319,4 +319,23 @@ class EmployeeController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function getEmployeeCompanies()
+    {
+        try {
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getEmployeeCompanies(Auth::user())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
