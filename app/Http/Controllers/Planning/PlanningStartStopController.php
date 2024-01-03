@@ -3,15 +3,9 @@
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Planning\StorePlanningRequest;
-use App\Http\Requests\Planning\UpdatePlanningRequest;
-use App\Models\Planning\PlanningBase as Planning;
 use App\Services\Planning\PlanningService;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use Exception;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 use App\Http\Requests\Planning\StartPlanByManagerRequest;
 use App\Http\Requests\Planning\StartPlanByEmployeeRequest;
 use App\Http\Requests\Planning\StopPlanByEmployeeRequest;
@@ -57,6 +51,7 @@ class PlanningStartStopController extends Controller
     {
         try {
             $input = $request->validated();
+            $input['user_id'] = Auth::id();
             $input['started_by'] = $input['user_id'];
             $this->planningStartStopService->startPlanByEmployee($input);
             return returnResponse(
@@ -75,7 +70,7 @@ class PlanningStartStopController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     public function stopPlanByManager(StopPlanByManagerRequest $request)
     {
         try {
@@ -102,8 +97,9 @@ class PlanningStartStopController extends Controller
     public function stopPlanByEmployee(StopPlanByEmployeeRequest $request)
     {
         try {
-            $input               = $request->validated();
-            $input['ended_by']   = $input['user_id'];
+            $input = $request->validated();
+            $input['user_id'] = Auth::id();
+            $input['ended_by'] = $input['user_id'];
             $this->planningStartStopService->stopPlanByEmployee($input);
             return returnResponse(
                 [

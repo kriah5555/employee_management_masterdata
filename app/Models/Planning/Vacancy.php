@@ -73,7 +73,8 @@ class Vacancy extends Model
         'created_by',
         'updated_by',
         'workstation_id',
-        'function_id'
+	'function_id',
+	'name'
     ];
 
     public function location()

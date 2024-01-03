@@ -39,7 +39,7 @@ class VacancyService implements VacancyInterface
         $response['start_date'] = date('Y-m-d', strtotime($data['start_date']));
         $response['start_time'] = $data['start_time'].':00';
         $response['end_time'] = $data['end_time'].':00';
-        $response['vacancy_count'] = $data['count'];
+        $response['vacancy_count'] = $data['vacancy_count'];
         $response['approval_type'] = $data['approval_type'];
         $response['extra_info'] = $data['extra_info'];
         $response['status'] = $data['status'];
@@ -135,7 +135,7 @@ class VacancyService implements VacancyInterface
         }
 
         // Filter by start date range.
-        if (isset($filters['start_date']) && !empty($filters['start_date'])) {
+        /*if (isset($filters['start_date']) && !empty($filters['start_date'])) {
             $startDate = $filters['start_date'];
             $vacancies->where(function ($query) use ($startDate) {
                 $query->where('start_date', '>=', $startDate)
@@ -143,7 +143,7 @@ class VacancyService implements VacancyInterface
                 ->orWhereNull('end_date');
             });
             // $vacancies->orWhere('start_date', '>=', $filters['start_date']);
-        }
+	}*/
 
         if (isset($filters['employees']) && !empty($filters['employees'])) {
             $employees = $filters['employees'];

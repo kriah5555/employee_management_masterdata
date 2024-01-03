@@ -53,7 +53,7 @@ class PlanningRepository implements PlanningRepositoryInterface
         $query->with($relations);
 
         if (!empty($location_id)) {
-            $query->where('location_id', $location);
+            $query->where('location_id', $location_id);
         }
 
         if (!empty($workstations)) {

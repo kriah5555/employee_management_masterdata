@@ -212,7 +212,7 @@ class PlanningService implements PlanningInterface
         foreach ($response['workstation_data'] as $id => $value) {
             $response['workstation_data'][$id]['employee'] = array_values($value['employee']);
         }
-        return $response['workstation_data'];
+        return $response;
     }
 
     public function getWeeklyPlanningService($location, $workstations, $employee_types, $weekNo, $year)
@@ -358,9 +358,9 @@ class PlanningService implements PlanningInterface
 
     public function getWeeklyPlannings($location, $workstations, $employee_types, $weekNumber, $year, $employee_profile_id = '')
     {
-        $weekDates       = getWeekDates($weekNumber, $year);
+        $weekDates = getWeekDates($weekNumber, $year);
         $startDateOfWeek = reset($weekDates);
-        $endDateOfWeek   = end($weekDates);
+        $endDateOfWeek = end($weekDates);
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, $employee_profile_id, ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
 

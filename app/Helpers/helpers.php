@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Illuminate\Support\Facades\Request;
 use App\Services\CompanyService;
 use App\Models\User\CompanyUser;
+use App\Models\Company\Employee\EmployeeProfile;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -213,7 +214,7 @@ if (!function_exists('formatModelName')) {
 }
 
 if (!function_exists('setTenantDB')) {
-    function setTenantDB($tenant_id) 
+    function setTenantDB($tenant_id)
     {
         $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to get tenant id from header
         $tenant = Tenant::find($tenant_id);
@@ -225,9 +226,9 @@ if (!function_exists('setTenantDB')) {
 }
 
 if (!function_exists('setTenantDBByCompanyId')) {
-    function setTenantDBByCompanyId($company_id) 
+    function setTenantDBByCompanyId($company_id)
     {
-        $tenant     = app(CompanyService::class)->getTenantByCompanyId($company_id);
+        $tenant = app(CompanyService::class)->getTenantByCompanyId($company_id);
         if ($tenant) {
             tenancy()->initialize($tenant);
             config(['database.connections.tenant_template.database' => $tenant->database_name]);
@@ -445,20 +446,22 @@ if (!function_exists('decodeData')) {
 }
 
 if (!function_exists('connectCompanyDataBase')) {
-    function connectCompanyDataBase($companyId) {
+    function connectCompanyDataBase($companyId)
+    {
         $tenant = App\Models\Tenant::where('company_id', $companyId)->get()->first();
         if ($tenant instanceof App\Models\Tenant && !empty($tenant)) {
             tenancy()->initialize($tenant);
             config(['database.connections.tenant_template.database' => $tenant->database_name]);
             return true;
-        } else{
+        } else {
             return false;
         }
     }
 }
 
 if (!function_exists('getUserCompanies')) {
-    function getUserCompanies($user_id) {
+    function getUserCompanies($user_id)
+    {
         return CompanyUser::where('user_id', $user_id)->get()->pluck('company_id')->unique()->toArray();
     }
 }
@@ -471,10 +474,31 @@ if (!function_exists('formatDate')) {
     }
 }
 
-if (!function_exists('formatTime')) { 
+if (!function_exists('formatTime')) {
     function formatTime($time, $format = '')
     {
         $format = !empty($format) ? $format : config('constants.DEFAULT_TIME_FORMAT');
         return date($format, strtotime($time));
+    }
+}
+if (!function_exists('getEmployeeProfileIdByUserId')) {
+    function getEmployeeProfileByUserId($userId)
+    {
+        return EmployeeProfile::where('user_id', $userId)->first();
+    }
+}
+
+if (!function_exists('getDatesArray')) {
+    function getDatesArray($fromDate, $toDate, $format = 'd-m-Y')
+    {
+        $dates = [];
+        $current = strtotime($fromDate);
+        $toDate = strtotime($toDate);
+        $stepVal = '+1 day';
+        while ($current <= $toDate) {
+            $dates[] = date($format, $current);
+            $current = strtotime($stepVal, $current);
+        }
+        return $dates;
     }
 }
