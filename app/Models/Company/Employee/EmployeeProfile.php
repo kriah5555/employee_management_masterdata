@@ -60,6 +60,19 @@ class EmployeeProfile extends BaseModel
         'user_id',
         'status',
     ];
+
+
+    protected $appends = ['full_name'];
+
+    public function getFullNameAttribute()
+    {
+        if ($this->user) {
+            return $this->user->userBasicDetails->first_name . ' ' . $this->user->userBasicDetails->last_name;
+        }
+
+        return '';
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class)

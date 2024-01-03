@@ -21,7 +21,17 @@ class LeaveService
     public function getLeaves($status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return $this->leave_repository->getLeaves('', $status);
+            return formatLeaves($this->leave_repository->getLeaves('', $status), $status);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function formatLeaves($leaves, $status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    {
+        try {
+            
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

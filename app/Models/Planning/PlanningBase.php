@@ -10,6 +10,7 @@ use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Planning\{PlanningBreak, PlanningContracts, PlanningDimona, TimeRegistration};
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use Illuminate\Support\Carbon;
 
 
 class PlanningBase extends BaseModel
@@ -25,7 +26,7 @@ class PlanningBase extends BaseModel
      */
     protected $table = 'planning_base';
 
-    // protected static $sort = ['start_date_time'];
+    protected static $sort = ['start_date_time'];
     /**
      * The primary key associated with the table.
      *
@@ -77,7 +78,15 @@ class PlanningBase extends BaseModel
         'break_started',
     ];
 
-    protected $appends = ['contract_hours_formatted', 'plan_date', 'start_time', 'end_time'];
+    protected $appends = ['contract_hours_formatted', 'plan_date', 'start_time', 'end_time', 'planned_hours'];
+
+    public function getPlannedHoursAttribute()
+    {
+            $start = Carbon::parse($this->start_date_time);
+            $end   = Carbon::parse($this->end_date_time);
+
+            return $start->diffInHours($end);
+    }
 
     public function getContractHoursFormattedAttribute()
     {

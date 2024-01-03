@@ -105,7 +105,6 @@ class EmployeeAvailabilityService
 
     public function availableDates($request)
     {
-        dd($request);
         $date = $request->period;
 
         $carbonDate = Carbon::createFromFormat('m-Y', $date);

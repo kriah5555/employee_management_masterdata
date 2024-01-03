@@ -37,10 +37,11 @@ class ResponsiblePersonService
                 $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$employeeProfile->roles[0]->name];
             }
             $responsiblePersons[] = [
-                'id'                     => $employeeProfile->user->employeeProfileForCompany->id,
+                'id'                     => $employeeProfile->id,
                 'full_name'              => $employeeProfile->user->userBasicDetails->first_name . ' ' . $employeeProfile->user->userBasicDetails->last_name,
                 'social_security_number' => $employeeProfile->user->social_security_number,
-                'role'                   => $role
+                'role'                   => $role,
+                'user_id'                => $employeeProfile->user->id,
             ];
         }
         return $responsiblePersons;
@@ -49,7 +50,8 @@ class ResponsiblePersonService
     public function getCompanyResponsiblePersonOptions($company_id)
     {
         try {
-            return $this->responsiblePersonRepository->getCompanyResponsiblePersonOptions($company_id);
+            return $this->getCompanyResponsiblePersons($company_id);
+            // return $this->responsiblePersonRepository->getCompanyResponsiblePersonOptions($company_id);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
