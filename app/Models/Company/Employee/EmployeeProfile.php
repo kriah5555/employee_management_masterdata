@@ -11,6 +11,7 @@ use App\Models\Company\Absence\Absence;
 use App\Models\Company\Employee\EmployeeCommute;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeBenefits;
+use App\Models\Company\Employee\EmployeeSignature;
 
 class EmployeeProfile extends BaseModel
 {
@@ -106,6 +107,11 @@ class EmployeeProfile extends BaseModel
     public function employeeBasicDetails()
     {
         return $this->belongsTo(UserBasicDetails::class, 'user_id', 'user_id');
+    }
+
+    public function signature()
+    {
+        return $this->hasOne(EmployeeSignature::class, 'employee_profile_id');
     }
 
     public function getEmployeeProfileByUserId($userId)

@@ -507,4 +507,32 @@ class EmployeeService
         }
         return $companies;
     }
+
+    public function createEmployeeSignature($employee_profile_id, $details)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+                $employee_profile = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id);
+                 if ($employee_profile->signature) {
+                    $employee_profile->signature->delete();
+                }
+                $employee_profile->signature()->create($details);
+            DB::connection('tenant')->commit();
+            return $employee_profile;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getEmployeeSignature($employee_profile_id)
+    {
+        try {
+            return $employee_profile = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id)->signature;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }

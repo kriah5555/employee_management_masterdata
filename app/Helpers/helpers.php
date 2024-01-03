@@ -482,9 +482,19 @@ if (!function_exists('formatTime')) {
         return date($format, strtotime($time));
     }
 }
+
 if (!function_exists('getEmployeeProfileIdByUserId')) {
     function getEmployeeProfileByUserId($userId)
     {
+        return EmployeeProfile::where('user_id', $userId)->first();
+    }
+}
+
+if (!function_exists('getEmployeeProfileIdByUserIdCompanyId')) {
+    function getEmployeeProfileIdByUserIdCompanyId($userId, $company_id)
+    {
+        setTenantDBByCompanyId($company_id);
+        
         return EmployeeProfile::where('user_id', $userId)->first();
     }
 }

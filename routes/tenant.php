@@ -29,6 +29,7 @@ use App\Http\Controllers\Employee\{
     EmployeeContractController,
     EmployeeBenefitsController,
     ResponsiblePersonController,
+    EmployeeSignatureController,
 };
 
 use App\Http\Controllers\{
@@ -153,6 +154,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::resource('responsible-persons', ResponsiblePersonController::class)->except(['edit']);
 
+        Route::resource('employee-signature', EmployeeSignatureController::class)->only(['update', 'show']);
 
         Route::get('responsible-persons-list', [ResponsiblePersonController::class, 'getResponsiblePersonList']);
 
