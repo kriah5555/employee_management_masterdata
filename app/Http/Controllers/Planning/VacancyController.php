@@ -170,8 +170,7 @@ class VacancyController extends Controller
         try {
             if (empty($data['company_id']) || !connectCompanyDataBase($data['company_id'])) {
                 throw new \Exception('Company Id is missing.');
-            }
-            $data['user_id'] = getActiveUserId();
+	    }
             return returnResponse(
                 [
                     'success' => true,
