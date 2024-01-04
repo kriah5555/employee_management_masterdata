@@ -58,17 +58,18 @@ class PlanningStartStopController extends Controller
             $input['started_by'] = $input['user_id'];
 
             $plan = $this->planningStartStopService->getPlanByQrCode($input['QR_code'], $input['user_id'], $input['start_time'], $input['start_time'])->first();
-
-            if (($plan->contract_status == config('contracts.UNSIGNED') || empty($plan->contracts)) && $plan->employeeType->employeeTypeCategory->id == config('constants.DAILY_CONTRACT_ID')) { # if contract not generated or if the contract is unsigned
+            if (($plan->contract_status != config('contracts.SIGNED') || empty($plan->contracts)) && $plan->employeeType->employeeTypeCategory->id == config('constants.DAILY_CONTRACT_ID')) { # if contract not generated or if the contract is unsigned
                 $qr_data = decodeData($input['QR_code']);
 
-                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : $contract = app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id']); # if contract exists use that else generate new contract and use that
+                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : $contract = app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id'] = 1); # if contract exists use that else generate new contract and use that
 
                 return response()->json([
                         'success'           => false,
                         'message'           => t('Please sign contract.'),
                         'sign_contract'     => 1, # 0-> not signed contract,  1-> signed contract,
                         'contract_pdf'      => env('CONTRACTS_URL') . '/' . $contract->files->file_path,
+                        'company_id'        => $qr_data['company_id'],
+                        'plan_id'           => $plan->id,
                     ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         
             }
