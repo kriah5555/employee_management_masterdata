@@ -397,30 +397,32 @@ class EmployeeAvailabilityService
 
             $company = app(CompanyService::class)->getCompanyById($companyId);
             connectCompanyDataBase($companyId);
-            $employeeProfile = getEmployeeProfileByUserId($userId);
+	    $employeeProfile = getEmployeeProfileByUserId($userId);
+	    if ($employeeProfile) {
             $existingAvailabilityDates = EmployeeAvailability::with('employeeAvailabilityRemarks')
                 ->where('employee_profile_id', $employeeProfile->id)
                 ->where('date', '>=', $dateRange['start_date'])
                 ->where('date', '<=', $dateRange['end_date'])
-                ->get();
-            foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
+		->get();
+	    foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
                 if ($existingAvailabilityDate->availability) {
                     $availability['available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
                 } else {
                     $availability['not_available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
-                }
+		}
                 if ($existingAvailabilityDate->employeeAvailabilityRemarks) {
                     $remarkString = $existingAvailabilityDate->employeeAvailabilityRemarks->remark;
                 } else {
                     $remarkString = null;
-                }
+		}
                 $availability['date_overview'][] = [
                     'company' => $company->company_name,
                     'date'    => date('d-m-Y', strtotime($existingAvailabilityDate->date)),
                     'type'    => $existingAvailabilityDate->availability,
                     'remark'  => $remarkString
                 ];
-            }
+	    }
+	    }
         }
         return $availability;
     }

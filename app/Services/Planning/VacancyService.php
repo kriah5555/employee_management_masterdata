@@ -61,18 +61,30 @@ class VacancyService implements VacancyInterface
     {
         //Formatting the data.
         $this->formatCreateVacancy($data);
+
         //Creating the vacancy.
         $vacancy = Vacancy::create($data['formated']['vacancy']);
+
         //Linking with employee types.
         $vacancy->employeeTypes()->createMany($data['formated']['employee_types']);
-        // foreach ($data['formated']['employee_types'] as $employeeType) {
-        //     VacancyEmployeeTypes::create([
-        //         'vacancy_id'  => $vacancy->id,
-        //         'employee_types_id' => $employeeType,
-        //     ]);
-        // }
 
         return $vacancy;
+    }
+
+    public function updateVacancyService($data, $vacancy)
+    {
+        $this->formatCreateVacancy($data);
+        foreach($data['formated']['employee_types'] as $employeeType) {
+            $updateEmployeeType[] = [
+                'employee_types_id' => $employeeType['employee_types_id'],
+                'vacancy_id' => $vacancy
+            ];
+        }
+        $vacancy = Vacancy::findOrFail($vacancy);
+        $vacancy->update($data['formated']['vacancy']);
+        $vacancy->employeeTypes()->delete();
+        $vacancy->employeeTypes()->createMany($updateEmployeeType);
+        return $vacancy->employeeTypes;
     }
 
     public function getFormatedFunction()
@@ -260,13 +272,14 @@ class VacancyService implements VacancyInterface
             if (empty($companyId) || !connectCompanyDataBase($data['company_id'])) {
                 throw new \Exception('Issue with company Id');
             }
-            $employeeProfileId = $this->getEmployeeProfileFromUserAndCompanyId($data['user_id'], $data['company_id']);
+	    $employeeProfileId = $this->getEmployeeProfileFromUserAndCompanyId($data['user_id'], $data['company_id']);
             unset($data['user_id'], $data['company_id']);
             $data['employee_profile_id'] = $employeeProfileId[0]->id ?? 0;
             $data['request_at'] = now()->format('Y-m-d H:i:s');
             $data['vacancy_date'] = date('Y-m-d', strtotime($data['vacancy_date']));
-        }
-        return $this->vacancyPostEmployees->updateOrCreate(
+	}
+
+	return $this->vacancyPostEmployees->updateOrCreate(
             [
                 'vacancy_date'        => $data['vacancy_date'],
                 'vacancy_id'          => $data['vacancy_id'],

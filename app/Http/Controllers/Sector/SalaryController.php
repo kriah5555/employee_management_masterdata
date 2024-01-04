@@ -103,7 +103,7 @@ class SalaryController extends Controller
     {
         try {
             $salary_type = $this->getSalaryTypeFromPath(request()->getPathInfo());
-            $status      = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id, $salary_type);
+            $status = $this->sectorSalaryService->undoIncrementedMinimumSalaries($sector_id, $salary_type);
 
             if ($status == 'success' || empty($status)) {
                 $message = t('Minimum salaries reverted successfully');

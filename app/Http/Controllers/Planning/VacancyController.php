@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Planning\VacancyRequest;
+use App\Http\Requests\Planning\{VacancyRequest, VacancyUpdateRequest};
 use App\Http\Requests\Planning\VacancyEmployeeRequest;
 use App\Models\Planning\Vacancy;
 use App\Services\Planning\VacancyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use App\Models\User\CompanyUser;
 
 class VacancyController extends Controller
 {
@@ -29,7 +27,7 @@ class VacancyController extends Controller
                     'success' => true,
                     'data'    => $this->vacancyService->vacancyOptions($companyId)
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
             );
         } catch (\Exception $e) {
             return returnResponse(
@@ -57,7 +55,7 @@ class VacancyController extends Controller
                     'success' => true,
                     'data'    => $this->vacancyService->getVacancies($filters)
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
             );
         } catch (\Exception $e) {
             return returnResponse(
@@ -78,13 +76,12 @@ class VacancyController extends Controller
      */
     public function store(VacancyRequest $request)
     {
-        $data = $request->validated();
         try {
+            $this->vacancyService->createVacancies($request->validated());
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => t('Vacancies created successfully'),
-                    'data'    => $this->vacancyService->createVacancies($data)
+                    'message' => t('Vacancies created successfully')
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -113,7 +110,7 @@ class VacancyController extends Controller
                     'success' => true,
                     'data'    => $this->vacancyService->getVacancyById($vacancy)
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
             );
         } catch (\Exception $e) {
             return returnResponse(
@@ -133,27 +130,17 @@ class VacancyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(VacancyRequest $request, Vacancy $vacancy)
+    public function update(VacancyUpdateRequest $request, $vacancy)
     {
         try {
             $inputData = $request->validated();
-            $vacancy->update($request->except('functions', 'employeeTypes'));
-
-            if ($request->has('functions')) {
-                $vacancy->functions()->sync($inputData['functions']);
-            }
-
-            if ($request->has('employeeTypes')) {
-                $vacancy->employeeTypes()->sync($inputData['employeeTypes']);
-            }
-
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Vacancies updated successfully'),
-                    'data'    => $vacancy
+                    'data'    => $this->vacancyService->updateVacancyService($inputData, $vacancy),
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
             );
         } catch (\Exception $e) {
             return returnResponse(
@@ -164,14 +151,31 @@ class VacancyController extends Controller
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
-        // return response()->json($vacancy, 200);
     }
 
     public function destroy($id)
     {
-        $vacancy = Vacancy::findOrFail($id);
-        $vacancy->delete();
-        return response()->json(null, 204);
+        try {
+            $vacancy = Vacancy::findOrFail($id);
+            $vacancy->delete();
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Vacancies deleted'),
+                    'data'    => $vacancy
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     public function applyVacancy(VacancyEmployeeRequest $vacancyEmployeeRequest)
@@ -181,14 +185,14 @@ class VacancyController extends Controller
             if (empty($data['company_id']) || !connectCompanyDataBase($data['company_id'])) {
                 throw new \Exception('Company Id is missing.');
             }
-            $data['user_id'] = getActiveUserId();
+            $data['user_id'] = getActiveUser()->id;
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Job applied successfully'),
                     'data'    => $this->vacancyService->applyVacancyService($data)
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
             );
         } catch (\Exception $e) {
             return returnResponse(
@@ -214,7 +218,7 @@ class VacancyController extends Controller
                     'message' => t('Application status updated successfully'),
                     'data'    => $this->vacancyService->replyToVacancyService($data)
                 ],
-                JsonResponse::HTTP_CREATED
+                JsonResponse::HTTP_OK
             );
         } catch (\Exception $e) {
             return returnResponse(
@@ -245,7 +249,7 @@ class VacancyController extends Controller
                     'message' => t('Employee vacancy overview successfully'),
                     'data'    => $this->vacancyService->getEmployeeOverviewService($data)
                 ],
-                JsonResponse::HTTP_CREATED
+                JsonResponse::HTTP_OK
             );
         } catch (\Exception $e) {
             return returnResponse(
