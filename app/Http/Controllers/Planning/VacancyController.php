@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Planning\VacancyRequest;
+use App\Http\Requests\Planning\{VacancyRequest, VacancyUpdateRequest};
 use App\Http\Requests\Planning\VacancyEmployeeRequest;
 use App\Models\Planning\Vacancy;
 use App\Services\Planning\VacancyService;
@@ -133,25 +133,15 @@ class VacancyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(VacancyRequest $request, Vacancy $vacancy)
+    public function update(VacancyUpdateRequest $request, $vacancy)
     {
         try {
             $inputData = $request->validated();
-            $vacancy->update($request->except('functions', 'employeeTypes'));
-
-            if ($request->has('functions')) {
-                $vacancy->functions()->sync($inputData['functions']);
-            }
-
-            if ($request->has('employeeTypes')) {
-                $vacancy->employeeTypes()->sync($inputData['employeeTypes']);
-            }
-
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Vacancies updated successfully'),
-                    'data'    => $vacancy
+                    'data'    => $this->vacancyService->updateVacancyService($inputData, $vacancy),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
