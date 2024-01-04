@@ -37,7 +37,7 @@ class ResponsiblePersonService
                 $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$employeeProfile->roles[0]->name];
             }
             $responsiblePersons[] = [
-                'id'                     => $employeeProfile->user->employeeProfileForCompany->id,
+                'id'                     => $employeeProfile->id,
                 'full_name'              => $employeeProfile->user->userBasicDetails->first_name . ' ' . $employeeProfile->user->userBasicDetails->last_name,
                 'social_security_number' => $employeeProfile->user->social_security_number,
                 'role'                   => $role
