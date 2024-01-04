@@ -60,7 +60,7 @@ class LongTermPlanningRequest extends ApiRequest
                 'required',
                 'date_format:d-m-Y',
             ],
-            'end_date'                     => 'after:start_date|date_format:d-m-Y',
+            'end_date'                     => 'nullable|after:start_date|date_format:d-m-Y',
         ];
 
     }
