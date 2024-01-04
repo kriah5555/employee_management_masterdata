@@ -21,7 +21,7 @@ class EmployeeAvailabilityController extends Controller
     public function index(EmployeeAvailabilityRequest $request)
     {
         try {
-            $userId = Auth::guard('web')->user()->id;
+            $userId = getActiveUser()->id;
             return returnResponse(
                 [
                     'success' => true,

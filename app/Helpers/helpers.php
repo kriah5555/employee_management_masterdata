@@ -8,6 +8,7 @@ use App\Services\CompanyService;
 use App\Models\User\CompanyUser;
 use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -517,12 +518,14 @@ if (!function_exists('getDateRangeByPeriod')) {
     }
 }
 
-if (!function_exists('getActiveUserId')) {
-    function getActiveUserId()
+if (!function_exists('getActiveUser')) {
+    function getActiveUser()
     {
         $user = Auth::guard('web')->user();
         if ($user) {
-            return $user->id;
+            return $user;
+        } else {
+            throw new Exception("Unauthorized access");
         }
         return null;
     }
