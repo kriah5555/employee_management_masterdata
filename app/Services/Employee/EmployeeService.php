@@ -409,7 +409,7 @@ class EmployeeService
         } else {
             $companyUsers = CompanyUser::where('user_id', $user->id)->get();
             foreach ($companyUsers as $companyUser) {
-                if ($companyUser->hasPermissionTo('Access company')) {
+                if ($companyUser->hasPermissionTo('Web app access')) {
                     $companies[] = $companyUser->company;
                 }
             }
