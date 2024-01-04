@@ -45,7 +45,6 @@ class EmployeeContractFile extends Model
 
     public function getFileUrlAttribute()
     {
-        exit;
-        return env('CONTRACTS_URL') . $this->files->first()->file_path;
+        return env('CONTRACTS_URL') . '/' . $this->files->file_path;
     }
 }

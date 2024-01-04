@@ -230,6 +230,7 @@ if (!function_exists('setTenantDB')) {
 if (!function_exists('setTenantDBByCompanyId')) {
     function setTenantDBByCompanyId($company_id)
     {
+        // $company_id = 1;
         $tenant = app(CompanyService::class)->getTenantByCompanyId($company_id);
         if ($tenant) {
             tenancy()->initialize($tenant);
