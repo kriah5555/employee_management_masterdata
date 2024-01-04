@@ -159,6 +159,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
         Route::resource($uri, $controller)->only($methods);
     }
+    Route::post('get-availability', [EmployeeAvailabilityController::class, 'index'])->name('get-employee-availability');
 
     Route::post('convert-pdf-to-html', [ContractTemplateController::class, 'convertPDFHtml']);
 

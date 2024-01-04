@@ -28,18 +28,24 @@ class EmployeeAvailabilityRequest extends ApiRequest
                 ];
             }
         } elseif ($this->isMethod('post')) {
-            $rules = [
-                'type'          => 'required|between:0,1|bail',
-                'remark'        => 'nullable|string',
-                'company_ids'   => 'required|array',
-                'company_ids.*' => [
-                    'bail',
-                    'required',
-                    Rule::exists('master.companies', 'id')
-                ],
-                'dates'         => 'required|array',
-                'dates.*'       => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-            ];
+            if ($this->routeIs('get-employee-availability')) {
+                $rules = [
+                    'period' => 'required|regex:/^\d{2}-\d{4}$/',
+                ];
+            } else {
+                $rules = [
+                    'type'          => 'required|between:0,1|bail',
+                    'remark'        => 'nullable|string',
+                    'company_ids'   => 'required|array',
+                    'company_ids.*' => [
+                        'bail',
+                        'required',
+                        Rule::exists('master.companies', 'id')
+                    ],
+                    'dates'         => 'required|array',
+                    'dates.*'       => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
+                ];
+            }
         }
         return $rules;
 
