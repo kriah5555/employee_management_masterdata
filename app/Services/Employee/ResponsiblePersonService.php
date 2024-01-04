@@ -132,7 +132,7 @@ class ResponsiblePersonService
             DB::connection('tenant')->beginTransaction();
             DB::connection('userdb')->beginTransaction();
 
-            $this->responsiblePersonRepository->deleteResponsiblePerson($responsible_person_id, $company_id);
+                $this->responsiblePersonRepository->deleteResponsiblePerson($responsible_person_id, $company_id);
 
             DB::connection('tenant')->commit();
             DB::connection('userdb')->commit();

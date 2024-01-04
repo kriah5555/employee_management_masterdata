@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Company\Employee\EmployeeContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Planning\Files;
+use App\Models\Planning\PlanningBase;
 
 class EmployeeContractFile extends Model
 {
@@ -18,19 +19,33 @@ class EmployeeContractFile extends Model
     protected $fillable = [
         'employee_profile_id',
         'employee_contract_id',
+        'planning_base_id',
         'file_id',
         'contract_status', # [1 => unsigned, 2 => signed]
         'status',
     ];
 
+    protected $appends = ['file_url'];
+
     public function employeeContract()
     {
         return $this->hasOne(EmployeeContract::class);
-        // return $this->hasOne(EmployeeContract::class, 'employee_contract_id');
+    }
+
+    public function plan()
+    {
+        return $this->hasOne(PlanningBase::class, 'planning_base_id');
     }
 
     public function files()
     {
         return $this->belongsTo(Files::class, 'file_id');
+    }
+
+
+    public function getFileUrlAttribute()
+    {
+        exit;
+        return env('CONTRACTS_URL') . $this->files->first()->file_path;
     }
 }
