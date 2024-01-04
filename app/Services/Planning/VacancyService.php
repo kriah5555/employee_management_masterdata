@@ -61,18 +61,30 @@ class VacancyService implements VacancyInterface
     {
         //Formatting the data.
         $this->formatCreateVacancy($data);
+
         //Creating the vacancy.
         $vacancy = Vacancy::create($data['formated']['vacancy']);
+
         //Linking with employee types.
         $vacancy->employeeTypes()->createMany($data['formated']['employee_types']);
-        // foreach ($data['formated']['employee_types'] as $employeeType) {
-        //     VacancyEmployeeTypes::create([
-        //         'vacancy_id'  => $vacancy->id,
-        //         'employee_types_id' => $employeeType,
-        //     ]);
-        // }
 
         return $vacancy;
+    }
+
+    public function updateVacancyService($data, $vacancy)
+    {
+        $this->formatCreateVacancy($data);
+        foreach($data['formated']['employee_types'] as $employeeType) {
+            $updateEmployeeType[] = [
+                'employee_types_id' => $employeeType['employee_types_id'],
+                'vacancy_id' => $vacancy
+            ];
+        }
+        $vacancy = Vacancy::findOrFail($vacancy);
+        $vacancy->update($data['formated']['vacancy']);
+        $vacancy->employeeTypes()->delete();
+        $vacancy->employeeTypes()->createMany($updateEmployeeType);
+        return $vacancy->employeeTypes;
     }
 
     public function getFormatedFunction()
