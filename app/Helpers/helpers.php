@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Request;
 use App\Services\CompanyService;
+use App\Models\User\CompanyUser;
+use App\Models\Company\Employee\EmployeeProfile;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -212,7 +216,7 @@ if (!function_exists('formatModelName')) {
 }
 
 if (!function_exists('setTenantDB')) {
-    function setTenantDB($tenant_id) 
+    function setTenantDB($tenant_id)
     {
         $tenant_id = empty($tenant_id) ? request()->header('tenant', '') : $tenant_id; # to get tenant id from header
         $tenant = Tenant::find($tenant_id);
@@ -224,9 +228,9 @@ if (!function_exists('setTenantDB')) {
 }
 
 if (!function_exists('setTenantDBByCompanyId')) {
-    function setTenantDBByCompanyId($company_id) 
+    function setTenantDBByCompanyId($company_id)
     {
-        $tenant     = app(CompanyService::class)->getTenantByCompanyId($company_id);
+        $tenant = app(CompanyService::class)->getTenantByCompanyId($company_id);
         if ($tenant) {
             tenancy()->initialize($tenant);
             config(['database.connections.tenant_template.database' => $tenant->database_name]);
@@ -284,20 +288,9 @@ if (!function_exists('formatToNumber')) { # will convert europe currency format 
 }
 
 if (!function_exists('replaceTokens')) {
-    /**
-     * Replace tokens in a string with corresponding values from an associative array.
-     *
-     * @param string $content The string containing tokens to be replaced.
-     * @param array $tokenData Associative array with tokens as keys and values as replacements.
-     * @return string The string after replacing tokens with values.
-     */
     function replaceTokens($content, $tokenData)
     {
-        $configTokens = array_keys(config('tokens.EMPLOYEE_TOKENS'));
-
-        $values = array_values($tokenData);
-
-        return str_replace($configTokens, $values, $content);
+        return str_replace(array_keys($tokenData), array_values($tokenData), $content);
     }
 }
 
@@ -455,14 +448,95 @@ if (!function_exists('decodeData')) {
 }
 
 if (!function_exists('connectCompanyDataBase')) {
-    function connectCompanyDataBase($companyId) {
+    function connectCompanyDataBase($companyId)
+    {
         $tenant = App\Models\Tenant::where('company_id', $companyId)->get()->first();
         if ($tenant instanceof App\Models\Tenant && !empty($tenant)) {
             tenancy()->initialize($tenant);
             config(['database.connections.tenant_template.database' => $tenant->database_name]);
             return true;
-        } else{
+        } else {
             return false;
         }
+    }
+}
+
+if (!function_exists('getUserCompanies')) {
+    function getUserCompanies($user_id)
+    {
+        return CompanyUser::where('user_id', $user_id)->get()->pluck('company_id')->unique()->toArray();
+    }
+}
+
+if (!function_exists('formatDate')) {
+    function formatDate($date, $format = '')
+    {
+        $format = !empty($format) ? $format : config('constants.DEFAULT_DATE_FORMAT');
+        return date($format, strtotime($date));
+    }
+}
+
+if (!function_exists('formatTime')) {
+    function formatTime($time, $format = '')
+    {
+        $format = !empty($format) ? $format : config('constants.DEFAULT_TIME_FORMAT');
+        return date($format, strtotime($time));
+    }
+}
+
+if (!function_exists('getEmployeeProfileIdByUserId')) {
+    function getEmployeeProfileByUserId($userId)
+    {
+        return EmployeeProfile::where('user_id', $userId)->first();
+    }
+}
+
+if (!function_exists('getEmployeeProfileIdByUserIdCompanyId')) {
+    function getEmployeeProfileIdByUserIdCompanyId($userId, $company_id)
+    {
+        setTenantDBByCompanyId($company_id);
+        
+        return EmployeeProfile::where('user_id', $userId)->first();
+    }
+}
+
+if (!function_exists('getDatesArray')) {
+    function getDatesArray($fromDate, $toDate, $format = 'd-m-Y')
+    {
+        $dates = [];
+        $current = strtotime($fromDate);
+        $toDate = strtotime($toDate);
+        $stepVal = '+1 day';
+        while ($current <= $toDate) {
+            $dates[] = date($format, $current);
+            $current = strtotime($stepVal, $current);
+        }
+        return $dates;
+    }
+}
+
+if (!function_exists('getDateRangeByPeriod')) {
+    function getDateRangeByPeriod($period)
+    {
+        $period = explode('-', $period);
+        $startDate = $period[1] . '-' . $period[0] . '-01';
+        $endDate = date("Y-m-t", strtotime($startDate));
+        return [
+            'start_date' => $startDate,
+            'end_date'   => $endDate,
+        ];
+    }
+}
+
+if (!function_exists('getActiveUser')) {
+    function getActiveUser()
+    {
+        $user = Auth::guard('web')->user();
+        if ($user) {
+            return $user;
+        } else {
+            throw new Exception("Unauthorized access");
+        }
+        return null;
     }
 }

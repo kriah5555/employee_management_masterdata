@@ -4,9 +4,11 @@ namespace App\Services\Contract;
 
 use Illuminate\Support\Facades\DB;
 use App\Services\HttpRequestService;
+use App\Models\Planning\PlanningBase;
 use App\Services\Company\FileService;
 use App\Models\Contract\ContractTemplate;
 use App\Repositories\Company\CompanyRepository;
+use App\Repositories\Planning\PlanningRepository;
 use App\Models\Company\Employee\EmployeeContractFile;
 use App\Models\Company\Contract\CompanyContractTemplate;
 use App\Repositories\Employee\EmployeeContractRepository;
@@ -20,13 +22,16 @@ class ContractService
     {
 
     }
-    public function generateEmployeeContract($employee_profile_id, $employee_contract_id, $contract_status) 
+    public function generateEmployeeContract($employee_profile_id, $employee_contract_id = null, $contract_status, $plan_id = null, $company_id = '') 
     {
-
         try {
-            DB::connection('master')->beginTransaction();
+            if (!empty($company_id)) {
+                setTenantDBByCompanyId($company_id);
+            }
+
+            DB::connection('tenant')->beginTransaction();
                 $url  = env('CONTRACTS_URL') . config('contracts.GENERATE_CONTRACT_ENDPOINT');
-                $body = ['body' => $this->getEmployeeContractTemplate($employee_contract_id)];
+                $body = ['body' => $this->getEmployeeContractTemplate($employee_contract_id, $company_id, $plan_id)];
 
                 // $body = [
                 //     "body"               => "<ul><li>point</li><li>point2</li></ul><p>Hi<br><strong>Sunil</strong>,How are you?<br>Regards,Sunil, This is a sample contract<br>template text with spaces, tabs, and newlines.</p><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {employee_signature} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {employer_signature}</p>",
@@ -47,7 +52,12 @@ class ContractService
                         'contract_status'      => $contract_status,
                         'employee_profile_id'  => $employee_profile_id,
                         'employee_contract_id' => $employee_contract_id,
+                        'planning_base_id'     => $plan_id,
                     ]);
+
+                    if (!empty($plan_id)) {
+                        PlanningBase::find($plan_id)->update(['contract_status' => $contract_status]);
+                    }
                     
                 } else {
                     throw new \Exception("Contract template not fount");
@@ -64,18 +74,36 @@ class ContractService
 
     public function createEmployeeContractFileData($values) 
     {
-        EmployeeContractFile::where(['employee_contract_id' => $values['employee_contract_id']])->update(['status' => false]);
+        if (!empty($values['employee_contract_id'])) {
+            $condition = ['employee_contract_id' => $values['employee_contract_id']];
+        } else {
+            $condition = ['planning_base_id' => $values['planning_base_id']];
+        } 
+        EmployeeContractFile::where($condition)->update(['status' => false]);
 
         return  EmployeeContractFile::create($values);
     }
 
-    public function getEmployeeContractTemplate($employee_contract_id, $company_id = '')
+    public function getEmployeeContractTemplate($employee_contract_id = '', $company_id = '', $plan_id = '')
     {
         try {
             $contract_template   = '';
-            $employeeContract    = $this->employeeContractRepository->getEmployeeContractById($employee_contract_id);
-            $employee_type_id    = $employeeContract->employee_type_id;
-            $language            = $employeeContract->employeeBasicDetails->language ?? config('constants.DEFAULT_LANGUAGE');
+
+            if (!empty($company_id)) { # if it is employee flow and he is trying to generate contract then there will br not tenant db set
+                setTenantDBByCompanyId($company_id);
+            }
+
+            if (!empty($employee_contract_id)) { # for employee long term contracts
+                $employeeContract     = $this->employeeContractRepository->getEmployeeContractById($employee_contract_id);
+                $employee_type_id     = $employeeContract->employee_type_id;
+                $employeeBasicDetails = $employeeContract->employeeBasicDetails->language;
+            } else { # for planning contract
+                $plan = app(PlanningRepository::class)->getPlanningById($plan_id);
+                $employee_type_id     = $plan->employee_type_id;
+                $employeeBasicDetails = $plan->employeeProfile->employeeBasicDetails;
+            }   
+
+            $language = $employeeBasicDetails->language ?? config('constants.DEFAULT_LANGUAGE');
 
             $employee_contract_template = CompanyContractTemplate::where([
                 'employee_type_id' => $employee_type_id,

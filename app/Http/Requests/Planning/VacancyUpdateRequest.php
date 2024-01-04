@@ -5,7 +5,7 @@ namespace App\Http\Requests\Planning;
 use App\Http\Requests\ApiRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VacancyRequest extends ApiRequest
+class VacancyUpdateRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,7 @@ class VacancyRequest extends ApiRequest
             'workstations'   => 'required|integer|exists:workstations,id',
             'functions'      => 'required|integer',
             'employee_types' => 'required|array',
-            'start_date'     => 'required|date|after_or_equal:today',
+            'start_date'     => 'required|date',
             'start_time'     => 'required|date_format:H:i',
             'end_time'       => 'required|date_format:H:i',
             'vacancy_count'  => 'required_if:status,1|integer|min:0',
@@ -37,7 +37,8 @@ class VacancyRequest extends ApiRequest
             'extra_info'     => 'nullable|string',
             'status'         => 'required|integer|in:0,1,2', // 1: Open, 0: deleted, 2: drafted
             'repeat_type'    => 'required|integer|int:0,1,2,3', //0: one time, 1: daily, 2: weekly, 4: monthly
-            'end_date'       => 'nullable|date|after_or_equal:start_date'
+            'end_date'       => 'nullable|date|after_or_equal:today',
+            ''
         ];
     }
 

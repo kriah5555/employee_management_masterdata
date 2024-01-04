@@ -75,9 +75,7 @@ class PlanningService implements PlanningInterface
     public function getWorkstations()
     {
         $data = $response = [];
-        $data = $this->location->with(['workstationsValues' => function ($query) {
-            $query->orderBy('workstation_name', 'ASC');
-        }])->get()->toArray();
+        $data = $this->location->with(['workstationsValues'])->get()->toArray();
 
         foreach ($data as $value) {
             //$response[$value['id']]['id'] = $value['id'];
@@ -214,7 +212,7 @@ class PlanningService implements PlanningInterface
         foreach ($response['workstation_data'] as $id => $value) {
             $response['workstation_data'][$id]['employee'] = array_values($value['employee']);
         }
-        return $response['workstation_data'];
+        return $response;
     }
 
     public function getWeeklyPlanningService($location, $workstations, $employee_types, $weekNo, $year)
@@ -232,9 +230,9 @@ class PlanningService implements PlanningInterface
             $response['workstation_data'][$value['value']]['employee'] = [];
             $shifts = $this->planningShiftsService->getPlanningShifts($location, $value['value']);
             $shiftsFormatted = [];
-	    foreach ($shifts as $shift) {
-	        $shiftsFormatted[] = [
-	            'id'             => $shift->id,
+            foreach ($shifts as $shift) {
+                $shiftsFormatted[] = [
+                    'id'             => $shift->id,
                     'start_time'     => date('H:i', strtotime($shift->start_time)),
                     'end_time'       => date('H:i', strtotime($shift->end_time)),
                     'contract_hours' => numericToEuropean($shift->contract_hours),
@@ -358,15 +356,15 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
-    public function getWeeklyPlannings($location, $workstations, $employee_types, $weekNumber, $year)
+    public function getWeeklyPlannings($location, $workstations, $employee_types, $weekNumber, $year, $employee_profile_id = '')
     {
         $weekDates = getWeekDates($weekNumber, $year);
         $startDateOfWeek = reset($weekDates);
         $endDateOfWeek = end($weekDates);
-        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $startDateOfWeek, $endDateOfWeek, $employee_profile_id, ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
 
-    public function getDayPlannings($location, $workstations, $employee_types, $date)
+    public function getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
         return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }

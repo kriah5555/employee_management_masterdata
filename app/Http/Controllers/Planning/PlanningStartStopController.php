@@ -3,21 +3,16 @@
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Planning\StorePlanningRequest;
-use App\Http\Requests\Planning\UpdatePlanningRequest;
-use App\Models\Planning\PlanningBase as Planning;
 use App\Services\Planning\PlanningService;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use Exception;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 use App\Http\Requests\Planning\StartPlanByManagerRequest;
 use App\Http\Requests\Planning\StartPlanByEmployeeRequest;
 use App\Http\Requests\Planning\StopPlanByEmployeeRequest;
 use App\Http\Requests\Planning\StopPlanByManagerRequest;
 use App\Services\Planning\PlanningStartStopService;
 use Illuminate\Support\Facades\Auth;
+use App\Services\Contract\ContractService;
 
 class PlanningStartStopController extends Controller
 {
@@ -55,13 +50,34 @@ class PlanningStartStopController extends Controller
 
     public function startPlanByEmployee(StartPlanByEmployeeRequest $request)
     {
+        
         try {
             $input = $request->validated();
+            $input['user_id'] = Auth::id();
+            // $input['user_id'] = $input['user_id'];
             $input['started_by'] = $input['user_id'];
+
+            $plan = $this->planningStartStopService->getPlanByQrCode($input['QR_code'], $input['user_id'], $input['start_time'], $input['start_time'])->first();
+
+            if (($plan->contract_status == config('contracts.UNSIGNED') || empty($plan->contracts)) && $plan->employeeType->employeeTypeCategory->id == config('constants.DAILY_CONTRACT_ID')) { # if contract not generated or if the contract is unsigned
+                $qr_data = decodeData($input['QR_code']);
+
+                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : $contract = app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id']); # if contract exists use that else generate new contract and use that
+
+                return response()->json([
+                        'success'           => false,
+                        'message'           => t('Please sign contract.'),
+                        'sign_contract'     => 1, # 0-> not signed contract,  1-> signed contract,
+                        'contract_pdf'      => env('CONTRACTS_URL') . '/' . $contract->files->file_path,
+                    ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        
+            }
+
             $this->planningStartStopService->startPlanByEmployee($input);
             return returnResponse(
                 [
                     'success' => true,
+                    'sign_contract' => 0,
                     'message' => 'Plan started'
                 ],
                 JsonResponse::HTTP_OK,
@@ -75,7 +91,7 @@ class PlanningStartStopController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     public function stopPlanByManager(StopPlanByManagerRequest $request)
     {
         try {
@@ -102,8 +118,9 @@ class PlanningStartStopController extends Controller
     public function stopPlanByEmployee(StopPlanByEmployeeRequest $request)
     {
         try {
-            $input               = $request->validated();
-            $input['ended_by']   = $input['user_id'];
+            $input = $request->validated();
+            $input['user_id'] = Auth::id();
+            $input['ended_by'] = $input['user_id'];
             $this->planningStartStopService->stopPlanByEmployee($input);
             return returnResponse(
                 [

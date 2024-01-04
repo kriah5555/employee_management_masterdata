@@ -3,7 +3,6 @@
 namespace App\Models\Company\Absence;
 
 use App\Models\BaseModel;
-use App\Services\DateService;
 use Illuminate\Support\Carbon;
 use App\Models\Company\Absence\AbsenceDates;
 use App\Models\Company\Absence\AbsenceHours;
@@ -56,12 +55,12 @@ class Absence extends BaseModel
 
     public function employee()
     {
-        return $this->hasOne(EmployeeProfile::class, 'employee_profile_id');
+        return $this->belongsTo(EmployeeProfile::class, 'employee_profile_id');
     }
 
     public function manager()
     {
-        return $this->hasOne(EmployeeProfile::class, 'manager_id');
+        return $this->belongsTo(EmployeeProfile::class, 'manager_id');
     }
 
     public function absenceDates()

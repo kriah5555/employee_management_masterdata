@@ -45,21 +45,29 @@ class PlanningRepository implements PlanningRepositoryInterface
         }
     }
 
-    public function getPlansBetweenDates($location, $workstations, $employee_types = '', $startDateOfWeek, $endDateOfWeek, $employee_id = '', $relations = [])
+    public function getPlansBetweenDates($location_id = '', $workstations = [], $employee_types = '', $startDateOfWeek, $endDateOfWeek, $employee_profile_id = '', $relations = [])
     {
         $startDateOfWeek = date('Y-m-d 00:00:00', strtotime($startDateOfWeek));
-        $endDateOfWeek = date('Y-m-d 23:59:59', strtotime($endDateOfWeek));
-        $query = PlanningBase::where('location_id', $location);
+        $endDateOfWeek   = date('Y-m-d 23:59:59', strtotime($endDateOfWeek));
+        $query           = PlanningBase::query();
         $query->with($relations);
+
+        if (!empty($location_id)) {
+            $query->where('location_id', $location_id);
+        }
+
         if (!empty($workstations)) {
             $query->whereIn('workstation_id', $workstations);
         }
+
         if (!empty($employee_types)) {
             $query->whereIn('employee_type_id', $employee_types);
         }
+
         if (!empty($employee_id)) {
-            $query->where('employee_profile_id', $employee_id);
+            $query->where('employee_profile_id', $employee_profile_id);
         }
+
         $query->whereBetween('start_date_time', [$startDateOfWeek, $endDateOfWeek]);
         $query->orderBy('start_date_time');
         $query->orderBy('end_date_time');

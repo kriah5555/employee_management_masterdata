@@ -19,7 +19,7 @@ class HolidayRepository implements HolidayRepositoryInterface
         if ($employee_id != '') {
             $query->where('employee_profile_id', $employee_id);
         }
-        $query->with(['absenceDates', 'absenceHours']);
+        $query->with(['absenceDates', 'absenceHours', 'employee', 'manager']);
         return $query->get();
     }
 

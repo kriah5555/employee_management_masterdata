@@ -28,10 +28,12 @@ class LocationService extends BaseService
     {
         return $this->locationRepository->getLocations();
     }
+
     public function getLocationById($locationId)
     {
         return $this->locationRepository->getLocationById($locationId);
     }
+
     public function deleteLocation($locationId)
     {
         return $this->locationRepository->deleteLocation($locationId);

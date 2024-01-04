@@ -162,10 +162,12 @@ class EmployeeService
             DB::connection('userdb')->beginTransaction();
             DB::connection('tenant')->beginTransaction();
             $existingEmpProfile = $this->userService->getUserBySocialSecurityNumber($values['social_security_number']);
+            $new_user = true;
             if ($existingEmpProfile->isEmpty()) {
                 $user = $this->userService->createNewUser($values);
             } else {
                 $user = $existingEmpProfile->last();
+                $new_user = false;
             }
             $this->createCompanyUser($user, $company_id, 'employee');
             $employeeProfile = $this->createEmployeeProfile($user, $values);
@@ -174,13 +176,19 @@ class EmployeeService
             app(EmployeeBenefitService::class)->createEmployeeBenefits($values, $employeeProfile->id);
             app(EmployeeCommuteService::class)->createEmployeeCommuteDetails($values, $employeeProfile->id);
 
+
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             DB::connection('tenant')->commit();
-            // $this->mailService->sendEmployeeCreationMail($employeeProfile->id);
+
+            $password = ucfirst($values['first_name']) . date('dmY', strtotime($values['date_of_birth']));
+            $this->mailService->sendEmployeeCreationMail($employeeProfile->id, $new_user, $values['language'], $password);
 
             return $employeeProfile;
         } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -483,5 +491,48 @@ class EmployeeService
             'employee_types' => array_values($activeTypes),
             'functions'      => $activeFunctions,
         ];
+    }
+
+    public function getEmployeeCompanies($user)
+    {
+        $companies = [];
+        $companyUsers = CompanyUser::where('user_id', $user->id)->get();
+        foreach ($companyUsers as $companyUser) {
+            if ($companyUser->hasRole('employee')) {
+                $companies[] = [
+                    'id'   => $companyUser->company->id,
+                    'name' => $companyUser->company->company_name,
+                ];
+            }
+        }
+        return $companies;
+    }
+
+    public function createEmployeeSignature($employee_profile_id, $details)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+                $employee_profile = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id);
+                 if ($employee_profile->signature) {
+                    $employee_profile->signature->delete();
+                }
+                $employee_profile->signature()->create($details);
+            DB::connection('tenant')->commit();
+            return $employee_profile;
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getEmployeeSignature($employee_profile_id)
+    {
+        try {
+            return $employee_profile = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id)->signature;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }

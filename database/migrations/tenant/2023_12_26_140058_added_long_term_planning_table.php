@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->integer('function_id');
             $table->date('start_date');
             $table->date('end_date')->nullable();
-            $table->integer('repeating_week');
+            $table->tinyInteger('repeating_week');
             $table->boolean('auto_renew')->default(false);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -30,11 +30,11 @@ return new class extends Migration {
         Schema::create('long_term_planning_timings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('long_term_planning_id')->references('id')->on('long_term_planning');
-            $table->string('day');
+            $table->tinyInteger('day');
             $table->time('start_time');
             $table->time('end_time');
             $table->decimal('contract_hours');
-            $table->integer('week_no');
+            $table->tinyInteger('week_no');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -4,14 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Company\{
     CompanyController,
-    LocationController,
-    CostCenterController,
-    WorkstationController,
-    AppSettingsController,
-    Absence\LeaveController,
-    Absence\HolidayController,
-    Contract\ContractConfigurationController,
-    Contract\CompanyContractTemplateController,
+    EmployeeAvailabilityController,
 };
 
 use App\Http\Controllers\Holiday\{
@@ -161,6 +154,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             'controller' => HolidayCodeConfigController::class,
             'methods'    => ['show', 'update']
         ],
+        'availability'        => [
+            'controller' => EmployeeAvailabilityController::class,
+            'methods'    => ['index', 'store', 'update', 'create']
+        ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
         Route::resource($uri, $controller)->only($methods);
@@ -216,7 +213,11 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::get('/user-details', [EmployeeController::class, 'getUserDetails']);
 
+    Route::post('employee-update', [EmployeeController::class, 'updateEmployee']);
+
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
+
+    Route::get('get-employee-companies', [EmployeeController::class, 'getEmployeeCompanies']);
 });
 
 use App\Models\User\CompanyUser;

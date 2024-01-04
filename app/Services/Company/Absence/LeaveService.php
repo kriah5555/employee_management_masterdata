@@ -21,7 +21,30 @@ class LeaveService
     public function getLeaves($status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return $this->leave_repository->getLeaves('', $status);
+            return $this->formatLeaves($this->leave_repository->getLeaves('', $status), $status);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function formatLeaves($leaves, $status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    {
+        try {
+            
+            return $leaves->map(function ($leave) use ($status) {
+                $actions = ['approve' => false, 'reject' => false, 'change_manager' => false, 'request_cancel' => false, 'cancel' => false];
+    
+                if ($status == config('absence.PENDING')) {
+                    $actions['change_manager'] = $actions['approve'] = $actions['reject'] = true;
+                } elseif ($status == config('absence.APPROVE')) {
+                    $actions['cancel'] = true;
+                }
+
+                $leave->actions = $actions;
+    
+                return $leave;
+            });
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -125,13 +148,13 @@ class LeaveService
 
                 $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
 
-                return $leave;
+                // return $leave;
 
             DB::connection('tenant')->commit();
             return $leave;
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
-            error_log($e->getMessage());    
+            error_log($e->getMessage());
             throw $e;
         }
     }

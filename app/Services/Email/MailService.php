@@ -2,29 +2,39 @@
 
 namespace App\Services\Email;
 
-use App\Mail\SendMail;
-use App\Services\Email\EmailTemplateService;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 use Config;
+use App\Mail\SendMail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Services\Email\EmailTemplateService;
+use App\Repositories\Employee\EmployeeProfileRepository;
 
 class MailService
 {
-    public function __construct(protected EmailTemplateService $email_template_service)
+    protected $redirect_mail;
+    
+    public function __construct(
+        protected EmailTemplateService $email_template_service,
+        protected EmployeeProfileRepository $employeeProfileRepository,
+        )
     {
-
+        $this->redirect_mail = 'sunilgangadhar.infanion@gmail.com';
     }
 
-    public function sendEmployeeCreationMail($employee_id, $new_employee = true, $language = 'en')
+    public function sendEmployeeCreationMail($employee_profile_id, $new_employee = true, $language = 'en', $password = '')
     {
-        if ($new_employee) {
-            $email_template = $this->email_template_service->getEmailTemplateDetailsByType('new_employee_creation_mail');
-            if ($email_template) {
-                $subject = $email_template->getTranslation('subject', $language);
-                $body    = $email_template->getTranslation('body', $language);
+        $email_template = $this->email_template_service->getEmailTemplateDetailsByType($new_employee ? 'new_employee_creation_mail' : 'existing_employee_creation_mail');
+        if ($email_template) {
+            $employeeData = $this->getEmployeeTokensData($employee_profile_id, $password);
 
-                self::triggerMail('sunilgangadhar.infanion@gmail.com', $subject, $body);
-            }
+            $subject = $email_template->getTranslation('subject', $language);
+            $body    = $email_template->getTranslation('body', $language);
+
+
+            $body    = replaceTokens($body, $employeeData);
+            $subject = replaceTokens($subject, $employeeData);
+
+            self::triggerMail($this->redirect_mail != '' ? $this->redirect_mail : $employeeData['employee_email'], $subject, $body);
         }
     }
 
@@ -39,30 +49,35 @@ class MailService
             $employeeData = $this->getEmployeeTokensData($values);
 
             // Replace employee tokens in the body content using config tokens
-            $configTokens = array_keys(config('tokens.EMPLOYEE_TOKENS'));
-            $body = replaceTokens($body, $employeeData);
+            $body    = replaceTokens($body, $employeeData);
+            $subject = replaceTokens($subject, $employeeData);
 
-            $this->triggerMail('jyotibarawoot@gmail.com', $subject, $body);
+            $this->triggerMail($this->redirect_mail != '' ? $this->redirect_mail : "", $subject, $body);
         }
     }
 
-
-    private function getEmployeeTokensData($values)
+    private function getEmployeeTokensData($employee_profile_id, $password = '')
     {
+        $employee = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id);
+
         return [
-            '{employee_first_name}'    => $values['first_name'],
-            '{employee_last_name}'     => $values['last_name'],
-            '{employee_date_of_birth}' => 'DOB',
-            '{employee_phone}'         => 'Phone',
-            '{employee_ssn}'           => 'SSN',
-            '{employee_gender}'        => 'Gender',
-            '{employee_email}'         => 'Email',
-            '{employee_address}'       => 'Address:Street + number Postal code City Country',
-            '{employee_nationality}'   => 'Nationality',
-            '{employee_bank}'          => $values['account_number'],
+            "{employee_username}"      => $employee->user->username,
+            "{employee_password}"      => $password,
+            "{employee_first_name}"    => $employee->user->userBasicDetails->first_name,
+            "{employee_last_name}"     => $employee->user->userBasicDetails->last_name,
+            "{employee_date_of_birth}" => $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null,
+            "{employee_nationality}"   => $employee->user->userBasicDetails->nationality,
+            "{employee_ssn}"           => $employee->user->social_security_number,
+            "{employee_gender}"        => $employee->user->userBasicDetails->gender->name,
+            "{employee_email}"         => $employee->user->userContactDetails ? $employee->user->userContactDetails->email : null,
+            "{employee_phone}"         => $employee->user->userContactDetails ? $employee->user->userContactDetails->phone_number : null,
+            "{employee_bank}"          => $employee->user->userBankAccount ? $employee->user->userBankAccount->account_number : null,
+            "{employee_address}"       => ($employee->user->userAddress ? $employee->user->userAddress->street_house_no : null) . ' ' .
+                                        ($employee->user->userAddress ? $employee->user->userAddress->postal_code : null) . ' ' .
+                                        ($employee->user->userAddress ? $employee->user->userAddress->city : null) . ' ' .
+                                        ($employee->user->userAddress ? $employee->user->userAddress->country : null),# Address:Street + number Postal code City Country
         ];
     }
-
 
     public function triggerMail($mail_id, $subject, $htmlContent)
     {
@@ -72,7 +87,6 @@ class MailService
         } catch (\Exception $e) {
             Log::error('Error sending email: ' . $e->getMessage());
             // You might want to throw the exception to propagate it to the calling code
-            throw $e;
         }
     }
 }
