@@ -272,13 +272,14 @@ class VacancyService implements VacancyInterface
             if (empty($companyId) || !connectCompanyDataBase($data['company_id'])) {
                 throw new \Exception('Issue with company Id');
             }
-            $employeeProfileId = $this->getEmployeeProfileFromUserAndCompanyId($data['user_id'], $data['company_id']);
+	    $employeeProfileId = $this->getEmployeeProfileFromUserAndCompanyId($data['user_id'], $data['company_id']);
             unset($data['user_id'], $data['company_id']);
             $data['employee_profile_id'] = $employeeProfileId[0]->id ?? 0;
             $data['request_at'] = now()->format('Y-m-d H:i:s');
             $data['vacancy_date'] = date('Y-m-d', strtotime($data['vacancy_date']));
-        }
-        return $this->vacancyPostEmployees->updateOrCreate(
+	}
+
+	return $this->vacancyPostEmployees->updateOrCreate(
             [
                 'vacancy_date'        => $data['vacancy_date'],
                 'vacancy_id'          => $data['vacancy_id'],
