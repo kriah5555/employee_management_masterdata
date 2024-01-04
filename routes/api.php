@@ -39,6 +39,8 @@ use App\Http\Controllers\{
     NotificationController\NotificationController,
 };
 
+use App\Http\Controllers\Planning\VacancyController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -216,6 +218,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 
     Route::get('get-employee-companies', [EmployeeController::class, 'getEmployeeCompanies']);
+
+    Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
+
+    Route::post('/vacancy/employee', [VacancyController::class, 'getEmployeeJobsOverview']);
 });
 
 use App\Models\User\CompanyUser;

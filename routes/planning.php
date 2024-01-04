@@ -102,8 +102,6 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     }
 });
 
-Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
-Route::post('/vacancy/employee', [VacancyController::class, 'getEmployeeJobsOverview']);
 
 
 // Route::controller(VacancyController::class)

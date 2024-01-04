@@ -8,7 +8,6 @@ use App\Services\CompanyService;
 use App\Models\User\CompanyUser;
 use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -129,10 +128,10 @@ if (!function_exists('makeApiRequest')) {
                 // Get the JSON response data
                 return $response->json();
             } else {
-                throw new Exception("API error");
+                throw new \Exception("API error");
             }
         } catch (\Exception $e) {
-            throw new Exception("API error");
+            throw new \Exception("API error");
         }
     }
 }
@@ -496,7 +495,7 @@ if (!function_exists('getEmployeeProfileIdByUserIdCompanyId')) {
     function getEmployeeProfileIdByUserIdCompanyId($userId, $company_id)
     {
         setTenantDBByCompanyId($company_id);
-        
+
         return EmployeeProfile::where('user_id', $userId)->first();
     }
 }
@@ -536,8 +535,7 @@ if (!function_exists('getActiveUser')) {
         if ($user) {
             return $user;
         } else {
-            throw new Exception("Unauthorized access");
+            throw new \Exception("Unauthorized access");
         }
-        return null;
     }
 }
