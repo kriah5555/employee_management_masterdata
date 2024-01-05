@@ -18,7 +18,7 @@ class EmployeePlanSignContractRequest extends ApiRequest
     {
         return [
             'signature'  => ['required', 'string'],
-            'company_id' => ['required', 'integer', Rule::exists('master.companies', 'id')],
+            'company_id' => ['nullable', 'integer', Rule::exists('master.companies', 'id')],
             'plan_id'    => ['required', 'integer', new PlanContractSignedRule(request()->input('company_id'))],
         ];
     }

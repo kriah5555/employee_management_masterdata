@@ -435,17 +435,23 @@ class EmployeeAvailabilityService
         $availability = [
             'available_dates'     => [],
             'not_available_dates' => [],
+            'remarks'             => [],
         ];
         $dateRange = getDateRangeByPeriod($period);
-        $existingAvailabilityDates = EmployeeAvailability::where('employee_profile_id', $employeeProfileId)
+        $existingAvailabilityDates = EmployeeAvailability::with('employeeAvailabilityRemarks')
+            ->where('employee_profile_id', $employeeProfileId)
             ->where('date', '>=', $dateRange['start_date'])
             ->where('date', '<=', $dateRange['end_date'])
             ->get();
         foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
+            $date = date('d-m-Y', strtotime($existingAvailabilityDate->date));
             if ($existingAvailabilityDate->availability) {
-                $availability['available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+                $availability['available_dates'][] = $date;
             } else {
-                $availability['not_available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+                $availability['not_available_dates'][] = $date;
+            }
+            if ($existingAvailabilityDate->employeeAvailabilityRemarks) {
+                $availability['remarks'][$date] = $existingAvailabilityDate->employeeAvailabilityRemarks->remark;
             }
         }
         return $availability;
