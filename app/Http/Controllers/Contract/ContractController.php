@@ -48,7 +48,30 @@ class ContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
+                    'message' => t('Contract signed successfully'),
                     'data'    => $this->contractService->signEmployeePlanContract($request->validated()),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+        
+    }
+
+    public function getEmployeePlanContract($plan_id)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->contractService->getEmployeeContractFiles('', '', '', $plan_id)->first(),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -76,6 +99,7 @@ class ContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
+                    'message' => t('Contract generated successfully.'),
                     'data'    => $this->contractService->generateEmployeeContract($request->employee_profile_id, $request->employee_contract_id, $contract_status),
                 ],
                 JsonResponse::HTTP_OK,
@@ -148,10 +172,5 @@ class ContractController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    function generateContract(Request $request)
-    {
-        
     }
 }

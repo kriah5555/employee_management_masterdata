@@ -76,7 +76,7 @@ class ContractService
             DB::connection('tenant')->beginTransaction();
                 $plan = app(PlanningRepository::class)->getPlanningById($values['plan_id']);
                 
-                $employee_contract_file = $this->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.SIGNED'), $values['plan_id'], $values['company_id'], $values['signature'], '');
+                $employee_contract_file = $this->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.SIGNED'), $values['plan_id'], $values['company_id'] ?? '', $values['signature'], '');
             DB::connection('tenant')->commit();
             return $employee_contract_file;
         } catch (\Exception $e) {
@@ -110,7 +110,7 @@ class ContractService
             if (!empty($employee_contract_id)) { # for employee long term contracts
                 $employeeContract     = $this->employeeContractRepository->getEmployeeContractById($employee_contract_id);
                 $employee_type_id     = $employeeContract->employee_type_id;
-                $employeeBasicDetails = $employeeContract->employeeBasicDetails->language;
+                $employeeBasicDetails = $employeeContract->employeeProfile->employeeBasicDetails;
             } else { # for planning contract
                 $plan = app(PlanningRepository::class)->getPlanningById($plan_id);
                 $employee_type_id     = $plan->employee_type_id;
@@ -118,6 +118,8 @@ class ContractService
             }   
 
             $language = $employeeBasicDetails->language ?? config('constants.DEFAULT_LANGUAGE');
+
+            
 
             $employee_contract_template = CompanyContractTemplate::where([
                 'employee_type_id' => $employee_type_id,
@@ -151,17 +153,24 @@ class ContractService
         }
     }
 
-    public function getEmployeeContractFiles($employee_profile_id, $contract_status, $contract_id = '') # ['signed', 'unsigned']
+    public function getEmployeeContractFiles($employee_profile_id = '', $contract_status = '', $employee_contract_id = '', $plan_id ='') # ['signed', 'unsigned']
     {
         try {
-            return EmployeeContractFile::where([
-                    'contract_status'     => $contract_status, 
-                    'employee_profile_id' => $employee_profile_id,
-                    'status'              => true
-                ])
-                ->with(['files'])
-                ->get();
+            // return $this->model
+            // ->when(empty($employee_profile_id), fn($q) => $q->where('status', $args['status']))
+            // ->when(isset($args['employee_id']), fn($q) => $q->where('employee_id', $args['employee_id']))
+            // ->when(isset($args['with']), fn($q) => $q->with($args['with']))
+            // ->get();
 
+            return EmployeeContractFile::query()
+                ->when(!empty($employee_profile_id), fn ($query) => $query->where('employee_profile_id', $employee_profile_id))
+                ->when(!empty($employee_contract_id), fn ($query) => $query->where('employee_contract_id', $employee_contract_id))
+                ->when(!empty($contract_status), fn ($query) => $query->where('contract_status', $contract_status))
+                ->when(!empty($plan_id), fn ($query) => $query->where('planning_base_id', $plan_id))
+                ->where('status', true)
+                // ->with(['files'])
+                ->get();
+    
         } catch (\Exception $e) {
             error_log($e->getMessage());
             throw $e;
