@@ -8,7 +8,7 @@ use App\Http\Controllers\Planning\
     PlanningStartStopController,
 };
 use App\Http\Controllers\{
-    Contract\ContractController
+    Contract\ContractMobileController
 };
 use App\Http\Middleware\SetActiveUser;
 use App\Http\Middleware\InitializeTenancy;
@@ -30,10 +30,13 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
     });
 
-    Route::controller(ContractController::class)->group(function () {
+    Route::controller(ContractMobileController::class)->group(function () {
 
         Route::post('employee-sign-plan-contract', 'employeeSignPlanContract');
 
+        // Route::post('get-employee-plan-contract/{user_id}', 'getEmployeePlanContract');
+
+        Route::get('get-employee-contracts', 'index');
     });
 
     Route::controller(PlanningStartStopController::class)->group(function () {

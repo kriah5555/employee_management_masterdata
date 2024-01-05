@@ -156,12 +156,6 @@ class ContractService
     public function getEmployeeContractFiles($employee_profile_id = '', $contract_status = '', $employee_contract_id = '', $plan_id ='') # ['signed', 'unsigned']
     {
         try {
-            // return $this->model
-            // ->when(empty($employee_profile_id), fn($q) => $q->where('status', $args['status']))
-            // ->when(isset($args['employee_id']), fn($q) => $q->where('employee_id', $args['employee_id']))
-            // ->when(isset($args['with']), fn($q) => $q->with($args['with']))
-            // ->get();
-
             return EmployeeContractFile::query()
                 ->when(!empty($employee_profile_id), fn ($query) => $query->where('employee_profile_id', $employee_profile_id))
                 ->when(!empty($employee_contract_id), fn ($query) => $query->where('employee_contract_id', $employee_contract_id))
