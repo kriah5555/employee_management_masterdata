@@ -29,12 +29,12 @@ class EmployeeContractFile extends Model
 
     public function employeeContract()
     {
-        return $this->hasOne(EmployeeContract::class);
+        return $this->belongsTo(EmployeeContract::class);
     }
 
     public function plan()
     {
-        return $this->hasOne(PlanningBase::class, 'planning_base_id');
+        return $this->belongsTo(PlanningBase::class, 'planning_base_id');
     }
 
     public function files()
@@ -45,7 +45,6 @@ class EmployeeContractFile extends Model
 
     public function getFileUrlAttribute()
     {
-        exit;
-        return env('CONTRACTS_URL') . $this->files->first()->file_path;
+        return env('CONTRACTS_URL') . '/' . $this->files->file_path;
     }
 }

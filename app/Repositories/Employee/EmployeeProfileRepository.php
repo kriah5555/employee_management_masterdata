@@ -77,10 +77,11 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
                 'user',
                 'user.userBasicDetails',
                 'user.userContactDetails',
+                'user.userProfilePicture'
             ]);
 
             return formatEmployees($employees);
-            
+
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -90,9 +91,11 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
     public function getEmployeesForHoliday()
     {
 
-        $employee_types_with_holiday_access = EmployeeType::with(['employeeTypeConfig' => function ($employeeTypeConfig) {
-            $employeeTypeConfig->where('holiday_access', true);
-        }])->get();
+        $employee_types_with_holiday_access = EmployeeType::with([
+            'employeeTypeConfig' => function ($employeeTypeConfig) {
+                $employeeTypeConfig->where('holiday_access', true);
+            }
+        ])->get();
 
         $employee_type_ids_with_holiday_access = $employee_types_with_holiday_access->pluck('id');
 
@@ -100,17 +103,20 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             'user',
             'user.userBasicDetails',
             'employeeContracts' => function ($employeeContracts) use ($employee_type_ids_with_holiday_access) {
-            $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
-        }])->get();
+                $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access);
+            }
+        ])->get();
 
         return formatEmployees($employees);
     }
 
     public function getEmployeesForLeave()
     {
-        $employee_types_with_holiday_access = EmployeeType::with(['employeeTypeConfig' => function ($employeeTypeConfig) {
-            $employeeTypeConfig->where('leave_access', true);
-        }])->get();
+        $employee_types_with_holiday_access = EmployeeType::with([
+            'employeeTypeConfig' => function ($employeeTypeConfig) {
+                $employeeTypeConfig->where('leave_access', true);
+            }
+        ])->get();
 
         $employee_type_ids_with_holiday_access = $employee_types_with_holiday_access->pluck('id');
 
@@ -118,8 +124,9 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
             'user',
             'user.userBasicDetails',
             'employeeContracts' => function ($employeeContracts) use ($employee_type_ids_with_holiday_access) {
-            $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access );
-        }])->get();
+                $employeeContracts->whereIn('employee_type_id', $employee_type_ids_with_holiday_access);
+            }
+        ])->get();
 
         return formatEmployees($employees);
     }
