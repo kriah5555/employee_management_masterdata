@@ -28,8 +28,8 @@ class PlanningContractService implements PlanningInterface
     public function getPlanningContractContract(PlanningBase $plan)
     {
         $dailyContract = $plan->employeeType()->whereHas('contractTypes', function ($query) {
-            $query->where('contract_renewal_type_id', 1);
-        })->get();
+            $query->where('contract_renewal_type_id', 2);
+	})->get();
         if (!$dailyContract->isEmpty()) {
             $template = $this->contractTemplateService->getTemplateForEmployeeType($plan->employeeType);
             if ($template) {
