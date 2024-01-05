@@ -17,13 +17,13 @@ class DimonaController extends Controller
         $this->dimonaBaseService = new DimonaBaseService();
     }
 
-    public function sendDimonaByPlan(Request $request, $dimonaType, $planId, $timeRegistrationId = '')
+    public function sendDimonaByPlan(Request $request, $planId)
     {
         $companyId = $request->header('Company-Id');
         // $dimonaType = $planId = $timeRegistrationId = '';
         $data = NULL;
         try {
-            $data = $this->dimonaBaseService->initiateDimonaByPlan($companyId, $dimonaType, $planId, $timeRegistrationId);
+            $data = $this->dimonaBaseService->initiateDimonaByPlan($companyId, $planId);
         } catch(\Exception $e) {
             return response()->json(
                 [

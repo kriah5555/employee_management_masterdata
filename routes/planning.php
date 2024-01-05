@@ -102,7 +102,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         Route::resource($uri, $controller)->only($methods);
     }
     Route::controller(DimonaController::class)->group(function () {
-        Route::get('/dimona-test-plan/{dimonaType}/{planId}', [DimonaController::class, 'sendDimonaByPlan']);
+        Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'sendDimonaByPlan']);
         Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
         Route::get('/dimona-test-plan', [DimonaController::class, 'sendDimonaByPlan']);
     });

@@ -49,15 +49,15 @@ class DimonaResponse extends Model
      * @var array
      */
      protected $fillable = [
-        'dimona_base_id',
+        'dimona_details_id',
         'result',
         'dimona_period_id',
         'registration_id',
         'smals_response',
     ];
 
-    public function dimonaBase()
+    public function dimonaDetails()
     {
-        return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
+        return $this->belongsTo(DimonaDetails::class, 'dimona_details_id');
     }
 }
