@@ -155,7 +155,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'availability'        => [
             'controller' => EmployeeAvailabilityController::class,
-            'methods'    => ['index', 'store', 'update', 'create']
+            'methods'    => ['store']
         ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
