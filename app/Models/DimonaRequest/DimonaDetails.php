@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Models\Planning;
+namespace App\Models\DimonaRequest;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Planning\PlanningBase;
-use App\Models\DimonaRequest\DimonaBase;
 
-class PlanningDimona extends Model
+class DimonaDetails extends Model
 {
     use HasFactory;
 
@@ -18,7 +16,7 @@ class PlanningDimona extends Model
      *
      * @var string
      */
-    protected $table = 'planning_dimonas';
+    protected $table = 'dimona_details';
 
     /**
      * The primary key associated with the table.
@@ -51,8 +49,11 @@ class PlanningDimona extends Model
      * @var array
      */
      protected $fillable = [
-        'planning_base_id',
         'dimona_base_id',
+        'dimona_type',
+        'status',
+        'start_date_time',
+        'end_date_time'
     ];
 
     public function dimonaBase()
@@ -60,8 +61,13 @@ class PlanningDimona extends Model
         return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
     }
 
-    public function planningBase()
+    public function dimonaError()
     {
-        return $this->belongsTo(PlanningBase::class, 'planning_base_id');
+        return $this->hasMany(DimonaError::class, 'dimona_base_id');
+    }
+
+    public function dimonaResponse()
+    {
+        return $this->hasMany(DimonaResponse::class, 'dimona_details_id');
     }
 }
