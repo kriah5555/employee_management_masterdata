@@ -8,7 +8,6 @@ use App\Services\CompanyService;
 use App\Models\User\CompanyUser;
 use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Support\Facades\Auth;
-use \Exception;
 use Carbon\Carbon;
 
 if (!function_exists('returnResponse')) {
@@ -412,6 +411,8 @@ if (!function_exists('formatEmployees')) {
         $employees->load('user');
         return $employees->map(function ($employee) {
             if ($employee->user) {
+                $phoneNumber = $employee->user->userContactDetails->phone_number;
+                $phoneNumber = (str_starts_with($phoneNumber, '+')) ? $phoneNumber : '+' . $phoneNumber;
                 return [
                     'employee_profile_id'    => $employee->id,
                     'employee_profile'       => $employee->user->userProfilePicture,
@@ -420,7 +421,7 @@ if (!function_exists('formatEmployees')) {
                     'full_name'              => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
                     'username'               => $employee->user->username,
                     'social_security_number' => $employee->user->social_security_number,
-                    'phone_number'           => $employee->user->userContactDetails->phone_number,
+                    'phone_number'           => $phoneNumber,
                     'email'                  => $employee->user->userContactDetails->email,
                     'user_id'                => $employee->user->id,
                 ];
@@ -558,19 +559,21 @@ if (!function_exists('getRSZNumberFormat')) {
 }
 
 if (!function_exists('timeDifferenceinHours')) {
-    function timeDifferenceinHours($start, $end) {
-        $start  = new Carbon($start);
-        $end    = new Carbon($end);
+    function timeDifferenceinHours($start, $end)
+    {
+        $start = new Carbon($start);
+        $end = new Carbon($end);
         $diff = $start->diff($end)->format('%H.%I');
         $time = explode('.', $diff);
-        return ($time[0] + ($time[1]/60));
+        return ($time[0] + ($time[1] / 60));
     }
 }
 
 
 if (!function_exists('addHours')) {
-    function addHours($dateTime, $hours) {
-        $start  = new Carbon($dateTime);
+    function addHours($dateTime, $hours)
+    {
+        $start = new Carbon($dateTime);
         return $start->addHours($hours)->format('Y-m-d H:i:s');
     }
 }
