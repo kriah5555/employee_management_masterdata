@@ -186,7 +186,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('stop-plan-reasons', 'getStopPlanReasons');
         });
-        Route::get('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
+	Route::get('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
+	Route::post('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
         Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-availability');
     });
 });
