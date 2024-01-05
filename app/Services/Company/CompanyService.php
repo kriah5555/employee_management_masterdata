@@ -9,6 +9,7 @@ use App\Services\AddressService;
 use App\Repositories\Company\CompanyRepository;
 use App\Interfaces\Services\Company\CompanyServiceInterface;
 use Exception;
+use App\Services\Email\MailService;
 
 use App\Services\Company\CompanyTenancyService;
 
@@ -22,6 +23,7 @@ class CompanyService implements CompanyServiceInterface
         protected CompanyLogoService $companyLogoService,
         protected CompanyLocationService $companyLocationService,
         protected CompanyWorkstationService $companyWorkstationService,
+        protected MailService $mailService,
     ) {
     }
 
@@ -42,6 +44,7 @@ class CompanyService implements CompanyServiceInterface
             });
             $this->companyTenancyService->createTenant($company);
             $company->address;
+            $this->mailService->sendCompanyCreationMail($company->id);
             return $company;
         } catch (Exception $e) {
             error_log($e->getMessage());

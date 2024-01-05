@@ -21,7 +21,8 @@ class CompanyService
         protected CompanySocialSecretaryDetailsRepository $companySocialSecretaryDetailsRepository,
         protected LocationService $locationService,
         protected AddressService $addressService,
-        protected WorkstationService $workstationService
+        protected WorkstationService $workstationService,
+        protected MailService $mailService,
     ) {
     }
 
@@ -57,6 +58,7 @@ class CompanyService
             $location_ids = $this->createCompanyLocations($company, $values); # add company locations
             $this->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();
+            $this->mailService->sendCompanyCreationMail($company->id);
             return $company;
         } catch (\Exception $e) {
             DB::connection('master')->rollback();
