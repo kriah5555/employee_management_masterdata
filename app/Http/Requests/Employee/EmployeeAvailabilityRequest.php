@@ -28,17 +28,34 @@ class EmployeeAvailabilityRequest extends ApiRequest
                 ];
             }
         } elseif ($this->isMethod('post')) {
+            if ($this->routeIs('get-employee-availability')) {
+                $rules = [
+                    'period' => 'required|regex:/^\d{2}-\d{4}$/',
+                ];
+            } else {
+                $rules = [
+                    'type'          => 'required|between:0,1|bail',
+                    'remark'        => 'nullable|string',
+                    'company_ids'   => 'required|array',
+                    'company_ids.*' => [
+                        'bail',
+                        'required',
+                        Rule::exists('master.companies', 'id')
+                    ],
+                    'dates'         => 'required|array',
+                    'dates.*'       => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
+                ];
+            }
+        } elseif ($this->isMethod('delete')) {
             $rules = [
-                'type'          => 'required|between:0,1|bail',
-                'remark'        => 'nullable|string',
-                'company_ids'   => 'required|array',
-                'company_ids.*' => [
-                    'bail',
+                'id'         => [
+                    'required',
+                    Rule::exists('employee_availabilities', 'id'),
+                ],
+                'company_id' => [
                     'required',
                     Rule::exists('master.companies', 'id')
                 ],
-                'dates'         => 'required|array',
-                'dates.*'       => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
             ];
         }
         return $rules;

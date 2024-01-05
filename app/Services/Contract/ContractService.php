@@ -22,7 +22,8 @@ class ContractService
     {
 
     }
-    public function generateEmployeeContract($employee_profile_id, $employee_contract_id = null, $contract_status, $plan_id = null, $company_id = '') 
+
+    public function generateEmployeeContract($employee_profile_id, $employee_contract_id = null, $contract_status, $plan_id = null, $company_id = '', $employee_signature = '', $employer_signature = '') 
     {
         try {
             if (!empty($company_id)) {
@@ -31,13 +32,7 @@ class ContractService
 
             DB::connection('tenant')->beginTransaction();
                 $url  = env('CONTRACTS_URL') . config('contracts.GENERATE_CONTRACT_ENDPOINT');
-                $body = ['body' => $this->getEmployeeContractTemplate($employee_contract_id, $company_id, $plan_id)];
-
-                // $body = [
-                //     "body"               => "<ul><li>point</li><li>point2</li></ul><p>Hi<br><strong>Sunil</strong>,How are you?<br>Regards,Sunil, This is a sample contract<br>template text with spaces, tabs, and newlines.</p><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {employee_signature} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {employer_signature}</p>",
-                //     "employee_signature" => "https://upload.wikimedia.org/wikipedia/commons/a/aa/Henry_Oaminal_Signature.png",
-                //     "employer_signature" => "https://upload.wikimedia.org/wikipedia/commons/a/aa/Henry_Oaminal_Signature.png",
-                // ];
+                $body = ['body' => $this->getEmployeeContractTemplate($employee_contract_id, $company_id, $plan_id), 'employee_signature' => $employee_signature, 'employer_signature' => $employer_signature];
 
                 if (!empty($body)) {
                     $response = makeApiRequest($url, 'POST', $body);
@@ -72,6 +67,25 @@ class ContractService
         }
     }
 
+    public function signEmployeePlanContract($values)
+    {
+        try {
+            if (isset($values['company_id'])) {
+                setTenantDBByCompanyId($values['company_id']);
+            }
+            DB::connection('tenant')->beginTransaction();
+                $plan = app(PlanningRepository::class)->getPlanningById($values['plan_id']);
+                
+                $employee_contract_file = $this->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.SIGNED'), $values['plan_id'], $values['company_id'] ?? '', $values['signature'], '');
+            DB::connection('tenant')->commit();
+            return $employee_contract_file;
+        } catch (\Exception $e) {
+            DB::connection('tenant')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
     public function createEmployeeContractFileData($values) 
     {
         if (!empty($values['employee_contract_id'])) {
@@ -96,7 +110,7 @@ class ContractService
             if (!empty($employee_contract_id)) { # for employee long term contracts
                 $employeeContract     = $this->employeeContractRepository->getEmployeeContractById($employee_contract_id);
                 $employee_type_id     = $employeeContract->employee_type_id;
-                $employeeBasicDetails = $employeeContract->employeeBasicDetails->language;
+                $employeeBasicDetails = $employeeContract->employeeProfile->employeeBasicDetails;
             } else { # for planning contract
                 $plan = app(PlanningRepository::class)->getPlanningById($plan_id);
                 $employee_type_id     = $plan->employee_type_id;
@@ -104,6 +118,8 @@ class ContractService
             }   
 
             $language = $employeeBasicDetails->language ?? config('constants.DEFAULT_LANGUAGE');
+
+            
 
             $employee_contract_template = CompanyContractTemplate::where([
                 'employee_type_id' => $employee_type_id,
@@ -137,17 +153,24 @@ class ContractService
         }
     }
 
-    public function getEmployeeContractFiles($employee_profile_id, $contract_status, $contract_id = '') # ['signed', 'unsigned']
+    public function getEmployeeContractFiles($employee_profile_id = '', $contract_status = '', $employee_contract_id = '', $plan_id ='') # ['signed', 'unsigned']
     {
         try {
-            return EmployeeContractFile::where([
-                    'contract_status'     => $contract_status, 
-                    'employee_profile_id' => $employee_profile_id,
-                    'status'              => true
-                ])
-                ->with(['files'])
-                ->get();
+            // return $this->model
+            // ->when(empty($employee_profile_id), fn($q) => $q->where('status', $args['status']))
+            // ->when(isset($args['employee_id']), fn($q) => $q->where('employee_id', $args['employee_id']))
+            // ->when(isset($args['with']), fn($q) => $q->with($args['with']))
+            // ->get();
 
+            return EmployeeContractFile::query()
+                ->when(!empty($employee_profile_id), fn ($query) => $query->where('employee_profile_id', $employee_profile_id))
+                ->when(!empty($employee_contract_id), fn ($query) => $query->where('employee_contract_id', $employee_contract_id))
+                ->when(!empty($contract_status), fn ($query) => $query->where('contract_status', $contract_status))
+                ->when(!empty($plan_id), fn ($query) => $query->where('planning_base_id', $plan_id))
+                ->where('status', true)
+                // ->with(['files'])
+                ->get();
+    
         } catch (\Exception $e) {
             error_log($e->getMessage());
             throw $e;

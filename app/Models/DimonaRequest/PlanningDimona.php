@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Models\Planning;
+namespace App\Models\DimonaRequest;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Planning\PlanningBase;
-use App\Models\DimonaRequest\DimonaBase;
 
 class PlanningDimona extends Model
 {

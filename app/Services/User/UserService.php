@@ -243,7 +243,8 @@ class UserService
         $userAddressDetails = $userAddressDetails ? $userAddressDetails->toApiResponseFormat() : null;
         $userContactDetails = $userContactDetails ? $userContactDetails->toApiResponseFormat() : null;
         $userBankAccountDetails = $userBankAccountDetails ? $userBankAccountDetails->toApiResponseFormat() : null;
-
+        $userBasicDetails['date_of_birth'] = isset($userBasicDetails['date_of_birth']) ?
+                                             date('d-m-Y', strtotime($userBasicDetails['date_of_birth'])) : '';
         return array_merge(
             $user->toArray(),
             $userBasicDetails ?: [],

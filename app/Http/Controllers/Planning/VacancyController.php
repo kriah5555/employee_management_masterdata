@@ -186,10 +186,19 @@ class VacancyController extends Controller
                 throw new \Exception('Company Id is missing.');
             }
             $data['user_id'] = getActiveUser()->id;
+            $message = t('Success');
+            if ($data['request_status'] == 0) {
+                $message =t('Job applied successfully');
+            } elseif ($data['request_status'] == 3) {
+                $message =t('Job saved successfully');
+            } elseif ($data['request_status'] == 4) {
+                $message =t('Job ignored successfully');
+            }
             return returnResponse(
                 [
+                    
                     'success' => true,
-                    'message' => t('Job applied successfully'),
+                    'message' => $message,
                     'data'    => $this->vacancyService->applyVacancyService($data)
                 ],
                 JsonResponse::HTTP_OK,

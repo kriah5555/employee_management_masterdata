@@ -134,12 +134,14 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::controller(ContractController::class)->group(function () {
 
-            Route::post('contracts', 'generateContract');
+            Route::post('contracts', 'store');
+
+            Route::post('employee-sign-plan-contract', 'employeeSignPlanContract');
+
+            Route::get('get-employee-plan-contract/{plan_id}', 'getEmployeePlanContract');
 
             Route::get('get-employee-contracts/{employee_id}/{status}', 'index')
                 ->where(['status' => '(signed|unsigned)']);
-
-
         });
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
@@ -185,5 +187,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('stop-plan-reasons', 'getStopPlanReasons');
         });
         Route::get('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
+        Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-availability');
     });
 });
