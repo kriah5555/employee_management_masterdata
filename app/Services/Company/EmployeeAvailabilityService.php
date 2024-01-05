@@ -4,7 +4,6 @@ namespace App\Services\Company;
 
 use DateTime;
 use App\Models\Company\EmployeeAvailability;
-use App\Models\Company\EmployeeAvailabilityRemarks;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Services\CompanyService;
@@ -81,23 +80,14 @@ class EmployeeAvailabilityService
         }
     }
 
-    public function deleteAvailability($id)
+    public function deleteAvailability($values)
     {
         try {
             DB::connection('tenant')->beginTransaction();
-            $updating_old_Dates = $this->deleteOldDates($id);
-
-            if ($updating_old_Dates == 1) {
-                $avalibilityTableDates = AvailabilityRemarks::find($id)->delete();
-
-                if (!$avalibilityTableDates) {
-                    throw new \Exception("Availability is not deleted , please check the dates selected");
-                }
-            } else {
-                throw new \Exception("Availability is not deleted , please check the dates selected");
-            }
+            $availability = EmployeeAvailability::findOrFail($values['id']);
+            $availability->employeeAvailabilityRemarks()->delete();
+            $availability->delete();
             DB::connection('tenant')->commit();
-            return "Availability deleted successfully";
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
             error_log($e->getMessage());
@@ -389,6 +379,7 @@ class EmployeeAvailabilityService
         $availability = [
             'available_dates'     => [],
             'not_available_dates' => [],
+            'both'                => [],
             'date_overview'       => [],
         ];
         $companyIds = getUserCompanies($userId);
@@ -397,33 +388,45 @@ class EmployeeAvailabilityService
 
             $company = app(CompanyService::class)->getCompanyById($companyId);
             connectCompanyDataBase($companyId);
-	    $employeeProfile = getEmployeeProfileByUserId($userId);
-	    if ($employeeProfile) {
-            $existingAvailabilityDates = EmployeeAvailability::with('employeeAvailabilityRemarks')
-                ->where('employee_profile_id', $employeeProfile->id)
-                ->where('date', '>=', $dateRange['start_date'])
-                ->where('date', '<=', $dateRange['end_date'])
-		->get();
-	    foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
-                if ($existingAvailabilityDate->availability) {
-                    $availability['available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
-                } else {
-                    $availability['not_available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
-		}
-                if ($existingAvailabilityDate->employeeAvailabilityRemarks) {
-                    $remarkString = $existingAvailabilityDate->employeeAvailabilityRemarks->remark;
-                } else {
-                    $remarkString = null;
-		}
-                $availability['date_overview'][] = [
-                    'company' => $company->company_name,
-                    'date'    => date('d-m-Y', strtotime($existingAvailabilityDate->date)),
-                    'type'    => $existingAvailabilityDate->availability,
-                    'remark'  => $remarkString
-                ];
-	    }
-	    }
+            $employeeProfile = getEmployeeProfileByUserId($userId);
+            if ($employeeProfile) {
+                $existingAvailabilityDates = EmployeeAvailability::with('employeeAvailabilityRemarks')
+                    ->where('employee_profile_id', $employeeProfile->id)
+                    ->where('date', '>=', $dateRange['start_date'])
+                    ->where('date', '<=', $dateRange['end_date'])
+                    ->get();
+                foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
+                    $date = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+                    if ($existingAvailabilityDate->availability) {
+                        $availability['available_dates'][] = $date;
+                    } else {
+                        $availability['not_available_dates'][] = $date;
+                    }
+                    if ($existingAvailabilityDate->employeeAvailabilityRemarks) {
+                        $remarkString = $existingAvailabilityDate->employeeAvailabilityRemarks->remark;
+                    } else {
+                        $remarkString = null;
+                    }
+                    if (!in_array($date, $availability['date_overview'])) {
+                        $availability['date_overview'][$date] = [
+                            'date'         => $date,
+                            'company_list' => []
+                        ];
+                    }
+                    $availability['date_overview'][$date]['company_list'][] = [
+                        'availability_id' => $existingAvailabilityDate->id,
+                        'company_name'    => $company->company_name,
+                        'company_id'      => $company->id,
+                        'type'            => $existingAvailabilityDate->availability,
+                        'remark'          => $remarkString
+                    ];
+                }
+            }
         }
+        $availability['both'] = array_intersect($availability['available_dates'], $availability['not_available_dates']);
+        $availability['available_dates'] = array_diff($availability['available_dates'], $availability['both']);
+        $availability['not_available_dates'] = array_diff($availability['not_available_dates'], $availability['both']);
+        $availability['date_overview'] = array_values($availability['date_overview']);
         return $availability;
     }
 
@@ -432,17 +435,23 @@ class EmployeeAvailabilityService
         $availability = [
             'available_dates'     => [],
             'not_available_dates' => [],
+            'remarks'             => [],
         ];
         $dateRange = getDateRangeByPeriod($period);
-        $existingAvailabilityDates = EmployeeAvailability::where('employee_profile_id', $employeeProfileId)
+        $existingAvailabilityDates = EmployeeAvailability::with('employeeAvailabilityRemarks')
+            ->where('employee_profile_id', $employeeProfileId)
             ->where('date', '>=', $dateRange['start_date'])
             ->where('date', '<=', $dateRange['end_date'])
             ->get();
         foreach ($existingAvailabilityDates as $existingAvailabilityDate) {
+            $date = date('d-m-Y', strtotime($existingAvailabilityDate->date));
             if ($existingAvailabilityDate->availability) {
-                $availability['available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+                $availability['available_dates'][] = $date;
             } else {
-                $availability['not_available_dates'][] = date('d-m-Y', strtotime($existingAvailabilityDate->date));
+                $availability['not_available_dates'][] = $date;
+            }
+            if ($existingAvailabilityDate->employeeAvailabilityRemarks) {
+                $availability['remarks'][$date] = $existingAvailabilityDate->employeeAvailabilityRemarks->remark;
             }
         }
         return $availability;
