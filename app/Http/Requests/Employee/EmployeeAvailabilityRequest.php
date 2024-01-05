@@ -46,6 +46,17 @@ class EmployeeAvailabilityRequest extends ApiRequest
                     'dates.*'       => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
                 ];
             }
+        } elseif ($this->isMethod('delete')) {
+            $rules = [
+                'id'         => [
+                    'required',
+                    Rule::exists('employee_availabilities', 'id'),
+                ],
+                'company_id' => [
+                    'required',
+                    Rule::exists('master.companies', 'id')
+                ],
+            ];
         }
         return $rules;
 

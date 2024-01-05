@@ -54,6 +54,16 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+        Schema::create('company_rules', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('rule_id')->references('id')->on('rules')->onDelete('cascade');
+            $table->foreignId('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->string('value');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+        });
     }
 
     /**
@@ -65,5 +75,6 @@ return new class extends Migration {
         Schema::dropIfExists('employee_type_rules');
         Schema::dropIfExists('sector_rules');
         Schema::dropIfExists('employee_type_sector_rules');
+        Schema::dropIfExists('company_rules');
     }
 };
