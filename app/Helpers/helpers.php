@@ -8,7 +8,8 @@ use App\Services\CompanyService;
 use App\Models\User\CompanyUser;
 use App\Models\Company\Employee\EmployeeProfile;
 use Illuminate\Support\Facades\Auth;
-use Exception;
+use \Exception;
+use Carbon\Carbon;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -129,10 +130,10 @@ if (!function_exists('makeApiRequest')) {
                 // Get the JSON response data
                 return $response->json();
             } else {
-                throw new Exception("API error");
+                throw new \Exception("API error");
             }
         } catch (\Exception $e) {
-            throw new Exception("API error");
+            throw new \Exception("API error");
         }
     }
 }
@@ -496,7 +497,7 @@ if (!function_exists('getEmployeeProfileIdByUserIdCompanyId')) {
     function getEmployeeProfileIdByUserIdCompanyId($userId, $company_id)
     {
         setTenantDBByCompanyId($company_id);
-        
+
         return EmployeeProfile::where('user_id', $userId)->first();
     }
 }
@@ -536,8 +537,40 @@ if (!function_exists('getActiveUser')) {
         if ($user) {
             return $user;
         } else {
-            throw new Exception("Unauthorized access");
+            throw new \Exception("Unauthorized access");
         }
-        return null;
+    }
+}
+
+
+if (!function_exists('getVatNumberFormat')) {
+    function getVatNumberFormat($vat)
+    {
+        return str_replace(['BE', 'be', 'Be', 'bE', '.', '-'], '', $vat);
+    }
+}
+
+if (!function_exists('getRSZNumberFormat')) {
+    function getRSZNumberFormat($rsz)
+    {
+        return str_replace(['.', '-'], '', $rsz);
+    }
+}
+
+if (!function_exists('timeDifferenceinHours')) {
+    function timeDifferenceinHours($start, $end) {
+        $start  = new Carbon($start);
+        $end    = new Carbon($end);
+        $diff = $start->diff($end)->format('%H.%I');
+        $time = explode('.', $diff);
+        return ($time[0] + ($time[1]/60));
+    }
+}
+
+
+if (!function_exists('addHours')) {
+    function addHours($dateTime, $hours) {
+        $start  = new Carbon($dateTime);
+        return $start->addHours($hours)->format('Y-m-d H:i:s');
     }
 }

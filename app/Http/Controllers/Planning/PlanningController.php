@@ -10,6 +10,7 @@ use App\Http\Requests\Planning\GetWeeklyPlanningRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\Planning\GetDayPlanningRequest;
+use Exception;
 
 
 class PlanningController extends Controller
@@ -36,13 +37,14 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -107,13 +109,14 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -133,13 +136,14 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -164,13 +168,14 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -184,13 +189,14 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -214,13 +220,14 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -234,13 +241,14 @@ class PlanningController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }

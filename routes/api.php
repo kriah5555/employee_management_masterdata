@@ -39,6 +39,8 @@ use App\Http\Controllers\{
     NotificationController\NotificationController,
 };
 
+use App\Http\Controllers\Planning\VacancyController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -67,6 +69,8 @@ use App\Http\Controllers\{
     500 =>  indicates that the server encountered an unexpected condition that prevented it from fulfilling the request
 */
 
+
+
 $integerRule = '[0-9]+'; # allow only integer values
 $statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
@@ -81,6 +85,7 @@ Route::group(['middleware' => 'service-registry'], function () {
 });
 
 Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
+
 
     $resources = [
         'contract-types'      => [
@@ -153,12 +158,13 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'availability'        => [
             'controller' => EmployeeAvailabilityController::class,
-            'methods'    => ['index', 'store', 'update', 'create']
+            'methods'    => ['store']
         ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
         Route::resource($uri, $controller)->only($methods);
     }
+    Route::post('get-availability', [EmployeeAvailabilityController::class, 'index'])->name('get-employee-availability');
 
     Route::post('convert-pdf-to-html', [ContractTemplateController::class, 'convertPDFHtml']);
 
@@ -215,6 +221,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 
     Route::get('get-employee-companies', [EmployeeController::class, 'getEmployeeCompanies']);
+
+    Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
+
+    Route::post('/vacancy/employee', [VacancyController::class, 'getEmployeeJobsOverview']);
 });
 
 use App\Models\User\CompanyUser;
@@ -253,3 +263,5 @@ Route::get('/script', function () {
         'message' => 'Done'
     ]);
 });
+
+;

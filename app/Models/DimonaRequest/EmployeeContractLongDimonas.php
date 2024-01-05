@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Models\Planning;
+namespace App\Models\DimonaRequest;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Planning\PlanningBase;
-use App\Models\DimonaRequest\DimonaBase;
+use App\Models\Company\Employee\EmployeeContract;
 
-class PlanningDimona extends Model
+class EmployeeContractLongDimonas extends Model
 {
     use HasFactory;
 
@@ -18,7 +17,7 @@ class PlanningDimona extends Model
      *
      * @var string
      */
-    protected $table = 'planning_dimonas';
+    protected $table = 'employee_contract_long_dimonas';
 
     /**
      * The primary key associated with the table.
@@ -51,7 +50,7 @@ class PlanningDimona extends Model
      * @var array
      */
      protected $fillable = [
-        'planning_base_id',
+        'employee_contract_id',
         'dimona_base_id',
     ];
 
@@ -60,8 +59,8 @@ class PlanningDimona extends Model
         return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
     }
 
-    public function planningBase()
+    public function EmployeeContractDimonas()
     {
-        return $this->belongsTo(PlanningBase::class, 'planning_base_id');
+        return $this->belongsTo(EmployeeContract::class, 'employee_contract_id');
     }
 }

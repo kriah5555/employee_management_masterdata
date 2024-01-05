@@ -65,62 +65,37 @@ class EmployeeAvailabilityController extends Controller
             );
         }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(EmployeeAvailabilityRequest $request, $id)
-    {
-        try {
-            return response()->json(
-                [
-                    'success' => true,
-                    'message' => $this->employeeAvailabilityService->updateAvailability($request->validated(), $id)
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (\Exception $e) {
-            return response()->json([
-                "success" => false,
-                "message" => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(EmployeeAvailabilityRequest $request)
     {
         try {
-            return response()->json(
+            $this->employeeAvailabilityService->deleteAvailability($request->validated());
+            return returnResponse(
                 [
-                    'success' => true,
-                    'message' => $this->employeeAvailabilityService->deleteAvailability($id)
+                    'success' => false,
+                    'message' => 'Availability deleted',
                 ],
-                JsonResponse::HTTP_OK,
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
         } catch (\Exception $e) {
-            return response()->json([
-                "success" => false,
-                "message" => $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return returnResponse(
+                [
+                    "success" => false,
+                    "message" => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
+
     /**
      * Display a listing of the resource.
      */
     public function getEmployeeAvailability(EmployeeAvailabilityRequest $request)
     {
         try {
-            $userId = Auth::guard('web')->user()->id;
             return returnResponse(
                 [
                     'success' => true,

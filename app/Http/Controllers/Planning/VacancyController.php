@@ -188,6 +188,7 @@ class VacancyController extends Controller
             $data['user_id'] = getActiveUser()->id;
             return returnResponse(
                 [
+                    
                     'success' => true,
                     'message' => t('Job applied successfully'),
                     'data'    => $this->vacancyService->applyVacancyService($data)

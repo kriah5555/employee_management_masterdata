@@ -52,7 +52,7 @@ class PlanningMobileService implements PlanningInterface
             }
         }
 
-        return $response;
+        return array_values($response);
     }
 
     public function formatPlans($plans, $company, $format = [])
@@ -170,7 +170,7 @@ class PlanningMobileService implements PlanningInterface
             if (!empty($employee_profiles)) {
                 $company = $this->companyRepository->getCompanyById($company_id);
                 $plans = $this->planningService->getPlans($from_date, $to_date, '', '', '', $employee_profiles->id);
-                if ($plans) { 
+                if ($plans) {
                     $response = $this->formatWorkedHours($plans, $company, $response);
                 }
             }
