@@ -63,9 +63,10 @@ class EmployeeSignatureController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $user_id)
+    public function show()
     {
         try {
+            $user_id = Auth::guard('web')->user()->id;
             $employee_profile = getEmployeeProfileIdByUserIdCompanyId($user_id, getCompanyId());
             
             return returnResponse(

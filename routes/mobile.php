@@ -34,8 +34,6 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::post('employee-sign-plan-contract', 'employeeSignPlanContract');
 
-        // Route::post('get-employee-plan-contract/{user_id}', 'getEmployeePlanContract');
-
         Route::get('get-employee-contracts', 'index');
     });
 
