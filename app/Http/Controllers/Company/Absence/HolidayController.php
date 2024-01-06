@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Company\Absence\HolidayService;
 use App\Http\Requests\Company\Absence\HolidayRequest;
+use App\Http\Requests\Company\Absence\AbsenceChangeReportingManagerRequest;
 
 class HolidayController extends Controller
 {
@@ -119,7 +120,29 @@ class HolidayController extends Controller
                 [
                     'success' => true,
                     'message' => t('Holiday created successfully'),
-                    'data'    => $this->holidayService->applyHoliday($request->toArray()),
+                    'data'    => $this->holidayService->applyHoliday($request->validated()),
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function changeHolidayManager(AbsenceChangeReportingManagerRequest $request)
+    {
+        try {
+            $this->holidayService->updateResponsiblePerson($request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Manager updated successfully'),
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -165,7 +188,7 @@ class HolidayController extends Controller
     public function update(HolidayRequest $request, $holidayId)
     {
         try {
-            $this->holidayService->updateAppliedHoliday($holidayId, $request->all());
+            $this->holidayService->updateAppliedHoliday($holidayId, $request->validated());
             return returnResponse(
                 [
                     'success' => true,

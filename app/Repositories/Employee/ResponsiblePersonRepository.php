@@ -20,13 +20,12 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     {
         $this->roles = array_keys(config('roles_permissions.RESPONSIBLE_PERSON_ROLES'));
     }
-    public function getCompanyResponsiblePersons($companyId)
+    public function getCompanyResponsiblePersons($company_id)
     {
-        $roles = array_keys(config('roles_permissions.RESPONSIBLE_PERSON_ROLES'));
-        return CompanyUser::where('company_id', $companyId)->with(['roles', 'user', 'user.employeeProfileForCompany'])->whereHas("roles", function ($q) use ($roles) {
-            $q->whereIn("name", $roles);
-        })->get();
-
+        $user_ids = $this->getCompanyResponsiblePersonUserIds($company_id);
+        return EmployeeProfile::whereIn('user_id', $user_ids)
+            ->with(['user.userBasicDetails'])
+            ->get();
     }
 
     public function getCompanyResponsiblePersonUserIds($company_id)
@@ -52,7 +51,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
         $user_ids     = $this->getCompanyResponsiblePersonUserIds($company_id);
         $user_service = app(UserService::class);
         $user         = User::whereIn('id', $user_ids)
-                        ->with(['userBasicDetails', 'roles', 'userContactDetails'])
+                        ->with(['userBasicDetails', 'userContactDetails'])
                         ->findOrFail($employee_profile->user_id);
         $user->roles = $user_service->getCompanyUserRoles($user->id, $company_id);
         return $user;

@@ -66,6 +66,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::resource('holidays', HolidayController::class)->except(['edit', 'index']);
 
+            Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
+
             Route::get('employee-holidays/{employee_id}/{status}', [HolidayController::class, 'employeeHolidays'])
                 ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for employee flow
 
@@ -79,6 +81,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::controller(LeaveController::class)->group(function () {
 
             Route::resource('leaves', LeaveController::class)->except(['edit', 'index']);
+
+            Route::post('leaves-change-reporting-manager', [LeaveController::class, 'changeLeaveManager']);
 
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
                 ->where(['status' => '(approve|pending)']); # to get leaves list
