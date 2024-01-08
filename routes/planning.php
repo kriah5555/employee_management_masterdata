@@ -56,6 +56,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
             }
         });
 
+    Route::post('get-week-planning-employee', [PlanningController::class, 'getWeeklyPlanningForEmployee'])->name('week-planning-employee');
 
     Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
 
