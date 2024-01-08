@@ -41,6 +41,21 @@ class EmployeeAvailabilityRequest extends ApiRequest
                         Rule::exists('employee_profiles', 'id')
                     ]
                 ];
+            } elseif ($this->routeIs('get-weekly-availability')) {
+                $rules = [
+                    'week' => 'required|integer',
+                    'year' => 'required|digits:4',
+                ];
+            } elseif ($this->routeIs('get-weekly-availability-for-employee')) {
+                $rules = [
+                    'employee_profile_id' => [
+                        'bail',
+                        'required',
+                        Rule::exists('employee_profiles', 'id')
+                    ],
+                    'week'                => 'required|integer',
+                    'year'                => 'required|digits:4',
+                ];
             } else {
                 $rules = [
                     'type'          => 'required|between:0,1|bail',
