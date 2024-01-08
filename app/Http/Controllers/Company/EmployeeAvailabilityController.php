@@ -113,4 +113,44 @@ class EmployeeAvailabilityController extends Controller
             );
         }
     }
+    public function getWeeklyAvailability(EmployeeAvailabilityRequest $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeAvailabilityService->getWeeklyAvailability($request->get('week'), $request->get('year')),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    "success" => false,
+                    "message" => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    public function getWeeklyAvailabilityForEmployee(EmployeeAvailabilityRequest $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeAvailabilityService->getWeeklyAvailabilityForEmployee($request->get('employee_profile_id'), $request->get('week'), $request->get('year')),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    "success" => false,
+                    "message" => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }

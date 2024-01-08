@@ -2,6 +2,7 @@
 
 namespace App\Services\Company;
 
+use App\Models\Planning\PlanningBase;
 use DateTime;
 use App\Models\Company\EmployeeAvailability;
 use Illuminate\Support\Facades\DB;
@@ -455,5 +456,67 @@ class EmployeeAvailabilityService
             }
         }
         return $availability;
+    }
+    public function getWeeklyAvailability($week, $year)
+    {
+        $dates = getWeekDates($week, $year);
+        $startDate = date('Y-m-d 00:00:00', strtotime(reset($dates)));
+        $endDate = date('Y-m-d 23:59:59', strtotime(end($dates)));
+        $plannedEmployeeIds = PlanningBase::whereBetween('start_date_time', [$startDate, $endDate])->get()->pluck('employee_profile_id')->toArray();
+        $plannedEmployeeIds = array_unique($plannedEmployeeIds);
+        $response = [];
+        foreach ($plannedEmployeeIds as $plannedEmployeeId) {
+            $employeeResponse = [
+                'availability'     => [],
+                'not_availability' => [],
+                'remarks'          => [],
+            ];
+            $availabilities = EmployeeAvailability::with('employeeAvailabilityRemarks')
+                ->where('employee_profile_id', $plannedEmployeeId)
+                ->where('date', '>=', $startDate)
+                ->where('date', '<=', $endDate)
+                ->get();
+            foreach ($availabilities as $availability) {
+                $date = date('d-m-Y', strtotime($availability->date));
+                if ($availability->availability) {
+                    $employeeResponse['availability'][] = $date;
+                } else {
+                    $employeeResponse['not_availability'][] = $date;
+                }
+                if ($availability->employeeAvailabilityRemarks) {
+                    $employeeResponse['remarks'][$date] = $availability->employeeAvailabilityRemarks->remark;
+                }
+            }
+            $response[$plannedEmployeeId] = $employeeResponse;
+        }
+        return $response;
+    }
+    public function getWeeklyAvailabilityForEmployee($employeeProfileId, $week, $year)
+    {
+        $dates = getWeekDates($week, $year);
+        $startDate = date('Y-m-d 00:00:00', strtotime(reset($dates)));
+        $endDate = date('Y-m-d 23:59:59', strtotime(end($dates)));
+        $employeeResponse = [
+            'availability'     => [],
+            'not_availability' => [],
+            'remarks'          => [],
+        ];
+        $availabilities = EmployeeAvailability::with('employeeAvailabilityRemarks')
+            ->where('employee_profile_id', $employeeProfileId)
+            ->where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate)
+            ->get();
+        foreach ($availabilities as $availability) {
+            $date = date('d-m-Y', strtotime($availability->date));
+            if ($availability->availability) {
+                $employeeResponse['availability'][] = $date;
+            } else {
+                $employeeResponse['not_availability'][] = $date;
+            }
+            if ($availability->employeeAvailabilityRemarks) {
+                $employeeResponse['remarks'][$date] = $availability->employeeAvailabilityRemarks->remark;
+            }
+        }
+        return $employeeResponse;
     }
 }
