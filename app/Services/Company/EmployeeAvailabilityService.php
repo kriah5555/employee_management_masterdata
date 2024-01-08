@@ -467,9 +467,9 @@ class EmployeeAvailabilityService
         $response = [];
         foreach ($plannedEmployeeIds as $plannedEmployeeId) {
             $employeeResponse = [
-                'availability'     => [],
-                'not_availability' => [],
-                'remarks'          => [],
+                'available'     => [],
+                'not_available' => [],
+                'remarks'       => [],
             ];
             $availabilities = EmployeeAvailability::with('employeeAvailabilityRemarks')
                 ->where('employee_profile_id', $plannedEmployeeId)
@@ -479,9 +479,9 @@ class EmployeeAvailabilityService
             foreach ($availabilities as $availability) {
                 $date = date('d-m-Y', strtotime($availability->date));
                 if ($availability->availability) {
-                    $employeeResponse['availability'][] = $date;
+                    $employeeResponse['available'][] = $date;
                 } else {
-                    $employeeResponse['not_availability'][] = $date;
+                    $employeeResponse['not_available'][] = $date;
                 }
                 if ($availability->employeeAvailabilityRemarks) {
                     $employeeResponse['remarks'][$date] = $availability->employeeAvailabilityRemarks->remark;
@@ -497,9 +497,9 @@ class EmployeeAvailabilityService
         $startDate = date('Y-m-d 00:00:00', strtotime(reset($dates)));
         $endDate = date('Y-m-d 23:59:59', strtotime(end($dates)));
         $employeeResponse = [
-            'availability'     => [],
-            'not_availability' => [],
-            'remarks'          => [],
+            'available'     => [],
+            'not_available' => [],
+            'remarks'       => [],
         ];
         $availabilities = EmployeeAvailability::with('employeeAvailabilityRemarks')
             ->where('employee_profile_id', $employeeProfileId)
@@ -509,9 +509,9 @@ class EmployeeAvailabilityService
         foreach ($availabilities as $availability) {
             $date = date('d-m-Y', strtotime($availability->date));
             if ($availability->availability) {
-                $employeeResponse['availability'][] = $date;
+                $employeeResponse['available'][] = $date;
             } else {
-                $employeeResponse['not_availability'][] = $date;
+                $employeeResponse['not_available'][] = $date;
             }
             if ($availability->employeeAvailabilityRemarks) {
                 $employeeResponse['remarks'][$date] = $availability->employeeAvailabilityRemarks->remark;
