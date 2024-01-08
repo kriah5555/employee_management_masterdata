@@ -29,7 +29,7 @@ class VacancyUpdateRequest extends ApiRequest
             'workstations'   => 'required|integer|exists:workstations,id',
             'functions'      => 'required|integer',
             'employee_types' => 'required|array',
-            'start_date'     => 'required|date',
+            'start_date'     => 'required|date_format:d-m-Y',
             'start_time'     => 'required|date_format:H:i',
             'end_time'       => 'required|date_format:H:i',
             'vacancy_count'  => 'required_if:status,1|integer|min:0',

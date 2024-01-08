@@ -343,7 +343,6 @@ class PlanningService implements PlanningInterface
             'start_plan'    => $startPlan,
             'stop_plan'     => $stopPlan,
             'contract'      => $this->planningContractService->getPlanningContractContract($details),
-            'contract_file' => $details->contracts
         ];
         $response['activity'] = [];
         foreach ($details->timeRegistrations as $timeRegistrations) {

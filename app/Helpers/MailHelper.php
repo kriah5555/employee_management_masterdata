@@ -1,6 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Mail;
-use App\Mail\MailService;
+use App\Services\Email\MailService;
 use App\Exceptions;
 use App\Http\Controllers\Notification\NotificationController;
 use GuzzleHttp\Client;

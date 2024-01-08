@@ -132,4 +132,9 @@ class AbsenceService
         $absence->delete();
         return;
     }
+
+    public function changeReportingManager($absence, $responsible_person_id)
+    {
+        return $absence->update(['manager_id' => $responsible_person_id]);
+    }
 }

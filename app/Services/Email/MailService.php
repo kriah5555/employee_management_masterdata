@@ -7,6 +7,7 @@ use App\Mail\SendMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Services\Email\EmailTemplateService;
+use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Employee\EmployeeProfileRepository;
 
 class MailService
@@ -16,6 +17,7 @@ class MailService
     public function __construct(
         protected EmailTemplateService $email_template_service,
         protected EmployeeProfileRepository $employeeProfileRepository,
+        protected CompanyRepository $companyRepository,
         )
     {
         $this->redirect_mail = 'sunilgangadhar.infanion@gmail.com';
@@ -79,6 +81,42 @@ class MailService
         ];
     }
 
+    public function sendCompanyCreationMail($company_id, $language = 'en')
+    {
+        $email_template = $this->email_template_service->getEmailTemplateDetailsByType('company_creation_mail');
+
+        if ($email_template) {
+            $subject = $email_template->getTranslation('subject', $language);
+            $body    = $email_template->getTranslation('body', $language);
+
+            // Get employee data
+            $companyData = $this->getCompanyTokensData($company_id);
+
+            // Replace employee tokens in the body content using config tokens
+            $body    = replaceTokens($body, $companyData);
+            $subject = replaceTokens($subject, $companyData);
+
+            $this->triggerMail($this->redirect_mail != '' ? $this->redirect_mail : "", $subject, $body);
+        }
+    }
+
+    private function getCompanyTokensData($company_id)
+    {
+        $company = $this->companyRepository->getCompanyById($company_id);
+
+        return [
+            '{company_name}'               => $company->company_name,
+            '{company_vat}'                => $company->vat_number,
+            '{company_responsible_person}' => '',
+            '{company_pc_number}'          => $company->company_name,
+            '{company_city}'               => $company->address->city,
+            '{company_address}'            => ($company->address ? $company->address->street_house_no : null) . ' ' .
+                                            ($company->address ? $company->address->postal_code : null) . ' ' .
+                                            ($company->address ? $company->address->city : null) . ' ' .
+                                            ($company->address ? $company->address->country : null),# Address:Street + number Postal code City Country,
+        ];
+    }
+
     public function triggerMail($mail_id, $subject, $htmlContent)
     {
         try {
@@ -86,7 +124,6 @@ class MailService
             Log::info('Email sent successfully.');
         } catch (\Exception $e) {
             Log::error('Error sending email: ' . $e->getMessage());
-            // You might want to throw the exception to propagate it to the calling code
         }
     }
 }
