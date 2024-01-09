@@ -43,6 +43,14 @@ class Absence extends BaseModel
             $absence->applied_date = now()->toDateString();
         });
 
+        // static::saving(function ($absence) { # to update manager id since currently there is no responsible person fro employee commented this
+
+        //     if (empty($absence->manager_id)) {
+
+        //         $absence->manager_id = EmployeeProfile::find($absence->employee_profile_id);
+        //     }
+        // });
+
         // Listen for the 'deleting' event
         static::deleting(function ($absence) {
             // Delete related AbsenceHours
@@ -51,6 +59,7 @@ class Absence extends BaseModel
             // Delete related AbsenceDates
             $absence->absenceDates()->delete();
         });
+          
     }
 
     public function employee()

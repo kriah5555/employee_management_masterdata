@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\Contract\ContractMobileService;
 use App\Http\Requests\Contract\ContractRequest;
 use App\Http\Requests\Contract\EmployeePlanSignContractRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ContractMobileController extends Controller
 {

@@ -34,7 +34,7 @@ class UpdateEmployeeRequest extends ApiRequest
                 'integer',
                 new GenderRule(),
             ],
-            'date_of_birth'          => 'required|date|date_format:Y-m-d|before:today',
+            'date_of_birth'          => 'required|date|date_format:d-m-Y|before:today',
             'street_house_no'        => 'required|string|max:255',
             'postal_code'            => 'required|string|max:50',
             'city'                   => 'required|string|max:50',

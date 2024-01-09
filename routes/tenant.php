@@ -66,6 +66,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::resource('holidays', HolidayController::class)->except(['edit', 'index']);
 
+            Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
+
             Route::get('employee-holidays/{employee_id}/{status}', [HolidayController::class, 'employeeHolidays'])
                 ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for employee flow
 
@@ -79,6 +81,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::controller(LeaveController::class)->group(function () {
 
             Route::resource('leaves', LeaveController::class)->except(['edit', 'index']);
+
+            Route::post('leaves-change-reporting-manager', [LeaveController::class, 'changeLeaveManager']);
 
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
                 ->where(['status' => '(approve|pending)']); # to get leaves list
@@ -188,8 +192,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('stop-plan-reasons', 'getStopPlanReasons');
         });
-	Route::get('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
-	Route::post('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
+        Route::get('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
+        Route::post('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
+        Route::post('get-weekly-availability', [EmployeeAvailabilityController::class, 'getWeeklyAvailability'])->name('get-weekly-availability');
+        Route::post('get-weekly-availability-for-employee', [EmployeeAvailabilityController::class, 'getWeeklyAvailabilityForEmployee'])->name('get-weekly-availability-for-employee');
         Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-availability');
     });
 });

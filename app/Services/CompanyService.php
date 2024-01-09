@@ -12,6 +12,7 @@ use App\Services\Company\LocationService;
 use App\Services\WorkstationService;
 use App\Repositories\Company\CompanyRepository;
 use App\Models\Tenant;
+use App\Services\Email\MailService;
 
 class CompanyService
 {

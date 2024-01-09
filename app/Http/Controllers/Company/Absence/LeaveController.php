@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Company\Absence;
 
 use Illuminate\Http\Request;
-use App\Services\Company\Absence\LeaveService;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Absence\HolidayRequest;
+use App\Services\Company\Absence\LeaveService;
+use App\Http\Requests\Company\Absence\AbsenceChangeReportingManagerRequest;
 
 class LeaveController extends Controller
 {
@@ -28,6 +29,28 @@ class LeaveController extends Controller
                     'data'    => $this->leave_service->getLeaves($status),
                 ],
                 JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function changeLeaveManager(AbsenceChangeReportingManagerRequest $request)
+    {
+        try {
+            $this->leave_service->updateResponsiblePerson($request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Manager updated successfully'),
+                ],
+                JsonResponse::HTTP_CREATED,
             );
         } catch (Exception $e) {
             return returnResponse(

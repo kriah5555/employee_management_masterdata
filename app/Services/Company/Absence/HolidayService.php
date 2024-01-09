@@ -190,4 +190,24 @@ class HolidayService
             throw $e;
         }
     }
+
+    public function updateResponsiblePerson($values)
+    {
+        try {
+            try {
+                DB::connection('tenant')->beginTransaction();
+                    $absence = $this->holiday_repository->getHolidayById($values['absence_id']);
+                    $this->absence_service->changeReportingManager($absence, $values['manager_id']);
+                DB::connection('tenant')->commit();
+            } catch (Exception $e) {
+                DB::connection('tenant')->rollback();
+                error_log($e->getMessage());
+                throw $e;
+            }
+            return $absence;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }
