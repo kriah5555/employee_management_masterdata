@@ -251,4 +251,31 @@ class PlanningController extends Controller
             );
         }
     }
+
+    /**
+     * Get weekly planning info.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return json
+     */
+    public function getWeeklyPlanningForEmployee(GetWeeklyPlanningRequest $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningService->getWeeklyPlanningForEmployee($request->input('employee_id'), $request->input('location'), $request->input('workstations'), $request->input('employee_types'), $request->input('week'), $request->input('year'))
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }

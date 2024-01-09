@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Company\Employee\EmployeeProfile;
 use App\Repositories\Employee\ResponsiblePersonRepository;
 use App\Services\Employee\EmployeeService;
+use App\Models\User\CompanyUser;
 
 class ResponsiblePersonService
 {
@@ -29,12 +30,13 @@ class ResponsiblePersonService
     {
         $responsiblePersons = [];
         foreach ($employeeProfiles as $employeeProfile) {
-            if ($employeeProfile->roles->count() == 1) {
-                $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$employeeProfile->roles[0]->name];
-            } elseif ($employeeProfile->roles[0]->name == 'employee') {
-                $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$employeeProfile->roles[1]->name];
+            $company_user = CompanyUser::where(['user_id' => $employeeProfile->user->id])->get()->first();
+            if ($company_user->roles->count() == 1) {
+                $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$company_user->roles[0]->name];
+            } elseif ($company_user->roles[0]->name == 'employee') {
+                $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$company_user->roles[1]->name];
             } else {
-                $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$employeeProfile->roles[0]->name];
+                $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$company_user->roles[0]->name];
             }
             $responsiblePersons[] = [
                 'id'                     => $employeeProfile->id,

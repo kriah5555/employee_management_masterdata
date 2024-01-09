@@ -241,6 +241,14 @@ class PlanningService implements PlanningInterface
             }
             $response['workstation_data'][$value['value']]['shifts'] = $shiftsFormatted;
         }
+        $weekDates = getWeekDates($weekNo, $year);
+        foreach ($weekDates as $date) {
+            $date = date('d-m-Y', strtotime($date));
+            $response['total'][$date] = [
+                'cost'           => 0,
+                'contract_hours' => 0
+            ];
+        }
 
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year);
@@ -343,7 +351,6 @@ class PlanningService implements PlanningInterface
             'start_plan'    => $startPlan,
             'stop_plan'     => $stopPlan,
             'contract'      => $this->planningContractService->getPlanningContractContract($details),
-            'contract_file' => $details->contracts
         ];
         $response['activity'] = [];
         foreach ($details->timeRegistrations as $timeRegistrations) {
@@ -379,5 +386,58 @@ class PlanningService implements PlanningInterface
     {
         $monthDates = getStartAndEndDateOfMonth($month, $year);
         return $this->planningRepository->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $monthDates['start_date'], $monthDates['end_date']);
+    }
+    public function getWeeklyPlanningForEmployee($employeId, $location, $workstations, $employee_types, $weekNo, $year)
+    {
+        //Getting the data from the query.
+        $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year, $employeId);
+        return $this->formatWeeklyDataEmployee($plannings);
+    }
+    public function formatWeeklyDataEmployee($plannings)
+    {
+        foreach ($plannings as $plan) {
+            $contractHours = $plan->contract_hours;
+            $planDate = date('d-m-Y', strtotime($plan->start_date_time));
+            //Initializing.
+            $profile = $plan->employee_profile_id;
+            $response = [];
+
+            //Employee details.
+            $response = [
+                'employee_id'   => $plan->employeeProfile->id,
+                'employee_name' => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name
+            ];
+            $response['total'] = [
+                'cost'           => 0,
+                'contract_hours' => 0
+            ];
+            $planDetails = [
+                "plan_id"        => $plan->id,
+                "timings"        => date('H:i', strtotime($plan->start_date_time)) . ' ' . date('H:i', strtotime($plan->end_date_time)),
+                "contract_hours" => number_format($contractHours, 2, ',', '.'),
+            ];
+
+            if (!isset($response['plans'][$planDate])) {
+                $response['plans'][$planDate]['planning'] = [];
+                $response['plans'][$planDate]['contract_hours'] = 0;
+                $response['plans'][$planDate]['cost'] = 0;
+                $response['plans'][$planDate]['employee_type'] = [
+                    'value' => $plan->employeeType->id,
+                    'label' => $plan->employeeType->name,
+                ];
+                $response['plans'][$planDate]['function'] = [
+                    'value' => $plan->functionTitle->id,
+                    'label' => $plan->functionTitle->name,
+                ];
+            }
+            $response['plans'][$planDate]['planning'][] = $planDetails;
+            $response['plans'][$planDate]['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['plans'][$planDate]['contract_hours']) + $contractHours
+            );
+            $response['total']['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['total']['contract_hours']) + $contractHours
+            );
+        }
+        return $response;
     }
 }

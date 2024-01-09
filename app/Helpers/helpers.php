@@ -332,7 +332,7 @@ if (!function_exists('getWeekDates')) {
         $startDate->setISODate($year, $weekNo, 1); // Set to the first day of the given week
         for ($i = 0; $i < 7; $i++) {
             $date = $startDate->format('Y-m-d');
-            $dates[$date] = $date;
+            $dates[] = $date;
             $startDate->modify('+1 day');
         }
         return $dates;

@@ -35,13 +35,7 @@ class LeaveRequest extends ApiRequest
                 'required',
                 'integer',
             ],
-            'manager_id' => [
-                'bail',
-                'nullable',
-                'integer',
-            ],
             'reason' => 'nullable|string',
-
             'dates' => [
                 'bail',
                 'required',

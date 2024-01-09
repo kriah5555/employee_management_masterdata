@@ -35,6 +35,12 @@ class GetWeeklyPlanningRequest extends ApiRequest
             ],
             'week'             => 'required|integer',
             'year'             => 'required|digits:4',
+            'employee_id'      => [
+                'bail',
+                'nullable',
+                'integer',
+                Rule::exists('employee_id', 'id'),
+            ],
         ];
 
     }

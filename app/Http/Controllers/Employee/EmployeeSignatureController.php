@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Employee\EmployeeService;
 
@@ -12,15 +13,15 @@ class EmployeeSignatureController extends Controller
 {
     public function __construct(protected EmployeeService $employee_service)
     {
-
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function update(Request $request, $user_id)
+    public function store(Request $request)
     {
         try {
+            $user_id = Auth::guard('web')->user()->id;
             $rules = [
                 'signature_data' => [
                     'required',
@@ -62,9 +63,10 @@ class EmployeeSignatureController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $user_id)
+    public function show()
     {
         try {
+            $user_id = Auth::guard('web')->user()->id;
             $employee_profile = getEmployeeProfileIdByUserIdCompanyId($user_id, getCompanyId());
             
             return returnResponse(
