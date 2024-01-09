@@ -391,26 +391,23 @@ class PlanningService implements PlanningInterface
     {
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year, $employeId);
-        return $this->formatWeeklyDataEmployee($plannings);
+        $employeeDetails = $this->employeeService->getEmployeeDetails($employeId);
+        $response = [
+            'employee_id'   => $employeId,
+            'employee_name' => $employeeDetails['first_name'] . ' ' . $employeeDetails['last_name'],
+            'total'         => [
+                'cost'           => 0,
+                'contract_hours' => 0
+            ],
+            'plans'         => []
+        ];
+        return $this->formatWeeklyDataEmployee($plannings, $response);
     }
-    public function formatWeeklyDataEmployee($plannings)
+    public function formatWeeklyDataEmployee($plannings, &$response)
     {
         foreach ($plannings as $plan) {
             $contractHours = $plan->contract_hours;
             $planDate = date('d-m-Y', strtotime($plan->start_date_time));
-            //Initializing.
-            $profile = $plan->employee_profile_id;
-            $response = [];
-
-            //Employee details.
-            $response = [
-                'employee_id'   => $plan->employeeProfile->id,
-                'employee_name' => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name
-            ];
-            $response['total'] = [
-                'cost'           => 0,
-                'contract_hours' => 0
-            ];
             $planDetails = [
                 "plan_id"        => $plan->id,
                 "timings"        => date('H:i', strtotime($plan->start_date_time)) . ' ' . date('H:i', strtotime($plan->end_date_time)),
