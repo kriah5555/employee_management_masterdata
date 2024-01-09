@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::dropIfExists('employee_type_rules');
         Schema::dropIfExists('rules');
-        Schema::create('rules', function (Blueprint $table) {
+        Schema::create('parameters', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->longText('description')->nullable();
@@ -23,32 +23,32 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('employee_type_rules', function (Blueprint $table) {
+        Schema::create('employee_type_parameters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rule_id')->references('id')->on('rules')->onDelete('cascade');
+            $table->foreignId('parameter_id')->references('id')->on('parameters')->onDelete('cascade');
             $table->foreignId('employee_type_id')->references('id')->on('employee_types')->onDelete('cascade');
-            $table->string('value');
+            $table->string('value')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('sector_rules', function (Blueprint $table) {
+        Schema::create('sector_parameters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rule_id')->references('id')->on('rules')->onDelete('cascade');
+            $table->foreignId('parameter_id')->references('id')->on('parameters')->onDelete('cascade');
             $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
-            $table->string('value');
+            $table->string('value')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('employee_type_sector_rules', function (Blueprint $table) {
+        Schema::create('employee_type_sector_parameters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rule_id')->references('id')->on('rules')->onDelete('cascade');
+            $table->foreignId('parameter_id')->references('id')->on('parameters')->onDelete('cascade');
             $table->foreignId('employee_type_id')->references('id')->on('employee_types')->onDelete('cascade');
             $table->foreignId('sector_id')->references('id')->on('sectors')->onDelete('cascade');
-            $table->string('value');
+            $table->string('value')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -61,10 +61,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('employee_type_sector_rules');
-        Schema::dropIfExists('employee_type_rules');
-        Schema::dropIfExists('sector_rules');
-        Schema::dropIfExists('rules');
+        Schema::dropIfExists('employee_type_sector_parameters');
+        Schema::dropIfExists('employee_type_parameters');
+        Schema::dropIfExists('sector_parameters');
+        Schema::dropIfExists('parameters');
         Schema::create('rules', function (Blueprint $table) {
             $table->id();
             $table->string('name');

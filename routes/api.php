@@ -24,7 +24,7 @@ use App\Http\Controllers\Employee\{
 use App\Http\Controllers\{
     MealVoucherController,
     ReasonController,
-    Rule\RuleController,
+    Parameter\ParameterController,
     Sector\SectorController,
     Sector\SalaryController,
     Contract\ContractTypeController,
@@ -40,6 +40,8 @@ use App\Http\Controllers\{
 };
 
 use App\Http\Controllers\Planning\VacancyController;
+use App\Models\User\CompanyUser;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,9 +118,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             'controller' => HolidayCodeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'rules'               => [
-            'controller' => RuleController::class,
-            'methods'    => ['index', 'show', 'edit', 'update']
+        'parameters'          => [
+            'controller' => ParameterController::class,
+            'methods'    => ['show', 'edit', 'update']
         ],
         'social-secretary'    => [
             'controller' => SocialSecretaryController::class,
@@ -225,12 +227,24 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
 
     Route::post('/vacancy/employee', [VacancyController::class, 'getEmployeeJobsOverview']);
+
+    Route::post('get-default-parameters', [ParameterController::class, 'getDefaultParameters'])->name('get-default-parameters');
+
+    Route::put('update-default-parameter/{parameter_id}', [ParameterController::class, 'updateDefaultParameter'])->name('update-default-parameter');
+
+    Route::post('get-employee-type-parameters', [ParameterController::class, 'getEmployeeTypeParameters'])->name('get-employee-type-parameters');
+
+    Route::put('update-employee-type-parameter/{parameter_id}', [ParameterController::class, 'updateEmployeeTypeParameter'])->name('update-employee-type-parameter');
+
+    Route::post('get-sector-parameters', [ParameterController::class, 'getSectorParameters'])->name('get-sector-parameters');
+
+    Route::post('update-sector-type-parameter/{parameter_id}', [ParameterController::class, 'updateSectorParameter'])->name('update-sector-type-parameter');
 });
 
-use App\Models\User\CompanyUser;
-use Illuminate\Support\Facades\DB;
-
 Route::get('/script', function () {
+    return response()->json([
+        'message' => 'No script'
+    ]);
     DB::connection('master')->beginTransaction();
     $results = DB::connection('userdb')
         ->table('model_has_roles')

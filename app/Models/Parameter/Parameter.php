@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Models\Rule;
+namespace App\Models\Parameter;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 
-class Rule extends BaseModel
+class Parameter extends BaseModel
 {
     use UserAudit;
 
-    const EMPLOYEE_TYPE_RULE = 1;
-    const SECTOR_RULE = 2;
-    const COMPANY_RULE = 3;
-    const EMPLOYEE_TYPE_SECTOR_RULE = 4;
-    const VALUE_TYPE_MINUTES = 1;
-    const VALUE_TYPE_HOURS = 2;
+    const EMPLOYEE_TYPE_PARAMETER = 1;
+    const SECTOR_PARAMETER = 2;
+    const COMPANY_PARAMETER = 3;
+    const EMPLOYEE_TYPE_SECTOR_PARAMETER = 4;
+    const VALUE_TYPE_HOURS = 1;
+    const VALUE_TYPE_MINUTES = 2;
     const VALUE_TYPE_DAYS = 3;
     const VALUE_TYPE_TIME = 4;
     const VALUE_TYPE_COUNT = 5;
@@ -27,7 +27,7 @@ class Rule extends BaseModel
      *
      * @var string
      */
-    protected $table = 'rules';
+    protected $table = 'parameters';
 
     /**
      * The primary key associated with the table.
@@ -70,25 +70,25 @@ class Rule extends BaseModel
         'updated_by'
     ];
 
-    public function getRuleTypeName()
+    public function getParameterTypeName()
     {
         switch ($this->type) {
-            case self::EMPLOYEE_TYPE_RULE:
-                $rule_type = 'Employee type rule';
+            case self::EMPLOYEE_TYPE_PARAMETER:
+                $parameter_type = 'Employee type parameter';
                 break;
-            case self::SECTOR_RULE:
-                $rule_type = 'Sector type';
+            case self::SECTOR_PARAMETER:
+                $parameter_type = 'Sector type';
                 break;
-            case self::COMPANY_RULE:
-                $rule_type = 'Company rule';
+            case self::COMPANY_PARAMETER:
+                $parameter_type = 'Company parameter';
                 break;
-            case self::EMPLOYEE_TYPE_SECTOR_RULE:
-                $rule_type = 'Employee type to sector rule';
+            case self::EMPLOYEE_TYPE_SECTOR_PARAMETER:
+                $parameter_type = 'Employee type to sector parameter';
                 break;
             default:
                 break;
         }
-        $this->rule_type = $rule_type;
-        // return $rule_type;
+        $this->parameter_type = $parameter_type;
+        // return $parameter_type;
     }
 }

@@ -48,8 +48,8 @@ class PlanningRepository implements PlanningRepositoryInterface
     public function getPlansBetweenDates($location_id = '', $workstations = [], $employee_types = '', $startDateOfWeek, $endDateOfWeek, $employee_profile_id = '', $relations = [])
     {
         $startDateOfWeek = date('Y-m-d 00:00:00', strtotime($startDateOfWeek));
-        $endDateOfWeek   = date('Y-m-d 23:59:59', strtotime($endDateOfWeek));
-        $query           = PlanningBase::query();
+        $endDateOfWeek = date('Y-m-d 23:59:59', strtotime($endDateOfWeek));
+        $query = PlanningBase::query();
         $query->with($relations);
 
         if (!empty($location_id)) {
@@ -98,15 +98,15 @@ class PlanningRepository implements PlanningRepositoryInterface
 
         if (!empty($from_date) && !empty($to_date)) {
             $from_date = date('Y-m-d 00:00:00', strtotime($from_date));
-            $to_date   = date('Y-m-d 23:59:59', strtotime($to_date));
+            $to_date = date('Y-m-d 23:59:59', strtotime($to_date));
             $query->whereBetween('start_date_time', [$from_date, $to_date]);
         } elseif (!empty($from_date_time) && !empty($to_date_time)) {
             $query->where(function ($query) use ($from_date_time, $to_date_time) { # to get the plans which are overlapping to the given date time
                 $query->where('start_date_time', '<=', $from_date_time)
-                      ->where('end_date_time', '>=', $to_date_time);
+                    ->where('end_date_time', '>=', $to_date_time);
             });
         }
-            
+
         $query->orderBy('start_date_time');
         $query->orderBy('end_date_time');
         return $query->get();

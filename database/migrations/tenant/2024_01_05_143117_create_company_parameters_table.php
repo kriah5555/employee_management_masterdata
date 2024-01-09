@@ -10,21 +10,21 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('company_rules', function (Blueprint $table) {
+        Schema::create('company_parameters', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('rule_id');
-            $table->string('rule_type');
-            $table->string('value');
+            $table->unsignedBigInteger('parameter_id');
+            $table->string('parameter_type');
+            $table->string('value')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
         });
-        Schema::create('location_rules', function (Blueprint $table) {
+        Schema::create('location_parameters', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('rule_id');
+            $table->unsignedBigInteger('parameter_id');
             $table->foreignId('location_id')->references('id')->on('locations')->onDelete('cascade');
-            $table->string('value');
+            $table->string('value')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();
@@ -37,6 +37,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('company_rules');
+        Schema::dropIfExists('company_parameters');
+        Schema::dropIfExists('location_parameters');
     }
 };

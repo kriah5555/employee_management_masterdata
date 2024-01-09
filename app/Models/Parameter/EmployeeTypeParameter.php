@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Models\Rule;
+namespace App\Models\Parameter;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\Parameter\Parameter;
 
-class EmployeeTypeRule extends BaseModel
+class EmployeeTypeParameter extends BaseModel
 {
     use UserAudit;
-    protected static $sort = ['type', 'name'];
 
-    protected $columnsToLog = ['description', 'default_value', 'status'];
+    protected $columnsToLog = ['value'];
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'rules';
+    protected $table = 'employee_type_parameters';
 
     /**
      * The primary key associated with the table.
@@ -49,13 +49,14 @@ class EmployeeTypeRule extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'name',
-        'description',
-        'type',
-        'value_type',
-        'default_value',
-        'status',
+        'parameter_id',
+        'employee_type_id',
+        'value',
         'created_by',
         'updated_by'
     ];
+    public function parameter()
+    {
+        return $this->belongsTo(Parameter::class);
+    }
 }
