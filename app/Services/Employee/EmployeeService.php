@@ -107,6 +107,7 @@ class EmployeeService
     public function formatEmployeeData($employee)
     {
         $userBasicDetails = [
+            "username"               => $employee->user->username,
             "first_name"             => $employee->user->userBasicDetails->first_name,
             "last_name"              => $employee->user->userBasicDetails->last_name,
             "nationality"            => $employee->user->userBasicDetails->nationality,
@@ -512,11 +513,11 @@ class EmployeeService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-                $employee_profile = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id);
-                 if ($employee_profile->signature) {
-                    $employee_profile->signature->delete();
-                }
-                $employee_profile->signature()->create($details);
+            $employee_profile = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id);
+            if ($employee_profile->signature) {
+                $employee_profile->signature->delete();
+            }
+            $employee_profile->signature()->create($details);
             DB::connection('tenant')->commit();
             return $employee_profile;
         } catch (Exception $e) {
