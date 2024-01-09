@@ -65,7 +65,7 @@ class PublicHolidayController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $public_holiday,
+                'data'    => $this->public_holiday_service->getOptionsToEdit($public_holiday->id)
             ],
             JsonResponse::HTTP_OK,
         );
