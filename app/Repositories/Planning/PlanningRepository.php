@@ -64,7 +64,7 @@ class PlanningRepository implements PlanningRepositoryInterface
             $query->whereIn('employee_type_id', $employee_types);
         }
 
-        if (!empty($employee_id)) {
+        if (!empty($employee_profile_id)) {
             $query->where('employee_profile_id', $employee_profile_id);
         }
 
