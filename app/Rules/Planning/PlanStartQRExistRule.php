@@ -17,7 +17,7 @@ class PlanStartQRExistRule implements ValidationRule
     {
         $plans = app(PlanningStartStopService::class)->getPlanByQrCode($this->qr_data, $this->user_id, $value, $value);
 
-        if ($plans->isEmpty()) {
+        if ( is_null($plans) ||$plans->isEmpty()) {
             $fail('No plan to start');
         } elseif ($plans->count() > 1) {
             $fail('Cannot start plan, There are more than one plan');

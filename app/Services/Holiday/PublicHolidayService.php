@@ -34,8 +34,8 @@ class PublicHolidayService extends BaseService
     public function getOptionsToEdit($public_holiday_id)
     {
         try {
-            $options = $this->getOptionsToCreate();
-            $options['details'] = $this->get($public_holiday_id, ['companiesValue']);
+            #$options = $this->getOptionsToCreate();
+            $options = $this->get($public_holiday_id, ['companiesValue']);
             return $options;
         } catch (Exception $e) {
             error_log($e->getMessage());
