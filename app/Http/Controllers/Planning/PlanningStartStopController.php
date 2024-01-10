@@ -53,8 +53,8 @@ class PlanningStartStopController extends Controller
         
         try {
             $input = $request->validated();
-            //$input['user_id'] = Auth::id();
-            $input['user_id'] = $input['user_id'];
+            // $input['user_id'] = Auth::id();
+            $input['user_id']    = $input['user_id'];
             $input['started_by'] = $input['user_id'];
             $plan = $this->planningStartStopService->getPlanByQrCode($input['QR_code'], $input['user_id'], $input['start_time'], $input['start_time'])->first();
             if (($plan->contract_status != config('contracts.SIGNED') || empty($plan->contracts)) && $plan->employeeType->employeeTypeCategory->id == config('constants.DAILY_CONTRACT_ID')) { # if contract not generated or if the contract is unsigned
@@ -119,7 +119,8 @@ class PlanningStartStopController extends Controller
     {
         try {
             $input = $request->validated();
-            $input['user_id'] = Auth::id();
+            // $input['user_id'] = Auth::id();
+            $input['user_id'] = $input['user_id'];
             $input['ended_by'] = $input['user_id'];
             $this->planningStartStopService->stopPlanByEmployee($input);
             return returnResponse(
@@ -131,7 +132,7 @@ class PlanningStartStopController extends Controller
             );
         } catch (Exception $e) {
             return response()->json([
-                'success' => false,
+                'success' => false, 
                 'message' => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
                 'file'    => $e->getFile(),
