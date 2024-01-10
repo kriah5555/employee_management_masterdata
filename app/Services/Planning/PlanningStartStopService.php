@@ -51,7 +51,9 @@ class PlanningStartStopService
         setTenantDBByCompanyId($qr_data['company_id']);
 
         $employee_profile = app(EmployeeProfileRepository::class)->getEmployeeProfileByUserId($user_id);
-        return $this->planningRepository->getPlans('', '', $qr_data['location_id'], '', '', $employee_profile->id, [], date('d-m-Y') . ' ' . $start_time . ':00', date('d-m-Y') . ' ' . $stop_time . ':00');
+        if ($employee_profile) {
+            return $this->planningRepository->getPlans('', '', $qr_data['location_id'], '', '', $employee_profile->id, [], date('d-m-Y') . ' ' . $start_time . ':00', date('d-m-Y') . ' ' . $stop_time . ':00');
+        }
     }
 
     public function stopPlanByManager($values)
@@ -93,7 +95,7 @@ class PlanningStartStopService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-
+            
                 $qr_data = decodeData($values['QR_code']);
 
                 setTenantDBByCompanyId($qr_data['company_id']);
