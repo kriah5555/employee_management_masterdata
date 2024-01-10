@@ -25,13 +25,12 @@ class DimonaBaseService
 
 
     //employee category: 1 -> Long term, 2-> Day contract, 3 -> External
-    public function initiateDimonaByPlan($companyId, $plan)
+    public function initiateDimonaByPlanService($companyId, $plan, $type = '')
     {
         $dimona = ['unique_id' => Str::uuid()];
         $this->setCompanyData($companyId, $dimona);
-        $this->setEmployeeAndPlanningData($plan, $dimona);
-        $this->createDimonaRecords($dimona);
-        // dd($dimona);
+        $dimonaDetai = $this->setEmployeeAndPlanningData($plan, $type, $dimona);
+        $this->createDimonaRecords($dimonaDetails, $dimona);
         $this->requestDimona->sendDimonaRequest($dimona);
     }
 
@@ -39,6 +38,7 @@ class DimonaBaseService
     {
         $relations = [
             'employeeType',
+            'employeeType.dimonaConfig',
             'employeeProfile',
             'employeeProfile.user',
             'employeeProfile.user.userBasicDetails',
@@ -64,11 +64,15 @@ class DimonaBaseService
         ];
     }
 
-    public function setEmployeeAndPlanningData($plan, &$dimona)
+    public function getEmployeeLongTermDetails()
+    {
+        
+    }
+
+    public function setEmployeeAndPlanningData($plan, $type, &$dimona)
     {
         $hours = null;
         $plan = $this->getPlanningById($plan);
-
         $employeeDetails = $plan['employee_profile'] ?? [];
         $employeeType = $plan['employee_type'] ?? [];
         $timeRegistraion = $plan['time_registrations'] ?? [];
@@ -76,6 +80,7 @@ class DimonaBaseService
 
         // plan details.
         $dimona['plan_id'] = $plan['id'];
+
         //Employee details.
         if (count($employeeDetails) > 0) {
             $dimona['employee_name'] = $employeeDetails['full_name'];
@@ -87,30 +92,59 @@ class DimonaBaseService
         if (count($employeeType) > 0) {
             $dimona['employee_type'] = $employeeType['name'];
             $dimona['employee_type_code'] = $employeeType['dimona_code'];
+            $dimona['employee_type_category'] = $employeeType['employee_type_category_id'];
+            $dimona['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
+            if ($dimona['employee_type_category'] == 1) {
+                // $this->getEmployeeLongTermDetails();
+            }
+        }
+
+        //Check for the Dimona type and timings.
+        if (is_null($type)) {
+            if (count($dimonaDetails) == 0) {
+                $dimona_type = 'IN';
+            } else {
+                $dimona_type = 'UPDATE';
+            }
+        } else {
+            $dimona_type = 'CANCEL';
         }
 
         if (count($timeRegistraion) > 0) {
-            if ($dimona['employee_type_code'] == 'STU' || 1) {
+            //Student dimona.
+            if ($dimona['dimona_catagory'] == 1) {
                 $dimona += $this->getWorkedHours($timeRegistraion, $plan);
-                // list($dimona['start_date_time'], $dimona['end_date_time'],  $dimona['hours']) = $this->getWorkedHours($timeRegistraion, $plan);
             }
-            if ($dimona['employee_type_code'] == 'FLxX') {
+
+            //Flexi dimona.
+            if ($dimona['dimona_catagory'] == 2 || $dimona['employee_type_category'] == 1) {
                 $lastTimeregistraion = end($timeRegistraion);
                 $dimona['start_date_time'] = $lastTimeregistraion['actual_start_time'];
                 $dimona['end_date_time'] = $lastTimeregistraion['actual_end_time'] ?? addHours($plan['end_date_time'], 1);
                 $dimona['hours'] =  timeDifferenceinHours($dimona['start_date_time'], $dimona['end_date_time']);
             }
 
-        } elseif (count($dimonaDetails) == 0) {
+            //OTH Dimona.
+            if ($dimona['dimona_catagory'] == 2) {
+                $dimona['start_date_time'] = $lastTimeregistraion['start_date_time'];
+                $dimona['end_date_time'] = $lastTimeregistraion['actual_end_time'] ?? addHours($plan['end_date_time'], 1);
+                $dimona['hours'] =  timeDifferenceinHours($dimona['start_date_time'], $dimona['end_date_time']);
+            }
+
+            if (count($timeRegistraion) == 0) {
+
+            }
+        } elseif (count($dimonaDetails) == 0 || count($dimonaDetails) > 0) {
             $hours = timeDifferenceinHours($plan['start_date_time'], $plan['end_date_time']);
-            $plan = [
-                'start_time' => $plan['start_date_time'],
-                'end_time' => $plan['end_date_time'],
+            $dimona += [
+                'start_date_time' => $plan['start_date_time'],
+                'end_date_time' => $plan['end_date_time'],
                 'hours' => $hours,
             ];
         }
+        $dimona['type'] = $dimona_type;
 
-        $dimona['type'] = 'IN';
+        return $dimonaDetails;
     }
 
     public function getWorkedHours($timeRegistraion, $plan)
@@ -127,25 +161,43 @@ class DimonaBaseService
         return ['start_date_time' => $start_date_time, 'end_date_time' => $end_date_time, 'hours' => $hours];
     }
 
-    public function createDimonaRecords($dimona)
+    public function createDimonaRecords($dimonaDetails, $dimona)
     {
-        $dimonaBaseRecord = $this->dimonaBase->create([
-            'unique_id' => $dimona['unique_id'],
-            'dimona_code' => $dimona['employee_type_code'],
-            'employee_id' => $dimona['user_id'],
-            'employee_rsz' => $dimona['social_security_number'],
-            'status' => 1,
-        ]);
+        if (count($dimonaDetails) == 0) {
+            $dimonaBaseRecord = $this->dimonaBase->create([
+                'unique_id' => $dimona['unique_id'],
+                'dimona_code' => $dimona['employee_type_code'],
+                'employee_id' => $dimona['user_id'],
+                'employee_rsz' => $dimona['social_security_number'],
+                'status' => 1,
+            ]);
 
-        $dimonaBaseRecord->planningDimona()->create(['planning_base_id' => $dimona['plan_id']]);
-        $dimonaBaseRecord->dimonaDetails()->create(
-            [
-                'dimona_type' => $dimona['type'],
-                'start_date_time' => $dimona['start_date_time'],
-                'end_date_time' => $dimona['end_date_time'],
-            ]
-        ); 
+            $dimonaBaseRecord->planningDimona()->create(['planning_base_id' => $dimona['plan_id']]);
+            $dimonaBaseRecord->dimonaDetails()->create(
+                [
+                    'dimona_type' => $dimona['type'],
+                    'start_date_time' => $dimona['start_date_time'],
+                    'end_date_time' => $dimona['end_date_time'],
+                ]
+            );
+        } else {
+            $lastDimona = end($dimonaDetails);
+            $dimonaBaseRecord = $this->dimonaBase->find($lastDimona['id']);
+            $dimonaBaseRecord->dimonaDetails()->create(
+                [
+                    'dimona_type' => $dimona['type'],
+                    'start_date_time' => $dimona['start_date_time'],
+                    'end_date_time' => $dimona['end_date_time'],
+                ]
+            );
+        }
     }
+
+    public function updateDimonaStatusService($data)
+    {
+
+    }
+
 
     public function getContractDetails($contractId)
     {
