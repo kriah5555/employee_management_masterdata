@@ -46,7 +46,8 @@ class PublicHolidayService extends BaseService
     public function create($values)
     {
         try {
-            DB::beginTransaction();
+	    DB::beginTransaction();
+	    $values['date'] = date('Y-m-d', strtotime($values['date']));
             $public_holiday = $this->model::create($values);
             $public_holiday->companies()->sync($values['companies'] ?? []);
             DB::commit();
