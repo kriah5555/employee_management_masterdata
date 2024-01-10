@@ -16,7 +16,7 @@ class PlanStartQRExistRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $plans = app(PlanningStartStopService::class)->getPlanByQrCode($this->qr_data, $this->user_id, $value, $value);
-
+        
         if ( is_null($plans) ||$plans->isEmpty()) {
             $fail('No plan to start');
         } elseif ($plans->count() > 1) {
