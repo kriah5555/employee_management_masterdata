@@ -85,7 +85,7 @@ class PlanningStartStopController extends Controller
                     JsonResponse::HTTP_OK,
                 );
             } else {
-                throw new \Exception("API error");
+                throw new \Exception("Plan not found...");
             }
 
         } catch (Exception $e) {
