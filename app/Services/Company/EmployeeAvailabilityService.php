@@ -424,9 +424,9 @@ class EmployeeAvailabilityService
                 }
             }
         }
-        $availability['both'] = array_intersect($availability['available_dates'], $availability['not_available_dates']);
-        $availability['available_dates'] = array_diff($availability['available_dates'], $availability['both']);
-        $availability['not_available_dates'] = array_diff($availability['not_available_dates'], $availability['both']);
+        $availability['both'] = array_values(array_intersect($availability['available_dates'], $availability['not_available_dates']));
+        $availability['available_dates'] = array_values(array_diff($availability['available_dates'], $availability['both']));
+        $availability['not_available_dates'] = array_values(array_diff($availability['not_available_dates'], $availability['both']));
         $availability['date_overview'] = array_values($availability['date_overview']);
         return $availability;
     }
