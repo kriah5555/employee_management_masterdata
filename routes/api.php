@@ -199,6 +199,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 
+        Route::post('salary-increment-calculation', 'salaryIncrementCalculation');
+
     });
 
     Route::controller(ReasonController::class)->group(function () {
