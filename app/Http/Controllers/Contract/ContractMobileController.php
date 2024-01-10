@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Contract\ContractMobileService;
+use App\Services\Contract\ContractService;
 use App\Http\Requests\Contract\ContractRequest;
 use App\Http\Requests\Contract\EmployeePlanSignContractRequest;
 class ContractMobileController extends Controller
 {
     public function __construct(
-        protected ContractMobileService $contractService
+        protected ContractMobileService $contractMobileService,
+        protected ContractService $contractService,
     )
     {
         
@@ -29,7 +31,7 @@ class ContractMobileController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->contractService->getEmployeeContractFiles($company_ids, $user_id, '', '', ''),
+                    'data'    => $this->contractMobileService->getEmployeeContractFiles($company_ids, $user_id, '', '', ''),
                 ],
                 JsonResponse::HTTP_OK,
             );
