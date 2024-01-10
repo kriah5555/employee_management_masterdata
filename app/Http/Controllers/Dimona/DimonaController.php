@@ -23,7 +23,7 @@ class DimonaController extends Controller
         // $dimonaType = $planId = $timeRegistrationId = '';
         $data = NULL;
         try {
-            $data = $this->dimonaBaseService->initiateDimonaByPlan($companyId, $planId);
+            $data = $this->dimonaBaseService->initiateDimonaByPlanService($companyId, $planId);
         } catch(\Exception $e) {
             return response()->json(
                 [
@@ -55,5 +55,25 @@ class DimonaController extends Controller
                 500
             );
         }
+    }
+
+
+    public function updateDimonaStatus(Request $request)
+    {
+        $data = '';
+        try {
+            $data = $request->all();
+            $data = $this->dimonaBaseService->updateDimonaStatusService($data);
+
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'file' => $e->getFile(),
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]
+            );
+        }
+        return $data;
     }
 }

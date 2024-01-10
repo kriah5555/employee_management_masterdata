@@ -103,26 +103,8 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     }
     Route::controller(DimonaController::class)->group(function () {
         Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'sendDimonaByPlan']);
+        Route::get('/send-dimona/{planId}', [DimonaController::class, 'sendDimonaByPlan']);
         Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
         Route::get('/dimona-test-plan', [DimonaController::class, 'sendDimonaByPlan']);
     });
 });
-
-
-
-// Route::controller(VacancyController::class)
-// ->middleware(['initialize-tenancy'])
-// ->prefix('vacancy')
-// ->group(function () {
-//     $apiList = [
-//         ['path' => 'options', 'function' => 'create'],
-//         ['path' => 'get-all-vacancies', 'function' => 'index'],
-//         ['path' => 'create', 'function' => 'store'],
-//         ['path' => 'get-vacancy/{vacancy}', 'function' => 'show'],
-//         ['path' => 'update/{vacancy}', 'function' => 'update'],
-//         ['path' => 'delete/{vacancy}', 'function' => 'destory'],
-//     ];
-//     foreach ($apiList as $api) {
-//         Route::POST($api['path'], $api['function']);
-//     }
-// });
