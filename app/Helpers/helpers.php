@@ -375,20 +375,33 @@ if (!function_exists('getDatesByMonthYear')) {
         return $dates;
     }
 }
+if (!function_exists('validateEuropeanNumberFormat')) {
+    function validateEuropeanNumberFormat($number)
+    {
+        return preg_match(config('regex.EUROPE_CURRENCY_FORMAT_REGEX'), $number);
+    }
+}
+
 
 if (!function_exists('europeanToNumeric')) {
     function europeanToNumeric($europeanNumber)
     {
-        // Replace dot with an empty string and replace comma with a dot
-        return str_replace(',', '.', str_replace('.', '', $europeanNumber));
+        if (validateEuropeanNumberFormat($europeanNumber)) {
+            // Replace dot with an empty string and replace comma with a dot
+            $europeanNumber = str_replace(',', '.', str_replace('.', '', $europeanNumber));
+        }
+        return $europeanNumber;
     }
 }
 if (!function_exists('numericToEuropean')) {
     // Function to convert numeric format to European number format
     function numericToEuropean($numericNumber)
     {
-        // Format the number with European number format
-        return number_format($numericNumber, 2, ',', '.');
+        if (!validateEuropeanNumberFormat($numericNumber)) {
+            // Format the number with European number format
+            $numericNumber = number_format($numericNumber, 2, ',', '.');
+        }
+        return $numericNumber;
     }
 }
 

@@ -23,21 +23,21 @@ class PublicHolidayRequest extends ApiRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'date' => [
+            'name'   => 'required|string|max:255',
+            'date'   => [
                 'bail',
                 'required',
-                'date_format:'.config('constants.DEFAULT_DATE_FORMAT'),
+                'date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
                 Rule::unique('public_holidays', 'date')->ignore($this->route('public_holiday')), # check if the date is unique or not
             ],
 
-            'status'      => 'required|boolean',
-            'companies'   => 'nullable|array',
-            'companies.*' => [
-                'bail',
-                'integer',
-                Rule::exists('companies', 'id'),
-            ],
+            'status' => 'required|boolean',
+            // 'companies'   => 'nullable|array',
+            // 'companies.*' => [
+            //     'bail',
+            //     'integer',
+            //     Rule::exists('companies', 'id'),
+            // ],
         ];
     }
 
