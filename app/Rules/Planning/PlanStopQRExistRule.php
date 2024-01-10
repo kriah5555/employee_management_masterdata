@@ -17,11 +17,10 @@ class PlanStopQRExistRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $qr_data = decodeData($this->qr_data);
-
         setTenantDBByCompanyId($qr_data['company_id']);
-
+        
         $employee_profile = app(EmployeeProfileRepository::class)->getEmployeeProfileByUserId($this->user_id);
-
+        
         $plans            = app(PlanningRepository::class)->getStartedPlanForEmployee($employee_profile->id, $qr_data['location_id']);
 
         if ($plans->isEmpty()) {

@@ -14,6 +14,7 @@ class StopPlanByEmployeeRequest extends ApiRequest
     {
         return [
             'QR_code'   => ['bail', 'required', 'string', new QRcodeRule,],
+            'user_id'   => ['bail', 'required'],
             'stop_time' => ['required', 'date_format:H:i', new PlanStopQRExistRule(request()->input('user_id'), request()->input('QR_code'))],
         ];
     }
