@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\DB;
 use App\Services\Contract\ContractService;
 use App\Models\Company\Employee\EmployeeProfile;
 use App\Repositories\Company\CompanyRepository;
-use App\Repositories\Planning\PlanningRepository;
 
 class ContractMobileService
 {
@@ -39,8 +38,7 @@ class ContractMobileService
     
                     $contracts->each(function ($contract) use(&$response, $company_name, $company_id, $company_image) {
                         $contractData = [
-			    'contract_id'        => $contract->id,
-			    'company_id'         => $company_id,
+                            'contract_id'        => $company_id,
                             'company_name'       => $company_name,
                             'company_image'      => $company_image,
                             'location_id'        => $contract->plan ? $contract->plan->location_id : null,
@@ -64,25 +62,6 @@ class ContractMobileService
     
             return $response;
         } catch (\Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function signEmployeePlanContract($values)
-    {
-        try {
-            if (isset($values['company_id'])) {
-                setTenantDBByCompanyId($values['company_id']);
-            }
-            DB::connection('tenant')->beginTransaction();
-                $plan = app(PlanningRepository::class)->getPlanningById($values['plan_id']);
-                
-                $employee_contract_file = $this->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.SIGNED'), $values['plan_id'], $values['company_id'] ?? '', $values['signature'], '');
-            DB::connection('tenant')->commit();
-            return $employee_contract_file;
-        } catch (\Exception $e) {
-            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
