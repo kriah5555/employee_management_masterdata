@@ -389,15 +389,14 @@ class PlanningService implements PlanningInterface
         return $this->planningRepository->getPlans($from_date, $to_date, $location, $workstations, $employee_types, $employee_id, $relations);
     }
 
-    public function getPlansForAbsence($dates_array)
+    public function getPlansForAbsence($dates_array, $employee_profile_id)
     {
-        $plans = $this->planningRepository->getPlansByDatesArray($dates_array);
+        $plans = $this->planningRepository->getPlansByDatesArray($dates_array, $employee_profile_id);
         return $plans->map(function ($plan) {
             return [
                 'plan_id'        => $plan->id,
-                'plan_date'      => $plan_date,
-                'plan_time'      => $start_time . '-' . $end_time,
-                'contract_hours' => $contract_hours_formatted,
+                'plan_date'      => $plan->plan_date,
+                'plan_time'      => $plan->start_time . '-' . $plan->end_time. ' ' . $plan->contract_hours_formatted,
             ];
         });
     }

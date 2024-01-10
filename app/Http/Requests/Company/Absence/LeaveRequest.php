@@ -11,6 +11,7 @@ use App\Rules\AbsenceDatesValidationRule;
 use App\Rules\EmployeeHolidayBalanceRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
+use App\Rules\AbsencePlansRule;
 
 class LeaveRequest extends ApiRequest
 {
@@ -49,7 +50,7 @@ class LeaveRequest extends ApiRequest
                 'array',
                 new HolidayCodeDurationTypeRule(request()->input('duration_type'), $companyId, $absence_id),
             ],
-            'plan_ids' => ['bail', 'nullable', 'integer', Rule::exists('tenant.planning_base.id', 'id')]
+            'plan_ids' => ['bail', 'nullable', 'integer', Rule::exists('tenant.planning_base.id', 'id'), new AbsencePlansRule(request()->input('dates'))]
         ];
     }
 
