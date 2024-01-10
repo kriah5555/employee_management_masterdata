@@ -70,9 +70,6 @@ class ContractService
     public function signEmployeePlanContract($values)
     {
         try {
-            if (isset($values['company_id'])) {
-                setTenantDBByCompanyId($values['company_id']);
-            }
             DB::connection('tenant')->beginTransaction();
                 $plan = app(PlanningRepository::class)->getPlanningById($values['plan_id']);
                 
