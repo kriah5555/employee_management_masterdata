@@ -80,7 +80,7 @@ class PlanningRepository implements PlanningRepositoryInterface
 
         $query->with($relations);
 
-        if (!empty($workstations)) {
+        if (!empty($location)) {
             $query->where('location_id', $location);
         }
 
@@ -101,6 +101,9 @@ class PlanningRepository implements PlanningRepositoryInterface
             $to_date = date('Y-m-d 23:59:59', strtotime($to_date));
             $query->whereBetween('start_date_time', [$from_date, $to_date]);
         } elseif (!empty($from_date_time) && !empty($to_date_time)) {
+            $from_date_time = date('Y-m-d H:i:s', strtotime($from_date_time));
+            $to_date_time   = date('Y-m-d H:i:s', strtotime($to_date_time));
+
             $query->where(function ($query) use ($from_date_time, $to_date_time) { # to get the plans which are overlapping to the given date time
                 $query->where('start_date_time', '<=', $from_date_time)
                     ->where('end_date_time', '>=', $to_date_time);
