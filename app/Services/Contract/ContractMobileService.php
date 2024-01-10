@@ -38,7 +38,8 @@ class ContractMobileService
     
                     $contracts->each(function ($contract) use(&$response, $company_name, $company_id, $company_image) {
                         $contractData = [
-                            'contract_id'        => $company_id,
+			    'contract_id'        => $contract->id,
+			    'company_id'         => $company_id,
                             'company_name'       => $company_name,
                             'company_image'      => $company_image,
                             'location_id'        => $contract->plan ? $contract->plan->location_id : null,

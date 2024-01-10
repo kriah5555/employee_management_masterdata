@@ -53,12 +53,10 @@ class PlanningStartStopController extends Controller
         
         try {
             $input = $request->validated();
-            $input['user_id'] = Auth::id();
-            // $input['user_id'] = $input['user_id'];
+            //$input['user_id'] = Auth::id();
+            $input['user_id'] = $input['user_id'];
             $input['started_by'] = $input['user_id'];
-
-            $plans = $this->planningStartStopService->getPlanByQrCode($input['QR_code'], $input['user_id'], $input['start_time'], $input['start_time'])->first();
-            $plan = $plans->first();
+            $plan = $this->planningStartStopService->getPlanByQrCode($input['QR_code'], $input['user_id'], $input['start_time'], $input['start_time'])->first();
             if (($plan->contract_status != config('contracts.SIGNED') || empty($plan->contracts)) && $plan->employeeType->employeeTypeCategory->id == config('constants.DAILY_CONTRACT_ID')) { # if contract not generated or if the contract is unsigned
                 $qr_data = decodeData($input['QR_code']);
 
