@@ -67,7 +67,7 @@ class PlanningStartStopController extends Controller
     
                     return response()->json([
                             'success'           => false,
-                            'message'           => t('Please sign contract.'),
+                            'message'           => t('Please sign contract and scan qr code to start your plan.'),
                             'sign_contract'     => 1, # 0-> not signed contract,  1-> signed contract,
                             'contract_pdf'      => env('CONTRACTS_URL') . '/' . $contract->files->file_path,
                             'company_id'        => $qr_data['company_id'],
@@ -85,7 +85,7 @@ class PlanningStartStopController extends Controller
                     JsonResponse::HTTP_OK,
                 );
             } else {
-                throw Exception('No plan to start..');
+                throw new \Exception("API error");
             }
 
         } catch (Exception $e) {
