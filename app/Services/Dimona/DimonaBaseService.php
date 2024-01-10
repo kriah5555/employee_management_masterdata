@@ -29,7 +29,7 @@ class DimonaBaseService
     {
         $dimona = ['unique_id' => Str::uuid()];
         $this->setCompanyData($companyId, $dimona);
-        $dimonaDetai = $this->setEmployeeAndPlanningData($plan, $type, $dimona);
+        $dimonaDetails = $this->setEmployeeAndPlanningData($plan, $type, $dimona);
         $this->createDimonaRecords($dimonaDetails, $dimona);
         $this->requestDimona->sendDimonaRequest($dimona);
     }
@@ -193,6 +193,7 @@ class DimonaBaseService
         }
     }
 
+    // public function getDimonaBase
     public function updateDimonaStatusService($data)
     {
 
