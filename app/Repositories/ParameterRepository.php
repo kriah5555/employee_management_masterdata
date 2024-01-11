@@ -134,6 +134,19 @@ class ParameterRepository implements ParameterRepositoryInterface
             throw new ModelUpdateFailedException('Failed to update parameter');
         }
     }
+    public function getEmployeeTypeSectorParameterById(string $parameterId): EmployeeTypeSectorParameter
+    {
+        return EmployeeTypeSectorParameter::findOrFail($parameterId);
+    }
+
+    public function updateEmployeeTypeSectorParameter(EmployeeTypeSectorParameter $parameter, array $newDetails): bool
+    {
+        if ($parameter->update($newDetails)) {
+            return true;
+        } else {
+            throw new ModelUpdateFailedException('Failed to update parameter');
+        }
+    }
     // public function updateEmployeeTypeParameter(array $values): bool
     // {
     //     $parameter = Parameter::where('name', $values['name'])->get()->first();

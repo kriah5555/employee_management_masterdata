@@ -74,6 +74,8 @@ class ParameterService
             $status = $this->updateEmployeeTypeParameter($parameterId, $values);
         } elseif ($values['type'] == 2) {
             $status = $this->updateSectorParameter($parameterId, $values);
+        } elseif ($values['type'] == 3) {
+            $status = $this->updateEmployeeTypeSectorParameter($parameterId, $values);
         }
         return $status;
     }
@@ -92,7 +94,12 @@ class ParameterService
     }
     public function updateSectorParameter($parameterId, $values)
     {
-        $parameter = $this->parameterRepository->getEmployeeTypeParameterById($parameterId);
-        return $this->parameterRepository->updateEmployeeTypeParameter($parameter, $values);
+        $parameter = $this->parameterRepository->getSectorParameterById($parameterId);
+        return $this->parameterRepository->updateSectorParameter($parameter, $values);
+    }
+    public function updateEmployeeTypeSectorParameter($parameterId, $values)
+    {
+        $parameter = $this->parameterRepository->getEmployeeTypeSectorParameterById($parameterId);
+        return $this->parameterRepository->updateEmployeeTypeSectorParameter($parameter, $values);
     }
 }
