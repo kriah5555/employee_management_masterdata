@@ -108,6 +108,8 @@ class EmployeeService
     {
         $userBasicDetails = [
             "username"               => $employee->user->username,
+            "responsible_person_id"  => $employee->responsible_person_id,
+            "responsible_person_name"=> ($employee->responsiblePerson) ? $employee->responsiblePerson->full_name : null,
             "first_name"             => $employee->user->userBasicDetails->first_name,
             "last_name"              => $employee->user->userBasicDetails->last_name,
             "nationality"            => $employee->user->userBasicDetails->nationality,
