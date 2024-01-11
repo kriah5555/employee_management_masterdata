@@ -13,6 +13,7 @@ use App\Rules\User\GenderRule;
 use App\Rules\EmployeeCommuteDetailsRule;
 use App\Rules\MealVoucherRule;
 use App\Rules\BelgiumCurrencyFormatRule;
+use App\Rules\ResponsiblePersonExistsRule;
 
 class EmployeeRequest extends ApiRequest
 {
@@ -24,6 +25,10 @@ class EmployeeRequest extends ApiRequest
      */
     public function rules(): array
     {
+        $companyId = getCompanyId();
+
+        $employeeId = $this->route('employee'); // Assuming your route parameter is named 'employee'
+
         $allowedLanguageValues = array_keys(config('constants.LANGUAGE_OPTIONS'));
         if ($this->isMethod('post') || $this->isMethod('put')) {
             $rules = [
@@ -35,21 +40,21 @@ class EmployeeRequest extends ApiRequest
                     'integer',
                     new GenderRule(),
                 ],
-                'date_of_birth'       => 'required|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-                'place_of_birth'      => 'nullable|string|max:255',
-                'street_house_no'     => 'required|string|max:255',
-                'postal_code'         => 'required|string|max:50',
-                'city'                => 'required|string|max:50',
-                'country'             => 'required|string|max:50',
-                'nationality'         => 'required|string|max:50',
-                'latitude'            => 'nullable|numeric',
-                'longitude'           => 'nullable|numeric',
-                'phone_number'        => 'required|string|max:20',
-                'email'               => 'required|email',
-                'license_expiry_date' => 'nullable|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-                'account_number'      => 'nullable|string|max:255',
-                'language'            => ['required', 'string', 'in:' . implode(',', $allowedLanguageValues)],
-                'marital_status_id'   => [
+                'date_of_birth'         => 'required|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
+                'responsible_person_id' => ['nullable', 'integer', new ResponsiblePersonExistsRule($companyId)],
+                'street_house_no'       => 'required|string|max:255',
+                'postal_code'           => 'required|string|max:50',
+                'city'                  => 'required|string|max:50',
+                'country'               => 'required|string|max:50',
+                'nationality'           => 'required|string|max:50',
+                'latitude'              => 'nullable|numeric',
+                'longitude'             => 'nullable|numeric',
+                'phone_number'          => 'required|string|max:20',
+                'email'                 => 'required|email',
+                'license_expiry_date'   => 'nullable|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
+                'account_number'        => 'nullable|string|max:255',
+                'language'              => ['required', 'string', 'in:' . implode(',', $allowedLanguageValues)],
+                'marital_status_id'     => [
                     'bail',
                     'required',
                     'integer',
@@ -59,6 +64,7 @@ class EmployeeRequest extends ApiRequest
                 'children'            => 'nullable|integer',
             ];
             if ($this->isMethod('post')) {
+                $rule['responsible_person_id'][] = Rule::notIn([$employeeId]);
                 $rules['fuel_card'] = 'nullable|boolean';
                 $rules['company_car'] = 'nullable|boolean';
                 $rules['extra_info'] = 'nullable|string';

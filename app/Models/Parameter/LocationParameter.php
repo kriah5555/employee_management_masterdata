@@ -4,21 +4,19 @@ namespace App\Models\Parameter;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
-use App\Models\Parameter\Parameter;
 
-class SectorParameter extends BaseModel
+class LocationParameter extends BaseModel
 {
     use UserAudit;
 
     protected $columnsToLog = ['value'];
-
-    protected $connection = 'master';
+    protected $connection = 'tenant';
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'sector_parameters';
+    protected $table = 'location_parameters';
 
     /**
      * The primary key associated with the table.
@@ -51,14 +49,10 @@ class SectorParameter extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'parameter_id',
-        'sector_id',
+        'location_id',
+        'parameter_name',
         'value',
         'created_by',
         'updated_by'
     ];
-    public function parameter()
-    {
-        return $this->belongsTo(Parameter::class);
-    }
 }

@@ -48,11 +48,6 @@ class ParameterService
     }
     public function getManageParameterOptions()
     {
-        $typeOptions = [
-            1 => 'Employee type',
-            2 => 'Sector',
-            3 => 'Employee type and Sector',
-        ];
         $employeeTypes = $this->employeeTypeService->getEmployeeTypesOptions();
         $sectors = $this->sectorService->getActiveSectorsOptions();
         $locations = $this->locationService->getActiveLocationsOptions();
@@ -66,11 +61,11 @@ class ParameterService
     public function getParameters($values)
     {
         if ($values['type'] == 1) {
-            return $this->getEmployeeTypeParameters($values['employee_type_id']);
+            return $this->getEmployeeTypeParameters($values['id']);
         } elseif ($values['type'] == 2) {
-            return $this->getSectorParameters($values['sector_id']);
+            return $this->getSectorParameters($values['id']);
         } elseif ($values['type'] == 3) {
-            return $this->parameterRepository->getEmployeeTypeSectorParameters($values['employee_type_id'], $values['sector_id']);
+            return $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
         }
     }
     public function updateParameter($parameterId, $values)
@@ -79,6 +74,8 @@ class ParameterService
             $status = $this->updateEmployeeTypeParameter($parameterId, $values);
         } elseif ($values['type'] == 2) {
             $status = $this->updateSectorParameter($parameterId, $values);
+        } elseif ($values['type'] == 3) {
+            $status = $this->updateEmployeeTypeSectorParameter($parameterId, $values);
         }
         return $status;
     }
@@ -97,7 +94,43 @@ class ParameterService
     }
     public function updateSectorParameter($parameterId, $values)
     {
-        $parameter = $this->parameterRepository->getEmployeeTypeParameterById($parameterId);
-        return $this->parameterRepository->updateEmployeeTypeParameter($parameter, $values);
+        $parameter = $this->parameterRepository->getSectorParameterById($parameterId);
+        return $this->parameterRepository->updateSectorParameter($parameter, $values);
+    }
+    public function updateEmployeeTypeSectorParameter($parameterId, $values)
+    {
+        $parameter = $this->parameterRepository->getEmployeeTypeSectorParameterById($parameterId);
+        return $this->parameterRepository->updateEmployeeTypeSectorParameter($parameter, $values);
+    }
+    public function getCompanyParameters($values)
+    {
+        $response = [];
+        if ($values['type'] == 1) {
+            $parameters = $this->getEmployeeTypeParameters($values['id']);
+        } elseif ($values['type'] == 2) {
+            $parameters = $this->getSectorParameters($values['id']);
+        } elseif ($values['type'] == 3) {
+            $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
+        } elseif ($values['type'] == 5) {
+            $parameters = $this->parameterRepository->getDefaultLocationParameters();
+        }
+        foreach ($parameters as $parameter) {
+            $details = [];
+            $details['name'] = $parameter['name'];
+            $details['default_value'] = $parameter['value'];
+            if ($values['type'] == 4) {
+                $companyParameters = $this->parameterRepository->getCompanyParameterByName($parameter['name']);
+            } else {
+                $companyParameters = $this->parameterRepository->getLocationParameterByName($parameter['id'], $parameter['name']);
+            }
+            if ($companyParameters) {
+                $details['use_default'] = false;
+            } else {
+                $details['use_default'] = true;
+                $details['value'] = $parameter['value'];
+            }
+            $response[] = $details;
+        }
+        return $response;
     }
 }

@@ -11,6 +11,8 @@ class EmployeeTypeSectorParameter extends BaseModel
     use UserAudit;
 
     protected $columnsToLog = ['value'];
+
+    protected $connection = 'master';
     /**
      * The table associated with the model.
      *

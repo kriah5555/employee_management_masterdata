@@ -28,6 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('dimona_details');
         Schema::dropIfExists('dimona_base');
     }
 };

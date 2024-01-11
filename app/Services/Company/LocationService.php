@@ -28,8 +28,8 @@ class LocationService extends BaseService
         $employeeTypes = $this->getActiveLocations();
         return $employeeTypes->map(function ($item) {
             return [
-                'id'   => $item->id,
-                'name' => $item->location_name,
+                'value' => $item->id,
+                'label' => $item->location_name,
             ];
         })->toArray();
     }
