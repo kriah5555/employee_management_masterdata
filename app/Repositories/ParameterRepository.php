@@ -7,6 +7,8 @@ use App\Models\Parameter\Parameter;
 use App\Models\Parameter\EmployeeTypeParameter;
 use App\Models\Parameter\SectorParameter;
 use App\Models\Parameter\EmployeeTypeSectorParameter;
+use App\Models\Parameter\CompanyParameter;
+use App\Models\Parameter\LocationParameter;
 use App\Exceptions\ModelUpdateFailedException;
 
 class ParameterRepository implements ParameterRepositoryInterface
@@ -147,26 +149,9 @@ class ParameterRepository implements ParameterRepositoryInterface
             throw new ModelUpdateFailedException('Failed to update parameter');
         }
     }
-    // public function updateEmployeeTypeParameter(array $values): bool
-    // {
-    //     $parameter = Parameter::where('name', $values['name'])->get()->first();
-    //     $employeeTypeParameter = EmployeeTypeParameter::firstOrCreate([
-    //         'parameter_id'     => $parameter->id,
-    //         'employee_type_id' => $values['employee_type_id'],
-    //     ]);
-    //     dd($employeeTypeParameter);
-    //     if ($values['use_default']) {
-    //         EmployeeTypeParameter::where('parameter_id', $parameter->id)
-    //             ->where('employee_type_id', $values['employee_type_id'])->delete();
-    //     } else {
-    //         $employeeTypeParameter = EmployeeTypeParameter::firstOrCreate([
-    //             'parameter_id'     => $parameter->id,
-    //             'employee_type_id' => $values['employee_type_id'],
-    //         ]);
-    //         dd($employeeTypeParameter);
-    //         $employeeTypeParameter->value = $values['value'];
-    //         $employeeTypeParameter->save();
-    //     }
-    //     return true;
-    // }
+    public function getCompanyParameterByName(string $parameterName): CompanyParameter|null
+    {
+        return CompanyParameter::where('parameter_name', $parameterName)->get()->first();
+    }
+
 }

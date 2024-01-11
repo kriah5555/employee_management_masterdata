@@ -200,5 +200,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-availability');
 
         Route::get('get-manage-parameter-options', [ParameterController::class, 'getManageParameterOptions'])->name('get-manage-parameter-options');
+        Route::get('get-company-parameters', [ParameterController::class, 'getCompanyParameters'])->name('get-company-parameters');
     });
 });
