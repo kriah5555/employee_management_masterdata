@@ -46,6 +46,17 @@ class SectorService
     {
         return $this->sectorRepository->getActiveSectors();
     }
+    public function getActiveSectorsOptions()
+    {
+        $employeeTypes = $this->getActiveSectors();
+        return $employeeTypes->map(function ($item) {
+            return [
+                'value' => $item->id,
+                'label' => $item->name,
+                // Add more fields as needed
+            ];
+        })->toArray();
+    }
 
     public function createSector($values)
     {
@@ -142,7 +153,7 @@ class SectorService
         return $this->sectorRepository->deleteSector($sector);
     }
 
-    public function getSectorFunctionTitles(array $sector_ids) 
+    public function getSectorFunctionTitles(array $sector_ids)
     {
         $function_service = app(FunctionService::class);
         return ['function_titles' => $function_service->getFunctionTitlesLinkedToSectors($sector_ids)];

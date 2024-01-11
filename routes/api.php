@@ -234,13 +234,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::put('update-default-parameter/{parameter_id}', [ParameterController::class, 'updateDefaultParameter'])->name('update-default-parameter');
 
-    Route::post('get-employee-type-parameters', [ParameterController::class, 'getEmployeeTypeParameters'])->name('get-employee-type-parameters');
+    Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
 
-    Route::put('update-employee-type-parameter/{parameter_id}', [ParameterController::class, 'updateEmployeeTypeParameter'])->name('update-employee-type-parameter');
-
-    Route::post('get-sector-parameters', [ParameterController::class, 'getSectorParameters'])->name('get-sector-parameters');
-
-    Route::post('update-sector-type-parameter/{parameter_id}', [ParameterController::class, 'updateSectorParameter'])->name('update-sector-type-parameter');
+    Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
 });
 
 Route::get('/script', function () {

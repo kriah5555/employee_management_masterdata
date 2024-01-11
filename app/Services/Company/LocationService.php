@@ -23,6 +23,16 @@ class LocationService extends BaseService
     {
         return $this->locationRepository->getActiveLocations();
     }
+    public function getActiveLocationsOptions()
+    {
+        $employeeTypes = $this->getActiveLocations();
+        return $employeeTypes->map(function ($item) {
+            return [
+                'value' => $item->id,
+                'label' => $item->location_name,
+            ];
+        })->toArray();
+    }
 
     public function getLocations()
     {
@@ -31,7 +41,7 @@ class LocationService extends BaseService
 
     public function getLocationById($locationId)
     {
-        return $this->locationRepository->getLocationById($locationId);
+        return $this->locationRepository->getLocationById($locationId, ['address', 'responsiblePersons']);
     }
 
     public function deleteLocation($locationId)
@@ -78,7 +88,13 @@ class LocationService extends BaseService
             $this->addressService->updateAddress($location->address, $values['address']);
             unset($values['address']);
             unset($values['company']);
-            $location->update($values);
+            $responsiblePersons = $values['responsible_persons'];
+            unset($values['responsible_persons']);
+            $location->update([
+                'location_name' => $values['location_name'],
+                'status'        => $values['status']
+            ]);
+            $location->responsiblePersons()->sync($responsiblePersons ?? []);
             DB::connection('tenant')->commit();
             return $location;
         } catch (Exception $e) {

@@ -24,43 +24,40 @@ class ParameterRequest extends ApiRequest
             // $parameters['description'] = 'required|string';
             $parameters['value'] = 'required';
         }
-        if ($this->route()->getName() == 'get-employee-type-parameters') {
-            // $parameters['description'] = 'required|string';
-            $parameters['employee_type_id'] = [
-                'required',
-                'integer',
-                Rule::exists('employee_types', 'id'),
-            ];
+        if ($this->route()->getName() == 'get-parameters') {
+            $parameters['type'] = 'required|integer|in:1,2,3';
+            $type = $this->input('type');
+            if ($type == 1) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('employee_types', 'id'),
+                ];
+            }
+            if ($type == 2) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('sectors', 'id'),
+                ];
+            }
+            if ($type == 3) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('employee_types', 'id'),
+                ];
+                $parameters['sector_id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('sectors', 'id'),
+                ];
+            }
         }
-        if ($this->route()->getName() == 'update-employee-type-parameter') {
-            // $parameters['employee_type_id'] = [
-            //     'required',
-            //     'integer',
-            //     Rule::exists('employee_types', 'id'),
-            // ];
-            // $parameters['name'] = [
-            //     'required',
-            //     'string',
-            //     Rule::exists('parameters', 'name'),
-            // ];
-            // $parameters['use_default'] = [
-            //     'required',
-            //     'boolean',
-            // ];
-            // $parameters['value'] = [
-            //     'nullable',
-            //     !$this->request->get('use_default') ? 'required' : '',
-            // ];
+        if ($this->route()->getName() == 'update-parameter') {
+            $parameters['type'] = 'required|integer|in:1,2,3';
             $parameters['value'] = [
                 'required'
-            ];
-        }
-        if ($this->route()->getName() == 'get-sector-parameters') {
-            // $parameters['description'] = 'required|string';
-            $parameters['sector_id'] = [
-                'required',
-                'integer',
-                Rule::exists('sectors', 'id'),
             ];
         }
         return $parameters;

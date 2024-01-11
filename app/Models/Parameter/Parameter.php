@@ -21,7 +21,7 @@ class Parameter extends BaseModel
 
     protected static $sort = ['type', 'name'];
 
-    protected $columnsToLog = ['description', 'default_value', 'status'];
+    protected $columnsToLog = ['description', 'value'];
     /**
      * The table associated with the model.
      *
