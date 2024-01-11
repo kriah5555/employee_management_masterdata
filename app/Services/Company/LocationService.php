@@ -23,6 +23,16 @@ class LocationService extends BaseService
     {
         return $this->locationRepository->getActiveLocations();
     }
+    public function getActiveLocationsOptions()
+    {
+        $employeeTypes = $this->getActiveLocations();
+        return $employeeTypes->map(function ($item) {
+            return [
+                'id'   => $item->id,
+                'name' => $item->location_name,
+            ];
+        })->toArray();
+    }
 
     public function getLocations()
     {

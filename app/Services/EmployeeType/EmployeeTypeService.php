@@ -37,6 +37,18 @@ class EmployeeTypeService
     {
         return $this->employeeTypeRepository->getEmployeeTypes();
     }
+    
+    public function getEmployeeTypesOptions()
+    {
+        $employeeTypes = $this->getEmployeeTypes();
+        return $employeeTypes->map(function ($item) {
+            return [
+                'id'   => $item->id,
+                'name' => $item->name,
+                // Add more fields as needed
+            ];
+        })->toArray();
+    }
 
     /**
      * Function to save a new employee type

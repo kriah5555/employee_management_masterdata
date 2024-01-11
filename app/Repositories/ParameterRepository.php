@@ -6,6 +6,7 @@ use App\Interfaces\ParameterRepositoryInterface;
 use App\Models\Parameter\Parameter;
 use App\Models\Parameter\EmployeeTypeParameter;
 use App\Models\Parameter\SectorParameter;
+use App\Models\Parameter\EmployeeTypeSectorParameter;
 use App\Exceptions\ModelUpdateFailedException;
 
 class ParameterRepository implements ParameterRepositoryInterface
@@ -60,6 +61,44 @@ class ParameterRepository implements ParameterRepositoryInterface
         }
         return $response;
     }
+    public function getSectorParameters($sectorId)
+    {
+        $response = [];
+        $sectorParameters = Parameter::where('type', 2)->get();
+        foreach ($sectorParameters as $sectorParameter) {
+            $parameter = SectorParameter::where('parameter_id', $sectorParameter->id)
+                ->where('sector_id', $sectorId)->get()->first();
+            if (!$parameter) {
+                $parameter = SectorParameter::create([
+                    'parameter_id' => $sectorParameter->id,
+                    'sector_id'    => $sectorId,
+                    'value'        => $sectorParameter->value,
+                ]);
+            }
+            $response[] = $this->formatParameterDetails($parameter);
+        }
+        return $response;
+    }
+    public function getEmployeeTypeSectorParameters($employeeTypeId, $sectorId)
+    {
+        $response = [];
+        $employeeTypeSectorParameters = Parameter::where('type', 3)->get();
+        foreach ($employeeTypeSectorParameters as $employeeTypeSectorParameter) {
+            $parameter = EmployeeTypeSectorParameter::where('parameter_id', $employeeTypeSectorParameter->id)
+                ->where('employee_type_id', $employeeTypeId)
+                ->where('sector_id', $sectorId)->get()->first();
+            if (!$parameter) {
+                $parameter = EmployeeTypeSectorParameter::create([
+                    'parameter_id'     => $employeeTypeSectorParameter->id,
+                    'employee_type_id' => $employeeTypeId,
+                    'sector_id'        => $sectorId,
+                    'value'            => $employeeTypeSectorParameter->value,
+                ]);
+            }
+            $response[] = $this->formatParameterDetails($parameter);
+        }
+        return $response;
+    }
     public function formatParameterDetails($parameter)
     {
         return [
@@ -81,28 +120,6 @@ class ParameterRepository implements ParameterRepositoryInterface
         } else {
             throw new ModelUpdateFailedException('Failed to update parameter');
         }
-    }
-    public function getSectorParameters($sectorId)
-    {
-        $response = [];
-        $sectorParameters = Parameter::where('type', 2)->get();
-        foreach ($sectorParameters as $sectorParameter) {
-            $parameter = SectorParameter::firstOrCreate([
-                'parameter_id' => $sectorParameter->id,
-                'sector_id'    => $sectorId,
-            ]);
-            dd($parameter->wasRecentlyCreated);
-            // $parameter->value =
-            if (!$parameter) {
-                $parameter = SectorParameter::create([
-                    'parameter_id'     => $sectorParameter->id,
-                    'employee_type_id' => $sectorId,
-                    'value'            => $sectorParameter->value,
-                ]);
-            }
-            $response[] = $this->formatParameterDetails($parameter);
-        }
-        return $response;
     }
     public function getSectorParameterById(string $parameterId): SectorParameter
     {

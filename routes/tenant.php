@@ -34,7 +34,8 @@ use App\Http\Controllers\Employee\{
 
 use App\Http\Controllers\{
     Sector\SectorController,
-    Contract\ContractController
+    Contract\ContractController,
+    Parameter\ParameterController,
 };
 use App\Http\Controllers\ReasonController;
 
@@ -197,5 +198,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::post('get-weekly-availability', [EmployeeAvailabilityController::class, 'getWeeklyAvailability'])->name('get-weekly-availability');
         Route::post('get-weekly-availability-for-employee', [EmployeeAvailabilityController::class, 'getWeeklyAvailabilityForEmployee'])->name('get-weekly-availability-for-employee');
         Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-availability');
+
+        Route::get('get-manage-parameter-options', [ParameterController::class, 'getManageParameterOptions'])->name('get-manage-parameter-options');
     });
 });
