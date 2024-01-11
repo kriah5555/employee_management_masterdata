@@ -12,6 +12,7 @@ use App\Models\Company\CompanySocialSecretaryDetails;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\Tenant;
+use App\Models\EmployeeType\EmployeeType;
 
 class Company extends BaseModel
 {
@@ -111,6 +112,11 @@ class Company extends BaseModel
     public function interimAgencies()
     {
         return $this->belongsToMany(InterimAgency::class, 'company_interim_agency', 'company_id', 'interim_agency_id');
+    }
+
+    public function dimoanEmployeeTypes()
+    {
+        return $this->belongsToMany(EmployeeType::class, 'employee_type_dimona_configurations', 'company_id', 'employee_type_id');
     }
 
     public function logoFile()

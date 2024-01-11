@@ -6,17 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Holiday\HolidayCodeService;
 use App\Http\Requests\Holiday\HolidayCodeConfigRequest;
-use App\Models\Company\Company;
 use Illuminate\Http\JsonResponse;
-use App\Services\CompanyService;
 
 class HolidayCodeConfigController extends Controller
 {
-    protected $company_service;
-
     public function __construct(protected HolidayCodeService $holiday_code_service)
     {
-        $this->company_service = app(CompanyService::class);
     }
 
     /**

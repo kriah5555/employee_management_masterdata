@@ -11,6 +11,7 @@ return [
         '{employee_email}'         => 'Email',
         '{employee_address}'       => 'Address:Street + number Postal code City Country',
         '{employee_nationality}'   => 'Nationality',
+        '{employee_old_bank}'      => 'Old Bank account number',
         '{employee_bank}'          => 'Bank account number',
         '{employee_username}'      => 'username',
         '{employee_password}'      => 'password',

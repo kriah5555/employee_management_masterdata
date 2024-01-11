@@ -60,9 +60,10 @@ class PlanningStartStopController extends Controller
             if (($plan->contract_status != config('contracts.SIGNED') || empty($plan->contracts)) && $plan->employeeType->employeeTypeCategory->id == config('constants.DAILY_CONTRACT_ID')) { # if contract not generated or if the contract is unsigned
                 $qr_data = decodeData($input['QR_code']);
 
-                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : $contract = app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id'] = 1); # if contract exists use that else generate new contract and use that
+                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : 
+                            app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id']); # if contract exists use that else generate new contract and use that
 
-                return response()->json([
+                return response()->json([   
                         'success'           => false,
                         'message'           => t('Please sign contract and scan qr code to start your plan.'),
                         'sign_contract'     => 1, # 0-> not signed contract,  1-> signed contract,

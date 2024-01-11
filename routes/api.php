@@ -37,6 +37,7 @@ use App\Http\Controllers\{
     SocialSecretary\SocialSecretaryController,
     EmployeeFunction\FunctionCategoryController,
     NotificationController\NotificationController,
+    Dimona\EmployeeTypeDimoanConfigurationController,
 };
 
 use App\Http\Controllers\Planning\VacancyController;
@@ -156,6 +157,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         ],
         'holiday-code-config' => [
             'controller' => HolidayCodeConfigController::class,
+            'methods'    => ['show', 'update']
+        ],
+        'employee-type-dimona-config' => [
+            'controller' => EmployeeTypeDimoanConfigurationController::class,
             'methods'    => ['show', 'update']
         ],
         'availability'        => [
