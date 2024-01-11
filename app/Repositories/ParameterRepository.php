@@ -101,6 +101,24 @@ class ParameterRepository implements ParameterRepositoryInterface
         }
         return $response;
     }
+    public function getDefaultLocationParameters()
+    {
+        $response = [];
+        $locationParameters = $this->getDefaultParameters(5);
+        foreach ($locationParameters as $locationParameter) {
+            $response[] = $this->formatDefaultParameterDetails($locationParameter);
+        }
+        return $response;
+    }
+    public function formatDefaultParameterDetails($parameter)
+    {
+        return [
+            'id'          => $parameter->id,
+            'name'        => $parameter->name,
+            'description' => $parameter->description,
+            'value'       => $parameter->value,
+        ];
+    }
     public function formatParameterDetails($parameter)
     {
         return [
@@ -152,6 +170,11 @@ class ParameterRepository implements ParameterRepositoryInterface
     public function getCompanyParameterByName(string $parameterName): CompanyParameter|null
     {
         return CompanyParameter::where('parameter_name', $parameterName)->get()->first();
+    }
+    public function getLocationParameterByName(string $locationId, string $parameterName): LocationParameter|null
+    {
+        return LocationParameter::where('location_id', $locationId)
+            ->where('parameter_name', $parameterName)->get()->first();
     }
 
 }

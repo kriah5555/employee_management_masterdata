@@ -111,12 +111,18 @@ class ParameterService
             $parameters = $this->getSectorParameters($values['id']);
         } elseif ($values['type'] == 3) {
             $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
+        } elseif ($values['type'] == 5) {
+            $parameters = $this->parameterRepository->getDefaultLocationParameters();
         }
         foreach ($parameters as $parameter) {
             $details = [];
             $details['name'] = $parameter['name'];
             $details['default_value'] = $parameter['value'];
-            $companyParameters = $this->parameterRepository->getCompanyParameterByName($parameter['name']);
+            if ($values['type'] == 4) {
+                $companyParameters = $this->parameterRepository->getCompanyParameterByName($parameter['name']);
+            } else {
+                $companyParameters = $this->parameterRepository->getLocationParameterByName($parameter['id'], $parameter['name']);
+            }
             if ($companyParameters) {
                 $details['use_default'] = false;
             } else {

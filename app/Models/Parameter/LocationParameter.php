@@ -16,7 +16,7 @@ class LocationParameter extends BaseModel
      *
      * @var string
      */
-    protected $table = 'company_parameters';
+    protected $table = 'location_parameters';
 
     /**
      * The primary key associated with the table.
