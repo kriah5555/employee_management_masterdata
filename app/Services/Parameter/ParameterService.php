@@ -48,11 +48,6 @@ class ParameterService
     }
     public function getManageParameterOptions()
     {
-        $typeOptions = [
-            1 => 'Employee type',
-            2 => 'Sector',
-            3 => 'Employee type and Sector',
-        ];
         $employeeTypes = $this->employeeTypeService->getEmployeeTypesOptions();
         $sectors = $this->sectorService->getActiveSectorsOptions();
         $locations = $this->locationService->getActiveLocationsOptions();
@@ -66,11 +61,11 @@ class ParameterService
     public function getParameters($values)
     {
         if ($values['type'] == 1) {
-            return $this->getEmployeeTypeParameters($values['employee_type_id']);
+            return $this->getEmployeeTypeParameters($values['id']);
         } elseif ($values['type'] == 2) {
-            return $this->getSectorParameters($values['sector_id']);
+            return $this->getSectorParameters($values['id']);
         } elseif ($values['type'] == 3) {
-            return $this->parameterRepository->getEmployeeTypeSectorParameters($values['employee_type_id'], $values['sector_id']);
+            return $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
         }
     }
     public function updateParameter($parameterId, $values)

@@ -237,8 +237,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
 
     Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
-
-    Route::post('update-sector-type-parameter/{parameter_id}', [ParameterController::class, 'updateSectorParameter'])->name('update-sector-type-parameter');
 });
 
 Route::get('/script', function () {

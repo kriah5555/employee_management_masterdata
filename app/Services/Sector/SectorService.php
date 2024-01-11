@@ -51,8 +51,8 @@ class SectorService
         $employeeTypes = $this->getActiveSectors();
         return $employeeTypes->map(function ($item) {
             return [
-                'id'   => $item->id,
-                'name' => $item->name,
+                'value' => $item->id,
+                'label' => $item->name,
                 // Add more fields as needed
             ];
         })->toArray();

@@ -27,14 +27,26 @@ class ParameterRequest extends ApiRequest
         if ($this->route()->getName() == 'get-parameters') {
             $parameters['type'] = 'required|integer|in:1,2,3';
             $type = $this->input('type');
-            if ($type == 1 || $type == 3) {
-                $parameters['employee_type_id'] = [
+            if ($type == 1) {
+                $parameters['id'] = [
                     'required',
                     'integer',
                     Rule::exists('employee_types', 'id'),
                 ];
             }
-            if ($type == 2 || $type == 3) {
+            if ($type == 2) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('sectors', 'id'),
+                ];
+            }
+            if ($type == 3) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('employee_types', 'id'),
+                ];
                 $parameters['sector_id'] = [
                     'required',
                     'integer',
