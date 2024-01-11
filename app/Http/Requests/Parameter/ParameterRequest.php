@@ -60,6 +60,43 @@ class ParameterRequest extends ApiRequest
                 'required'
             ];
         }
+        if ($this->route()->getName() == 'get-company-parameters') {
+            $parameters['type'] = 'required|integer|in:1,2,3,4,5';
+            $type = $this->input('type');
+            if ($type == 1) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.employee_types', 'id'),
+                ];
+            }
+            if ($type == 2) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.sectors', 'id'),
+                ];
+            }
+            if ($type == 3) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.employee_types', 'id'),
+                ];
+                $parameters['sector_id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.sectors', 'id'),
+                ];
+            }
+            if ($type == 5) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('locations', 'id'),
+                ];
+            }
+        }
         return $parameters;
 
     }

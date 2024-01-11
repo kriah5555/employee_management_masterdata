@@ -16,6 +16,7 @@ use App\Services\Employee\EmployeeService;
 use App\Services\Employee\CommuteTypeService;
 use App\Http\Requests\Employee\EmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
+use App\Http\Requests\Employee\UpdateEmployeeWebRequest;
 use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
 
 class EmployeeController extends Controller
@@ -161,6 +162,52 @@ class EmployeeController extends Controller
                     'success' => true,
                     'message' => 'Employee updated successfully',
                     'data'    => $this->employeeService->updateEmployee($request->validated(), $companyId)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function updateEmployeePersonal(UpdateEmployeeWebRequest $request)
+    {
+        try {
+            $companyId = getCompanyId();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee Personal Details updated successfully',
+                    'data'    => $this->employeeService->updateEmployeePersonal($request->validated(), $companyId)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function updateEmployeeAddress(UpdateEmployeeWebRequest $request)
+    {
+        try {
+            $companyId = getCompanyId();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Employee Address Details updated successfully',
+                    'data'    => $this->employeeService->updateEmployeeAddress($request->validated(), $companyId)
                 ],
                 JsonResponse::HTTP_OK,
             );
