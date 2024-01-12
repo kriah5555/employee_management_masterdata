@@ -150,7 +150,7 @@ class ParameterRequest extends ApiRequest
     }
     protected function prepareForValidation()
     {
-        if ($this->route()->getName() == 'update-company-parameters') {
+        if ($this->route()->getName() == 'get-company-parameters' || $this->route()->getName() == 'update-company-parameters') {
             $this->merge(['parameter_name' => $this->route('parameter_name')]);
             $this->formatParameters();
         }

@@ -107,11 +107,11 @@ class ParameterService
     {
         $response = [];
         if ($values['type'] == 1) {
-            $parameters = $this->getEmployeeTypeParameters($values['id']);
+            $parameters = $this->getEmployeeTypeParameters($values['employee_type_id']);
         } elseif ($values['type'] == 2) {
-            $parameters = $this->getSectorParameters($values['id']);
+            $parameters = $this->getSectorParameters($values['sector_id']);
         } elseif ($values['type'] == 3) {
-            $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
+            $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['employee_type_id'], $values['sector_id']);
         } elseif ($values['type'] == 4) {
             $parameters = $this->parameterRepository->getDefaultCompanyParameters();
         } elseif ($values['type'] == 5) {
