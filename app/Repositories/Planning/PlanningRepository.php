@@ -115,15 +115,16 @@ class PlanningRepository implements PlanningRepositoryInterface
         return $query->get();
     }
 
-    public function getPlansByDatesArray($dates_array)
+    public function getPlansByDatesArray($dates_array, $employee_profile_id)
     {
         $query = PlanningBase::query();
+        $query->where('employee_profile_id', $employee_profile_id);
 
         $query->where(function ($query) use ($dates_array) {
             foreach ($dates_array as $date) {
                 $startOfDay = date('Y-m-d 00:00:00', strtotime($date));
                 $endOfDay   = date('Y-m-d 23:59:59', strtotime($date));
-                $query->whereBetween('start_date_time', [$startOfDay, $endOfDay]);
+                $query->orWhereBetween('start_date_time', [$startOfDay, $endOfDay]);
             }
         });
 

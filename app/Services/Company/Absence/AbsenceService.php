@@ -24,12 +24,16 @@ class AbsenceService
         }
     }
 
-    public function createAbsenceRelatedData(Absence $absence, $absence_hours, $dates_data)
+    public function createAbsenceRelatedData(Absence $absence, $absence_hours, $dates_data, $plan_ids = [])
     {
         try {
             $absence->absenceHours()->createMany($absence_hours);
 
             $absence->absenceDates()->create($dates_data);
+
+            if (!empty($plan_ids)) {
+                $absence->plans()->sync($plan_ids);
+            }
 
             return $absence;
         } catch (Exception $e) {

@@ -193,7 +193,7 @@ class PlanningMobileService implements PlanningInterface
             $worked_hours         = (($time_registrations) ? $time_registrations->flatten()->pluck('worked_hours')->sum() : 0);
             $break                = ($breaks) ? $breaks->flatten()->pluck('break_hours')->sum() : 0;
 
-            if (!isset($return[$plan->employeeType->name])) {
+            if (!isset($return[$plan->employeeType->name])) { # will add this data only once
                 $return[$plan->employeeType->name] = [
                     'company_id'           => $company->id,
                     'company_name'         => $company->company_name,

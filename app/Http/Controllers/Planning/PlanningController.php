@@ -256,8 +256,9 @@ class PlanningController extends Controller
     {
         try {
             $rules = [
-                'dates'   => ['bail', 'required', 'array',],
-                'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT')
+                'dates'               => ['bail', 'required', 'array',],
+                'employee_profile_id' => ['bail', 'required', 'integer'],
+                'dates.*'             => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT')
             ];
 
             $validator = Validator::make(request()->all(), $rules, []);
@@ -275,7 +276,7 @@ class PlanningController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningService->getPlansForAbsence($request->dates)
+                    'data'    => $this->planningService->getPlansForAbsence($request->dates, $request->employee_profile_id)
                 ],
                 JsonResponse::HTTP_OK,
             );

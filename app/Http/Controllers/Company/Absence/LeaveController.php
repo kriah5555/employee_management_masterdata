@@ -116,7 +116,7 @@ class LeaveController extends Controller
     public function store(Request $request)
     {
         try {
-            $request_data = $request->all();
+            $request_data = $request->validated();
             return returnResponse(
                 [
                     'success' => true,
