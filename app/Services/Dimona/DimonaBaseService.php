@@ -25,13 +25,15 @@ class DimonaBaseService
 
 
     //employee category: 1 -> Long term, 2-> Day contract, 3 -> External
-    public function initiateDimonaByPlanService($companyId, $plan, $type = '')
+    public function initiateDimonaByPlanService($companyId, $plannings, $type = '')
     {
-        $dimona = ['unique_id' => Str::uuid()];
-        $this->setCompanyData($companyId, $dimona);
-        $dimonaDetails = $this->setEmployeeAndPlanningData($plan, $type, $dimona);
-        $this->createDimonaRecords($dimonaDetails, $dimona);
-        $this->requestDimona->sendDimonaRequest($dimona);
+        foreach ($plannings as $plan) {
+            $dimona = ['unique_id' => Str::uuid()];
+            $this->setCompanyData($companyId, $dimona);
+            $dimonaDetails = $this->setEmployeeAndPlanningData($plan, $type, $dimona);
+            $this->createDimonaRecords($dimonaDetails, $dimona);
+            $this->requestDimona->sendDimonaRequest($dimona);
+        }
     }
 
     public function getPlanningById($planId)
