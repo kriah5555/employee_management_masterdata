@@ -118,7 +118,9 @@ class ParameterService
         }
         foreach ($parameters as $parameter) {
             $details = [];
-            $details['name'] = $parameter['name'];
+	    $details['id'] = $parameter['name'];
+	    $details['name'] = $parameter['name'];
+	    $details['description'] = $parameter['description'];
             $details['default_value'] = $parameter['value'];
             if ($values['type'] == 4) {
                 $companyParameters = $this->parameterRepository->getCompanyParameterByName($parameter['name']);
