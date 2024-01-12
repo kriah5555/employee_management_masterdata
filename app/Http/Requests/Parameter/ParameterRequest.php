@@ -64,21 +64,21 @@ class ParameterRequest extends ApiRequest
             $parameters['type'] = 'required|integer|in:1,2,3,4,5';
             $type = $this->input('type');
             if ($type == 1) {
-                $parameters['id'] = [
+                $parameters['employee_type_id'] = [
                     'required',
                     'integer',
                     Rule::exists('master.employee_types', 'id'),
                 ];
             }
             if ($type == 2) {
-                $parameters['id'] = [
+                $parameters['sector_id'] = [
                     'required',
                     'integer',
                     Rule::exists('master.sectors', 'id'),
                 ];
             }
             if ($type == 3) {
-                $parameters['id'] = [
+                $parameters['employee_type_id'] = [
                     'required',
                     'integer',
                     Rule::exists('master.employee_types', 'id'),
@@ -90,7 +90,7 @@ class ParameterRequest extends ApiRequest
                 ];
             }
             if ($type == 5) {
-                $parameters['id'] = [
+                $parameters['location_id'] = [
                     'required',
                     'integer',
                     Rule::exists('locations', 'id'),
@@ -105,21 +105,21 @@ class ParameterRequest extends ApiRequest
             ];
             $parameterName = $this->route('parameter_name');
             if (in_array($parameterName, ['PAR_1A', 'PAR_1B'])) {
-                $parameters['id'] = [
+                $parameters['employee_type_id'] = [
                     'required',
                     'integer',
                     Rule::exists('master.employee_types', 'id'),
                 ];
             }
             if (in_array($parameterName, ['PAR_2A', 'PAR_2B', 'PAR_2C', 'PAR_2D', 'PAR_2E', 'PAR_2F', 'PAR_2G', 'PAR_2H', 'PAR_2I', 'PAR_2J'])) {
-                $parameters['id'] = [
+                $parameters['sector_id'] = [
                     'required',
                     'integer',
                     Rule::exists('master.sectors', 'id'),
                 ];
             }
             if (in_array($parameterName, ['PAR_3A', 'PAR_3B', 'PAR_3C'])) {
-                $parameters['id'] = [
+                $parameters['employee_type_id'] = [
                     'required',
                     'integer',
                     Rule::exists('master.employee_types', 'id'),
@@ -150,7 +150,22 @@ class ParameterRequest extends ApiRequest
     }
     protected function prepareForValidation()
     {
-        $this->merge(['parameter_name' => $this->route('parameter_name')]);
+        if ($this->route()->getName() == 'update-company-parameters') {
+            $this->merge(['parameter_name' => $this->route('parameter_name')]);
+            $this->formatParameters();
+        }
+    }
+    protected function formatParameters()
+    {
+        $type = $this->input('type');
+        if ($type == 1 || $type == 3) {
+            $newParams['employee_type_id'] = $this->input('id');
+        } elseif ($type == 2) {
+            $newParams['sector_id'] = $this->input('id');
+        } elseif ($type == 5) {
+            $newParams['location_id'] = $this->input('id');
+        }
+        $this->merge($newParams);
     }
     public function messages()
     {

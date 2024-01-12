@@ -61,4 +61,9 @@ class EmployeeTypeParameter extends BaseModel
     {
         return $this->belongsTo(Parameter::class);
     }
+
+    public function companyParameters()
+    {
+        return $this->morphedByMany(CompanyParameter::class, 'company_parameters');
+    }
 }

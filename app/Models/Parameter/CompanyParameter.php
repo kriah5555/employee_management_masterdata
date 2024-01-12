@@ -4,6 +4,10 @@ namespace App\Models\Parameter;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\Parameter\EmployeeTypeParameter;
+use App\Models\Parameter\SectorParameter;
+use App\Models\Parameter\EmployeeTypeSectorParameter;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class CompanyParameter extends BaseModel
 {
@@ -49,9 +53,24 @@ class CompanyParameter extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'parameter_name',
+        'parameter_id',
+        'parameter_type',
         'value',
         'created_by',
         'updated_by'
     ];
+    public function employeeTypeParameter(): MorphToMany
+    {
+        return $this->morphedByMany(EmployeeTypeParameter::class, 'employee_type_parameters');
+    }
+
+    public function sectorParameter(): MorphToMany
+    {
+        return $this->morphedByMany(SectorParameter::class, 'parameter_type');
+    }
+
+    public function employeeTypeSectorParameter(): MorphToMany
+    {
+        return $this->morphedByMany(EmployeeTypeSectorParameter::class, 'parameter_type');
+    }
 }

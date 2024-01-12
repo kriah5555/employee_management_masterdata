@@ -12,7 +12,8 @@ return new class extends Migration {
     {
         Schema::create('company_parameters', function (Blueprint $table) {
             $table->id();
-            $table->string('parameter_name');
+            $table->unsignedBigInteger('parameter_id')->nullable();
+            $table->string('parameter_type')->nullable();
             $table->string('value')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -141,6 +141,22 @@ class ParameterRepository implements ParameterRepositoryInterface
     {
         return EmployeeTypeParameter::findOrFail($parameterId);
     }
+    public function getEmployeeTypeParameter(string $defaultParameterId, $employeeTypeId): EmployeeTypeParameter
+    {
+        return EmployeeTypeParameter::where('parameter_id', $defaultParameterId)
+            ->where('employee_type_id', $employeeTypeId)->get()->firstOrFail();
+    }
+    public function getSectorParameter(string $defaultParameterId, $sectorId): SectorParameter
+    {
+        return SectorParameter::where('parameter_id', $defaultParameterId)
+            ->where('sector_id', $sectorId)->get()->firstOrFail();
+    }
+    public function getEmployeeTypeSectorParameter(string $defaultParameterId, $employeeTypeId, $sectorId): EmployeeTypeSectorParameter
+    {
+        return EmployeeTypeSectorParameter::where('parameter_id', $defaultParameterId)
+            ->where('employee_type_id', $employeeTypeId)
+            ->where('sector_id', $sectorId)->get()->firstOrFail();
+    }
 
     public function updateEmployeeTypeParameter(EmployeeTypeParameter $parameter, array $newDetails): bool
     {
@@ -178,7 +194,7 @@ class ParameterRepository implements ParameterRepositoryInterface
     }
     public function getParameterByName(string $parameterName): Parameter|null
     {
-        return Parameter::where('name', $parameterName)->get()->first();
+        return Parameter::where('name', $parameterName)->get()->firstOrFail();
     }
     public function getCompanyParameterByName(string $parameterName): CompanyParameter|null
     {
