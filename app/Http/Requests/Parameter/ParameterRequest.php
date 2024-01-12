@@ -158,14 +158,16 @@ class ParameterRequest extends ApiRequest
     protected function formatParameters()
     {
         $type = $this->input('type');
-        if ($type == 1 || $type == 3) {
-            $newParams['employee_type_id'] = $this->input('id');
-        } elseif ($type == 2) {
-            $newParams['sector_id'] = $this->input('id');
-        } elseif ($type == 5) {
-            $newParams['location_id'] = $this->input('id');
+        if (in_array($type, [1, 2, 3, 5])) {
+            if ($type == 1 || $type == 3) {
+                $newParams['employee_type_id'] = $this->input('id');
+            } elseif ($type == 2) {
+                $newParams['sector_id'] = $this->input('id');
+            } elseif ($type == 5) {
+                $newParams['location_id'] = $this->input('id');
+            }
+            $this->merge($newParams);
         }
-        $this->merge($newParams);
     }
     public function messages()
     {

@@ -59,7 +59,7 @@ class ParameterRepository implements ParameterRepositoryInterface
                     'value'            => $employeeTypeParameter->value,
                 ]);
             }
-            $response[] = $this->formatParameterDetails($parameter);
+            $response[] = $parameter;
         }
         return $response;
     }
@@ -77,7 +77,7 @@ class ParameterRepository implements ParameterRepositoryInterface
                     'value'        => $sectorParameter->value,
                 ]);
             }
-            $response[] = $this->formatParameterDetails($parameter);
+            $response[] = $parameter;
         }
         return $response;
     }
@@ -97,7 +97,7 @@ class ParameterRepository implements ParameterRepositoryInterface
                     'value'            => $employeeTypeSectorParameter->value,
                 ]);
             }
-            $response[] = $this->formatParameterDetails($parameter);
+            $response[] = $parameter;
         }
         return $response;
     }
@@ -106,7 +106,7 @@ class ParameterRepository implements ParameterRepositoryInterface
         $response = [];
         $locationParameters = $this->getDefaultParameters(4);
         foreach ($locationParameters as $locationParameter) {
-            $response[] = $this->formatDefaultParameterDetails($locationParameter);
+            $response[] = $locationParameter;
         }
         return $response;
     }
@@ -115,7 +115,7 @@ class ParameterRepository implements ParameterRepositoryInterface
         $response = [];
         $locationParameters = $this->getDefaultParameters(5);
         foreach ($locationParameters as $locationParameter) {
-            $response[] = $this->formatDefaultParameterDetails($locationParameter);
+            $response[] = $locationParameter;
         }
         return $response;
     }
@@ -195,6 +195,11 @@ class ParameterRepository implements ParameterRepositoryInterface
     public function getParameterByName(string $parameterName): Parameter|null
     {
         return Parameter::where('name', $parameterName)->get()->firstOrFail();
+    }
+    public function getCompanyParameter(Parameter|EmployeeTypeParameter|SectorParameter|EmployeeTypeSectorParameter $parameter): CompanyParameter|null
+    {
+        return CompanyParameter::where('parameter_id', $parameter->id)
+            ->where('parameter_type', get_class($parameter))->get()->first();
     }
     public function getCompanyParameterByName(string $parameterName): CompanyParameter|null
     {

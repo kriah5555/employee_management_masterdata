@@ -119,21 +119,19 @@ class ParameterService
         }
         foreach ($parameters as $parameter) {
             $details = [];
-            $details['id'] = $parameter['name'];
-            $details['name'] = $parameter['name'];
-            $details['description'] = $parameter['description'];
-            $details['default_value'] = $parameter['value'];
-            if ($values['type'] == 4) {
-                $companyParameters = $this->parameterRepository->getCompanyParameterByName($parameter['name']);
+            if (in_array($values['type'], [1, 2, 3])) {
+                $details['id'] = $parameter->id;
+                $details['name'] = $parameter->parameter->name;
+                $details['description'] = $parameter->parameter->description;
+                $details['default_value'] = $details['value'] = $parameter->parameter->value;
             } else {
-                $companyParameters = $this->parameterRepository->getLocationParameterByName($parameter['id'], $parameter['name']);
+                $details['id'] = $parameter->id;
+                $details['name'] = $parameter->name;
+                $details['description'] = $parameter->description;
+                $details['default_value'] = $details['value'] = $parameter->value;
             }
-            if ($companyParameters) {
-                $details['use_default'] = false;
-            } else {
-                $details['use_default'] = true;
-                $details['value'] = $parameter['value'];
-            }
+            $companyParameters = $this->parameterRepository->getCompanyParameter($parameter);
+            $details['use_default'] = $companyParameters ? false : true;
             $response[] = $details;
         }
         return $response;
