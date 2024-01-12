@@ -4,6 +4,7 @@ namespace App\Services\Company\Absence;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Absence\Absence;
+use App\Models\Company\Absence\AbsenceDates;
 use Exception;
 use DateTime;
 
@@ -136,5 +137,49 @@ class AbsenceService
     public function changeReportingManager($absence, $responsible_person_id)
     {
         return $absence->update(['manager_id' => $responsible_person_id]);
+    }
+
+    public function getAbsenceDetailsForWeek($week_number, $year)
+    {
+        try {
+            $dates = getWeekDates($week_number, $year, 'd-m-Y');
+
+            $absence_data = $this->getAbsenceForDates($dates);
+            dd($dates, $absence_data);
+
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getAbsenceForDates($dates)
+    {
+        try {
+
+
+            $absenceIds = AbsenceDates::where(function ($query) use ($dates) {
+                foreach ($dates as $date) {
+                    $query->orWhere(function ($innerQuery) use ($date) {
+                        $innerQuery->whereRaw('"dates"::jsonb @> ?::jsonb', ['["' . $date . '"]'])
+                            ->orWhere(function ($innerInnerQuery) use ($date) {
+                                $innerInnerQuery->where('dates_type', 2)
+                                    ->where(function ($dateQuery) use ($date) {
+                                        $dateQuery->whereRaw('?::date BETWEEN "dates"->>"from_date" AND "dates"->>"to_date"')
+                                            ->orWhereRaw('?::date = "dates"->>"from_date"', [$date])
+                                            ->orWhereRaw('?::date = "dates"->>"to_date"', [$date]);
+                                    });
+                            });
+                    });
+                }
+            })->pluck('absence_id');
+
+            dd($absenceIds, $dates);
+            return Absence::whereIn('id', $absenceIds)->get();
+
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }

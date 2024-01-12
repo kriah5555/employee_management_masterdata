@@ -325,19 +325,20 @@ if (!function_exists('getTenantFolderPath')) {
 }
 
 if (!function_exists('getWeekDates')) {
-    function getWeekDates($weekNo, $year)
+    function getWeekDates($weekNo, $year, $date_formate = 'Y-m-d')
     {
-        $dates = [];
+        $dates     = [];
         $startDate = new DateTime();
         $startDate->setISODate($year, $weekNo, 1); // Set to the first day of the given week
         for ($i = 0; $i < 7; $i++) {
-            $date = $startDate->format('Y-m-d');
+            $date = $startDate->format($date_formate);
             $dates[] = $date;
             $startDate->modify('+1 day');
         }
         return $dates;
     }
 }
+
 if (!function_exists('getStartAndEndDateOfMonth')) {
     function getStartAndEndDateOfMonth($month, $year)
     {
