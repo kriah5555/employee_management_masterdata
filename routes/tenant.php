@@ -201,5 +201,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::get('get-manage-parameter-options', [ParameterController::class, 'getManageParameterOptions'])->name('get-manage-parameter-options');
         Route::post('get-company-parameters', [ParameterController::class, 'getCompanyParameters'])->name('get-company-parameters');
+        Route::post('update-company-parameters/{parameter_name}', [ParameterController::class, 'updateCompanyParameters'])->name('update-company-parameters');
     });
 });

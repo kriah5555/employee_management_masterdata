@@ -111,6 +111,8 @@ class ParameterService
             $parameters = $this->getSectorParameters($values['id']);
         } elseif ($values['type'] == 3) {
             $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
+        } elseif ($values['type'] == 4) {
+            $parameters = $this->parameterRepository->getDefaultCompanyParameters();
         } elseif ($values['type'] == 5) {
             $parameters = $this->parameterRepository->getDefaultLocationParameters();
         }
@@ -132,5 +134,18 @@ class ParameterService
             $response[] = $details;
         }
         return $response;
+    }
+    public function updateCompanyParameters($values)
+    {
+        $defaultParameter = $this->parameterRepository->getParameterByName($values['parameter_name']);
+        if ($values['use_default']) {
+            $this->deleteCompanyParameter($defaultParameter, $values);
+        } else {
+            $this->createCompanyParameter($defaultParameter, $values);
+        }
+    }
+    public function deleteCompanyParameter($defaultParameter, $values)
+    {
+        // if ($defaultParameter-)
     }
 }

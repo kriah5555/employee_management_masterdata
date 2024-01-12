@@ -91,71 +91,71 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
 
     $resources = [
-        'contract-types'      => [
+        'contract-types'              => [
             'controller' => ContractTypeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'employee-types'      => [
+        'employee-types'              => [
             'controller' => EmployeeTypeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'sectors'             => [
+        'sectors'                     => [
             'controller' => SectorController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'function-categories' => [
+        'function-categories'         => [
             'controller' => FunctionCategoryController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'function-titles'     => [
+        'function-titles'             => [
             'controller' => FunctionTitleController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'reasons'             => [
+        'reasons'                     => [
             'controller' => ReasonController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'holiday-codes'       => [
+        'holiday-codes'               => [
             'controller' => HolidayCodeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'parameters'          => [
+        'parameters'                  => [
             'controller' => ParameterController::class,
             'methods'    => ['show', 'edit', 'update']
         ],
-        'social-secretary'    => [
+        'social-secretary'            => [
             'controller' => SocialSecretaryController::class,
             'methods'    => ['index', 'show', 'store', 'update', 'destroy']
         ],
-        'interim-agencies'    => [
+        'interim-agencies'            => [
             'controller' => InterimAgencyController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'companies'           => [
+        'companies'                   => [
             'controller' => CompanyController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'commute-types'       => [
+        'commute-types'               => [
             'controller' => CommuteTypeController::class,
             'methods'    => ['index', 'store', 'show', 'edit', 'update', 'destroy']
         ],
-        'meal-vouchers'       => [
+        'meal-vouchers'               => [
             'controller' => MealVoucherController::class,
             'methods'    => ['index', 'store', 'show', 'edit', 'update', 'destroy']
         ],
-        'email-templates'     => [
+        'email-templates'             => [
             'controller' => EmailTemplateApiController::class,
             'methods'    => ['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']
         ],
-        'public-holidays'     => [
+        'public-holidays'             => [
             'controller' => PublicHolidayController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'contract-templates'  => [
+        'contract-templates'          => [
             'controller' => ContractTemplateController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'holiday-code-config' => [
+        'holiday-code-config'         => [
             'controller' => HolidayCodeConfigController::class,
             'methods'    => ['show', 'update']
         ],
@@ -163,7 +163,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             'controller' => EmployeeTypeDimoanConfigurationController::class,
             'methods'    => ['show', 'update']
         ],
-        'availability'        => [
+        'availability'                => [
             'controller' => EmployeeAvailabilityController::class,
             'methods'    => ['store']
         ],

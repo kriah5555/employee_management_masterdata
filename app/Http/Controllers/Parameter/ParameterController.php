@@ -100,4 +100,14 @@ class ParameterController extends Controller
             JsonResponse::HTTP_OK,
         );
     }
+    public function updateCompanyParameters(ParameterRequest $request)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->parameterService->updateCompanyParameters($request->validated()),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
 }

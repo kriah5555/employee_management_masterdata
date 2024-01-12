@@ -97,8 +97,60 @@ class ParameterRequest extends ApiRequest
                 ];
             }
         }
+        if ($this->route()->getName() == 'update-company-parameters') {
+            $parameters['parameter_name'] = [
+                'required',
+                'string',
+                Rule::exists('master.parameters', 'name'),
+            ];
+            $parameterName = $this->route('parameter_name');
+            if (in_array($parameterName, ['PAR_1A', 'PAR_1B'])) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.employee_types', 'id'),
+                ];
+            }
+            if (in_array($parameterName, ['PAR_2A', 'PAR_2B', 'PAR_2C', 'PAR_2D', 'PAR_2E', 'PAR_2F', 'PAR_2G', 'PAR_2H', 'PAR_2I', 'PAR_2J'])) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.sectors', 'id'),
+                ];
+            }
+            if (in_array($parameterName, ['PAR_3A', 'PAR_3B', 'PAR_3C'])) {
+                $parameters['id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.employee_types', 'id'),
+                ];
+                $parameters['sector_id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('master.sectors', 'id'),
+                ];
+            }
+            if (in_array($parameterName, ['PAR_5A', 'PAR_5B'])) {
+                $parameters['location_id'] = [
+                    'required',
+                    'integer',
+                    Rule::exists('locations', 'id'),
+                ];
+            }
+            $parameters['use_default'] = [
+                'required',
+                'boolean',
+            ];
+            $parameters['value'] = [
+                'required_if:use_default,false'
+            ];
+        }
         return $parameters;
 
+    }
+    protected function prepareForValidation()
+    {
+        $this->merge(['parameter_name' => $this->route('parameter_name')]);
     }
     public function messages()
     {

@@ -101,6 +101,15 @@ class ParameterRepository implements ParameterRepositoryInterface
         }
         return $response;
     }
+    public function getDefaultCompanyParameters()
+    {
+        $response = [];
+        $locationParameters = $this->getDefaultParameters(4);
+        foreach ($locationParameters as $locationParameter) {
+            $response[] = $this->formatDefaultParameterDetails($locationParameter);
+        }
+        return $response;
+    }
     public function getDefaultLocationParameters()
     {
         $response = [];
@@ -166,6 +175,10 @@ class ParameterRepository implements ParameterRepositoryInterface
         } else {
             throw new ModelUpdateFailedException('Failed to update parameter');
         }
+    }
+    public function getParameterByName(string $parameterName): Parameter|null
+    {
+        return Parameter::where('name', $parameterName)->get()->first();
     }
     public function getCompanyParameterByName(string $parameterName): CompanyParameter|null
     {
