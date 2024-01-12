@@ -428,7 +428,7 @@ if (!function_exists('formatEmployees')) {
                 $phoneNumber = (str_starts_with($phoneNumber, '+')) ? $phoneNumber : '+' . $phoneNumber;
                 return [
                     'employee_profile_id'    => $employee->id,
-                    'employee_profile'       => $employee->user->userProfilePicture,
+                    #'employee_profile'       => $employee->user->userProfilePicture,
                     'first_name'             => $employee->user->userBasicDetails->first_name,
                     'last_name'              => $employee->user->userBasicDetails->last_name,
                     'full_name'              => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name,
