@@ -141,12 +141,9 @@ class UserService
             $existingAccountNumber = $UserBankObject->account_number;
             $details = $this->userBankAccountRepository->updateUserBankAccount($UserBankObject, $values);
         }
-
-        if ($newAccountNumber != $existingAccountNumber) {
-            $this->mailService->sendEmployeeAccountUpdateMail($values);
-        }
-
-
+        // if ($newAccountNumber != $existingAccountNumber) {
+        //     $this->mailService->sendEmployeeAccountUpdateMail($values);
+        // }
     }
 
     public function updateUserBasicDetails(User $user, $values)
@@ -203,10 +200,32 @@ class UserService
         $this->updateContactDetails($user, $values);
 
 
-        // If you need to return the updated user:
-        // return $user;
+        return $updateUser;
+    }
 
-        // Otherwise, return the update status:
+    public function updateEmployeePersonal($values)
+    {
+        $saveValues = [
+            'social_security_number' => $values['social_security_number'],
+        ];
+
+        $user = User::findOrFail($values['user_id']);
+        $updateUser = $user->update($saveValues);
+
+        $this->updateUserBankAccount($user, $values);
+        $this->updateUserBasicDetails($user, $values);
+        $this->updateContactDetails($user, $values);
+
+        return $updateUser;
+    }
+
+    public function updateEmployeeAddress($values)
+    {
+
+        $user = User::findOrFail($values['user_id']);
+
+        $updateUser =$this->updateUserAddress($user, $values);
+
         return $updateUser;
     }
 

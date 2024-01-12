@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('employee_profile_id')->nullable()->references('id')->on('employee_profiles')->onDelete('cascade');
             $table->foreignId('location_id')->nullable()->references('id')->on('locations')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::table('locations', function (Blueprint $table) {
             $table->dropColumn('responsible_person_id');

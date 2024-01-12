@@ -64,7 +64,6 @@ class EmployeeRequest extends ApiRequest
                 'children'            => 'nullable|integer',
             ];
             if ($this->isMethod('post')) {
-                $rule['responsible_person_id'][] = Rule::notIn([$employeeId]);
                 $rules['fuel_card'] = 'nullable|boolean';
                 $rules['company_car'] = 'nullable|boolean';
                 $rules['extra_info'] = 'nullable|string';
@@ -76,7 +75,8 @@ class EmployeeRequest extends ApiRequest
                 $rules['employee_function_details'] = ['bail', 'required', 'array', new EmployeeFunctionDetailsRule()];
                 $rules['employee_commute_details'] = ['bail', 'nullable', 'array', new EmployeeCommuteDetailsRule()];
                 $rules['meal_voucher_id'] = ['bail', 'integer', 'nullable', new MealVoucherRule()];
-            } elseif ($this->isMethod('put')) {
+            } elseif ($this->isMethod('put') || $this->isMethod('patch')) {
+                $rule['responsible_person_id'][] = Rule::notIn([$employeeId]);
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-'])];
             }
         }
