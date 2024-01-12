@@ -108,6 +108,8 @@ class EmployeeService
     {
         $userBasicDetails = [
             "username"               => $employee->user->username,
+            "responsible_person_id"  => $employee->responsible_person_id,
+            "responsible_person_name"=> ($employee->responsiblePerson) ? $employee->responsiblePerson->full_name : null,
             "first_name"             => $employee->user->userBasicDetails->first_name,
             "last_name"              => $employee->user->userBasicDetails->last_name,
             "nationality"            => $employee->user->userBasicDetails->nationality,
@@ -212,6 +214,70 @@ class EmployeeService
             DB::connection('master')->commit();
             DB::connection('userdb')->commit();
             return $user;
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+
+
+    public function updateEmployeePersonal($values, $company_id)
+    {
+        try {
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+
+            $existingEmpProfile = $this->userService->getUserById($values['user_id']);
+
+            if ($existingEmpProfile) {
+                $user = $this->userService->updateEmployeePersonal($values);
+
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+
+            // Commit transactions
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+
+            return $user;
+
+
+
+        } catch (Exception $e) {
+            DB::connection('master')->rollback();
+            DB::connection('userdb')->rollback();
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateEmployeeAddress($values, $company_id)
+    {
+        try {
+            DB::connection('master')->beginTransaction();
+            DB::connection('userdb')->beginTransaction();
+
+            $existingEmpProfile = $this->userService->getUserById($values['user_id']);
+
+            if ($existingEmpProfile) {
+                $user = $this->userService->updateEmployeeAddress($values);
+
+            } else {
+                $user = $existingEmpProfile->last();
+            }
+
+            // Commit transactions
+            DB::connection('master')->commit();
+            DB::connection('userdb')->commit();
+
+            return $user;
+
+
+
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();

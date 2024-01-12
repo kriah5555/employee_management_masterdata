@@ -55,7 +55,6 @@ class EmployeeTypeRepository implements EmployeeTypeRepositoryInterface
 
     public function getCompanyEmployeeTypes($company_id)
     {
-
         $company = Company::findOrFail($company_id);
         $employeeTypes = [];
         foreach ($company->sectors as $sector) {

@@ -2,13 +2,13 @@
 
 namespace App\Repositories\Planning;
 
+use App\Models\Company\Company;
+use App\Models\Planning\PlanningBase;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection; 
 use App\Exceptions\ModelDeleteFailedException;
 use App\Exceptions\ModelUpdateFailedException;
 use App\Interfaces\Planning\PlanningRepositoryInterface;
-use App\Models\Planning\PlanningBase;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Company\Company;
 
 class PlanningRepository implements PlanningRepositoryInterface
 {
@@ -112,6 +112,21 @@ class PlanningRepository implements PlanningRepositoryInterface
 
         $query->orderBy('start_date_time');
         $query->orderBy('end_date_time');
+        return $query->get();
+    }
+
+    public function getPlansByDatesArray($dates_array)
+    {
+        $query = PlanningBase::query();
+
+        $query->where(function ($query) use ($dates_array) {
+            foreach ($dates_array as $date) {
+                $startOfDay = date('Y-m-d 00:00:00', strtotime($date));
+                $endOfDay   = date('Y-m-d 23:59:59', strtotime($date));
+                $query->whereBetween('start_date_time', [$startOfDay, $endOfDay]);
+            }
+        });
+
         return $query->get();
     }
 

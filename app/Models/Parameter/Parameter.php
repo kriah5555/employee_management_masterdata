@@ -19,9 +19,10 @@ class Parameter extends BaseModel
     const VALUE_TYPE_TIME = 4;
     const VALUE_TYPE_COUNT = 5;
 
+    protected $connection = 'master';
     protected static $sort = ['type', 'name'];
 
-    protected $columnsToLog = ['description', 'default_value', 'status'];
+    protected $columnsToLog = ['description', 'value'];
     /**
      * The table associated with the model.
      *

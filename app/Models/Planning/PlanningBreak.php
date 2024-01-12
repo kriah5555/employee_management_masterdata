@@ -73,7 +73,8 @@ class PlanningBreak extends Model
             $start = Carbon::parse($this->break_start_time);
             $end   = Carbon::parse($this->break_end_time);
 
-            return $start->diffInHours($end);
+            $hours = $start->floatDiffInHours($end);
+            return round($hours, 3);
         }
         
         return 0;

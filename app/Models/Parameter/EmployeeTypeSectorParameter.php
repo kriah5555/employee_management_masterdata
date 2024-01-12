@@ -6,7 +6,7 @@ use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\Parameter\Parameter;
 
-class SectorParameter extends BaseModel
+class EmployeeTypeSectorParameter extends BaseModel
 {
     use UserAudit;
 
@@ -18,7 +18,7 @@ class SectorParameter extends BaseModel
      *
      * @var string
      */
-    protected $table = 'sector_parameters';
+    protected $table = 'employee_type_sector_parameters';
 
     /**
      * The primary key associated with the table.
@@ -52,6 +52,7 @@ class SectorParameter extends BaseModel
      */
     protected $fillable = [
         'parameter_id',
+        'employee_type_id',
         'sector_id',
         'value',
         'created_by',

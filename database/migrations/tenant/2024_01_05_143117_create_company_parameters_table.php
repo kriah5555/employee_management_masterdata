@@ -12,8 +12,7 @@ return new class extends Migration {
     {
         Schema::create('company_parameters', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('parameter_id');
-            $table->string('parameter_type');
+            $table->string('parameter_name');
             $table->string('value')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -22,8 +21,8 @@ return new class extends Migration {
         });
         Schema::create('location_parameters', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('parameter_id');
             $table->foreignId('location_id')->references('id')->on('locations')->onDelete('cascade');
+            $table->string('parameter_name');
             $table->string('value')->nullable();
             $table->timestamps();
             $table->softDeletes();

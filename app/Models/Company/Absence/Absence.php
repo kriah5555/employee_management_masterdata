@@ -4,6 +4,7 @@ namespace App\Models\Company\Absence;
 
 use App\Models\BaseModel;
 use Illuminate\Support\Carbon;
+use App\Models\Planning\PlanningBase;
 use App\Models\Company\Absence\AbsenceDates;
 use App\Models\Company\Absence\AbsenceHours;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,7 +21,7 @@ class Absence extends BaseModel
 
     protected $fillable = [
         'absence_type', # [1 => Holiday, 2 -> Leave]
-        'duration_type', #  [1 => 'First half',2 => 'Second half',3 => 'Multiple codes',4 => 'Multiple codes first half',5 => 'Multiple codes half',6 => 'First and second half', # will have two holiday codes, 7 => 'Multiple dates', # will have two holiday codes],
+        'duration_type', #  [1 => 'First half',2 => 'Second half',3 => 'Multiple codes',4 => 'Multiple codes first half',5 => 'Multiple codes half',6 => 'First and second half', # will have two holiday codes, 7 => 'Multiple dates', # will have two holiday codes, 8 => full day, 9 => plannings(no plannings then will consider for full day)],
         'absence_status', # [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled, 5 => approved but requested for cancellation]
         'employee_profile_id',
         'manager_id',
@@ -85,5 +86,10 @@ class Absence extends BaseModel
     public function getAppliedDateAttribute($value)
     {
         return Carbon::parse($value)->format('d-m-Y');
+    }
+
+    public function plans()
+    {
+        return $this->belongsToMany(PlanningBase::class, 'absence_plans');
     }
 }

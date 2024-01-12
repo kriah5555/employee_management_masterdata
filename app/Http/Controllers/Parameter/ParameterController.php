@@ -16,6 +16,16 @@ class ParameterController extends Controller
     {
         $this->parameterService = $parameterService;
     }
+    public function getManageParameterOptions()
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->parameterService->getManageParameterOptions(),
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
 
     public function getDefaultParameters(ParameterRequest $request)
     {
@@ -38,19 +48,19 @@ class ParameterController extends Controller
             JsonResponse::HTTP_OK,
         );
     }
-    public function getEmployeeTypeParameters(ParameterRequest $request)
+    public function getParameters(ParameterRequest $request)
     {
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->parameterService->getEmployeeTypeParameters($request->validated()['employee_type_id']),
+                'data'    => $this->parameterService->getParameters($request->validated()),
             ],
             JsonResponse::HTTP_OK,
         );
     }
-    public function updateEmployeeTypeParameter(ParameterRequest $request, $parameterId)
+    public function updateParameter(ParameterRequest $request, $parameterId)
     {
-        $this->parameterService->updateEmployeeTypeParameter($parameterId, $request->validated());
+        $this->parameterService->updateParameter($parameterId, $request->validated());
         return returnResponse(
             [
                 'success' => true,
@@ -76,6 +86,16 @@ class ParameterController extends Controller
             [
                 'success' => true,
                 'message' => 'Parameter updated',
+            ],
+            JsonResponse::HTTP_OK,
+        );
+    }
+    public function getCompanyParameters(ParameterRequest $request)
+    {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->parameterService->getCompanyParameters($request->validated()),
             ],
             JsonResponse::HTTP_OK,
         );

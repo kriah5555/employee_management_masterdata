@@ -57,11 +57,23 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
             foreach ($planningResources as $api) {
                 Route::POST($api['path'], $api['function']);
             }
+
         });
 
-    Route::post('get-week-planning-employee', [PlanningController::class, 'getWeeklyPlanningForEmployee'])->name('week-planning-employee');
 
-    Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
+    Route::controller(PlanningController::class)->group(function () {
+        
+        Route::post('get-week-planning-employee', 'getWeeklyPlanningForEmployee')->name('week-planning-employee');
+
+        Route::get('get-employee-day-planning/{employee_profile_id}', 'getEmployeeDayPlanning');
+
+        Route::get('planning-details/{plan_id}', 'getPlanDetails');
+        
+        Route::post('get-plans-for-absence', 'getPlansForAbsence');
+    });
+
+
+
 
     Route::controller(PlanningCreateEditController::class)->group(function () {
 
@@ -86,7 +98,6 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     });
 
 
-    Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);

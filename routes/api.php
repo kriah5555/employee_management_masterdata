@@ -37,6 +37,7 @@ use App\Http\Controllers\{
     SocialSecretary\SocialSecretaryController,
     EmployeeFunction\FunctionCategoryController,
     NotificationController\NotificationController,
+    Dimona\EmployeeTypeDimoanConfigurationController,
 };
 
 use App\Http\Controllers\Planning\VacancyController;
@@ -158,6 +159,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
             'controller' => HolidayCodeConfigController::class,
             'methods'    => ['show', 'update']
         ],
+        'employee-type-dimona-config' => [
+            'controller' => EmployeeTypeDimoanConfigurationController::class,
+            'methods'    => ['show', 'update']
+        ],
         'availability'        => [
             'controller' => EmployeeAvailabilityController::class,
             'methods'    => ['store']
@@ -221,6 +226,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::get('/user-details', [EmployeeController::class, 'getUserDetails']);
 
     Route::post('employee-update', [EmployeeController::class, 'updateEmployee']);
+    Route::post('update-employee-personal-details', [EmployeeController::class, 'updateEmployeePersonal']);
+    Route::post('update-employee-address-details', [EmployeeController::class, 'updateEmployeeAddress']);
 
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 
@@ -234,13 +241,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::put('update-default-parameter/{parameter_id}', [ParameterController::class, 'updateDefaultParameter'])->name('update-default-parameter');
 
-    Route::post('get-employee-type-parameters', [ParameterController::class, 'getEmployeeTypeParameters'])->name('get-employee-type-parameters');
+    Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
 
-    Route::put('update-employee-type-parameter/{parameter_id}', [ParameterController::class, 'updateEmployeeTypeParameter'])->name('update-employee-type-parameter');
-
-    Route::post('get-sector-parameters', [ParameterController::class, 'getSectorParameters'])->name('get-sector-parameters');
-
-    Route::post('update-sector-type-parameter/{parameter_id}', [ParameterController::class, 'updateSectorParameter'])->name('update-sector-type-parameter');
+    Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
 });
 
 Route::get('/script', function () {

@@ -3,10 +3,12 @@
 namespace App\Models\Company;
 
 use App\Models\BaseModel;
+use App\Models\Company\Employee\EmployeeProfile;
 use App\Traits\UserAudit;
 use App\Models\Company\CompanyAddress;
 use App\Models\Company\Company;
 use App\Models\Company\Workstation;
+use App\Models\Company\ResponsiblePerson;
 
 class Location extends BaseModel
 {
@@ -15,12 +17,11 @@ class Location extends BaseModel
     protected $connection = 'tenant';
 
     protected static $sort = ['location_name'];
-    
+
     protected $columnsToLog = [
         'location_name',
         'status',
         'address',
-        'responsible_person_id',
     ];
 
 
@@ -34,7 +35,6 @@ class Location extends BaseModel
         'location_name',
         'status',
         'address',
-        'responsible_person_id',
     ];
 
     public function workstations()
@@ -60,8 +60,13 @@ class Location extends BaseModel
             $locations = (array) $locations;
         }
         return $this->belongsToMany(Workstation::class, 'locations_to_workstations')
-        ->select('workstations.id', 'workstations.workstation_name as workStationsName')
-        ->whereIn('locations.id', $locations)
-        ->where('workstations.status', true);
+            ->select('workstations.id', 'workstations.workstation_name as workStationsName')
+            ->whereIn('locations.id', $locations)
+            ->where('workstations.status', true);
+    }
+
+    public function responsiblePersons()
+    {
+        return $this->belongsToMany(EmployeeProfile::class, 'location_responsible_persons');
     }
 }

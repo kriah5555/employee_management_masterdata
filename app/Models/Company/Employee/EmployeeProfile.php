@@ -12,6 +12,7 @@ use App\Models\Company\Employee\EmployeeCommute;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeBenefits;
 use App\Models\Company\Employee\EmployeeSignature;
+use App\Models\Company\Employee\EmployeeProfile;
 
 class EmployeeProfile extends BaseModel
 {
@@ -59,6 +60,7 @@ class EmployeeProfile extends BaseModel
      */
     protected $fillable = [
         'user_id',
+        'responsible_person_id',
         'status',
     ];
 
@@ -74,6 +76,11 @@ class EmployeeProfile extends BaseModel
         return '';
     }
 
+    public function responsiblePerson()
+    {
+        return $this->belongsTo(EmployeeProfile::class, 'responsible_person_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class)
@@ -84,6 +91,7 @@ class EmployeeProfile extends BaseModel
     {
         return $this->hasMany(EmployeeContract::class);
     }
+    
     public function employeeSocialSecretaryDetails()
     {
         return $this->hasOne(EmployeeSocialSecretaryDetails::class);

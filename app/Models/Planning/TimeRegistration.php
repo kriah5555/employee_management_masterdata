@@ -73,7 +73,9 @@ class TimeRegistration extends Model
             $start = Carbon::parse($this->actual_start_time);
             $end   = Carbon::parse($this->actual_end_time);
 
-            return $start->diffInHours($end);
+            $hours = $start->floatDiffInHours($end);
+            return round($hours, 3);
+
         }
 
         return 0;
