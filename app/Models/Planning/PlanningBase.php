@@ -13,6 +13,7 @@ use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use Illuminate\Support\Carbon;
 use App\Models\Company\Employee\EmployeeContractFile;
+use App\Models\Company\Absence\Absence;
 
 
 class PlanningBase extends BaseModel
@@ -259,5 +260,10 @@ class PlanningBase extends BaseModel
         }
 
         return $query->get();
+    }
+
+    public function plans()
+    {
+        return $this->belongsToMany(Absence::class, 'contract_type_employee_type');
     }
 }

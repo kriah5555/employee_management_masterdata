@@ -16,7 +16,10 @@ use App\Http\Controllers\Planning\
 use App\Http\Controllers\Planning\PlanningShiftController;
 use App\Http\Middleware\InitializeTenancy;
 use App\Http\Middleware\SetActiveUser;
-use App\Http\Controllers\Dimona\DimonaController;
+use App\Http\Controllers\Dimona\{
+    DimonaController,
+    DimonaOverviewController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -54,11 +57,23 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
             foreach ($planningResources as $api) {
                 Route::POST($api['path'], $api['function']);
             }
+
         });
 
-    Route::post('get-week-planning-employee', [PlanningController::class, 'getWeeklyPlanningForEmployee'])->name('week-planning-employee');
 
-    Route::get('get-employee-day-planning/{employee_profile_id}', [PlanningController::class, 'getEmployeeDayPlanning']);
+    Route::controller(PlanningController::class)->group(function () {
+        
+        Route::post('get-week-planning-employee', 'getWeeklyPlanningForEmployee')->name('week-planning-employee');
+
+        Route::get('get-employee-day-planning/{employee_profile_id}', 'getEmployeeDayPlanning');
+
+        Route::get('planning-details/{plan_id}', 'getPlanDetails');
+        
+        Route::post('get-plans-for-absence', 'getPlansForAbsence');
+    });
+
+
+
 
     Route::controller(PlanningCreateEditController::class)->group(function () {
 
@@ -83,7 +98,6 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     });
 
 
-    Route::get('planning-details/{plan_id}', [PlanningController::class, 'getPlanDetails']);
     Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
     Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
     Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
@@ -103,27 +117,12 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         Route::resource($uri, $controller)->only($methods);
     }
     Route::controller(DimonaController::class)->group(function () {
-        Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'sendDimonaByPlan']);
+        Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'testDimona']);
+        Route::post('/send-dimona', [DimonaController::class, 'sendDimonaByPlan']);
         Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
-        Route::get('/dimona-test-plan', [DimonaController::class, 'sendDimonaByPlan']);
+    });
+
+    Route::controller(DimonaOverviewController::class)->group(function () {
+        Route::post('/dimona-overview', [DimonaOverviewController::class, 'getDimonaDetails']);
     });
 });
-
-
-
-// Route::controller(VacancyController::class)
-// ->middleware(['initialize-tenancy'])
-// ->prefix('vacancy')
-// ->group(function () {
-//     $apiList = [
-//         ['path' => 'options', 'function' => 'create'],
-//         ['path' => 'get-all-vacancies', 'function' => 'index'],
-//         ['path' => 'create', 'function' => 'store'],
-//         ['path' => 'get-vacancy/{vacancy}', 'function' => 'show'],
-//         ['path' => 'update/{vacancy}', 'function' => 'update'],
-//         ['path' => 'delete/{vacancy}', 'function' => 'destory'],
-//     ];
-//     foreach ($apiList as $api) {
-//         Route::POST($api['path'], $api['function']);
-//     }
-// });

@@ -24,7 +24,7 @@ use App\Http\Controllers\Employee\{
 use App\Http\Controllers\{
     MealVoucherController,
     ReasonController,
-    Rule\RuleController,
+    Parameter\ParameterController,
     Sector\SectorController,
     Sector\SalaryController,
     Contract\ContractTypeController,
@@ -37,9 +37,12 @@ use App\Http\Controllers\{
     SocialSecretary\SocialSecretaryController,
     EmployeeFunction\FunctionCategoryController,
     NotificationController\NotificationController,
+    Dimona\EmployeeTypeDimoanConfigurationController,
 };
 
 use App\Http\Controllers\Planning\VacancyController;
+use App\Models\User\CompanyUser;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,75 +91,79 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
 
     $resources = [
-        'contract-types'      => [
+        'contract-types'              => [
             'controller' => ContractTypeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'employee-types'      => [
+        'employee-types'              => [
             'controller' => EmployeeTypeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'sectors'             => [
+        'sectors'                     => [
             'controller' => SectorController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'function-categories' => [
+        'function-categories'         => [
             'controller' => FunctionCategoryController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'function-titles'     => [
+        'function-titles'             => [
             'controller' => FunctionTitleController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'reasons'             => [
+        'reasons'                     => [
             'controller' => ReasonController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'holiday-codes'       => [
+        'holiday-codes'               => [
             'controller' => HolidayCodeController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'rules'               => [
-            'controller' => RuleController::class,
-            'methods'    => ['index', 'show', 'edit', 'update']
+        'parameters'                  => [
+            'controller' => ParameterController::class,
+            'methods'    => ['show', 'edit', 'update']
         ],
-        'social-secretary'    => [
+        'social-secretary'            => [
             'controller' => SocialSecretaryController::class,
             'methods'    => ['index', 'show', 'store', 'update', 'destroy']
         ],
-        'interim-agencies'    => [
+        'interim-agencies'            => [
             'controller' => InterimAgencyController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'companies'           => [
+        'companies'                   => [
             'controller' => CompanyController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'commute-types'       => [
+        'commute-types'               => [
             'controller' => CommuteTypeController::class,
             'methods'    => ['index', 'store', 'show', 'edit', 'update', 'destroy']
         ],
-        'meal-vouchers'       => [
+        'meal-vouchers'               => [
             'controller' => MealVoucherController::class,
             'methods'    => ['index', 'store', 'show', 'edit', 'update', 'destroy']
         ],
-        'email-templates'     => [
+        'email-templates'             => [
             'controller' => EmailTemplateApiController::class,
             'methods'    => ['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']
         ],
-        'public-holidays'     => [
+        'public-holidays'             => [
             'controller' => PublicHolidayController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'contract-templates'  => [
+        'contract-templates'          => [
             'controller' => ContractTemplateController::class,
             'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
         ],
-        'holiday-code-config' => [
+        'holiday-code-config'         => [
             'controller' => HolidayCodeConfigController::class,
             'methods'    => ['show', 'update']
         ],
-        'availability'        => [
+        'employee-type-dimona-config' => [
+            'controller' => EmployeeTypeDimoanConfigurationController::class,
+            'methods'    => ['show', 'update']
+        ],
+        'availability'                => [
             'controller' => EmployeeAvailabilityController::class,
             'methods'    => ['store']
         ],
@@ -197,6 +204,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 
+        Route::post('salary-increment-calculation', 'salaryIncrementCalculation');
+
     });
 
     Route::controller(ReasonController::class)->group(function () {
@@ -217,6 +226,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::get('/user-details', [EmployeeController::class, 'getUserDetails']);
 
     Route::post('employee-update', [EmployeeController::class, 'updateEmployee']);
+    Route::post('update-employee-personal-details', [EmployeeController::class, 'updateEmployeePersonal']);
+    Route::post('update-employee-address-details', [EmployeeController::class, 'updateEmployeeAddress']);
 
     Route::get('/send-notification', [NotificationController::class, 'sendNotification']);
 
@@ -225,12 +236,20 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('/vacancy/apply-vacancy', [VacancyController::class, 'applyVacancy']);
 
     Route::post('/vacancy/employee', [VacancyController::class, 'getEmployeeJobsOverview']);
+
+    Route::post('get-default-parameters', [ParameterController::class, 'getDefaultParameters'])->name('get-default-parameters');
+
+    Route::put('update-default-parameter/{parameter_id}', [ParameterController::class, 'updateDefaultParameter'])->name('update-default-parameter');
+
+    Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
+
+    Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
 });
 
-use App\Models\User\CompanyUser;
-use Illuminate\Support\Facades\DB;
-
 Route::get('/script', function () {
+    return response()->json([
+        'message' => 'No script'
+    ]);
     DB::connection('master')->beginTransaction();
     $results = DB::connection('userdb')
         ->table('model_has_roles')

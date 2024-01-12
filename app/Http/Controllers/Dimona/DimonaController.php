@@ -17,13 +17,13 @@ class DimonaController extends Controller
         $this->dimonaBaseService = new DimonaBaseService();
     }
 
-    public function sendDimonaByPlan(Request $request, $planId)
+    public function testDimona(Request $request, $planId)
     {
         $companyId = $request->header('Company-Id');
-        // $dimonaType = $planId = $timeRegistrationId = '';
-        $data = NULL;
+
         try {
-            $data = $this->dimonaBaseService->initiateDimonaByPlan($companyId, $planId);
+            $data = $this->dimonaBaseService->initiateDimonaByPlanService($companyId, $planId);
+            return response()->json($data);
         } catch(\Exception $e) {
             return response()->json(
                 [
@@ -33,8 +33,29 @@ class DimonaController extends Controller
                 ]
             );
         }
+    }
 
-        return $data;
+    public function sendDimonaByPlan(Request $request)
+    {
+        $companyId = $request->header('Company-Id');
+
+        $rules = [
+            'plans' => 'required|array'
+        ];
+        try {
+            $data = $request->validate($rules);
+
+            $data = $this->dimonaBaseService->initiateDimonaByPlanService($companyId, $data['plans']);
+            return response()->json($data);
+        } catch(\Exception $e) {
+            return response()->json(
+                [
+                    'file' => $e->getFile(),
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]
+            );
+        }
     }
 
     public function sendDimonaByEmployeeContract($dimonaType, $employeeContract)
@@ -55,5 +76,25 @@ class DimonaController extends Controller
                 500
             );
         }
+    }
+
+
+    public function updateDimonaStatus(Request $request)
+    {
+        $data = '';
+        try {
+            $data = $request->all();
+            $data = $this->dimonaBaseService->updateDimonaStatusService($data);
+
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'file' => $e->getFile(),
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]
+            );
+        }
+        return $data;
     }
 }

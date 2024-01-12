@@ -51,6 +51,7 @@ return [
     'FIRST_AND_SECOND_HALF'              => 6,
     'MULTIPLE_DATES'                     => 7,
     'FULL_DAYS'                          => 8,
+    'PLANNING_LEAVES'                    => 9,
 
     'DATES_MULTIPLE' => 1,
     'DATES_FROM_TO'  => 2,
@@ -64,5 +65,6 @@ return [
         6 => 'First and second half', 
         7 => 'Multiple dates',
         8 => 'Full day', 
+        // 9 => 'Leave for plannings', 
     ],
 ];

@@ -190,8 +190,8 @@ class PlanningMobileService implements PlanningInterface
             $contract_hours       = $plan->contract_hours;
             $planned_hours        = $plan->planned_hours;
             $over_time            = 0;
-            $worked_hours         = ($time_registrations) ? formatToEuropeHours($time_registrations->flatten()->pluck('worked_hours')->sum()) : 0;
-            $break                = ($breaks) ? formatToEuropeHours($breaks->flatten()->pluck('break_hours')->sum()) : 0;
+            $worked_hours         = (($time_registrations) ? $time_registrations->flatten()->pluck('worked_hours')->sum() : 0);
+            $break                = ($breaks) ? $breaks->flatten()->pluck('break_hours')->sum() : 0;
 
             if (!isset($return[$plan->employeeType->name])) {
                 $return[$plan->employeeType->name] = [
@@ -205,13 +205,11 @@ class PlanningMobileService implements PlanningInterface
                     'break_hours'          => 0,
                 ];
             }
-
             $return[$plan->employeeType->name]['total_worked_hours']   = ($return[$plan->employeeType->name]['total_worked_hours'] ?? 0) + $worked_hours;
             $return[$plan->employeeType->name]['total_contract_hours'] = ($return[$plan->employeeType->name]['total_contract_hours'] ?? 0) + $contract_hours;
             $return[$plan->employeeType->name]['total_planned_hours']  = ($return[$plan->employeeType->name]['total_planned_hours'] ?? 0) + $planned_hours;
             $return[$plan->employeeType->name]['overtime']             = ($return[$plan->employeeType->name]['overtime'] ?? 0) + $over_time;
-            $return[$plan->employeeType->name]['break_hours']          = ($return[$plan->employeeType->name]['total_worked_hours'] ?? 0) + $break;
-
+            $return[$plan->employeeType->name]['break_hours']          = ($return[$plan->employeeType->name]['break_hours'] ?? 0) + $break;
             $return[$plan->employeeType->name]['plans'][] = [
                 'plan_date'                => $plan->plan_date,
                 'start_time'               => $plan->start_time,

@@ -28,7 +28,7 @@ class LeaveRequest extends ApiRequest
             'duration_type' => [
                 'bail',
                 'required',
-                Rule::in(array_keys(config('absence.DURATION_TYPE'))),
+                Rule::in([config('absence.PLANNING_LEAVES')]),
             ],
             'employee_profile_id' => [
                 'bail',
@@ -49,6 +49,7 @@ class LeaveRequest extends ApiRequest
                 'array',
                 new HolidayCodeDurationTypeRule(request()->input('duration_type'), $companyId, $absence_id),
             ],
+            'plan_ids' => ['bail', 'nullable', 'integer', Rule::exists('tenant.planning_base.id', 'id')]
         ];
     }
 

@@ -206,6 +206,9 @@ class PlanningService implements PlanningInterface
             $response['total'][$planDate]['contract_hours'] = numericToEuropean(
                 europeanToNumeric($response['total'][$planDate]['contract_hours']) + $contractHours
             );
+            $response['total']['week_total']['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['total']['week_total']['contract_hours']) + $contractHours
+            );
         }
 
         $response['workstation_data'] = array_values($response['workstation_data']);
@@ -249,6 +252,10 @@ class PlanningService implements PlanningInterface
                 'contract_hours' => 0
             ];
         }
+        $response['total']['week_total'] = [
+            'cost'           => 0,
+            'contract_hours' => 0
+        ];
 
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year);
@@ -382,6 +389,19 @@ class PlanningService implements PlanningInterface
         return $this->planningRepository->getPlans($from_date, $to_date, $location, $workstations, $employee_types, $employee_id, $relations);
     }
 
+    public function getPlansForAbsence($dates_array)
+    {
+        $plans = $this->planningRepository->getPlansByDatesArray($dates_array);
+        return $plans->map(function ($plan) {
+            return [
+                'plan_id'        => $plan->id,
+                'plan_date'      => $plan_date,
+                'plan_time'      => $start_time . '-' . $end_time,
+                'contract_hours' => $contract_hours_formatted,
+            ];
+        });
+    }
+
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)
     {
         $monthDates = getStartAndEndDateOfMonth($month, $year);
@@ -401,7 +421,38 @@ class PlanningService implements PlanningInterface
             ],
             'plans'         => []
         ];
+        $this->getTotalsForWeeklyPlanning($location, $workstations, $employee_types, $weekNo, $year, $response);
         return $this->formatWeeklyDataEmployee($plannings, $response);
+    }
+
+    public function getTotalsForWeeklyPlanning($location, $workstations, $employee_types, $weekNo, $year, &$response)
+    {
+        $response['day_total'] = [];
+        $weekDates = getWeekDates($weekNo, $year);
+        foreach ($weekDates as $date) {
+            $date = date('d-m-Y', strtotime($date));
+            $response['day_total'][$date] = [
+                'cost'           => 0,
+                'contract_hours' => 0
+            ];
+        }
+        $response['day_total']['week_total'] = [
+            'cost'           => 0,
+            'contract_hours' => 0
+        ];
+
+        //Getting the data from the query.
+        $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year);
+        foreach ($plannings as $plan) {
+            $planDate = date('d-m-Y', strtotime($plan->start_date_time));
+            $response['day_total'][$planDate]['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['day_total'][$planDate]['contract_hours']) + $plan->contract_hours
+            );
+            $response['day_total']['week_total']['contract_hours'] = numericToEuropean(
+                europeanToNumeric($response['day_total']['week_total']['contract_hours']) + $plan->contract_hours
+            );
+        }
+        return $response;
     }
     public function formatWeeklyDataEmployee($plannings, &$response)
     {

@@ -70,10 +70,11 @@ class ContractService
     public function signEmployeePlanContract($values)
     {
         try {
-            if (isset($values['company_id'])) {
-                setTenantDBByCompanyId($values['company_id']);
-            }
             DB::connection('tenant')->beginTransaction();
+
+                if (isset($values['company_id'])) {
+                    setTenantDBByCompanyId($values['company_id']);
+                }
                 $plan = app(PlanningRepository::class)->getPlanningById($values['plan_id']);
                 
                 $employee_contract_file = $this->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.SIGNED'), $values['plan_id'], $values['company_id'] ?? '', $values['signature'], '');

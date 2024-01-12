@@ -8,6 +8,9 @@ use App\Http\Requests\UpdateMinimumSalariesRequest;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\Rules\BelgiumCurrencyFormatRule;
+use Illuminate\Validation\Rule;
 
 class SalaryController extends Controller
 {
@@ -77,14 +80,40 @@ class SalaryController extends Controller
         }
     }
 
-    public function addIncrementToMinimumSalaries($sector_id, $increment_coefficient)
+    public function salaryIncrementCalculation(Request $request)
     {
         try {
-            $this->sectorSalaryService->incrementMinimumSalaries($sector_id, $increment_coefficient);
+            $rules = [
+                'sector_id'   => [
+                    'required',
+                    'integer',
+                    Rule::exists('sectors', 'id'),
+                ],
+                'coefficient' => [
+                    'required',
+                    new BelgiumCurrencyFormatRule,
+                ],
+                'type'        => [
+                    'required',
+                    'integer',
+                    'in:1,2'
+                ],
+            ];
+            $validator = Validator::make(request()->all(), $rules);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+            $values = $validator->validated();
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Minimum salaries updated'
+                    'data'    => $this->sectorSalaryService->salaryIncrementCalculation($values)
                 ],
                 JsonResponse::HTTP_OK,
             );

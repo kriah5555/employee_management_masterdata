@@ -21,9 +21,7 @@ class LocationRepository implements LocationRepositoryInterface
 
     public function getLocationById(string $locationId, array $relations = ['address']): Collection|Builder|Location
     {
-        $location_details = Location::with($relations)->findOrFail($locationId);
-        $location_details->responsible_person_details = ($location_details->responsible_person_id) ? app(ResponsiblePersonRepository::class)->getResponsiblePersonById($location_details->responsible_person_id, getCompanyId()) : null; # if the responsible person is removed and the user still linked to the location the because of this he wil not be fetched
-        return $location_details;
+        return Location::with($relations)->findOrFail($locationId);
     }
 
     public function deleteLocation(string $locationId)

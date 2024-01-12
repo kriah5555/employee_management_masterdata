@@ -252,6 +252,44 @@ class PlanningController extends Controller
         }
     }
 
+    public function getPlansForAbsence(Request $request)
+    {
+        try {
+            $rules = [
+                'dates'   => ['bail', 'required', 'array',],
+                'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT')
+            ];
+
+            $validator = Validator::make(request()->all(), $rules, []);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningService->getPlansForAbsence($request->dates)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     /**
      * Get weekly planning info.
      *

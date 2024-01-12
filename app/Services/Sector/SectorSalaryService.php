@@ -20,7 +20,7 @@ class SectorSalaryService
 
     public function getMinimumSalariesBySectorId($sector_id, $salary_type = '')
     {
-        $field  = $this->getFieldBySalaryType($salary_type);
+        $field = $this->getFieldBySalaryType($salary_type);
         $sector = $this->sectorService->getSectorDetails($sector_id);
         $sector->load('salaryConfig.salarySteps.minimumSalary');
 
@@ -53,7 +53,7 @@ class SectorSalaryService
             case config('constants.HOURLY_SALARY'):
                 return 'hourly_minimum_salary';
             default:
-                return ''; 
+                return '';
         }
     }
 
@@ -61,7 +61,7 @@ class SectorSalaryService
     {
         try {
             DB::beginTransaction();
-            $field              = $this->getFieldBySalaryType($salary_type);
+            $field = $this->getFieldBySalaryType($salary_type);
             $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
 
             #backup the old data
@@ -92,28 +92,28 @@ class SectorSalaryService
         $minimumSalaryModel->save();
     }
 
-    private function getSalaryStepIdsBySectorSalaryConfig(SectorSalaryConfig $sectorSalaryConfig) 
+    private function getSalaryStepIdsBySectorSalaryConfig(SectorSalaryConfig $sectorSalaryConfig)
     {
         return SectorSalarySteps::where('sector_salary_config_id', $sectorSalaryConfig->id)
-                ->whereIn('level', range(0, $sectorSalaryConfig->steps))
-                ->get()->pluck('id');
+            ->whereIn('level', range(0, $sectorSalaryConfig->steps))
+            ->get()->pluck('id');
     }
 
-    public function incrementMinimumSalaries($sectorId, $increment_coefficient)
+    public function salaryIncrementCalculation($values)
     {
         try {
-            DB::beginTransaction();
-            $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
+            $data = $this->getMinimumSalariesBySectorId($values['sector_id'], $values['type']);
+            $coefficient = europeanToNumeric($values['coefficient']);
+            foreach ($data['salaries'] as $index => $salaries) {
+                foreach ($salaries as $key => $salary) {
+                    if ($key != 'level') {
+                        $oldSalary = europeanToNumeric($salary);
+                        $data['salaries'][$index][$key] = number_format(($coefficient / 100 * $oldSalary) + $oldSalary, 4);
+                    }
+                }
 
-            #backup the old data
-            $sectorSalarySteps_ids = $this->getSalaryStepIdsBySectorSalaryConfig($sectorSalaryConfig);
-            $this->addSalaryBackup($sectorSalarySteps_ids, $sectorSalaryConfig);
-
-            # update all the minimum salaries by $increment_coefficient %
-            MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps_ids)
-                ->update(['salary' => DB::raw("salary + (salary * $increment_coefficient / 100)")]);
-
-            DB::commit();
+            }
+            return $data;
         } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
@@ -123,9 +123,9 @@ class SectorSalaryService
 
     private function addSalaryBackup($sectorSalarySteps, $sectorSalaryConfig, $salary_type)
     {
-        $field           = $this->getFieldBySalaryType($salary_type);
+        $field = $this->getFieldBySalaryType($salary_type);
         $old_salary_data = MinimumSalary::whereIn('sector_salary_steps_id', $sectorSalarySteps)->get();
-        $save_old_data   = [];
+        $save_old_data = [];
         foreach ($old_salary_data as $salary_data) {
             $save_old_data[$salary_data->sector_salary_steps_id][$salary_data->category_number] = $salary_data->$field;
         }
@@ -145,8 +145,8 @@ class SectorSalaryService
         try {
             DB::beginTransaction();
 
-            $sectorSalaryConfig      = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
-            $revertSalaryData        = $this->getRevertSalaryData($sectorSalaryConfig, $salary_type); # to validate if the category are mismatching or not
+            $sectorSalaryConfig = SectorSalaryConfig::where('sector_id', $sectorId)->firstOrFail();
+            $revertSalaryData = $this->getRevertSalaryData($sectorSalaryConfig, $salary_type); # to validate if the category are mismatching or not
             $revertSalaryDataWithCat = $this->getRevertSalaryDataWithCategory($sectorSalaryConfig, $salary_type);
 
             if ($revertSalaryDataWithCat) {
@@ -187,7 +187,7 @@ class SectorSalaryService
 
     private function applyRevertData($revertSalaryDataWithCat, $salary_type)
     {
-        $field  = $this->getFieldBySalaryType($salary_type);
+        $field = $this->getFieldBySalaryType($salary_type);
         foreach ($revertSalaryDataWithCat->salary_data as $sectorSalaryStepsId => $salaryData) {
             foreach ($salaryData as $category => $salary) {
                 MinimumSalary::where('sector_salary_steps_id', $sectorSalaryStepsId)
