@@ -60,7 +60,6 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
 
         });
 
-
     Route::controller(PlanningController::class)->group(function () {
         
         Route::post('get-week-planning-employee', 'getWeeklyPlanningForEmployee')->name('week-planning-employee');

@@ -36,7 +36,7 @@ class Absence extends BaseModel
         'deleted_at',
     ];
 
-    protected $appends = ['plan_timings'];
+    protected $appends = ['plan_timings', 'plan_ids'];
 
     public function getPlanTimingsAttribute()
     {
@@ -49,6 +49,13 @@ class Absence extends BaseModel
         }
 
         return array_unique($return_data);
+    }
+
+    public function getPlanIdsAttribute()
+    {
+        $planIds = $this->plans->pluck('id')->toArray();
+
+        return $planIds;
     }
 
     protected static function boot()

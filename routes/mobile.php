@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Planning\
 {
     PlanningMobileController,
+    PlanningController,
     PlanningStartStopController,
 };
 use App\Http\Controllers\{
@@ -48,6 +49,8 @@ Route::middleware([SetActiveUser::class])->group(function () {
     Route::middleware([InitializeTenancy::class])->group(function () {
 
         Route::get('get-employees-to-switch-plan', [PlanningMobileController::class, 'getEmployeesToSwitchPlan']);
+
+        Route::post('get-day-planning', [PlanningController::class, 'getDayPlanningMobile'])->name('get-day-planning-mobile');
 
     });
 

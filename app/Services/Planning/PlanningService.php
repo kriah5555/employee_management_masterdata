@@ -12,6 +12,7 @@ use App\Models\EmployeeFunction\FunctionTitle;
 use App\Services\Employee\EmployeeService;
 use App\Services\Planning\PlanningContractService;
 use App\Services\Planning\PlanningShiftsService;
+use App\Services\Company\Absence\AbsenceService;
 
 
 class PlanningService implements PlanningInterface
@@ -267,6 +268,32 @@ class PlanningService implements PlanningInterface
     {
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
         return $this->formatDayPlanning($plannings);
+    }
+
+    public function getDayPlanningMobileService($location, $workstations, $employee_types, $date)
+    {
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        $absenceService = app(AbsenceService::class);
+        return $plannings->map(function ($plan) use($absenceService) {
+            return [
+                'plan_id'                  => $plan->id,
+                'plan_date'                => $plan->plan_date,
+                'start_time'               => $plan->start_time,
+                'end_time'                 => $plan->end_time,
+                'contract_hours'           => $plan->contract_hours,
+                'contract_hours_formatted' => $plan->contract_hours_formatted,
+                'location_id'              => $plan->location_id,
+                'location_name'            => $plan->location->location_name,
+                'workstation_id'           => $plan->workstation_id,
+                'workstation_name'         => $plan->workstation->workstation_name,
+                'function_id'              => $plan->function_id,
+                'function_name'            => $plan->functionTitle->name,
+                'employee_profile_id'      => $plan->employee_profile_id,
+                'employee_name'            => $plan->employeeProfile->full_name,
+                'leave_status'             => !empty($absenceService->getAbsenceForDate($plan->plan_date)),
+                'leave_reason'             => "something"
+            ];
+        });
     }
 
     public function getEmployeeDayPlanningService($employee_profile_id, $date = '')
