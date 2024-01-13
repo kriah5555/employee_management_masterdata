@@ -30,6 +30,7 @@ use App\Http\Controllers\Employee\{
     EmployeeBenefitsController,
     ResponsiblePersonController,
     EmployeeSignatureController,
+    EmployeeInvitationController,
 };
 
 use App\Http\Controllers\{
@@ -135,6 +136,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeCommuteController::class,
                 'methods'    => ['show', 'update', 'create']
             ],
+            'employee-invitations'       => [
+                'controller' => EmployeeInvitationController::class,
+                'methods'    => ['store']
+            ],
         ];
 
         Route::controller(ContractController::class)->group(function () {
@@ -200,7 +205,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-availability');
 
         Route::get('get-manage-parameter-options', [ParameterController::class, 'getManageParameterOptions'])->name('get-manage-parameter-options');
+
         Route::post('get-company-parameters', [ParameterController::class, 'getCompanyParameters'])->name('get-company-parameters');
+
         Route::post('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
     });
 });

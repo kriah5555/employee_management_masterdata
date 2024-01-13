@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'EMPLOYEE_TOKENS' => [
+    'EMPLOYEE_TOKENS'    => [
         '{employee_first_name}'    => 'First name',
         '{employee_last_name}'     => 'Last name',
         '{employee_date_of_birth}' => 'DOB',
@@ -17,7 +17,7 @@ return [
         '{employee_password}'      => 'password',
     ],
 
-    'COMPANY_TOKENS' => [
+    'COMPANY_TOKENS'     => [
         '{company_name}'               => 'Company_name',
         '{company_vat}'                => 'Company VAT number',
         '{company_responsible_person}' => 'Responsible person',
@@ -26,7 +26,7 @@ return [
         '{company_pc_number}'          => 'Paritair committee number',
     ],
 
-    'CONTRACT_TOKENS' => [
+    'CONTRACT_TOKENS'    => [
         '{contract_start_date}'               => "Contract start date",
         '{contract_end_date}'                 => "Contract end date",
         '{contract_salary_type}'              => "Salary type(hourly or monthly)",
@@ -43,7 +43,7 @@ return [
         '{contract_work_days_per_week}'       => "Work days per week",
     ],
 
-    'ATTACHMENT_TOKENS' => [
+    'ATTACHMENT_TOKENS'  => [
         '{attachment_location_name}'               => 'Location name',
         '{attachment_location_address}'            => 'Address:Street + number Postal code City Country',
         '{attachment_commute_type}'                => 'Commute type',
@@ -56,7 +56,7 @@ return [
         '{attachment_active_contract_date}'        => 'Active contract date',
     ],
 
-    'SIGNATURE_TOKENS' => [
+    'SIGNATURE_TOKENS'   => [
         '{employee_signature}' => 'Employee signature',
         '{employer_signature}' => 'Employer signature',
     ],
@@ -69,14 +69,8 @@ return [
         '{flex_salary_employee}'  => 'Employee flex salary',
     ],
 
-    'TOKENS'                            => [
-        '{first_name}'    => 'First name',
-        '{last_name}'     => 'Last name',
-        '{uid}'           => 'User id',
-        '{date_of_birth}' => 'DOB',
-        '{gender}'        => 'Gender',
-        '{email}'         => 'Email',
-        '{phone_number}'  => 'Phone number',
-        '{company_name}'  => "Company name",
-    ],
+    'ADDITIONAL_TOKENS'  => [
+        '{link1}' => 'Link 1',
+        '{link2}' => 'Link 2',
+    ]
 ];

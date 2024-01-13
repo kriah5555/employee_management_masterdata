@@ -10,13 +10,19 @@ trait UserAudit
     public static function bootUserAudit()
     {
         static::creating(function ($model) {
-            $model->created_by = Auth::id();
-            $model->updated_by = Auth::id();
+            $user = Auth::id();
+            if ($user) {
+                $model->created_by = $user;
+                $model->updated_by = $user;
+            }
         });
 
         static::updating(function ($model) {
             if (!$model->isDirty()) {
-                $model->updated_by = Auth::id();
+                $user = Auth::id();
+                if ($user) {
+                    $model->updated_by = $user;
+                }
             }
         });
     }
