@@ -224,7 +224,7 @@ class UserService
 
         $user = User::findOrFail($values['user_id']);
 
-        $updateUser =$this->updateUserAddress($user, $values);
+        $updateUser = $this->updateUserAddress($user, $values);
 
         return $updateUser;
     }
@@ -237,6 +237,7 @@ class UserService
 
     public function updateUserDetails(User $user, $values)
     {
+        $this->userRepository->updateUser($user, $values);
         $this->userBasicDetailsRepository->updateUserBasicDetails($user->userBasicDetails, $values);
         $this->userAddressRepository->updateUserAddress($user->userAddress, $values);
         $this->userContactDetailsRepository->updateUserContactDetails($user->userContactDetails, $values);
@@ -263,7 +264,7 @@ class UserService
         $userContactDetails = $userContactDetails ? $userContactDetails->toApiResponseFormat() : null;
         $userBankAccountDetails = $userBankAccountDetails ? $userBankAccountDetails->toApiResponseFormat() : null;
         $userBasicDetails['date_of_birth'] = isset($userBasicDetails['date_of_birth']) ?
-                                             date('d-m-Y', strtotime($userBasicDetails['date_of_birth'])) : '';
+            date('d-m-Y', strtotime($userBasicDetails['date_of_birth'])) : '';
         return array_merge(
             $user->toArray(),
             $userBasicDetails ?: [],

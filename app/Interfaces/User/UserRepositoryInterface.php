@@ -2,6 +2,8 @@
 
 namespace App\Interfaces\User;
 
+use App\Models\User\User;
+
 interface UserRepositoryInterface
 {
 
@@ -11,5 +13,5 @@ interface UserRepositoryInterface
 
     public function createUser(array $details);
 
-    public function updateUser(string $id, array $updatedDetails);
+    public function updateUser(User $user, array $updatedDetails);
 }

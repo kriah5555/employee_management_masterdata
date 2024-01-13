@@ -60,4 +60,13 @@ class EmployeeInvitationService
     {
         return date('Y-m-d H:i', strtotime(date('Y-m-d H:i') . '+2 weeks'));
     }
+    public function employeeRegistration($values)
+    {
+        $employeeInvitation = $values['employee_invitation'];
+        unset($values['employee_invitation']);
+        unset($values['token']);
+        $employeeInvitation->invitation_status = 2;
+        $employeeInvitation->data = $values;
+        $employeeInvitation->save();
+    }
 }
