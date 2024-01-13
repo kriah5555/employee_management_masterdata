@@ -38,8 +38,28 @@ class ContractController extends Controller
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
-        }
-        
+        } 
+    }
+
+    public function getEmployeeDocuments($employee_profile_id)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->contractService->getEmployeeDocuments($employee_profile_id),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        } 
     }
 
     public function employeeSignPlanContract(EmployeePlanSignContractRequest $request)

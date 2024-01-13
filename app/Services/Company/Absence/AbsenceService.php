@@ -215,15 +215,19 @@ class AbsenceService
     public function getAbsenceForDate($date)
     {
         try {
-            $date = "10-01-2024";
-            $absenceIds = AbsenceDates::whereJsonContains('dates', $date)
-                        ->where('dates_type', config('absence.DATES_MULTIPLE')) // Multiple dates
-                        ->orWhere(function ($query) use ($date) {
-                            $query->where('dates_type', config('absence.DATES_FROM_TO')) // From and To date
-                                ->where('dates->from_date', '<=', $date)
-                                ->where('dates->to_date', '>=', $date);
-                        })
-                        ->pluck('absence_id');
+            $absenceIds = AbsenceDates::where(function ($query) use ($date) {
+                $query->where('dates_type', config('absence.DATES_MULTIPLE')) // Multiple dates
+                    ->whereJsonContains('dates', $date);
+            })
+            ->orWhere(function ($query) use ($date) {
+                $query->where('dates_type', config('absence.DATES_FROM_TO')) // From and To date
+                    ->get()
+                    ->filter(function ($absence) use ($date) {
+                        $dates = $absence->dates;
+                        return strtotime($date) >= strtotime($dates['from_date']) && strtotime($date) <= strtotime($dates['to_date']);
+                    });
+            })
+            ->pluck('absence_id');
 
             return Absence::whereIn('id', $absenceIds)->get();
 

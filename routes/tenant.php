@@ -153,6 +153,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('get-employee-contracts/{employee_id}/{status}', 'index')
                 ->where(['status' => '(signed|unsigned)']);
+
+            Route::get('get-employee-documents/{employee_profile_id}', 'getEmployeeDocuments');
+
         });
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {

@@ -163,8 +163,36 @@ class ContractService
                 ->when(!empty($contract_status), fn ($query) => $query->where('contract_status', $contract_status))
                 ->when(!empty($plan_id), fn ($query) => $query->where('planning_base_id', $plan_id))
                 ->where('status', true)
-                // ->with(['files'])
                 ->get();
+    
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getEmployeeDocuments($employee_profile_id) # will get all contracts and documents of employee
+    {
+        try {
+
+            $employee_documents = $this->getEmployeeContractFiles($employee_profile_id);
+            return $employee_documents->map(function ($contract) {
+
+                $type = null;
+
+                if ($contract->planning_base_id) {
+                    $type = 'Plan contract';
+                } elseif ($contract->employee_contract_id) {
+                    $type = 'long term contract';
+                }
+
+                return [
+                    'file_id'   => $contract->files->id,
+                    'file_name' => $contract->files->file_name,
+                    'file_url'  => $contract->file_url,
+                    'type'      => $type . ' (' . ($contract->contract_status == config('contracts.CONTRACT_STATUS_SIGNED') ? 'Signed' : 'Unsigned') . ')',
+                ];
+            });
     
         } catch (\Exception $e) {
             error_log($e->getMessage());
