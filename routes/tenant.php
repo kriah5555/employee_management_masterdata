@@ -176,6 +176,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::get('responsible-persons-list', [ResponsiblePersonController::class, 'getResponsiblePersonList']);
 
+        Route::get('employee-holiday-count-overview/{employee_profile_id}', [EmployeeHolidayCountController::class, 'getEmployeeHolidayCountOverview']);
+
         Route::controller(EmployeeController::class)->group(function () {
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');

@@ -279,5 +279,25 @@ class AbsenceService
             throw $e;
         }
     }
+
+    public function getEmployeeAbsenceCounts($employee_profile_id, $absence_type, $holiday_code_id) # Holiday or leave
+    {
+        $absences = Absence::with(['absenceHours' => function ($query) use ($holiday_code_id) {
+            $query->select('absence_id', 'hours')
+                ->where('holiday_code_id', $holiday_code_id)
+                ->where('hours', '>', 0);
+            }])
+            ->where('absence_type', $absence_type)
+            ->where('employee_profile_id', $employee_profile_id);
+
+        $absences = $absences->get(['id', 'employee_profile_id']);
+
+        $employee_absence_hours_used = 0;
+
+        foreach ($absences as $absence) {
+            $employee_absence_hours_used = $absence->absenceDates ?  count($absence->absenceDates->absence_dates_array) * $absences->pluck('absenceHours')->flatten()->pluck('hours')->sum() : 0;
+        }
+
+        return $employee_absence_hours_used;
+    }
 }
-;
