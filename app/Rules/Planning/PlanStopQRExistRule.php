@@ -9,14 +9,15 @@ use App\Repositories\Employee\EmployeeProfileRepository;
 
 class PlanStopQRExistRule implements ValidationRule
 {
-    public function __construct(protected $user_id, protected $qr_data)
+    public function __construct(protected $user_id, protected $time)
     {
 
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $qr_data = decodeData($this->qr_data);
+        $qr_data = decodeData($value);
+        
         setTenantDBByCompanyId($qr_data['company_id']);
         
         $employee_profile = app(EmployeeProfileRepository::class)->getEmployeeProfileByUserId($this->user_id);

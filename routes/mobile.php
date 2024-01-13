@@ -43,6 +43,8 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::post('start-plan-by-employee', 'startPlanByEmployee');
         
         Route::post('stop-plan-by-employee', 'stopPlanByEmployee');
+
+        Route::post('stop-forgot-plan-by-employee', 'stopForgotPlanByEmployee');
         
     });
 

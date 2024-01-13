@@ -103,7 +103,7 @@ class PlanningStartStopService
                 $employee_profile = app(EmployeeProfileRepository::class)->getEmployeeProfileByUserId($values['user_id']);
 
                 $plans            = app(PlanningRepository::class)->getStartedPlanForEmployee($employee_profile->id, $qr_data['location_id']);
-
+                
                 $values['plan_id'] = $plans->first()->id;
 
                 $this->stopPlanByManager($values);

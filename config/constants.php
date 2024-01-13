@@ -104,5 +104,7 @@ return [
         1 => 'NOTIFICATION',
         2 => 'MAIL',
         3 => 'MAIL_AND_NOTIFICATION'
-    ]
+    ],
+
+    'PLANNING_STOP_MAX_TIME' => 17,
 ];
