@@ -68,29 +68,14 @@ class EmployeeInvitationController extends Controller
     public function employeeRegistration(EmployeeInvitationRequest $request)
     {
         try {
-            $token = $request->validated()['token'];
-            $token = decodeData($token);
-            $companyId = $token['company_id'];
-            $token = $token['token'];
-            setTenantDBByCompanyId($companyId);
-            $employeeInvitation = EmployeeInvitation::where('token', $token)->get()->first();
-            if ($employeeInvitation) {
-                if ($employeeInvitation->invitation_status == 1 && strtotime($employeeInvitation->expire_at) > strtotime(date('Y-m-d H:i'))) {
-                    return returnResponse(
-                        [
-                            'success' => true,
-                            'data'    => json_decode($employeeInvitation->data)
-                        ],
-                        JsonResponse::HTTP_OK,
-                    );
-                } elseif (strtotime($employeeInvitation->expire_at) <= strtotime(date('Y-m-d H:i'))) {
-                    throw new AuthenticationException("Link expired");
-                } else {
-                    throw new AuthenticationException("Invalid token");
-                }
-            } else {
-                throw new AuthenticationException("Invalid token");
-            }
+            $this->employeeInvitationService->employeeRegistration($request->all());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Registration successfull.',
+                ],
+                JsonResponse::HTTP_OK,
+            );
         } catch (Exception $e) {
             return returnResponse(
                 [

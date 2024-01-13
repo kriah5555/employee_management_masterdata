@@ -48,16 +48,16 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     {
         $employee_profile = $this->getEmployeeProfileById($employee_profile_id);
 
-        $user_ids     = $this->getCompanyResponsiblePersonUserIds($company_id);
+        $user_ids = $this->getCompanyResponsiblePersonUserIds($company_id);
         $user_service = app(UserService::class);
-        $user         = User::whereIn('id', $user_ids)
-                        ->with(['userBasicDetails', 'userContactDetails'])
-                        ->findOrFail($employee_profile->user_id);
+        $user = User::whereIn('id', $user_ids)
+            ->with(['userBasicDetails', 'userContactDetails'])
+            ->findOrFail($employee_profile->user_id);
         $user->roles = $user_service->getCompanyUserRoles($user->id, $company_id);
         return $user;
     }
 
-    public function getEmployeeProfileById(mixed $employee_profile_id, array $relations = []) 
+    public function getEmployeeProfileById(mixed $employee_profile_id, array $relations = [])
     {
         return app(EmployeeProfileRepository::class)->getEmployeeProfileById($employee_profile_id, $relations);
     }
@@ -78,7 +78,7 @@ class ResponsiblePersonRepository implements ResponsiblePersonInterface
     {
         $employee_profile = $this->getEmployeeProfileById($employee_profile_id);
 
-        app(UserRepository::class)->updateUser($employee_profile->user_id, ['social_security_number' => $responsible_person_details['social_security_number']]);
+        app(UserRepository::class)->updateUser($employee_profile->user, ['social_security_number' => $responsible_person_details['social_security_number']]);
         app(UserService::class)->updateUserDetails($employee_profile->user, $responsible_person_details);
 
         $company_user = CompanyUser::where(['company_id' => $company_id, 'user_id' => $employee_profile->user_id])->get()->first();
