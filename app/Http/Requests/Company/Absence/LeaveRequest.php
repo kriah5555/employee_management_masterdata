@@ -23,7 +23,8 @@ class LeaveRequest extends ApiRequest
     {
         $companyId = getCompanyId();
 
-        $absence_id = request()->route('leave');
+        $route = request()->url();
+        $absence_id = $this->isMethod('PUT') ? substr($route, strrpos($route, '/') + 1) : null;
         return [
             'duration_type' => [
                 'bail',
@@ -49,7 +50,7 @@ class LeaveRequest extends ApiRequest
                 'array',
                 new HolidayCodeDurationTypeRule(request()->input('duration_type'), $companyId, $absence_id),
             ],
-            'plan_ids' => ['bail', 'nullable', 'integer', Rule::exists('tenant.planning_base.id', 'id')]
+            'plan_timings' => ['bail', 'nullable', 'array']
         ];
     }
 

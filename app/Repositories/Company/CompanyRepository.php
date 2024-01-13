@@ -50,6 +50,21 @@ class CompanyRepository implements CompanyRepositoryInterface
         return Company::create($details);
     }
 
+    public function getCompanyPublicHolidays($company_id, $dates)
+    {
+        $company = Company::findOrFail($company_id);
+
+        $public_holidays = $company->publicHolidays();
+
+        if (!empty($dates)) {
+            $public_holidays->whereIn('date', $dates);
+        }
+
+        $public_holidays = $public_holidays->get();
+
+        return $public_holidays;
+    }
+
     public function updateCompany(Company $company, array $updatedDetails)
     {
         if ($company->update($updatedDetails)) {

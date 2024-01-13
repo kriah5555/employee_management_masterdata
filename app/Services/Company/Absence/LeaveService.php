@@ -84,9 +84,9 @@ class LeaveService
 
             $this->leave_repository->updateLeave($leave, $updatedDetails);
 
-            $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data);
+            $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data, $updatedDetails['plan_timings']);
 
-            return $leave;
+            return $this->absence_service->$leave;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -121,7 +121,7 @@ class LeaveService
 
                 $leave = $this->leave_repository->createLeave($formatted_data['details']);
 
-                $leave = $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
+                $leave = $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data'], $formatted_data['details']['plan_timings']);
 
             DB::connection('tenant')->commit();
             
@@ -146,7 +146,7 @@ class LeaveService
 
                 $this->leave_repository->updateLeave($leave, $formatted_data['details']);
 
-                $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data']);
+                $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data'], $details['plan_timings']);
 
                 // return $leave;
 

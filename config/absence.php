@@ -22,6 +22,9 @@ return [
 
     'HOLIDAY'        => 1,
     'LEAVE'          => 2,
+    'PUBLIC_HOLIDAY' => 3,
+
+
     'HOURS'          => 1,
     'DAYS'           => 2,
 

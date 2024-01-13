@@ -66,7 +66,7 @@ class AbsenceDatesValidationRule implements ValidationRule
         $overlapping_dates = array_intersect($absence_applied_dates, $absence_dates_array);
         if (!empty($overlapping_dates) && $overlapping_dates_on_error) {
             $overlapping_dates = implode(', ', $overlapping_dates);
-            $fail("Holiday Already applied for dates {$overlapping_dates}");
+            $fail("Absence already applied for dates {$overlapping_dates}");
         }
 
     }
