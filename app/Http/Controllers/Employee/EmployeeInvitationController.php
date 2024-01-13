@@ -68,7 +68,6 @@ class EmployeeInvitationController extends Controller
     public function employeeRegistration(EmployeeInvitationRequest $request)
     {
         try {
-            dd($request->validated());
             $token = $request->validated()['token'];
             $token = decodeData($token);
             $companyId = $token['company_id'];
