@@ -264,6 +264,6 @@ class PlanningBase extends BaseModel
 
     public function plans()
     {
-        return $this->belongsToMany(Absence::class, 'contract_type_employee_type');
+        return $this->belongsToMany(Absence::class, 'absence_plans', 'absence_id', 'planning_base_id');
     }
 }

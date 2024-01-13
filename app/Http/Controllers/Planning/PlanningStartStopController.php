@@ -63,12 +63,13 @@ class PlanningStartStopController extends Controller
                 $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id'] ); # if contract exists use that else generate new contract and use that
 
                 return response()->json([   
-                        'success'           => false,
-                        'message'           => t('Please sign contract and scan qr code to start your plan.'),
-                        'sign_contract'     => 1, # 0-> not signed contract,  1-> signed contract,
-                        'contract_pdf'      => env('CONTRACTS_URL') . '/' . $contract->files->file_path,
-                        'company_id'        => $qr_data['company_id'],
-                        'plan_id'           => $plan->id,
+                        'success'             => false,
+                        'message'             => t('Please sign contract and scan qr code to start your plan.'),
+                        'sign_contract'       => 1, # 0-> not signed contract,  1-> signed contract,
+                        'forgot_to_stop_plan' => false, # false => has forgotten to stop the plan,
+                        'contract_pdf'        => env('CONTRACTS_URL') . '/' . $contract->files->file_path,
+                        'company_id'          => $qr_data['company_id'],
+                        'plan_id'             => $plan->id,
                     ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         
             }

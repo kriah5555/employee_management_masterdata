@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\BaseModel;
 use App\Models\Company\Company;
+use Illuminate\Support\Carbon;
+
 class PublicHoliday extends BaseModel
 {
     use HasFactory, SoftDeletes;
@@ -37,6 +39,11 @@ class PublicHoliday extends BaseModel
         'deleted_at'
     ];
 
+    public function getDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+
     public function companies()
     {
         return $this->belongsToMany(Company::class, 'company_public_holidays', 'public_holiday_id', 'company_id');
@@ -44,6 +51,6 @@ class PublicHoliday extends BaseModel
 
     public function companiesValue()
     {
-        return $this->belongsToMany(Company::class, 'company_public_holidays', 'public_holiday_id', 'company_id')->select(['companies.id as value', 'companies.company_name as label']);
+        return $this->belongsToMany(Company::class, 'company_public_holidays', 'public_holiday_id', 'company_id');
     }
 }

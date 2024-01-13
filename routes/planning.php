@@ -66,7 +66,7 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
 
         Route::get('planning-details/{plan_id}', 'getPlanDetails');
         
-        Route::post('get-plans-for-absence', 'getPlansForAbsence');
+        Route::post('get-plans-for-leave', 'getPlansForAbsence');
     });
 
 

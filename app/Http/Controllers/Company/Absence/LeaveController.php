@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Company\Absence;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Absence\HolidayRequest;
 use App\Services\Company\Absence\LeaveService;
+use App\Services\Company\Absence\AbsenceService;
+use App\Http\Requests\Company\Absence\LeaveRequest;
 use App\Http\Requests\Company\Absence\AbsenceChangeReportingManagerRequest;
 
 class LeaveController extends Controller
@@ -113,15 +114,14 @@ class LeaveController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(LeaveRequest $request)
     {
         try {
-            $request_data = $request->validated();
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Leave created successfully'),
-                    'data'    => $this->leave_service->applyLeave($request_data)
+                    'data'    => $this->leave_service->applyLeave($request->validated())
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -141,7 +141,7 @@ class LeaveController extends Controller
      */
     public function show($leaveId)
     {
-        $leave_details = $this->leave_service->getLeaveById($leaveId, ['absenceDates', 'absenceHours.holidayCode']);
+        $leave_details = app(AbsenceService::class)->formatAbsenceDataForOverview($this->leave_service->getLeaveById($leaveId, ['absenceDates', 'absenceHours.holidayCode']));
         try {
             return returnResponse(
                 [
@@ -164,10 +164,10 @@ class LeaveController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $leaveId)
+    public function update(LeaveRequest $request, $leaveId)
     {
         try {
-            $this->leave_service->updateApprovedLeave($leaveId, $request->all());
+            $this->leave_service->updateApprovedLeave($leaveId, $request->validated());
             return returnResponse(
                 [
                     'success' => true,

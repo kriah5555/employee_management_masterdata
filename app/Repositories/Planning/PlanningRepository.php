@@ -157,4 +157,26 @@ class PlanningRepository implements PlanningRepositoryInterface
         $query->selectRaw('DATE(start_date_time) as date, COUNT(*) as count')->groupBy('date');
         return $query->get();
     }
+
+    public function getPlanningsForTimings($employee_profile_id, $date_timings = [])
+{
+    $query = PlanningBase::where('employee_profile_id', $employee_profile_id);
+
+    $query->where(function ($query) use ($date_timings) {
+        foreach ($date_timings as $date_timing) {
+            $start_date_time = date('Y-m-d H:i:s', strtotime($date_timing['start_date_time']));
+            $end_date_time   = date('Y-m-d H:i:s', strtotime($date_timing['end_date_time']));
+            
+            $query->orWhere(function ($query) use ($start_date_time, $end_date_time) {
+                $query->where('start_date_time', $start_date_time)
+                    ->where('end_date_time', $end_date_time);
+            });
+        }
+    });
+
+    $query->orderBy('start_date_time');
+    $query->orderBy('end_date_time');
+
+    return $query->get();
+}
 }

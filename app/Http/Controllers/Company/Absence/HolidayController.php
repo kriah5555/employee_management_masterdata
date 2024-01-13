@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company\Absence;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Services\Company\Absence\AbsenceService;
 use App\Services\Company\Absence\HolidayService;
 use App\Http\Requests\Company\Absence\HolidayRequest;
 use App\Http\Requests\Company\Absence\AbsenceChangeReportingManagerRequest;
@@ -162,7 +163,7 @@ class HolidayController extends Controller
      */
     public function show($holidayId)
     {
-        $holiday_details = $this->holidayService->getHolidayById($holidayId, ['absenceDates', 'absenceHours.holidayCode']);
+        $holiday_details = app(AbsenceService::class)->formatAbsenceDataForOverview($this->holidayService->getHolidayById($holidayId, ['absenceDates', 'absenceHours.holidayCode']));
         try {
             return returnResponse(
                 [
