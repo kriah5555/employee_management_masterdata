@@ -7,6 +7,7 @@ use App\Models\Company\DashboardAccess;
 use App\Models\Company\Location;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class DashboardAccessService
 {

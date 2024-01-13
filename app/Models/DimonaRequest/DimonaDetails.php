@@ -63,7 +63,7 @@ class DimonaDetails extends Model
 
     public function dimonaError()
     {
-        return $this->hasMany(DimonaError::class, 'dimona_base_id');
+        return $this->hasMany(DimonaError::class, 'dimona_details_id');
     }
 
     public function dimonaResponse()

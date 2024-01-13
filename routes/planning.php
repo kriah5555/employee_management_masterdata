@@ -16,7 +16,10 @@ use App\Http\Controllers\Planning\
 use App\Http\Controllers\Planning\PlanningShiftController;
 use App\Http\Middleware\InitializeTenancy;
 use App\Http\Middleware\SetActiveUser;
-use App\Http\Controllers\Dimona\DimonaController;
+use App\Http\Controllers\Dimona\{
+    DimonaController,
+    DimonaOverviewController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -114,9 +117,12 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         Route::resource($uri, $controller)->only($methods);
     }
     Route::controller(DimonaController::class)->group(function () {
-        Route::get('/dimona-test-plan/{planId}', 'sendDimonaByPlan');
-        Route::get('/send-dimona/{planId}', 'sendDimonaByPlan');
-        Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', 'sendDimonaByEmployeeContract');
-        Route::get('/dimona-test-plan', 'sendDimonaByPlan');
+        Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'testDimona']);
+        Route::post('/send-dimona', [DimonaController::class, 'sendDimonaByPlan']);
+        Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
+    });
+
+    Route::controller(DimonaOverviewController::class)->group(function () {
+        Route::post('/dimona-overview', [DimonaOverviewController::class, 'getDimonaDetails']);
     });
 });

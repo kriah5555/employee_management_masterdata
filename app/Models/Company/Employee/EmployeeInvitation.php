@@ -1,24 +1,23 @@
 <?php
 
-namespace App\Models\Parameter;
+namespace App\Models\Company\Employee;
 
 use App\Models\BaseModel;
+use App\Models\Company\Employee\EmployeeProfile;
 use App\Traits\UserAudit;
-use App\Models\Parameter\Parameter;
 
-class EmployeeTypeParameter extends BaseModel
+class EmployeeInvitation extends BaseModel
 {
     use UserAudit;
 
-    protected $columnsToLog = ['value'];
-
-    protected $connection = 'master';
+    protected $columnsToLog = ['data', 'invitation_status'];
+    protected $connection = 'tenant';
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'employee_type_parameters';
+    protected $table = 'employee_invitations';
 
     /**
      * The primary key associated with the table.
@@ -51,19 +50,13 @@ class EmployeeTypeParameter extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'parameter_id',
-        'employee_type_id',
-        'value',
-        'created_by',
-        'updated_by'
+        'token',
+        'data',
+        'invitation_status',
+        'expire_at',
     ];
-    public function parameter()
+    public function inviter()
     {
-        return $this->belongsTo(Parameter::class);
-    }
-
-    public function companyParameters()
-    {
-        return $this->morphedByMany(CompanyParameter::class, 'company_parameters');
+        return $this->belongsTo(EmployeeProfile::class, 'invited_by');
     }
 }

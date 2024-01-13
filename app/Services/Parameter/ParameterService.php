@@ -2,6 +2,7 @@
 
 namespace App\Services\Parameter;
 
+use App\Models\Parameter\CompanyParameter;
 use App\Models\Parameter\Parameter;
 use Exception;
 use App\Repositories\ParameterRepository;
@@ -106,33 +107,66 @@ class ParameterService
     {
         $response = [];
         if ($values['type'] == 1) {
-            $parameters = $this->getEmployeeTypeParameters($values['id']);
+            $parameters = $this->getEmployeeTypeParameters($values['employee_type_id']);
         } elseif ($values['type'] == 2) {
-            $parameters = $this->getSectorParameters($values['id']);
+            $parameters = $this->getSectorParameters($values['sector_id']);
         } elseif ($values['type'] == 3) {
-            $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
+            $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['employee_type_id'], $values['sector_id']);
+        } elseif ($values['type'] == 4) {
+            $parameters = $this->parameterRepository->getDefaultCompanyParameters();
         } elseif ($values['type'] == 5) {
             $parameters = $this->parameterRepository->getDefaultLocationParameters();
         }
         foreach ($parameters as $parameter) {
             $details = [];
-	    $details['id'] = $parameter['name'];
-	    $details['name'] = $parameter['name'];
-	    $details['description'] = $parameter['description'];
-            $details['default_value'] = $parameter['value'];
-            if ($values['type'] == 4) {
-                $companyParameters = $this->parameterRepository->getCompanyParameterByName($parameter['name']);
+            if (in_array($values['type'], [1, 2, 3])) {
+                $details['id'] = $parameter->id;
+                $details['name'] = $parameter->parameter->name;
+                $details['description'] = $parameter->parameter->description;
+                $details['default_value'] = $details['value'] = $parameter->parameter->value;
             } else {
-                $companyParameters = $this->parameterRepository->getLocationParameterByName($parameter['id'], $parameter['name']);
+                $details['id'] = $parameter->id;
+                $details['name'] = $parameter->name;
+                $details['description'] = $parameter->description;
+                $details['default_value'] = $details['value'] = $parameter->value;
             }
-            if ($companyParameters) {
-                $details['use_default'] = false;
-            } else {
-                $details['use_default'] = true;
-                $details['value'] = $parameter['value'];
-            }
+            $companyParameters = $this->parameterRepository->getCompanyParameter($parameter);
+            $details['use_default'] = $companyParameters ? false : true;
             $response[] = $details;
         }
         return $response;
+    }
+    public function updateCompanyParameter($values)
+    {
+        $defaultParameter = $this->parameterRepository->getParameterByName($values['parameter_name']);
+        if ($defaultParameter->type == 1) {
+            $parameter = $this->parameterRepository->getEmployeeTypeParameter($defaultParameter->id, $values['employee_type_id']);
+        } elseif ($defaultParameter->type == 2) {
+            $parameter = $this->parameterRepository->getSectorParameter($defaultParameter->id, $values['sector_id']);
+        } elseif ($defaultParameter->type == 3) {
+            $parameter = $this->parameterRepository->getEmployeeTypeSectorParameter($defaultParameter->id, $values['employee_type_id'], $values['sector_id']);
+        } elseif ($defaultParameter->type == 4) {
+            $parameter = $this->parameterRepository->getEmployeeTypeParameter($defaultParameter->id);
+        } elseif ($defaultParameter->type == 5) {
+            $parameter = $this->parameterRepository->getEmployeeTypeParameter($defaultParameter->id, $values['location_id']);
+        }
+        if ($values['use_default']) {
+            $this->deleteCompanyParameter($parameter);
+        } else {
+            $this->createCompanyParameter($parameter, $values);
+        }
+    }
+    public function createCompanyParameter($parameter, $values)
+    {
+        return CompanyParameter::create([
+            'parameter_id'   => $parameter->id,
+            'parameter_type' => get_class($parameter),
+            'value'          => $values['value'],
+        ]);
+    }
+    public function deleteCompanyParameter($parameter)
+    {
+        return CompanyParameter::where('parameter_id', $parameter->id)
+            ->where('parameter_type', get_class($parameter))->get()->delete();
     }
 }

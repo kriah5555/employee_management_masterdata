@@ -79,7 +79,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
                 'user',
                 'user.userBasicDetails',
                 'user.userContactDetails',
-                'user.userProfilePicture'
+                #'user.userProfilePicture'
             ]);
 
             return formatEmployees($employees);

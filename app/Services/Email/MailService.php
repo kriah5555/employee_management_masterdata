@@ -13,14 +13,13 @@ use App\Repositories\Employee\EmployeeProfileRepository;
 class MailService
 {
     protected $redirect_mail;
-    
+
     public function __construct(
         protected EmailTemplateService $email_template_service,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected CompanyRepository $companyRepository,
-        )
-    {
-        $this->redirect_mail = 'sunilgangadhar.infanion@gmail.com';
+    ) {
+        $this->redirect_mail = 'vishaldudalkar.infanion@gmail.com';
     }
 
     public function sendEmployeeCreationMail($employee_profile_id, $new_employee = true, $language = 'en', $password = '')
@@ -30,10 +29,10 @@ class MailService
             $employeeData = $this->getEmployeeTokensData($employee_profile_id, $password);
 
             $subject = $email_template->getTranslation('subject', $language);
-            $body    = $email_template->getTranslation('body', $language);
+            $body = $email_template->getTranslation('body', $language);
 
 
-            $body    = replaceTokens($body, $employeeData);
+            $body = replaceTokens($body, $employeeData);
             $subject = replaceTokens($subject, $employeeData);
 
             self::triggerMail($this->redirect_mail != '' ? $this->redirect_mail : $employeeData['employee_email'], $subject, $body);
@@ -45,13 +44,13 @@ class MailService
         $email_template = $this->email_template_service->getEmailTemplateDetailsByType('employee_account_update_mail');
         if ($email_template) {
             $subject = $email_template->getTranslation('subject', $language);
-            $body    = $email_template->getTranslation('body', $language);
+            $body = $email_template->getTranslation('body', $language);
 
             // Get employee data
             $employeeData = $this->getEmployeeTokensData($values);
 
             // Replace employee tokens in the body content using config tokens
-            $body    = replaceTokens($body, $employeeData);
+            $body = replaceTokens($body, $employeeData);
             $subject = replaceTokens($subject, $employeeData);
 
             $this->triggerMail($this->redirect_mail != '' ? $this->redirect_mail : "", $subject, $body);
@@ -75,9 +74,9 @@ class MailService
             "{employee_phone}"         => $employee->user->userContactDetails ? $employee->user->userContactDetails->phone_number : null,
             "{employee_bank}"          => $employee->user->userBankAccount ? $employee->user->userBankAccount->account_number : null,
             "{employee_address}"       => ($employee->user->userAddress ? $employee->user->userAddress->street_house_no : null) . ' ' .
-                                        ($employee->user->userAddress ? $employee->user->userAddress->postal_code : null) . ' ' .
-                                        ($employee->user->userAddress ? $employee->user->userAddress->city : null) . ' ' .
-                                        ($employee->user->userAddress ? $employee->user->userAddress->country : null),# Address:Street + number Postal code City Country
+                ($employee->user->userAddress ? $employee->user->userAddress->postal_code : null) . ' ' .
+                ($employee->user->userAddress ? $employee->user->userAddress->city : null) . ' ' .
+                ($employee->user->userAddress ? $employee->user->userAddress->country : null), # Address:Street + number Postal code City Country
         ];
     }
 
@@ -87,14 +86,30 @@ class MailService
 
         if ($email_template) {
             $subject = $email_template->getTranslation('subject', $language);
-            $body    = $email_template->getTranslation('body', $language);
+            $body = $email_template->getTranslation('body', $language);
 
             // Get employee data
             $companyData = $this->getCompanyTokensData($company_id);
 
             // Replace employee tokens in the body content using config tokens
-            $body    = replaceTokens($body, $companyData);
+            $body = replaceTokens($body, $companyData);
             $subject = replaceTokens($subject, $companyData);
+
+            $this->triggerMail($this->redirect_mail != '' ? $this->redirect_mail : "", $subject, $body);
+        }
+    }
+
+    public function sendEmployeeInvitationMail($data, $language = 'en')
+    {
+        $email_template = $this->email_template_service->getEmailTemplateDetailsByType('employee_invitation_mail');
+
+        if ($email_template) {
+            $subject = $email_template->getTranslation('subject', $language);
+            $body = $email_template->getTranslation('body', $language);
+
+            // Replace employee tokens in the body content using config tokens
+            $body = replaceTokens($body, $data);
+            $subject = replaceTokens($subject, $data);
 
             $this->triggerMail($this->redirect_mail != '' ? $this->redirect_mail : "", $subject, $body);
         }
@@ -111,9 +126,9 @@ class MailService
             '{company_pc_number}'          => $company->company_name,
             '{company_city}'               => $company->address->city,
             '{company_address}'            => ($company->address ? $company->address->street_house_no : null) . ' ' .
-                                            ($company->address ? $company->address->postal_code : null) . ' ' .
-                                            ($company->address ? $company->address->city : null) . ' ' .
-                                            ($company->address ? $company->address->country : null),# Address:Street + number Postal code City Country,
+                ($company->address ? $company->address->postal_code : null) . ' ' .
+                ($company->address ? $company->address->city : null) . ' ' .
+                ($company->address ? $company->address->country : null), # Address:Street + number Postal code City Country,
         ];
     }
 

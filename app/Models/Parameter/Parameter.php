@@ -92,4 +92,19 @@ class Parameter extends BaseModel
         $this->parameter_type = $parameter_type;
         // return $parameter_type;
     }
+
+    public function employeeTypeParameters()
+    {
+        return $this->hasMany(EmployeeTypeParameter::class, 'parameter_id');
+    }
+
+    public function sectorParameters()
+    {
+        return $this->hasMany(SectorParameter::class, 'parameter_id');
+    }
+
+    public function employeeTypeSectorParameters()
+    {
+        return $this->hasMany(EmployeeTypeSectorParameter::class, 'parameter_id');
+    }
 }
