@@ -101,6 +101,8 @@ class PlanningStartStopService
 
             $values['plan_id'] = $plans->first()->id;
 
+            $values['plan_id'] = $plans->first()->id;
+
             $this->stopPlanByManager($values);
 
             DB::connection('tenant')->commit();

@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Planning\GetWeeklyPlanningRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\Planning\GetDayPlanningRequest;
 
 
 class UurroosterController extends Controller

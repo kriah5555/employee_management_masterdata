@@ -179,6 +179,32 @@ class PlanningController extends Controller
         }
     }
 
+    public function getDayPlanningMobile(GetDayPlanningRequest $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningService->getDayPlanningMobileService(
+                        $request->input('location'),
+                        $request->input('workstations'),
+                        $request->input('employee_types'),
+                        date('Y-m-d', strtotime($request->input('date')))
+                    )
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     public function getEmployeeDayPlanning($employee_profile_id)
     {
         try {

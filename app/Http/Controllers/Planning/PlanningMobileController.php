@@ -75,7 +75,7 @@ class PlanningMobileController extends Controller
                 );
             }
 
-            $userId = Auth::guard('web')->user()->id;
+            $userId      = Auth::guard('web')->user()->id;
             $company_ids = getUserCompanies($userId);
             return returnResponse(
                 [
