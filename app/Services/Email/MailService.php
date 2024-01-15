@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Services\Email\EmailTemplateService;
 use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Employee\EmployeeProfileRepository;
+use App\Jobs\SendEmailJob;
 
 class MailService
 {
@@ -134,11 +135,18 @@ class MailService
 
     public function triggerMail($mail_id, $subject, $htmlContent)
     {
-        try {
-            Mail::to($mail_id)->send(new SendMail($subject, $htmlContent));
-            Log::info('Email sent successfully.');
-        } catch (\Exception $e) {
-            Log::error('Error sending email: ' . $e->getMessage());
-        }
+        // try {
+        //     Mail::to($mail_id)->send(new SendMail($subject, $htmlContent));
+        //     Log::info('Email sent successfully.');
+        // } catch (\Exception $e) {
+        //     Log::error('Error sending email: ' . $e->getMessage());
+        // }
+        $data = [
+            'subject'        => $subject,
+            'body'           => $htmlContent,
+            'recipien_email' => $mail_id,
+            'recipient_name' => $mail_id,
+        ];
+        dispatch(new SendEmailJob($data));
     }
 }
