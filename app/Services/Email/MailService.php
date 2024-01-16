@@ -20,7 +20,7 @@ class MailService
         protected CompanyRepository $companyRepository,
         )
     {
-        $this->redirect_mail = 'sunilgangadhar.infanion@gmail.com';
+        $this->redirect_mail = 'indii.2.0.test@gmail.com';
     }
 
     public function sendEmployeeCreationMail($employee_profile_id, $new_employee = true, $language = 'en', $password = '')

@@ -38,7 +38,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
                 'user_id' => $employeeProfileDetails['user_id'],
             ],
             [
-                'responsible_person_id' => $employeeProfileDetails['responsible_person_id'],
+                'responsible_person_id' => isset($employeeProfileDetails['responsible_person_id']) ? $employeeProfileDetails['responsible_person_id'] : null,
             ]
         );
         // create($employeeProfileDetails);
