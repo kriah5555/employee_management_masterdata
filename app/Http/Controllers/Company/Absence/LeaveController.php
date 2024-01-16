@@ -144,15 +144,16 @@ class LeaveController extends Controller
             $data = $request->validated();
             $formattedData = [];
             $formattedData['employee_profile_id'] = $data['employee_profile_id'];
-            $formattedData['duration_type'] = 8;
             $formattedData['reason'] = $data['reason'];
             if ($data['duration_type'] == 1) {
                 $formattedData['dates'] = $data['dates'];
+                $formattedData['duration_type'] = 8;
             } else {
                 $formattedData['dates'] = [
                     'from_date' => $data['from_date'],
                     'to_date'   => $data['to_date']
                 ];
+                $formattedData['duration_type'] = 7;
             }
             $formattedData['plan_timings'] = $data['pid'];
             $formattedData['holiday_code_counts'][] = [
