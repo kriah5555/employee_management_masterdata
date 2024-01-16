@@ -15,9 +15,10 @@ class GetDayPlanningRequest extends ApiRequest
      */
     public function rules(): array
     {
+        $not_required_for_mobile = $this->route()->getName() == 'get-day-planning-mobile';
         return [
             'location'         => [
-                'required',
+                $not_required_for_mobile ? 'nullable'  : 'required',
                 'integer',
                 Rule::exists('locations', 'id'),
             ],
@@ -34,7 +35,7 @@ class GetDayPlanningRequest extends ApiRequest
                 Rule::exists('master.employee_types', 'id'),
             ],
             'date'             => 'required|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-            'year'             => 'required|digits:4',
+            'year'             => [$not_required_for_mobile ? 'nullable' : 'required', 'digits:4'],
         ];
 
     }

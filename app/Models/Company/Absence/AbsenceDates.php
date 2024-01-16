@@ -43,7 +43,8 @@ class AbsenceDates extends BaseModel
 
     public function getAbsenceDatesArrayAttribute() # will return the all dates which absence is applied
     {
-        $customDates = json_decode($this->getAttribute('dates'), true);
+        $customDates = $this->getAttribute('dates');
+        // $customDates = decodeData($this->getAttribute('dates'));
         if ($this->dates_type == 2) { # will have from and to date
             return getDatesArray($customDates['from_date'], $customDates['to_date']);
         } else {

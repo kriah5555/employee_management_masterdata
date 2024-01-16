@@ -36,6 +36,28 @@ class Absence extends BaseModel
         'deleted_at',
     ];
 
+    protected $appends = ['plan_timings', 'plan_ids'];
+
+    public function getPlanTimingsAttribute()
+    {
+        $return_data = [];
+        
+        $this->load('plans');
+
+        foreach ($this->plans as $plan) {
+            $return_data[] = $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted;
+        }
+
+        return array_unique($return_data);
+    }
+
+    public function getPlanIdsAttribute()
+    {
+        $planIds = $this->plans->pluck('id')->toArray();
+
+        return $planIds;
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -90,6 +112,6 @@ class Absence extends BaseModel
 
     public function plans()
     {
-        return $this->belongsToMany(PlanningBase::class, 'absence_plans');
+        return $this->belongsToMany(PlanningBase::class, 'absence_plans', 'absence_id', 'planning_base_id');
     }
 }

@@ -43,6 +43,7 @@ use App\Http\Controllers\{
 use App\Http\Controllers\Planning\VacancyController;
 use App\Models\User\CompanyUser;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Employee\EmployeeInvitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -244,6 +245,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
 
     Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
+
+    Route::post('validate-employee-invitations', [EmployeeInvitationController::class, 'validateEmployeeInvitation'])->name('validate-employee-invitations');
+
+    Route::post('employee-registration', [EmployeeInvitationController::class, 'employeeRegistration'])->name('employee-registration');
 });
 
 Route::get('/script', function () {

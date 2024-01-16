@@ -13,6 +13,7 @@ use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use App\Models\Tenant;
 use App\Models\EmployeeType\EmployeeType;
+use App\Models\Holiday\PublicHoliday;
 
 class Company extends BaseModel
 {
@@ -155,6 +156,11 @@ class Company extends BaseModel
     {
         return $this->with('sectors.employeeTypesValue')
         ->where('id', $companyId);
+    }
+
+    public function publicHolidays()
+    {
+        return $this->belongsToMany(PublicHoliday::class, 'company_public_holidays')->where('public_holidays.status', true);
     }
 
 }

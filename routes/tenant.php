@@ -13,6 +13,7 @@ use App\Http\Controllers\Company\{
     WorkstationController,
     Absence\LeaveController,
     Absence\HolidayController,
+    Absence\AbsenceController,
     Contract\ContractConfigurationController,
     Contract\CompanyContractTemplateController,
     EmployeeAvailabilityController,
@@ -30,6 +31,7 @@ use App\Http\Controllers\Employee\{
     EmployeeBenefitsController,
     ResponsiblePersonController,
     EmployeeSignatureController,
+    EmployeeInvitationController,
 };
 
 use App\Http\Controllers\{
@@ -90,6 +92,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('leaves-status/{leave_id}/{status}', 'updateLeaveStatus')
                 ->where(['status' => '(cancel)']);
+            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave');
         });
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
@@ -135,6 +138,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeCommuteController::class,
                 'methods'    => ['show', 'update', 'create']
             ],
+            'employee-invitations'       => [
+                'controller' => EmployeeInvitationController::class,
+                'methods'    => ['store']
+            ],
         ];
 
         Route::controller(ContractController::class)->group(function () {
@@ -147,6 +154,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('get-employee-contracts/{employee_id}/{status}', 'index')
                 ->where(['status' => '(signed|unsigned)']);
+
+            Route::get('get-employee-documents/{employee_profile_id}', 'getEmployeeDocuments');
+
         });
 
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
@@ -166,6 +176,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::get('employee-signature', [EmployeeSignatureController::class, 'show']);
 
         Route::get('responsible-persons-list', [ResponsiblePersonController::class, 'getResponsiblePersonList']);
+
+        Route::get('employee-holiday-count-overview/{employee_profile_id}', [EmployeeHolidayCountController::class, 'getEmployeeHolidayCountOverview']);
 
         Route::controller(EmployeeController::class)->group(function () {
 
@@ -193,14 +205,30 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('stop-plan-reasons', 'getStopPlanReasons');
         });
-        Route::get('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
-        Route::post('get-employee-availability', [EmployeeAvailabilityController::class, 'getEmployeeAvailability'])->name('get-employee-availability-manager');
-        Route::post('get-weekly-availability', [EmployeeAvailabilityController::class, 'getWeeklyAvailability'])->name('get-weekly-availability');
-        Route::post('get-weekly-availability-for-employee', [EmployeeAvailabilityController::class, 'getWeeklyAvailabilityForEmployee'])->name('get-weekly-availability-for-employee');
-        Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-availability');
+
+        Route::controller(EmployeeAvailabilityController::class)->group(function () {
+
+            Route::get('get-employee-availability', 'getEmployeeAvailability')->name('get-employee-availability-manager');
+
+            Route::post('get-employee-availability', 'getEmployeeAvailability')->name('get-employee-availability-manager');
+
+            Route::post('get-weekly-availability', 'getWeeklyAvailability')->name('get-weekly-availability');
+
+            Route::post('get-weekly-availability-for-employee', 'getWeeklyAvailabilityForEmployee')->name('get-weekly-availability-for-employee');
+
+            Route::delete('availability', 'destroy')->name('delete-availability');
+        });
 
         Route::get('get-manage-parameter-options', [ParameterController::class, 'getManageParameterOptions'])->name('get-manage-parameter-options');
+
         Route::post('get-company-parameters', [ParameterController::class, 'getCompanyParameters'])->name('get-company-parameters');
+
+        Route::controller(AbsenceController::class)->group(function () {
+
+            Route::post('get-absence-details-for-week', 'getAbsenceDetailsForWeek');
+
+        });
+
         Route::post('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
     });
 });

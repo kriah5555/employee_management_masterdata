@@ -32,12 +32,12 @@ class PublicHolidayRequest extends ApiRequest
             ],
 
             'status' => 'required|boolean',
-            // 'companies'   => 'nullable|array',
-            // 'companies.*' => [
-            //     'bail',
-            //     'integer',
-            //     Rule::exists('companies', 'id'),
-            // ],
+            'companies'   => 'nullable|array',
+            'companies.*' => [
+                'bail',
+                'integer',
+                Rule::exists('master.companies', 'id'),
+            ],
         ];
     }
     protected function prepareForValidation()

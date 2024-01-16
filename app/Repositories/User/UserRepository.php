@@ -4,6 +4,8 @@ namespace App\Repositories\User;
 
 use App\Models\User\User;
 use App\Interfaces\User\UserRepositoryInterface;
+use App\Exceptions\ModelDeleteFailedException;
+use App\Exceptions\ModelUpdateFailedException;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -23,9 +25,13 @@ class UserRepository implements UserRepositoryInterface
         return User::create($details);
     }
 
-    public function updateUser(string $id, array $updatedDetails)
+    public function updateUser(User $user, array $updatedDetails)
     {
-        return User::whereId($id)->update($updatedDetails);
+        if ($user->update($updatedDetails)) {
+            return true;
+        } else {
+            throw new ModelUpdateFailedException('Failed to update user basic details');
+        }
     }
     public function getUserBySocialSecurityNumber(string $socialSecurityNumber)
     {

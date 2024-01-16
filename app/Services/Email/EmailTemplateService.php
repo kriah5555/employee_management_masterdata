@@ -5,6 +5,7 @@ namespace App\Services\Email;
 use Illuminate\Support\Facades\DB;
 use App\Models\Email\EmailTemplate;
 use App\Services\BaseService;
+
 class EmailTemplateService extends BaseService
 {
     public function __construct(protected EmailTemplate $emailTemplate)
@@ -19,12 +20,12 @@ class EmailTemplateService extends BaseService
                 $emailTemplate = $this->model::create([
                     'template_type' => $values['template_type'],
                 ]);
-    
+
                 foreach (config('app.available_locales') as $locale) {
                     $emailTemplate->setTranslation('body', $locale, $values['body'][$locale]);
                     $emailTemplate->setTranslation('subject', $locale, $values['subject'][$locale]);
                 }
-    
+
                 $emailTemplate->save();
                 return $emailTemplate;
             });
@@ -38,16 +39,16 @@ class EmailTemplateService extends BaseService
     {
         try {
             DB::beginTransaction();
-                $emailTemplate->update([
-                    'status' => $values['status'],
-                ]);
-        
-                foreach (config('app.available_locales') as $locale) {
-                    $emailTemplate->setTranslation('body', $locale, $values['body'][$locale]);
-                    $emailTemplate->setTranslation('subject', $locale, $values['subject'][$locale]);
-                }
-        
-                $emailTemplate->save();
+            $emailTemplate->update([
+                'status' => $values['status'],
+            ]);
+
+            foreach (config('app.available_locales') as $locale) {
+                $emailTemplate->setTranslation('body', $locale, $values['body'][$locale]);
+                $emailTemplate->setTranslation('subject', $locale, $values['subject'][$locale]);
+            }
+
+            $emailTemplate->save();
             DB::commit();
             return $emailTemplate;
         } catch (Exception $e) {
@@ -61,8 +62,15 @@ class EmailTemplateService extends BaseService
     {
         return [
             'email_template_type' => $this->transformOptions(config('constants.EMAIL_TEMPLATES')),
-            'tokens'              => config('constants.TOKENS'),
-            // 'tokens'              => $this->transformOptions(config('constants.TOKENS')),
+            'tokens'              => array_merge(
+                config('tokens.EMPLOYEE_TOKENS'),
+                config('tokens.COMPANY_TOKENS'),
+                config('tokens.CONTRACT_TOKENS'),
+                config('tokens.ATTACHMENT_TOKENS'),
+                config('tokens.SIGNATURE_TOKENS'),
+                config('tokens.FLEX_SALARY_TOKENS'),
+                config('tokens.ADDITIONAL_TOKENS')
+            ),
         ];
     }
 
@@ -78,8 +86,8 @@ class EmailTemplateService extends BaseService
 
     public function getOptionsToEdit($email_template_id)
     {
-        $email_template     = self::getEmailTemplateDetailsById($email_template_id);
-        $options            = $this->getOptionsToCreate();
+        $email_template = self::getEmailTemplateDetailsById($email_template_id);
+        $options = $this->getOptionsToCreate();
         $email_template['template_type'] = [
             'value' => $email_template['template_type'],
             'label' => config('constants.EMAIL_TEMPLATES')[$email_template['template_type']]

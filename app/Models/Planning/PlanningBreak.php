@@ -51,7 +51,7 @@ class PlanningBreak extends Model
      * @var array
      */
 
-     protected $fillable = [
+    protected $fillable = [
         'plan_id',
         'break_start_time',
         'break_end_time',
@@ -71,12 +71,12 @@ class PlanningBreak extends Model
     {
         if ($this->break_end_time && $this->status) {
             $start = Carbon::parse($this->break_start_time);
-            $end   = Carbon::parse($this->break_end_time);
+            $end = Carbon::parse($this->break_end_time);
 
             $hours = $start->floatDiffInHours($end);
             return round($hours, 3);
         }
-        
+
         return 0;
     }
 }

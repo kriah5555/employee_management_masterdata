@@ -179,6 +179,32 @@ class PlanningController extends Controller
         }
     }
 
+    public function getDayPlanningMobile(GetDayPlanningRequest $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningService->getDayPlanningMobileService(
+                        $request->input('location'),
+                        $request->input('workstations'),
+                        $request->input('employee_types'),
+                        date('Y-m-d', strtotime($request->input('date')))
+                    )
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     public function getEmployeeDayPlanning($employee_profile_id)
     {
         try {
@@ -256,11 +282,14 @@ class PlanningController extends Controller
     {
         try {
             $rules = [
-                'dates'   => ['bail', 'required', 'array',],
-                'dates.*' => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT')
+                'dates'               => ['bail', 'required', 'array',],
+                'employee_profile_id' => ['bail', 'required', 'integer'],
+                'dates.*'             => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT')
             ];
 
-            $validator = Validator::make(request()->all(), $rules, []);
+            $request_data = request()->all();
+
+            $validator = Validator::make($request_data, $rules, []);
             if ($validator->fails()) {
                 return returnResponse(
                     [
@@ -271,11 +300,16 @@ class PlanningController extends Controller
                 );
             }
 
+            if (isset($request_data['dates']['from_date']) && (!isset($request_data['dates']['to_date']))) {
+                throw new Exception('dates.to date field is required');
+            } elseif (isset($request_data['dates']['from_date']) && isset($request_data['dates']['to_date'])) {
+                $request_data['dates'] = getDatesArray($request_data['dates']['from_date'], $request_data['dates']['to_date']);
+            }
 
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningService->getPlansForAbsence($request->dates)
+                    'data'    => $this->planningService->getPlansForAbsence($request_data['dates'], $request->employee_profile_id)
                 ],
                 JsonResponse::HTTP_OK,
             );

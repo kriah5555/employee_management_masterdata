@@ -50,15 +50,15 @@ return [
         'monthly' => 'Monthly'
     ],
 
-    'LONG_TERM_CONTRACT_ID' => 1,
+    'LONG_TERM_CONTRACT_ID'        => 1,
 
-    'DAILY_CONTRACT_ID'     => 2,
+    'DAILY_CONTRACT_ID'            => 2,
 
-    'DEFAULT_DATE_FORMAT' => 'd-m-Y',
+    'DEFAULT_DATE_FORMAT'          => 'd-m-Y',
 
-    'DEFAULT_TIME_FORMAT' => 'H:i',
+    'DEFAULT_TIME_FORMAT'          => 'H:i',
 
-    'DEFAULT_LANGUAGE'    => 'en',
+    'DEFAULT_LANGUAGE'             => 'en',
 
     # 24 hours time format like 11:00
 
@@ -70,6 +70,7 @@ return [
         'existing_employee_creation_mail' => 'Existing employee creation mail',
         'employee_account_update_mail'    => 'Employee account number update',
         'company_creation_mail'           => 'Company creation mail',
+        'employee_invitation_mail'        => 'Employee invitation mail',
     ],
 
     'MONTHLY_SALARY'               => 1,
@@ -89,19 +90,21 @@ return [
         'MONTHLY_OVERVIEW_PLANNING' => 8,
     ],
 
-    'RSZ_NUMBER_VALIDATION' => 'digits_between:1,11',
+    'RSZ_NUMBER_VALIDATION'        => 'digits_between:1,11',
 
-    'DASHBOARD_ACCESS_OPTIONS' => [
+    'DASHBOARD_ACCESS_OPTIONS'     => [
         1 => 'Company',
         2 => 'Location',
     ],
 
-    'COMPANY'          => 1,
-    'LOCATIONS'        => 2,
+    'COMPANY'                      => 1,
+    'LOCATIONS'                    => 2,
 
-    'APP_SETTINGS_OPTIONS' => [
+    'APP_SETTINGS_OPTIONS'         => [
         1 => 'NOTIFICATION',
         2 => 'MAIL',
         3 => 'MAIL_AND_NOTIFICATION'
-    ]
+    ],
+
+    'PLANNING_STOP_MAX_TIME' => 1,
 ];

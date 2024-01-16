@@ -3,22 +3,25 @@
 namespace App\Rules\Planning;
 
 use Closure;
+use App\Repositories\Planning\PlanningRepository;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Services\Planning\PlanningStartStopService;
-
-use App\Repositories\Planning\PlanningRepository;
 use App\Repositories\Employee\EmployeeProfileRepository;
 
 class PlanStartQRExistRule implements ValidationRule
 {
-    public function __construct(protected $user_id, protected $qr_data)
+    public function __construct(protected $user_id, protected $time)
     {
 
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $plans = app(PlanningStartStopService::class)->getPlanByQrCode($this->qr_data, $this->user_id, $value, $value);
+        $qr_data = decodeData($value);
+
+        setTenantDBByCompanyId($qr_data['company_id']);
+
+        $plans = app(PlanningStartStopService::class)->getPlanByQrCode($value, $this->user_id, $this->time, $this->time);
         
         if ( is_null($plans) ||$plans->isEmpty()) {
             $fail('No plan to start.');
@@ -27,10 +30,6 @@ class PlanStartQRExistRule implements ValidationRule
         } elseif ($plans->first()->plan_started) {
             $fail('Plan already started.');
         }
-
-        $qr_data = decodeData($this->qr_data);
-
-        setTenantDBByCompanyId($qr_data['company_id']);
 
         $employee_profile = app(EmployeeProfileRepository::class)->getEmployeeProfileByUserId($this->user_id);
 

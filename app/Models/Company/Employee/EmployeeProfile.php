@@ -12,7 +12,6 @@ use App\Models\Company\Employee\EmployeeCommute;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeBenefits;
 use App\Models\Company\Employee\EmployeeSignature;
-use App\Models\Company\Employee\EmployeeProfile;
 
 class EmployeeProfile extends BaseModel
 {
@@ -91,7 +90,7 @@ class EmployeeProfile extends BaseModel
     {
         return $this->hasMany(EmployeeContract::class);
     }
-    
+
     public function employeeSocialSecretaryDetails()
     {
         return $this->hasOne(EmployeeSocialSecretaryDetails::class);

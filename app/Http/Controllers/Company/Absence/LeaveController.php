@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Company\Absence;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Absence\HolidayRequest;
 use App\Services\Company\Absence\LeaveService;
+use App\Services\Company\Absence\AbsenceService;
+use App\Http\Requests\Company\Absence\LeaveRequest;
 use App\Http\Requests\Company\Absence\AbsenceChangeReportingManagerRequest;
 
 class LeaveController extends Controller
@@ -22,7 +23,7 @@ class LeaveController extends Controller
     public function index($status)
     {
         try {
-            $status = config('absence.'.strtoupper($status));
+            $status = config('absence.' . strtoupper($status));
             return returnResponse(
                 [
                     'success' => true,
@@ -66,7 +67,7 @@ class LeaveController extends Controller
     public function updateLeaveStatus($leave_id, $status)
     {
         try {
-            $status = config('absence.'.strtoupper($status));
+            $status = config('absence.' . strtoupper($status));
             $this->leave_service->updateLeaveStatus($leave_id, $status);
             return returnResponse(
                 [
@@ -113,15 +114,58 @@ class LeaveController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(LeaveRequest $request)
     {
         try {
-            $request_data = $request->all();
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Leave created successfully'),
-                    'data'    => $this->leave_service->applyLeave($request_data)
+                    'data'    => $this->leave_service->applyLeave($request->validated())
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function addLeave(LeaveRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            $formattedData = [];
+            $formattedData['employee_profile_id'] = $data['employee_profile_id'];
+            $formattedData['reason'] = $data['reason'];
+            if ($data['duration_type'] == 1) {
+                $formattedData['dates'] = $data['dates'];
+                $formattedData['duration_type'] = 8;
+            } else {
+                $formattedData['dates'] = [
+                    'from_date' => $data['from_date'],
+                    'to_date'   => $data['to_date']
+                ];
+                $formattedData['duration_type'] = 7;
+            }
+            $formattedData['plan_timings'] = $data['pid'];
+            $formattedData['holiday_code_counts'][] = [
+                'holiday_code'  => $data['holiday_code_id'],
+                'hours'         => 0,
+                'duration_type' => null
+            ];
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Leave created successfully'),
+                    'data'    => $this->leave_service->applyLeave($formattedData)
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -141,7 +185,7 @@ class LeaveController extends Controller
      */
     public function show($leaveId)
     {
-        $leave_details = $this->leave_service->getLeaveById($leaveId, ['absenceDates', 'absenceHours.holidayCode']);
+        $leave_details = app(AbsenceService::class)->formatAbsenceDataForOverview($this->leave_service->getLeaveById($leaveId, ['absenceDates', 'absenceHours.holidayCode']));
         try {
             return returnResponse(
                 [
@@ -164,10 +208,10 @@ class LeaveController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $leaveId)
+    public function update(LeaveRequest $request, $leaveId)
     {
         try {
-            $this->leave_service->updateApprovedLeave($leaveId, $request->all());
+            $this->leave_service->updateApprovedLeave($leaveId, $request->validated());
             return returnResponse(
                 [
                     'success' => true,

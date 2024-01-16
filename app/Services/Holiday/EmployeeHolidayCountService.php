@@ -2,11 +2,12 @@
 
 namespace App\Services\Holiday;
 
-use Illuminate\Support\Facades\DB;
-use App\Models\Company\Employee\EmployeeHolidayCount;
-use App\Models\Holiday\EmployeeHolidayCountReasons;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\DB;
 use App\Services\Holiday\HolidayCodeService;
+use App\Services\Company\Absence\AbsenceService;
+use App\Models\Holiday\EmployeeHolidayCountReasons;
+use App\Models\Company\Employee\EmployeeHolidayCount;
 use App\Repositories\Employee\EmployeeProfileRepository;
 
 class EmployeeHolidayCountService extends BaseService
@@ -55,7 +56,7 @@ class EmployeeHolidayCountService extends BaseService
                     'holiday_code_id'           => $holidayCode->id,
                     'holiday_code_name'         => $holidayCode->holiday_code_name,
                     'employee_holiday_count_id' => $employee_holiday_count_id,
-                    'holiday_code_count'        => $holidayCode->count_type == 2 ? $holidayCode->count / config('constants.DAY_HOURS') : 0,
+                    'holiday_code_count'        => $holidayCode->count,
                     'count_type'                => config('absence.HOLIDAY_COUNT_TYPE_OPTIONS')[$holidayCode->count_type],
                     'count'                     => $holidayCode->count_type == 2 ? $count / config('constants.DAY_HOURS') : $count,
                     'reason'                    => $reason,
@@ -73,7 +74,7 @@ class EmployeeHolidayCountService extends BaseService
     public function getOptionsToEdit($employee_id)
     {
         $employee_details = $this->employeeProfileRepository->getEmployeeProfileById($employee_id, ['user', 'user.userBasicDetails']);
-        $company_id          = request()->header('Company-Id');
+        $company_id       = getCompanyId();
 
         $employee_holiday_counts = $this->getEmployeeHolidayCounts($employee_id, $company_id);
 
@@ -190,6 +191,38 @@ class EmployeeHolidayCountService extends BaseService
                     'status'     => $data->status,
                 ];
             }
+            return $return;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getEmployeeCountOverview($employee_profile_id, $absence_type)
+    {
+        try {
+
+                $absenceService   = app(AbsenceService::class);
+                $employee_details = $this->employeeProfileRepository->getEmployeeProfileById($employee_profile_id, ['user', 'user.userBasicDetails']);
+                $company_id       = getCompanyId();
+
+                $employee_holiday_counts = collect($this->getEmployeeHolidayCounts($employee_profile_id, $company_id))->map(function ($holiday_count_details) use($absenceService, $employee_profile_id, $absence_type) {
+                    $used_count = $absenceService->getEmployeeAbsenceCounts($employee_profile_id, $absence_type, $holiday_count_details['holiday_code_id']);
+                    if ($holiday_count_details['count']) {
+                        $holiday_count_details['used_count']      = max(0, $used_count);
+                        $holiday_count_details['available_count'] = max(0, $holiday_count_details['count'] - $used_count);
+
+                        return $holiday_count_details;
+                    }
+                })->filter()->values();
+
+
+
+                $return  = [
+                    'employee_holiday_counts' => $employee_holiday_counts,
+                    'employee_details'        => $employee_details,
+                ];
+
             return $return;
         } catch (Exception $e) {
             error_log($e->getMessage());

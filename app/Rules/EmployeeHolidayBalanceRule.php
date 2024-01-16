@@ -3,11 +3,11 @@
 namespace App\Rules;
 
 use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\Company\Employee\EmployeeHolidayCount;
 use App\Models\Company\Absence\Absence;
 use App\Services\Company\Absence\AbsenceService;
 use App\Repositories\Holiday\HolidayCodeRepository;
+use Illuminate\Contracts\Validation\ValidationRule;
+use App\Models\Company\Employee\EmployeeHolidayCount;
 
 class EmployeeHolidayBalanceRule implements ValidationRule
 {
@@ -27,17 +27,18 @@ class EmployeeHolidayBalanceRule implements ValidationRule
             return; 
         }
 
-        $absenceHoursData = collect($value)->map(function ($data) {
+        $absenceService   = app(AbsenceService::class);
+        $absenceHoursData = collect($value)->map(function ($data) use($absenceService) {
             return [
                 'holiday_code' => $data['holiday_code'],
-                'hours' => app(AbsenceService::class)->getCalculateAbsenceHours(request(), $data, true),
+                'hours'        => $absenceService->getCalculateAbsenceHours(request(), $data, true),
             ];
         });
 
         $absenceHoursValidate = $absenceHoursData->groupBy('holiday_code')->map(function ($group) {
             return [
                 'holiday_code' => $group->first()['holiday_code'],
-                'hours' => $group->sum('hours'),
+                'hours'        => $group->sum('hours'),
             ];
         }); # to make unique holiday code with count
 
@@ -52,29 +53,31 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                     ->where('count', '>', 0)
                     ->value('count');
 
-                // Fetch absences with hours for the specified employee and holiday code
-                $absences = Absence::with(['absenceHours' => function ($query) use ($holidayCodeId) {
-                    $query->select('absence_id', 'hours')
-                        ->where('holiday_code_id', $holidayCodeId)
-                        ->where('hours', '>', 0);
-                    }])
-                    ->where('absence_type', config('absence.HOLIDAY'))
-                    ->where('employee_profile_id', $this->employee_id);
+                // // Fetch absences with hours for the specified employee and holiday code
+                // $absences = Absence::with(['absenceHours' => function ($query) use ($holidayCodeId) {
+                //     $query->select('absence_id', 'hours')
+                //         ->where('holiday_code_id', $holidayCodeId)
+                //         ->where('hours', '>', 0);
+                //     }])
+                //     ->where('absence_type', config('absence.HOLIDAY'))
+                //     ->where('employee_profile_id', $this->employee_id);
 
-                if (!empty($this->absence_id)) {
-                    $absences->where('id', '!=', $this->absence_id);
-                }
+                // if (!empty($this->absence_id)) {
+                //     $absences->where('id', '!=', $this->absence_id);
+                // }
 
-                $absences = $absences->get(['id', 'employee_profile_id']);
+                // $absences = $absences->get(['id', 'employee_profile_id']);
 
-                $employee_holiday_hours_used = $absences->pluck('absenceHours')->flatten()->pluck('hours');
-                $employee_holiday_hours_used = 0;
+                // // $employee_holiday_hours_used = $absences->pluck('absenceHours')->flatten()->pluck('hours');
+                // $employee_holiday_hours_used = 0;
 
-                foreach ($absences as $absence) {
-                    $employee_holiday_hours_used = $absence->absenceDates ?  count($absence->absenceDates->absence_dates_array) * $absences->pluck('absenceHours')->flatten()->pluck('hours')->sum() : 0;
-                }
+                // foreach ($absences as $absence) {
+                //     $employee_holiday_hours_used = $absence->absenceDates ?  count($absence->absenceDates->absence_dates_array) * $absences->pluck('absenceHours')->flatten()->pluck('hours')->sum() : 0;
+                // }
 
-                $remaining_holiday_count = $holiday_code_Count- $employee_holiday_hours_used;
+                $employee_holiday_hours_used = $absenceService->getEmployeeAbsenceCounts($this->employee_id, config('absence.HOLIDAY'), $holidayCodeId);
+
+                $remaining_holiday_count = $holiday_code_Count - $employee_holiday_hours_used;
 
                 // Check if the total absence hours exceed the holiday count
                 if ($requested_hours > $remaining_holiday_count) {
@@ -83,7 +86,7 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                 }
             }
 
-            if (app(AbsenceService::class)->breakHolidayCodeCountLoopCondition($index, $this->duration_type)) { # will break the loop according to the duration type holiday count needed
+            if ($absenceService->breakHolidayCodeCountLoopCondition($index, $this->duration_type)) { # will break the loop according to the duration type holiday count needed
                 break;
             }
         }
