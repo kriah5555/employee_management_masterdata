@@ -287,7 +287,9 @@ class PlanningController extends Controller
                 'dates.*'             => 'date_format:' . config('constants.DEFAULT_DATE_FORMAT')
             ];
 
-            $validator = Validator::make(request()->all(), $rules, []);
+            $request_data = request()->all();
+
+            $validator = Validator::make($request_data, $rules, []);
             if ($validator->fails()) {
                 return returnResponse(
                     [
@@ -298,11 +300,16 @@ class PlanningController extends Controller
                 );
             }
 
+            if (isset($request_data['dates']['from_date']) && (!isset($request_data['dates']['to_date']))) {
+                throw new Exception('dates.to date field is required');
+            } elseif (isset($request_data['dates']['from_date']) && isset($request_data['dates']['to_date'])) {
+                $request_data['dates'] = getDatesArray($request_data['dates']['from_date'], $request_data['dates']['to_date']);
+            }
 
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningService->getPlansForAbsence($request->dates, $request->employee_profile_id)
+                    'data'    => $this->planningService->getPlansForAbsence($request_data['dates'], $request->employee_profile_id)
                 ],
                 JsonResponse::HTTP_OK,
             );
