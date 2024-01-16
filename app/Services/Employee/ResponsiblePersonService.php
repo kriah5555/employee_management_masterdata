@@ -31,7 +31,10 @@ class ResponsiblePersonService
         $responsiblePersons = [];
         foreach ($employeeProfiles as $employeeProfile) {
             $company_user = CompanyUser::where(['user_id' => $employeeProfile->user->id])->get()->first();
-            if ($company_user->roles->count() == 1) {
+            if ($company_user->roles[0]->name == 'employee') {
+              continue;
+	    }
+	    if ($company_user->roles->count() == 1) {
                 $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$company_user->roles[0]->name];
             } elseif ($company_user->roles[0]->name == 'employee') {
                 $role = config('roles_permissions.RESPONSIBLE_PERSON_ROLES')[$company_user->roles[1]->name];
