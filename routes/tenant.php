@@ -92,6 +92,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('leaves-status/{leave_id}/{status}', 'updateLeaveStatus')
                 ->where(['status' => '(cancel)']);
+            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave');
         });
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
@@ -227,7 +228,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::post('get-absence-details-for-week', 'getAbsenceDetailsForWeek');
 
         });
-        
+
         Route::post('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
     });
 });
