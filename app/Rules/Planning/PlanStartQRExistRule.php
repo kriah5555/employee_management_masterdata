@@ -17,7 +17,7 @@ class PlanStartQRExistRule implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $qr_data = decodeData($this->qr_data);
+        $qr_data = decodeData($value);
 
         setTenantDBByCompanyId($qr_data['company_id']);
 
