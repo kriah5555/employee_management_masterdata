@@ -274,7 +274,7 @@ class PlanningService implements PlanningInterface
     {
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
         $absenceService = app(AbsenceService::class);
-        return $plannings->map(function ($plan) use($absenceService) {
+        return $plannings->map(function ($plan) use ($absenceService) {
             return [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
@@ -424,7 +424,13 @@ class PlanningService implements PlanningInterface
         $plans = $this->planningRepository->getPlansByDatesArray($dates_array, $employee_profile_id);
 
         foreach ($plans as $plan) {
-            $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
+            // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
+            // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
+            $return_data[] = [
+                'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
+                'Plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
+                'shift_leave' => false,
+            ];
         }
         return array_unique($return_data);
     }

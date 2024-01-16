@@ -11,7 +11,8 @@ use App\Http\Controllers\Planning\
     PlanningCreateEditController,
     PlanningStartStopController,
     TimeRegistrationController,
-    VacancyController
+    VacancyController,
+    PlanningBreakController
 };
 use App\Http\Controllers\Planning\PlanningShiftController;
 use App\Http\Middleware\InitializeTenancy;
@@ -61,14 +62,20 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
         });
 
     Route::controller(PlanningController::class)->group(function () {
-        
+
         Route::post('get-week-planning-employee', 'getWeeklyPlanningForEmployee')->name('week-planning-employee');
 
         Route::get('get-employee-day-planning/{employee_profile_id}', 'getEmployeeDayPlanning');
 
         Route::get('planning-details/{plan_id}', 'getPlanDetails');
-        
+
         Route::post('get-plans-for-leave', 'getPlansForAbsence');
+    });
+    Route::controller(PlanningBreakController::class)->group(function () {
+
+        Route::post('start-break', 'startBreak')->name('start-break');
+
+        Route::post('stop-break', 'stopBreak')->name('stop-break');
     });
 
 
