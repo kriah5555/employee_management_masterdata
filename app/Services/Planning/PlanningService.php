@@ -367,6 +367,7 @@ class PlanningService implements PlanningInterface
     public function formatPlanDetails($details)
     {
         $startPlan = $stopPlan = false;
+        $sendPlanDimona = $details->dimona_status ? false : true;
         if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
             if ($details->plan_started) {
                 $startPlan = false;
@@ -377,14 +378,15 @@ class PlanningService implements PlanningInterface
             }
         }
         $response = [
-            'start_time'    => date('H:i', strtotime($details->start_date_time)),
-            'end_time'      => date('H:i', strtotime($details->end_date_time)),
-            'employee_type' => $details->employeeType->name,
-            'function'      => $details->functionTitle->name,
-            'workstation'   => $details->workstation->workstation_name,
-            'start_plan'    => $startPlan,
-            'stop_plan'     => $stopPlan,
-            'contract'      => $this->planningContractService->getPlanningContractContract($details),
+            'start_time'       => date('H:i', strtotime($details->start_date_time)),
+            'end_time'         => date('H:i', strtotime($details->end_date_time)),
+            'employee_type'    => $details->employeeType->name,
+            'function'         => $details->functionTitle->name,
+            'workstation'      => $details->workstation->workstation_name,
+            'start_plan'       => $startPlan,
+            'stop_plan'        => $stopPlan,
+            'send_plan_dimona' => $sendPlanDimona,
+            'contract'         => $this->planningContractService->getPlanningContractContract($details),
         ];
         $response['activity'] = [];
         foreach ($details->timeRegistrations as $timeRegistrations) {
@@ -419,7 +421,7 @@ class PlanningService implements PlanningInterface
     public function getPlansForAbsence($dates_array, $employee_profile_id)
     {
         $return_data = [];
-        $plans       = $this->planningRepository->getPlansByDatesArray($dates_array, $employee_profile_id);
+        $plans = $this->planningRepository->getPlansByDatesArray($dates_array, $employee_profile_id);
 
         foreach ($plans as $plan) {
             $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
