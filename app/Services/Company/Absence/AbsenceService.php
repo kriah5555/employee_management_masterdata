@@ -219,6 +219,7 @@ class AbsenceService
                 $query->where('dates_type', config('absence.DATES_MULTIPLE')) // Multiple dates
                     ->whereJsonContains('dates', $date);
             })
+<<<<<<< HEAD
             // ->orWhere(function ($query) use ($date) {
             //     $query->where('dates_type', config('absence.DATES_FROM_TO')) // From and To date
             //         ->get()
@@ -227,8 +228,18 @@ class AbsenceService
             //             return strtotime($date) >= strtotime($dates['from_date']) && strtotime($date) <= strtotime($dates['to_date']);
             //         });
             // })
+=======
+           /* ->orWhere(function ($query) use ($date) {
+                $query->where('dates_type', config('absence.DATES_FROM_TO')) // From and To date
+                    ->get()
+                    ->filter(function ($absence) use ($date) {
+                        $dates = $absence->dates;
+                        return strtotime($date) >= strtotime($dates['from_date']) && strtotime($date) <= strtotime($dates['to_date']);
+                    });
+	   })
+	    */
+>>>>>>> 07feddd69ee5af43439b60043976fd7a23b6c34f
             ->pluck('absence_id');
-
             return Absence::whereIn('id', $absenceIds)->get();
 
         } catch (Exception $e) {

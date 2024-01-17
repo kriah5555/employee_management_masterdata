@@ -63,10 +63,21 @@ class CostCenterController extends Controller
      */
     public function show($cost_center_id)
     {
+        $data = $this->costCenterService->getCostCenters($cost_center_id, ['location', 'workstations', 'employees.employeeBasicDetails'])->toArray();
+        $employees = $data['employees'];
+        $employees_list = [];
+        foreach ($employees as $employee) {
+            $fullname = $employee['employee_basic_details']['first_name'] . ' ' . $employee['employee_basic_details']['last_name'];
+            $employees_list[] = [
+                'value' => $employee['id'],
+                'label' => $fullname
+            ];
+        }
+        $data['employees'] = $employees_list;
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getCostCenters($cost_center_id, ['location', 'workstations', 'employees.employeeBasicDetails'] ),
+                'data'    => $data
             ],
             JsonResponse::HTTP_CREATED,
         );

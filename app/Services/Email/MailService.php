@@ -19,9 +19,9 @@ class MailService
         protected EmailTemplateService $email_template_service,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected CompanyRepository $companyRepository,
-    ) {
-	    #$this->redirect_mail = 'vishaldudalkar.infanion@gmail.com';
-	    $this->redirect_mail = 'hemantp.infanion@gmail.com';
+        )
+    {
+        $this->redirect_mail = 'indii.2.0.test@gmail.com';
     }
 
     public function sendEmployeeCreationMail($employee_profile_id, $new_employee = true, $language = 'en', $password = '')
