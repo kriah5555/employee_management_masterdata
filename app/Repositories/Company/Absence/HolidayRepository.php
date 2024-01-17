@@ -9,16 +9,22 @@ use App\Exceptions\ModelUpdateFailedException;
 
 class HolidayRepository implements HolidayRepositoryInterface
 {
-    public function getHolidays($employee_id = '', $status = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    public function getHolidays($employee_id = '', $status = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled, 5 => request for cancellation
     {
         $query = Absence::query();
         $query->where('absence_type', config('absence.HOLIDAY'));
         if ($status != '') {
-            $query->where('absence_status', $status);
+            if ($status == config('absence.PENDING')) {
+                $query->whereIn('absence_status', [config('absence.PENDING'), config('absence.REQUEST_CANCEL')]);
+            } else {
+                $query->where('absence_status', $status);
+            }
         }
+
         if ($employee_id != '') {
             $query->where('employee_profile_id', $employee_id);
         }
+        
         $query->with(['absenceDates', 'absenceHours', 'employee', 'manager']);
         return $query->get();
     }
