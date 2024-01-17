@@ -263,7 +263,7 @@ class PlanningController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningService->getPlanningDetailsById($planId)
+                    'data'    => $this->planningService->getPlanningDetailsForDayOverview($planId)
                 ],
                 JsonResponse::HTTP_OK,
             );

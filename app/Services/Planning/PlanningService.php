@@ -274,7 +274,7 @@ class PlanningService implements PlanningInterface
     {
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
         $absenceService = app(AbsenceService::class);
-	    return $plannings->map(function ($plan) use ($absenceService) {
+        return $plannings->map(function ($plan) use ($absenceService) {
             return [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
@@ -348,6 +348,24 @@ class PlanningService implements PlanningInterface
             ])
         );
     }
+
+    public function getPlanningDetailsForDayOverview($planId)
+    {
+        return $this->formatPlanDetailsForDayOverview(
+            $this->planningRepository->getPlanningById($planId, [
+                'employeeType',
+                'workstation',
+                'functionTitle',
+                'employeeProfile',
+                'employeeProfile.user.userBasicDetails',
+                'timeRegistrations',
+                'timeRegistrations.startedBy',
+                'timeRegistrations.endedBy',
+                'contracts',
+                'breaks'
+            ])
+        );
+    }
     public function getPlanningById($planId)
     {
         return $this->planningRepository->getPlanningById($planId, [
@@ -365,6 +383,42 @@ class PlanningService implements PlanningInterface
     }
 
     public function formatPlanDetails($details)
+    {
+        $startPlan = $stopPlan = false;
+        $sendPlanDimona = $details->dimona_status ? false : true;
+        if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
+            if ($details->plan_started) {
+                $startPlan = false;
+                $stopPlan = true;
+            } else {
+                $startPlan = true;
+                $stopPlan = false;
+            }
+        }
+        $response = [
+            'start_time'       => date('H:i', strtotime($details->start_date_time)),
+            'end_time'         => date('H:i', strtotime($details->end_date_time)),
+            'employee_type'    => $details->employeeType->name,
+            'function'         => $details->functionTitle->name,
+            'workstation'      => $details->workstation->workstation_name,
+            'start_plan'       => $startPlan,
+            'stop_plan'        => $stopPlan,
+            'send_plan_dimona' => $sendPlanDimona,
+            'contract'         => $this->planningContractService->getPlanningContractContract($details),
+        ];
+        $response['activity'] = [];
+        foreach ($details->timeRegistrations as $timeRegistrations) {
+            $startedByFullName = $timeRegistrations->startedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->startedBy->userBasicDetails->last_name;
+            $response['activity'][] = "Plan started by " . $startedByFullName . " at " . date('H:i', strtotime($timeRegistrations->actual_start_time));
+            if ($timeRegistrations->actual_end_time) {
+                $endedByFullName = $timeRegistrations->endedBy->userBasicDetails->first_name . ' ' . $timeRegistrations->endedBy->userBasicDetails->last_name;
+                $response['activity'][] = "Plan stopped by " . $endedByFullName . " at " . date('H:i', strtotime($timeRegistrations->actual_end_time));
+            }
+        }
+        return $response;
+    }
+
+    public function formatPlanDetailsForDayOverview($details)
     {
         $startPlan = $stopPlan = false;
         $sendPlanDimona = $details->dimona_status ? false : true;
