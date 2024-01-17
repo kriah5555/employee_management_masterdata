@@ -70,7 +70,8 @@ class LocationService extends BaseService
             DB::connection('tenant')->beginTransaction();
             $address = $this->addressService->createNewAddress($values['address']);
             $values['address'] = $address->id;
-            $location = $this->locationRepository->createLocation($values);
+	    $location = $this->locationRepository->createLocation($values);
+	    $location->responsiblePersons()->sync($values['responsible_persons'] ?? []);
             DB::connection('tenant')->commit();
             return $location;
         } catch (\Exception $e) {

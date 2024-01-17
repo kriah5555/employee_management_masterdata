@@ -12,7 +12,8 @@ class LocationRepository implements LocationRepositoryInterface
 {
     public function getLocations()
     {
-        return Location::all();
+	    //        return Location::all();
+	    return Location::with(['address'])->get();
     }
     public function getActiveLocations()
     {
