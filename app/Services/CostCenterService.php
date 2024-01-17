@@ -19,8 +19,8 @@ class CostCenterService extends BaseService
     {
         parent::__construct($costCenter);
         $this->workstationService = app(WorkstationService::class);
-        $this->employeeService    = app(EmployeeService::Class);
-        $this->locationService    = app(LocationService::class);
+        $this->employeeService = app(EmployeeService::Class);
+        $this->locationService = app(LocationService::class);
     }
 
     public function getCostCenters($id, $with = [])
@@ -45,11 +45,11 @@ class CostCenterService extends BaseService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-                $costCenter   = $this->model->create($values);
-                $workstations = $values['workstations'] ?? [];
-                $employees    = $values['employees'] ?? [];
-                $costCenter->workstations()->sync($workstations);
-                $costCenter->employees()->sync($employees);
+            $costCenter = $this->model->create($values);
+            $workstations = $values['workstations'] ?? [];
+            $employees = $values['employees'] ?? [];
+            $costCenter->workstations()->sync($workstations);
+            $costCenter->employees()->sync($employees);
             DB::connection('tenant')->commit();
             return $costCenter;
         } catch (Exception $e) {
@@ -63,12 +63,12 @@ class CostCenterService extends BaseService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-                $costCenter   = $this->model->find($costCenterId);
-                $workstations = $values['workstations'] ?? [];
-                $employees    = $values['employees'] ?? [];
-                $costCenter->workstations()->sync($workstations);
-                $costCenter->employees()->sync($employees);
-                $costCenter   = $costCenter->update($values);
+            $costCenter = $this->model->find($costCenterId);
+            $workstations = $values['workstations'] ?? [];
+            $employees = $values['employees'] ?? [];
+            $costCenter->workstations()->sync($workstations);
+            $costCenter->employees()->sync($employees);
+            $costCenter = $costCenter->update($values);
             DB::connection('tenant')->commit();
             return $costCenter;
         } catch (Exception $e) {
@@ -82,13 +82,20 @@ class CostCenterService extends BaseService
     {
         try {
             $options['locations'] = $this->locationService->getActiveLocations();
-            
+
             foreach ($options['locations'] as $location) {
                 $workstations = $this->locationService->getLocationWorkstations($location['id']);
                 $options['workstations'][$location['id']] = $workstations;
             }
-            
             $options['employees'] = $this->employeeService->getEmployeeOptions()['employees'];
+            $employees = $this->employeeService->getEmployeeOptions()['employees'];
+            $options['employees'] = [];
+            foreach ($employees as $employee) {
+                $options['employees'][] = [
+                    'value' => $employee['employee_profile_id'],
+                    'label' => $employee['full_name']
+                ];
+            }
             return $options;
         } catch (Exception $e) {
             error_log($e->getMessage());

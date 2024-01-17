@@ -182,7 +182,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('translations', TranslationController::class)->only(['show', 'index', 'update']);
 
-        Route::post('/translate', 'getStringTranslation');
     });
 
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
@@ -250,6 +249,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::post('employee-registration', [EmployeeInvitationController::class, 'employeeRegistration'])->name('employee-registration');
 });
+Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
 
 Route::get('/script', function () {
     return response()->json([
@@ -287,5 +287,3 @@ Route::get('/script', function () {
         'message' => 'Done'
     ]);
 });
-
-;
