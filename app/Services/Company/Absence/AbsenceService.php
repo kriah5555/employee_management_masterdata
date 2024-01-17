@@ -226,7 +226,7 @@ class AbsenceService
                         $dates = $absence->dates;
                         return strtotime($date) >= strtotime($dates['from_date']) && strtotime($date) <= strtotime($dates['to_date']);
                     });
-	   })
+	        })
 	    */
             ->pluck('absence_id');
             return Absence::whereIn('id', $absenceIds)->get();

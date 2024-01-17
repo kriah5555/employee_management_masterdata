@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 use App\Http\Controllers\Company\{
     CompanyController,
@@ -78,6 +79,15 @@ use App\Http\Controllers\Employee\EmployeeInvitationController;
 $integerRule = '[0-9]+'; # allow only integer values
 $statusRule = '^(0|1|all)$'; # allow only 0 1 0r all values
 $numericWithOptionalDecimalRule = '[0-9]+(\.[0-9]+)?'; # allow only numeric and decimla values
+
+/**
+ * Crons
+ */
+Route::get('/schedule-run', function () {
+    Artisan::command('schedule:run');
+});
+
+
 Route::get('/testing', function () {
     return response()->json([
         'message' => 'Masterdata'
@@ -182,7 +192,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
         Route::resource('translations', TranslationController::class)->only(['show', 'index', 'update']);
 
-        Route::post('/translate', 'getStringTranslation');
     });
 
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
@@ -250,6 +259,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::post('employee-registration', [EmployeeInvitationController::class, 'employeeRegistration'])->name('employee-registration');
 });
+Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
 
 Route::get('/script', function () {
     return response()->json([
@@ -287,5 +297,3 @@ Route::get('/script', function () {
         'message' => 'Done'
     ]);
 });
-
-;

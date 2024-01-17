@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 
 class CostCenterController extends Controller
-{    
+{
     public function __construct(protected CostCenterService $costCenterService)
     {
     }
