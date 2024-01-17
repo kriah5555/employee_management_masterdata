@@ -45,14 +45,15 @@ class DimonaController extends Controller
         try {
             $data = $request->validate($rules);
 
-            $data = $this->dimonaBaseService->initiateDimonaByPlanService($companyId, $data['plans']);
-            return response()->json($data);
+	    $data = $this->dimonaBaseService->initiateDimonaByPlanService($companyId, $data['plans']);
+	    $response = ['message' => 'Dimona sent successfully', 'success' => true];
+            return response()->json($response, 200);
         } catch(\Exception $e) {
             return response()->json(
                 [
                     'file' => $e->getFile(),
                     'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                    //'trace' => $e->getTraceAsString(),
                 ]
             );
         }

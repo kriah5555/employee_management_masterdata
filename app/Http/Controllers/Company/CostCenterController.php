@@ -77,7 +77,7 @@ class CostCenterController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->costCenterService->getCostCenters($cost_center_id, ['location', 'workstations', 'employees.employeeBasicDetails']),
+                'data'    => $data
             ],
             JsonResponse::HTTP_CREATED,
         );

@@ -274,7 +274,7 @@ class PlanningService implements PlanningInterface
     {
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
         $absenceService = app(AbsenceService::class);
-        return $plannings->map(function ($plan) use ($absenceService) {
+	    return $plannings->map(function ($plan) use ($absenceService) {
             return [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
@@ -290,8 +290,8 @@ class PlanningService implements PlanningInterface
                 'function_name'            => $plan->functionTitle->name,
                 'employee_profile_id'      => $plan->employee_profile_id,
                 'employee_name'            => $plan->employeeProfile->full_name,
-                'leave_status'             => !empty($absenceService->getAbsenceForDate($plan->plan_date)),
-                'leave_reason'             => "something"
+                'leave_status'             => $leave_status,
+                'leave_reason'             => $leave_status ? "Something" : null,
             ];
         });
     }
@@ -426,13 +426,13 @@ class PlanningService implements PlanningInterface
         foreach ($plans as $plan) {
             // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
             // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
-            $return_data[] = [
+            $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = [
                 'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
                 'Plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
                 'shift_leave' => false,
             ];
         }
-        return array_unique($return_data);
+        return array_values($return_data);
     }
 
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year)

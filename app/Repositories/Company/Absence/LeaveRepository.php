@@ -14,11 +14,17 @@ class LeaveRepository implements LeaveRepositoryInterface
         $query = Absence::query();
         $query->where('absence_type', config('absence.LEAVE'));
         if ($status != '') {
-            $query->where('absence_status', $status);
+            if ($status == config('absence.PENDING')) {
+                $query->whereIn('absence_status', [config('absence.PENDING'), config('absence.REQUEST_CANCEL')]);
+            } else {
+                $query->where('absence_status', $status);
+            }
         }
+
         if ($employee_id != '') {
             $query->where('employee_profile_id', $employee_id);
         }
+        
         $query->with(['absenceDates', 'absenceHours', 'employee', 'manager']);
         return $query->get();
     }

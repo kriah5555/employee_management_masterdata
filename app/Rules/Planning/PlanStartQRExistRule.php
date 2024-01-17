@@ -32,6 +32,7 @@ class PlanStartQRExistRule implements ValidationRule
         }
 
         $employee_profile = app(EmployeeProfileRepository::class)->getEmployeeProfileByUserId($this->user_id);
+        // empty($employee_profile)
 
         $plans            = app(PlanningRepository::class)->getStartedPlanForEmployee($employee_profile->id, $qr_data['location_id']);
 

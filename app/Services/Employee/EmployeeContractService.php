@@ -153,9 +153,10 @@ class EmployeeContractService
 
                 if ($existingRecord) {
                     $employee_function_detail_ids[] = $existingRecord->id;
+                    $existingRecord->update(['experience' => $function_details['experience']]);
                     $existingRecord->salary()->update(['salary' => $function_details['salary']]);
                 } else {
-                    $function_details['salary_id'] = $this->employeeSalaryDetails::create($function_details)->id;
+                    $function_details['salary_id']  = $this->employeeSalaryDetails::create($function_details)->id;
                     $employee_function_detail_ids[] = $employeeContract->employeeFunctionDetails()->create($function_details)->id;
                 }
             }
