@@ -233,7 +233,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
-    Route::get('/user-details', [EmployeeController::class, 'getUserDetails']);
+    Route::post('/user-details', [EmployeeController::class, 'getUserDetails']);
 
     Route::post('employee-update', [EmployeeController::class, 'updateEmployee']);
     Route::post('update-employee-personal-details', [EmployeeController::class, 'updateEmployeePersonal']);

@@ -504,10 +504,10 @@ class EmployeeService
         }
     }
 
-    public function getUserDetails()
+    public function getUserDetails($userID)
     {
         try {
-            $userID = Auth::guard('web')->user()->id;
+
             return $this->userService->getUserDetails($userID);
         } catch (Exception $e) {
             error_log($e->getMessage());
