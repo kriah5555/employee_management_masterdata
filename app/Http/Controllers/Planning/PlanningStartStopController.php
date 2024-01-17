@@ -138,11 +138,10 @@ class PlanningStartStopController extends Controller
             
             $plans            = app(PlanningRepository::class)->getStartedPlanForEmployee($employee_profile->id, $qr_data['location_id']);
 
-            if ($plans->count()) {
-                $startTime = Carbon::parse($plans->first()->start_date_time);
-                $now = Carbon::now();
-
-                $hoursDifference = $now->diffInHours($startTime);
+	    if ($plans->count()) {
+		$endTime         = Carbon::parse($plans->first()->end_date_time);
+                $now             = Carbon::now();
+                $hoursDifference = $now->diffInHours($endTime);
                 if ($hoursDifference > config('constants.PLANNING_STOP_MAX_TIME')) {
                     return response()->json([   
                         'success'             => false,

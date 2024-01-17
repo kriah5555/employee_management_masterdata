@@ -41,7 +41,7 @@ class EmployeeHolidayCountRule implements ValidationRule
                     'required',
                 ],
                 "holiday_code_counts.$index.reason" => [
-                    'required',
+                    'nullable',
                 ],
             ];
 
