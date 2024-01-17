@@ -10,6 +10,7 @@ use App\Models\Contract\ContractTemplate;
 use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Planning\PlanningRepository;
 use App\Models\Company\Employee\EmployeeContractFile;
+use App\Repositories\Employee\EmployeeIdCardRepository;
 use App\Models\Company\Contract\CompanyContractTemplate;
 use App\Repositories\Employee\EmployeeContractRepository;
 
@@ -176,7 +177,7 @@ class ContractService
         try {
 
             $employee_documents = $this->getEmployeeContractFiles($employee_profile_id);
-            return $employee_documents->map(function ($contract) {
+            $return = $employee_documents->map(function ($contract) {
 
                 $type = null;
 
@@ -191,6 +192,39 @@ class ContractService
                     'file_name' => $contract->files->file_name,
                     'file_url'  => $contract->file_url,
                     'type'      => $type . ' (' . ($contract->contract_status == config('contracts.CONTRACT_STATUS_SIGNED') ? 'Signed' : 'Unsigned') . ')',
+                ];
+            });
+
+            $return = $return->merge($this->getEmployeeIdCards($employee_profile_id));
+            return $return;
+    
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getEmployeeIdCards($employee_profile_id) # will get all contracts and documents of employee
+    {
+        try {
+
+            $employee_id_cards = app(EmployeeIdCardRepository::class)->getEmployeeIdCardByEmployeeProfileId($employee_profile_id);
+
+            return $employee_id_cards->map(function ($id_card) {
+
+                $type = null;
+
+                if ($id_card->type == config('constants.EMPLOYEE_ID_FRONT')) {
+                    $type = 'ID card front';
+                } elseif ($id_card->type == config('constants.EMPLOYEE_ID_BACK')) {
+                    $type = 'ID card back';
+                }
+
+                return [
+                    'file_id'   => $id_card->files->id,
+                    'file_name' => $id_card->files->file_name,
+                    'file_url'  => $id_card->file_url,
+                    'type'      => $type,
                 ];
             });
     

@@ -107,4 +107,11 @@ return [
     ],
 
     'PLANNING_STOP_MAX_TIME' => 1,
+
+    'EMPLOYEE_ID_FRONT' => 1,
+    'EMPLOYEE_ID_BACK'  => 2,
+
+    'COMPANY_LOGO_PATH' => 'public/company_logos',
+
+    'EMPLOYEE_ID_PATH' => 'public/employee_id_cards',
 ];

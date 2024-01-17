@@ -71,6 +71,7 @@ class LocationService extends BaseService
             $address = $this->addressService->createNewAddress($values['address']);
             $values['address'] = $address->id;
             $location = $this->locationRepository->createLocation($values);
+            $location->responsiblePersons()->sync($values['responsible_persons'] ?? []);
             DB::connection('tenant')->commit();
             return $location;
         } catch (\Exception $e) {
@@ -88,7 +89,7 @@ class LocationService extends BaseService
             $this->addressService->updateAddress($location->address, $values['address']);
             unset($values['address']);
             unset($values['company']);
-            $responsiblePersons = $values['responsible_persons'];
+            $responsiblePersons = $values['responsible_persons'] ?? [];
             unset($values['responsible_persons']);
             $location->update([
                 'location_name' => $values['location_name'],

@@ -43,10 +43,11 @@ class CompanyLogoService implements CompanyLogoServiceInterface
         $filename = str_replace(' ', '_', $request_data['company_name'] . '_' . time() . '_' . $request_data['logo']->getClientOriginalName());
         $file = Files::create([
             'file_name' => $filename,
-            'file_path' => $request_data['logo']->storeAs('public/company_logos', $filename)
+            'file_path' => $request_data['logo']->storeAs(config('constants.COMPANY_LOGO_PATH'), $filename)
         ]);
         return $file->id;
     }
+    
     public function getCompanyLogo(Company $company)
     {
         return $company->logo;

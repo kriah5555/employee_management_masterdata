@@ -26,6 +26,7 @@ use App\Http\Controllers\Holiday\{
 use App\Http\Controllers\Employee\{
     EmployeeController,
     EmployeeAccessController,
+    EmployeeIdCardController,
     EmployeeCommuteController,
     EmployeeContractController,
     EmployeeBenefitsController,
@@ -125,6 +126,10 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             'employees'                  => [
                 'controller' => EmployeeController::class,
                 'methods'    => ['index', 'show', 'store', 'update', 'destroy']
+            ],
+            'employee-id-card'                  => [
+                'controller' => EmployeeIdCardController::class,
+                'methods'    => ['update', 'store', 'destroy']
             ],
             'employee-contracts'         => [
                 'controller' => EmployeeContractController::class,

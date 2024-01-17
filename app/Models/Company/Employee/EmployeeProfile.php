@@ -8,6 +8,7 @@ use App\Traits\UserAudit;
 use App\Models\User\User;
 use App\Models\User\UserBasicDetails;
 use App\Models\Company\Absence\Absence;
+use App\Models\Company\Employee\EmployeeIdCard;
 use App\Models\Company\Employee\EmployeeCommute;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeBenefits;
@@ -78,6 +79,11 @@ class EmployeeProfile extends BaseModel
     public function responsiblePerson()
     {
         return $this->belongsTo(EmployeeProfile::class, 'responsible_person_id');
+    }
+
+    public function employeeIdCards()
+    {
+        return $this->hasMany(EmployeeIdCard::class);
     }
 
     public function user()

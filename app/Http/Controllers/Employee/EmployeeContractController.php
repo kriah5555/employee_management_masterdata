@@ -121,7 +121,7 @@ class EmployeeContractController extends Controller
                 [
                     'success' => true,
                     'message' => 'Employee contract updated successfully',
-                    'data'    => $this->employeeContractService->updateEmployeeContract($request->all(), $employee_contract_id),
+                    'data'    => $this->employeeContractService->updateEmployeeContract($request->validated(), $employee_contract_id),
                 ],
                 JsonResponse::HTTP_OK,
             );

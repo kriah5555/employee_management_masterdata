@@ -16,9 +16,14 @@ class CompanyLocationService implements CompanyLocationServiceInterface
         $location_ids = [];
         if (isset($values['locations'])) {
             foreach ($values['locations'] as $index => $location_details) {
-                if (!empty($location_details['responsible_persons'])) {
-                    $location_details['responsible_person_id'] = $responsible_person_ids[$location_details['responsible_persons'][0]];
-                }
+                // if (!empty($location_details['responsible_persons'])) {
+                //     $location_details['responsible_person_id'] = $responsible_person_ids[$location_details['responsible_persons'][0]];
+                // }
+
+                $location_details['responsible_persons'] = array_map(function ($index) use ($responsible_person_ids) {
+                    return $responsible_person_ids[$index];
+                }, $location_details['responsible_persons']);
+
                 $location_ids[$index] = $this->locationService->create($location_details)->id;
             }
         }
