@@ -19,8 +19,7 @@ class MailService
         protected EmailTemplateService $email_template_service,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected CompanyRepository $companyRepository,
-        )
-    {
+    ) {
         $this->redirect_mail = 'indii.2.0.test@gmail.com';
     }
 
