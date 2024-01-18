@@ -274,7 +274,7 @@ class PlanningService implements PlanningInterface
     {
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
         $absenceService = app(AbsenceService::class);
-	    return $plannings->map(function ($plan) use ($absenceService) {
+        return $plannings->map(function ($plan) use ($absenceService) {
             $leave_status = $absenceService->getAbsenceForDate($plan->plan_date)->isNotEmpty();
             return [
                 'plan_id'                  => $plan->id,
@@ -573,6 +573,25 @@ class PlanningService implements PlanningInterface
             $response['total']['contract_hours'] = numericToEuropean(
                 europeanToNumeric($response['total']['contract_hours']) + $contractHours
             );
+        }
+        return $response;
+    }
+
+    public function getPlansToSendDimona($values)
+    {
+        $response = [];
+        $companyId = getCompanyId();
+        $company = Company::findOrFail($companyId);
+        $activeDimonaEmployeeTypes = $company->dimoanEmployeeTypes->pluck('id')->toArray();
+        $plans = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], '', $values['date'], $values['date'], '', ['employeeProfile.user.userBasicDetails']);
+        foreach ($plans as $plan) {
+            if (!$plan->dimona_status && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
+                $response[] = [
+                    'plan_id' => $plan->id,
+                    'name'    => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name,
+                    'timings' => date('H:i', strtotime($plan->start_date_time)) . '-' . date('H:i', strtotime($plan->end_date_time)) . ' ' . numericToEuropean($plan->contract_hours),
+                ];
+            }
         }
         return $response;
     }
