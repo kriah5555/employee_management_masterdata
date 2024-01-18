@@ -18,6 +18,7 @@ use App\Http\Requests\Employee\EmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeeWebRequest;
 use App\Http\Requests\Employee\UpdateEmployeePersonalDetailsRequest;
+use App\Models\User\User;
 
 class EmployeeController extends Controller
 {
@@ -105,26 +106,43 @@ class EmployeeController extends Controller
         }
     }
 
-    public function getUserDetails()
-    {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => $this->employeeService->getUserDetails(),
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+    public function getUserDetails(Request $request)
+{
+    $userID = $request["user_id"];
+
+    // Check if the user with the given ID exists in the users table
+    $userExists = User::where('id', $userID)->exists();
+
+    if (!$userExists) {
+        // Handle the case where the user doesn't exist
+        return returnResponse(
+            [
+                'success' => false,
+                'message' => 'User not found',
+            ],
+            JsonResponse::HTTP_NOT_FOUND
+        );
     }
+
+    try {
+        return returnResponse(
+            [
+                'success' => true,
+                'data'    => $this->employeeService->getUserDetails($userID),
+            ],
+            JsonResponse::HTTP_OK
+        );
+    } catch (Exception $e) {
+        return returnResponse(
+            [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ],
+            JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+        );
+    }
+}
+
 
 
     /**

@@ -20,6 +20,8 @@ class SendEmailJob implements ShouldQueue
     protected $recipientEmail;
     protected $recipientName;
 
+    // protected $queue = 'mails_queue';
+
     public function __construct($data)
     {
         $this->subject = $data['subject'];
