@@ -350,4 +350,47 @@ class PlanningController extends Controller
             );
         }
     }
+
+    public function getPlansToSendDimona(Request $request)
+    {
+        $rules = [
+            'location_id' => [
+                'bail',
+                'required',
+                'integer',
+                Rule::exists('locations', 'id'),
+            ],
+            'date'        => 'date_format:d-m-Y'
+        ];
+
+        $request_data = request()->all();
+
+        $validator = Validator::make($request_data, $rules, []);
+        if ($validator->fails()) {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => $validator->errors()->all()
+                ],
+                JsonResponse::HTTP_BAD_REQUEST,
+            );
+        }
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningService->getPlansToSendDimona($validator->validated())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }
