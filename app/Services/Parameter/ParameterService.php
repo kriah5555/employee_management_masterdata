@@ -62,12 +62,13 @@ class ParameterService
     public function getParameters($values)
     {
         if ($values['type'] == 1) {
-            return $this->getEmployeeTypeParameters($values['id']);
+            $parameters = $this->getEmployeeTypeParameters($values['id']);
         } elseif ($values['type'] == 2) {
-            return $this->getSectorParameters($values['id']);
+            $parameters = $this->getSectorParameters($values['id']);
         } elseif ($values['type'] == 3) {
-            return $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
+            $parameters = $this->parameterRepository->getEmployeeTypeSectorParameters($values['id'], $values['sector_id']);
         }
+        return $this->parameterRepository->formatParameterCollection($parameters);
     }
     public function updateParameter($parameterId, $values)
     {
@@ -120,25 +121,30 @@ class ParameterService
         foreach ($parameters as $parameter) {
             $details = [];
             if (in_array($values['type'], [1, 2, 3])) {
-                $details['id'] = $parameter->id;
+                $details['id'] = $parameter->parameter->name;
                 $details['name'] = $parameter->parameter->name;
                 $details['description'] = $parameter->parameter->description;
-                $details['default_value'] = $details['value'] = $parameter->parameter->value;
+                $details['default_value'] = $details['value'] = $parameter->value;
             } else {
-                $details['id'] = $parameter->id;
+                $details['id'] = $parameter->name;
                 $details['name'] = $parameter->name;
                 $details['description'] = $parameter->description;
                 $details['default_value'] = $details['value'] = $parameter->value;
             }
             $companyParameters = $this->parameterRepository->getCompanyParameter($parameter);
-            $details['use_default'] = $companyParameters ? false : true;
+            if ($companyParameters) {
+                $details['use_default'] = false;
+                $details['value'] = $companyParameters->value;
+            } else {
+                $details['use_default'] = true;
+            }
             $response[] = $details;
         }
         return $response;
     }
-    public function updateCompanyParameter($values)
+    public function updateCompanyParameter($parameterName, $values)
     {
-        $defaultParameter = $this->parameterRepository->getParameterByName($values['parameter_name']);
+        $defaultParameter = $this->parameterRepository->getParameterByName($parameterName);
         if ($defaultParameter->type == 1) {
             $parameter = $this->parameterRepository->getEmployeeTypeParameter($defaultParameter->id, $values['employee_type_id']);
         } elseif ($defaultParameter->type == 2) {
