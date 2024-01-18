@@ -7,6 +7,7 @@ use App\Models\Planning\Files;
 use Illuminate\Support\Facades\DB;
 use App\Services\Company\FileService;
 use App\Repositories\Employee\EmployeeIdCardRepository;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeIdCardService
 {
@@ -42,12 +43,14 @@ class EmployeeIdCardService
     {
         $filename = $this->generateFilename($details['employee_profile_id'], $type, $file->getClientOriginalName());
 
-        // Adjusted store path for tenancy
-        $storePath = tenant('id').'/'.config('constants.EMPLOYEE_ID_PATH');
+        $storePath = tenant('id') . DIRECTORY_SEPARATOR . trim(config('constants.EMPLOYEE_ID_PATH'), DIRECTORY_SEPARATOR);
+
+        // Use putFile to store the contents of the file
+        $filePath = Storage::disk('tenant')->putFile($storePath, $file);
 
         $fileData = $this->fileService->createFileData([
             'file_name' => $filename,
-            'file_path' => $file->storeAs($storePath, $filename),
+            'file_path' => $filePath, // Use the actual file path returned by putFile
         ]);
 
         $details['file_id'] = $fileData->id;
@@ -59,6 +62,6 @@ class EmployeeIdCardService
 
     private function generateFilename($employeeProfileId, $type, $originalName)
     {
-        return str_replace(' ', '_', $employeeProfileId . '_ID_' . $type == 1 ? '_ID_front' : '_ID_back' . '_' . time() . '_' . $originalName);
+        return str_replace(' ', '_', $employeeProfileId . ($type == 1 ? '_ID_front' : '_ID_back') . '_' . time() . '_' . $originalName);
     }
 }

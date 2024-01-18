@@ -113,5 +113,5 @@ return [
 
     'COMPANY_LOGO_PATH' => 'public/company_logos',
 
-    'EMPLOYEE_ID_PATH' => 'public/employee_id_cards',
+    'EMPLOYEE_ID_PATH' => 'employee_id_cards',
 ];

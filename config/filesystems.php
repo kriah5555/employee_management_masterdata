@@ -55,6 +55,14 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
+
+        'tenant' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/tenants/' . tenant('id') . '/public'),
+            'url' => env('APP_URL') . '/storage/public/tenants/' . tenant('id') . '/public',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
     ],
 
     /*

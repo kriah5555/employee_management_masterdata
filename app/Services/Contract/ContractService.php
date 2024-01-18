@@ -195,7 +195,7 @@ class ContractService
                 ];
             });
 
-            $return = $return->merge($this->getEmployeeIdCards($employee_profile_id));
+            $return = $return->isNotEmpty() ? $return->merge($this->getEmployeeIdCards($employee_profile_id)) : $this->getEmployeeIdCards($employee_profile_id);
             return $return;
     
         } catch (\Exception $e) {
@@ -209,7 +209,6 @@ class ContractService
         try {
 
             $employee_id_cards = app(EmployeeIdCardRepository::class)->getEmployeeIdCardByEmployeeProfileId($employee_profile_id);
-
             return $employee_id_cards->map(function ($id_card) {
 
                 $type = null;

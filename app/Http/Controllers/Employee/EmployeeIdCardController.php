@@ -61,11 +61,12 @@ class EmployeeIdCardController extends Controller
                     JsonResponse::HTTP_BAD_REQUEST,
                 );
             }
+            $this->employeeIdCardService->saveEmployeeIdCard($request->all());
 
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeIdCardService->saveEmployeeIdCard($request->all())
+                    'message' => t('Employee Id card added successfully.')
                 ],
                 JsonResponse::HTTP_OK,
             );
