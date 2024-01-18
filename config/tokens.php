@@ -43,6 +43,16 @@ return [
         '{contract_work_days_per_week}'       => "Work days per week",
     ],
 
+    'PLANNING_TOKENS'    => [
+        '{planning_start_time}'     => "Planning start time",
+        '{planning_end_time}'       => "Planning end time",
+        '{planning_contract_hours}' => "Planning contract hours",
+        '{planning_break_time}'     => "Planning break time",
+        '{planning_workstation}'    => "Planning workstation",
+        '{planning_location}'       => "Planning location",
+        '{planning_function}'       => "Planning function",
+    ],
+
     'ATTACHMENT_TOKENS'  => [
         '{attachment_location_name}'               => 'Location name',
         '{attachment_location_address}'            => 'Address:Street + number Postal code City Country',

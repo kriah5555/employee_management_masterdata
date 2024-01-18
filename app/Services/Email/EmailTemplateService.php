@@ -69,7 +69,8 @@ class EmailTemplateService extends BaseService
                 config('tokens.ATTACHMENT_TOKENS'),
                 config('tokens.SIGNATURE_TOKENS'),
                 config('tokens.FLEX_SALARY_TOKENS'),
-                config('tokens.ADDITIONAL_TOKENS')
+                config('tokens.ADDITIONAL_TOKENS'),
+                config('tokens.PLANNING_TOKENS'),
             ),
         ];
     }
