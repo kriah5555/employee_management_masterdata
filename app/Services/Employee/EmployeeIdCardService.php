@@ -63,4 +63,33 @@ class EmployeeIdCardService
     {
         return str_replace(' ', '_', $employeeProfileId . ($type == 1 ? '_ID_front' : '_ID_back') . '_' . time() . '_' . $originalName);
     }
+
+    public function getEmployeeIdCards($employee_profile_id) # will get all contracts and documents of employee
+    {
+        try {
+
+            $employee_id_cards = $this->employeeIdCardRepository->getEmployeeIdCardByEmployeeProfileId($employee_profile_id);
+            return $employee_id_cards->map(function ($id_card) {
+
+                $type = null;
+
+                if ($id_card->type == config('constants.EMPLOYEE_ID_FRONT')) {
+                    $type = 'ID card front';
+                } elseif ($id_card->type == config('constants.EMPLOYEE_ID_BACK')) {
+                    $type = 'ID card back';
+                }
+
+                return [
+                    'file_id'   => $id_card->files->id,
+                    'file_name' => $id_card->files->file_name,
+                    'file_url'  => $id_card->file_url,
+                    'type'      => $type,
+                ];
+            });
+    
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }

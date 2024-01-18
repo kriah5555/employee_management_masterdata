@@ -8,6 +8,7 @@ use App\Models\Planning\PlanningBase;
 use App\Services\Company\FileService;
 use App\Models\Contract\ContractTemplate;
 use App\Repositories\Company\CompanyRepository;
+use App\Services\Employee\EmployeeIdCardService;
 use App\Repositories\Planning\PlanningRepository;
 use App\Models\Company\Employee\EmployeeContractFile;
 use App\Repositories\Employee\EmployeeIdCardRepository;
@@ -195,37 +196,8 @@ class ContractService
                 ];
             });
 
-            $return = $return->isNotEmpty() ? $return->merge($this->getEmployeeIdCards($employee_profile_id)) : $this->getEmployeeIdCards($employee_profile_id);
-            return $return;
-    
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function getEmployeeIdCards($employee_profile_id) # will get all contracts and documents of employee
-    {
-        try {
-
-            $employee_id_cards = app(EmployeeIdCardRepository::class)->getEmployeeIdCardByEmployeeProfileId($employee_profile_id);
-            return $employee_id_cards->map(function ($id_card) {
-
-                $type = null;
-
-                if ($id_card->type == config('constants.EMPLOYEE_ID_FRONT')) {
-                    $type = 'ID card front';
-                } elseif ($id_card->type == config('constants.EMPLOYEE_ID_BACK')) {
-                    $type = 'ID card back';
-                }
-
-                return [
-                    'file_id'   => $id_card->files->id,
-                    'file_name' => $id_card->files->file_name,
-                    'file_url'  => $id_card->file_url,
-                    'type'      => $type,
-                ];
-            });
+            $employee_id_cards_details = app(EmployeeIdCardService::class)->getEmployeeIdCards($employee_profile_id);
+            return $return->concat($employee_id_cards_details);
     
         } catch (\Exception $e) {
             error_log($e->getMessage());
