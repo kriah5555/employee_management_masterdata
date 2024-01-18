@@ -127,7 +127,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
                 'controller' => EmployeeController::class,
                 'methods'    => ['index', 'show', 'store', 'update', 'destroy']
             ],
-            'employee-id-card'                  => [
+            'employee-id-card'           => [
                 'controller' => EmployeeIdCardController::class,
                 'methods'    => ['store', 'show']
             ],
