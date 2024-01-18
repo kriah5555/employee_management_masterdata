@@ -32,7 +32,7 @@ class EmployeeIdCard extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return asset('storage/tenants/public/'.$this->files->file_path);
+        return asset('storage/tenants/'.$this->files->file_path);
     }
 
     public function files()

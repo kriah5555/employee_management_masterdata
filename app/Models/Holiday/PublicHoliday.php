@@ -11,7 +11,6 @@ use Illuminate\Support\Carbon;
 
 class PublicHoliday extends BaseModel
 {
-    use HasFactory, SoftDeletes;
 
     protected $connection = 'master';
 

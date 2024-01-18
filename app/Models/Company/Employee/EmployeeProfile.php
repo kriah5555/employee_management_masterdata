@@ -69,7 +69,7 @@ class EmployeeProfile extends BaseModel
 
     public function getFullNameAttribute()
     {
-        if ($this->user) {
+        if ($this->user && $this->user->userBasicDetails) {
             return $this->user->userBasicDetails->first_name . ' ' . $this->user->userBasicDetails->last_name;
         }
 
