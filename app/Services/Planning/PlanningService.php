@@ -274,7 +274,9 @@ class PlanningService implements PlanningInterface
     {
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
         $absenceService = app(AbsenceService::class);
-	    return $plannings->map(function ($plan) use ($absenceService) {
+	return $plannings->map(function ($plan) use ($absenceService) {
+		$leave_status = $absenceService->getAbsenceForDate($plan->plan_date)->isNotEmpty();
+
             return [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,

@@ -123,13 +123,11 @@ class EmployeeContractService
             $employeeType = EmployeeType::findOrFail($contractDetails['employee_type_id']);
             $employeeContract = $this->employeeContractRepository->getEmployeeContractById($employee_contract_id);
             $employee_profile_id = $employeeContract->employee_profile_id;
-
             $this->employeeContractRepository->updateEmployeeContract($employee_contract_id, [
                 'start_date'       => $contractDetails['start_date'],
                 'end_date'         => $contractDetails['end_date'],
                 'employee_type_id' => $contractDetails['employee_type_id'],
             ]); # update contract details
-
             if ($employeeType->employeeTypeCategory->id == config('constants.LONG_TERM_CONTRACT_ID')) { # update long data if contract cat id long term
                 $employeeContract->load('longTermEmployeeContract'); // Load the relationship
 
