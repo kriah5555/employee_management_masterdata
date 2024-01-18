@@ -9,7 +9,7 @@ use App\Models\BaseModel;
 use App\Models\Company\Company;
 use Illuminate\Support\Carbon;
 
-class PublicHoliday extends Model
+class PublicHoliday extends BaseModel
 {
     use HasFactory, SoftDeletes;
 

@@ -111,7 +111,7 @@ class EmployeeService
             "username"               => $employee->user->username,
             "responsible_person_id"  => $employee->responsible_person_id,
             "responsible_person_name"=> ($employee->responsiblePerson) ? $employee->responsiblePerson->full_name : null,
-            "first_name"             => $employee_basic_details ? $employee->user->userBasicDetails : null,
+            "first_name"             => $employee_basic_details ? $employee->user->userBasicDetails->first_name : null,
             "last_name"              => $employee_basic_details ? $employee->user->userBasicDetails->last_name : null,
             "nationality"            => $employee_basic_details ? $employee->user->userBasicDetails->nationality : null,
             "date_of_birth"          => $employee_basic_details ? $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null : null,
