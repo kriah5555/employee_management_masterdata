@@ -119,6 +119,14 @@ class ParameterRepository implements ParameterRepositoryInterface
         }
         return $response;
     }
+    public function formatDefaultParameterCollection($parameters)
+    {
+        $response = [];
+        foreach ($parameters as $parameter) {
+            $response[] = $this->formatDefaultParameterDetails($parameter);
+        }
+        return $response;
+    }
     public function formatDefaultParameterDetails($parameter)
     {
         return [
@@ -127,6 +135,14 @@ class ParameterRepository implements ParameterRepositoryInterface
             'description' => $parameter->description,
             'value'       => $parameter->value,
         ];
+    }
+    public function formatParameterCollection($parameters)
+    {
+        $response = [];
+        foreach ($parameters as $parameter) {
+            $response[] = $this->formatParameterDetails($parameter);
+        }
+        return $response;
     }
     public function formatParameterDetails($parameter)
     {
