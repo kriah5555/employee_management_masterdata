@@ -7,20 +7,10 @@ use App\Interfaces\Employee\EmployeeIdCardInterface;
 
 class EmployeeIdCardRepository implements EmployeeIdCardInterface
 {
-    // public function getEmployeeIdCardById($employee_profile_id)
-    // {
-    //     return EmployeeFunctionDetails::where($employeeFunctionDetailsId);
-    // }
-
     public function getEmployeeIdCardByEmployeeProfileId($employee_profile_id)
     {
         return EmployeeIdCard::where(['employee_profile_id' => $employee_profile_id])->get();
     }
-
-    // public function getEmployeeIdCardByEmployeeProfileId($employee_profile_id)
-    // {
-    //     return EmployeeIdCard::where(['employee_profile_id' => $employee_profile_id])->get();
-    // }
 
     public function deleteIdCard($employee_profile_id, $type)
     {

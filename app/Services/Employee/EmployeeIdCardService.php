@@ -45,12 +45,11 @@ class EmployeeIdCardService
 
         $storePath = tenant('id') . DIRECTORY_SEPARATOR . trim(config('constants.EMPLOYEE_ID_PATH'), DIRECTORY_SEPARATOR);
 
-        // Use putFile to store the contents of the file
         $filePath = Storage::disk('tenant')->putFile($storePath, $file);
 
         $fileData = $this->fileService->createFileData([
             'file_name' => $filename,
-            'file_path' => $filePath, // Use the actual file path returned by putFile
+            'file_path' => $filePath, 
         ]);
 
         $details['file_id'] = $fileData->id;
