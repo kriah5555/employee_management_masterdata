@@ -27,7 +27,7 @@ class PublicHolidayRequest extends ApiRequest
             'date'   => [
                 'bail',
                 'required',
-                'date_format:Y-m-d',
+                'date_format:d-m-Y',
                 Rule::unique('public_holidays', 'date')->ignore($this->route('public_holiday')), # check if the date is unique or not
             ],
 
@@ -40,13 +40,14 @@ class PublicHolidayRequest extends ApiRequest
             ],
         ];
     }
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'date' => \Carbon\Carbon::parse($this->date)->format('Y-m-d'),
-            // Modify the date format using Carbon or any other method you prefer
-        ]);
-    }
+    
+    // protected function prepareForValidation()
+    // {
+    //     $this->merge([
+    //         'date' => \Carbon\Carbon::parse($this->date)->format('Y-m-d'),
+    //         // Modify the date format using Carbon or any other method you prefer
+    //     ]);
+    // }
 
     public function messages()
     {

@@ -63,11 +63,11 @@ class EmployeeController extends Controller
     {
         try {
             $companyId = getCompanyId();
-            $this->employeeService->createNewEmployee($request->validated(), $companyId);
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee created successfully'
+                    'message' => 'Employee created successfully',
+                    'data'    => $this->employeeService->createNewEmployee($request->validated(), $companyId),
                 ],
                 JsonResponse::HTTP_OK,
             );

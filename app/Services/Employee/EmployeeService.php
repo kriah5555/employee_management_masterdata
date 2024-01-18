@@ -106,19 +106,20 @@ class EmployeeService
 
     public function formatEmployeeData($employee)
     {
+        $employee_basic_details = $employee->user->userBasicDetails;
         $userBasicDetails = [
             "username"               => $employee->user->username,
             "responsible_person_id"  => $employee->responsible_person_id,
             "responsible_person_name"=> ($employee->responsiblePerson) ? $employee->responsiblePerson->full_name : null,
-            "first_name"             => $employee->user->userBasicDetails->first_name,
-            "last_name"              => $employee->user->userBasicDetails->last_name,
-            "nationality"            => $employee->user->userBasicDetails->nationality,
-            "date_of_birth"          => $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null,
-            "place_of_birth"         => $employee->user->userBasicDetails->place_of_birth,
-            "license_expiry_date"    => $employee->user->userBasicDetails->license_expiry_date ? date('d-m-Y', strtotime($employee->user->userBasicDetails->license_expiry_date)) : null,
-            "extra_info"             => $employee->user->userBasicDetails->extra_info,
+            "first_name"             => $employee_basic_details ? $employee->user->userBasicDetails : null,
+            "last_name"              => $employee_basic_details ? $employee->user->userBasicDetails->last_name : null,
+            "nationality"            => $employee_basic_details ? $employee->user->userBasicDetails->nationality : null,
+            "date_of_birth"          => $employee_basic_details ? $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null : null,
+            "place_of_birth"         => $employee_basic_details ? $employee->user->userBasicDetails->place_of_birth : null,
+            "license_expiry_date"    => $employee_basic_details ? $employee->user->userBasicDetails->license_expiry_date ? date('d-m-Y', strtotime($employee->user->userBasicDetails->license_expiry_date)) : null : null,
+            "extra_info"             => $employee_basic_details ? $employee->user->userBasicDetails->extra_info : null,
             "social_security_number" => $employee->user->social_security_number,
-            "gender"                 => $employee->user->userBasicDetails->gender,
+            "gender"                 => $employee_basic_details ? $employee->user->userBasicDetails->gender : null,
             "street_house_no"        => $employee->user->userAddress ? $employee->user->userAddress->street_house_no : null,
             "postal_code"            => $employee->user->userAddress ? $employee->user->userAddress->postal_code : null,
             "city"                   => $employee->user->userAddress ? $employee->user->userAddress->city : null,

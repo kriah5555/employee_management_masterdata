@@ -9,7 +9,7 @@ use App\Models\BaseModel;
 use App\Models\Company\Company;
 use Illuminate\Support\Carbon;
 
-class PublicHoliday extends BaseModel
+class PublicHoliday extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -38,6 +38,15 @@ class PublicHoliday extends BaseModel
         'updated_at',
         'deleted_at'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($publicHoliday) {
+            $publicHoliday->date = date('Y-m-d', strtotime($publicHoliday->date));
+        });
+    }
 
     public function getDateAttribute($value)
     {
