@@ -233,7 +233,7 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
 
     Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
 
-    Route::get('/user-details', [EmployeeController::class, 'getUserDetails']);
+    Route::post('/user-details', [EmployeeController::class, 'getUserDetails']);
 
     Route::post('employee-update', [EmployeeController::class, 'updateEmployee']);
     Route::post('update-employee-personal-details', [EmployeeController::class, 'updateEmployeePersonal']);
@@ -254,12 +254,12 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
 
     Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
-
-    Route::post('validate-employee-invitations', [EmployeeInvitationController::class, 'validateEmployeeInvitation'])->name('validate-employee-invitations');
-
-    Route::post('employee-registration', [EmployeeInvitationController::class, 'employeeRegistration'])->name('employee-registration');
 });
 Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
+
+Route::post('validate-employee-invitations', [EmployeeInvitationController::class, 'validateEmployeeInvitation'])->name('validate-employee-invitations');
+
+Route::post('employee-registration', [EmployeeInvitationController::class, 'employeeRegistration'])->name('employee-registration');
 
 Route::get('/script', function () {
     return response()->json([
