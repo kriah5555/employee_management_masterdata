@@ -35,7 +35,7 @@ class CompanyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->companyService->getCompanies(),
+                    'data'    => $this->companyService->getCompaniesForOverview(),
                 ],
                 JsonResponse::HTTP_OK,
             );

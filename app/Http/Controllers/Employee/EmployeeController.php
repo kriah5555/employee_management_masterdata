@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Employee;
 
+use App\Models\Company\Employee\EmployeeProfile;
 use Exception;
 use Illuminate\Http\Request;
 use App\Services\CompanyService;
@@ -107,41 +108,41 @@ class EmployeeController extends Controller
     }
 
     public function getUserDetails(Request $request)
-{
-    $userID = $request["user_id"];
+    {
+        $userID = $request["user_id"];
 
-    // Check if the user with the given ID exists in the users table
-    $userExists = User::where('id', $userID)->exists();
+        // Check if the user with the given ID exists in the users table
+        $userExists = User::where('id', $userID)->exists();
 
-    if (!$userExists) {
-        // Handle the case where the user doesn't exist
-        return returnResponse(
-            [
-                'success' => false,
-                'message' => 'User not found',
-            ],
-            JsonResponse::HTTP_NOT_FOUND
-        );
+        if (!$userExists) {
+            // Handle the case where the user doesn't exist
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => 'User not found',
+                ],
+                JsonResponse::HTTP_NOT_FOUND
+            );
+        }
+
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeService->getUserDetails($userID),
+                ],
+                JsonResponse::HTTP_OK
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
-
-    try {
-        return returnResponse(
-            [
-                'success' => true,
-                'data'    => $this->employeeService->getUserDetails($userID),
-            ],
-            JsonResponse::HTTP_OK
-        );
-    } catch (Exception $e) {
-        return returnResponse(
-            [
-                'success' => false,
-                'message' => $e->getMessage(),
-            ],
-            JsonResponse::HTTP_INTERNAL_SERVER_ERROR
-        );
-    }
-}
 
 
 
@@ -245,14 +246,14 @@ class EmployeeController extends Controller
     /**
      * Delete employee type.
      */
-    public function destroy(EmployeeType $employeeType)
+    public function destroy($employeeProfileId)
     {
         try {
-            $employeeType->delete();
+            // $this->employeeService->deleteEmployee($employeeProfileId);
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Employee type deleted successfully'
+                    'message' => 'Employee deleted successfully'
                 ],
                 JsonResponse::HTTP_OK,
             );

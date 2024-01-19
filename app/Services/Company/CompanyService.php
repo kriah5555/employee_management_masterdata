@@ -31,6 +31,13 @@ class CompanyService implements CompanyServiceInterface
     {
         return $this->companyRepository->getCompanies();
     }
+    public function getCompaniesForOverview()
+    {
+        return [
+            'active'   => $this->companyRepository->getActiveCompanies(),
+            'archived' => $this->companyRepository->getArchivedCompanies(),
+        ];
+    }
     public function getActiveCompanies()
     {
         return $this->companyRepository->getActiveCompanies();
@@ -56,15 +63,15 @@ class CompanyService implements CompanyServiceInterface
     {
         try {
             DB::connection('tenant')->beginTransaction();
-                $responsible_persons_ids = [];
-                foreach ($values['responsible_persons'] as $index => $responsiblePerson) {
-                    $employee_service = app(EmployeeService::class);
-                    $responsible_persons = $employee_service->createNewResponsiblePerson($responsiblePerson, $company_id);
-                    $responsible_persons_ids[$index] = $responsible_persons->id;
-                }
-                $company = $this->getCompanyDetails($company_id);
-                $location_ids = $this->companyLocationService->createCompanyLocations($values, $responsible_persons_ids); # add company locations
-                $this->companyWorkstationService->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
+            $responsible_persons_ids = [];
+            foreach ($values['responsible_persons'] as $index => $responsiblePerson) {
+                $employee_service = app(EmployeeService::class);
+                $responsible_persons = $employee_service->createNewResponsiblePerson($responsiblePerson, $company_id);
+                $responsible_persons_ids[$index] = $responsible_persons->id;
+            }
+            $company = $this->getCompanyDetails($company_id);
+            $location_ids = $this->companyLocationService->createCompanyLocations($values, $responsible_persons_ids); # add company locations
+            $this->companyWorkstationService->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -110,9 +117,12 @@ class CompanyService implements CompanyServiceInterface
         DB::commit();
     }
 
-    public function deleteCompany($companyId)
+    public function deleteCompany($company)
     {
-        $this->companyRepository->deleteCompany($companyId);
+        // $company->status = false;
+        // $company->save();
+        $this->companyRepository->updateCompany($company, ['status' => false]);
+        // $this->companyRepository->deleteCompany($companyId);
     }
 
     public function getCompanySectors(Company $company)
