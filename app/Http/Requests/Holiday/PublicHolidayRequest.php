@@ -43,13 +43,12 @@ class PublicHolidayRequest extends ApiRequest
         ];
     }
 
-    /*protected function prepareForValidation()
+    protected function prepareForValidation()
     {
         $this->merge([
             'date' => \Carbon\Carbon::parse($this->date)->format('Y-m-d'),
         ]);
     }
-     */
 
     public function messages()
     {
