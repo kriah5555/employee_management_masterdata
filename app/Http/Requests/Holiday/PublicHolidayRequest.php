@@ -28,7 +28,9 @@ class PublicHolidayRequest extends ApiRequest
                 'bail',
                 'required',
                 'date_format:Y-m-d',
-                Rule::unique('public_holidays', 'date')->ignore($this->route('public_holiday')), # check if the date is unique or not
+                Rule::unique('public_holidays', 'date')->where(function ($query) {
+                    $query->where('deleted_at', null);
+                })->ignore($this->route('public_holiday')),
             ],
 
             'status' => 'required|boolean',
