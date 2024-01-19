@@ -68,7 +68,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::controller(HolidayController::class)->group(function () {
 
-            Route::resource('holidays', HolidayController::class)->except(['edit', 'index']);
+            Route::resource('holidays', HolidayController::class)->except(['edit']);
 
             Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
 
@@ -84,15 +84,18 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::controller(LeaveController::class)->group(function () {
 
-            Route::resource('leaves', LeaveController::class)->except(['edit', 'index']);
+            Route::resource('leaves', LeaveController::class)->except(['edit']);
 
             Route::post('leaves-change-reporting-manager', [LeaveController::class, 'changeLeaveManager']);
 
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
                 ->where(['status' => '(approve|pending)']); # to get leaves list
 
+            Route::get('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
+
             Route::post('leaves-status/{leave_id}/{status}', 'updateLeaveStatus')
                 ->where(['status' => '(cancel)']);
+
             Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave');
         });
 

@@ -42,6 +42,27 @@ class LeaveController extends Controller
         }
     }
 
+    public function getAllLeavesForMobile()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->leave_service->getLeavesMobile(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     public function changeLeaveManager(AbsenceChangeReportingManagerRequest $request)
     {
         try {

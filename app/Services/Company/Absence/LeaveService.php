@@ -28,23 +28,28 @@ class LeaveService
         }
     }
 
-    public function formatLeaves($leaves, $status) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    public function getLeavesMobile() # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            
-            return $leaves->map(function ($leave) use ($status) {
-                $actions = ['approve' => false, 'reject' => false, 'change_manager' => false, 'request_cancel' => false, 'cancel' => false];
-    
-                if ($status == config('absence.PENDING')) {
-                    $actions['change_manager'] = $actions['approve'] = $actions['reject'] = true;
-                } elseif ($status == config('absence.APPROVE')) {
-                    $actions['cancel'] = true;
-                }
+            return $this->formatLeaves($this->leave_repository->getLeaves(), '', true);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 
-                $leave->actions = $actions;
-    
-                return $leave;
-            });
+    public function formatLeaves($leaves, $status, $mobile = false) # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    {
+        try {
+            if ($mobile) {
+                return $this->absence_service->formatAbsenceDataForMobileOverview($leaves, $status, config('absence.LEAVE'));
+            } else {
+                return $leaves->map(function ($leave) use ($status) {
+                    $leave->actions = $this->absence_service->getAbsenceActions($leave->absence_type, $leave->absence_status);
+
+                    return $leave;
+                });
+            }
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

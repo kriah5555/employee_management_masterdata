@@ -300,4 +300,63 @@ class AbsenceService
 
         return $employee_absence_hours_used;
     }
+
+    /*
+         $absence_type =>  [1 => Holiday, 2 -> Leave], 
+         $status => [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled, 5 => approved but requested for cancellation]
+    */
+    public function formatAbsenceDataForMobileOverview($absence, $status, $absence_type) 
+    {
+        $response = [
+            'pending'   => [],
+            'approved'  => [],
+            'cancelled' => [],
+            'rejected'  => [],
+        ];
+        
+        $absence->each(function ($leave) use ($status, &$response, $absence_type) {
+
+            $absence_data =  [
+                'id'             => $leave->id,
+                'applied_date'   => $leave->applied_date,
+                'duration_type'  => $leave->duration_type,
+                'dates'          => $leave->absenceDates->dates,
+                'dates_type'     => $leave->absenceDates->dates_type, # [1 =>  multiple dates, 2 => from and to date]
+                'leave_code'     => $absence_type == config('absence.LEAVE') ? $leave->absenceHours->first()->holidayCode->holiday_code_name : null,
+                'absence_status' => $leave->absence_status,
+                'employee_name'  => $leave->employee->full_name,
+                'employee_id'    => $leave->employee->id,
+                'manager_id'     => $leave->manager ? $leave->manager->id : null,
+                'manager_name'   => $leave->manager ? $leave->manager->full_name : null,
+                'reason'         => $leave->reason,
+                'actions'        => $this->getAbsenceActions($leave->absence_type, $leave->absence_status),
+            ];
+
+            if ($leave->absence_status == config('absence.PENDING') || $leave->absence_status == config('absence.REQUEST_CANCEL')) {
+                $response['pending'][] = $absence_data;
+            } elseif ($leave->absence_status == config('absence.APPROVE')) {
+                $response['approved'][] = $absence_data;
+            } elseif ($leave->absence_status == config('absence.REJECT')) {
+                $response['rejected'][] = $absence_data;
+            } elseif ($leave->absence_status == config('absence.CANCEL')) {
+                $response['cancelled'][] = $absence_data;
+            }
+        }); 
+
+        return $response;
+    }
+
+    public function getAbsenceActions($absence_type, $status) #$absence_type =>  [1 => Holiday, 2 -> Leave]
+    {
+        $actions = ['approve' => false, 'reject' => false, 'change_manager' => false, 'request_cancel' => false, 'cancel' => false];
+        if ($absence_type == config('absence.LEAVE')) {
+            if ($status == config('absence.PENDING')) {
+                $actions = $actions['approve'] = $actions['reject'] = true;
+            } elseif ($status == config('absence.APPROVE')) {
+                $actions['cancel'] = true;
+            }
+        }
+
+        return $actions;
+    }
 }
