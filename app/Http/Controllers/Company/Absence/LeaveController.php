@@ -176,7 +176,7 @@ class LeaveController extends Controller
                 ];
                 $formattedData['duration_type'] = 7;
             }
-            $formattedData['plan_timings'] = $data['pid'];
+            $formattedData['plan_timings'] = isset($data['pid']) ? $data['pid'] :null;
             $formattedData['holiday_code_counts'][] = [
                 'holiday_code'  => $data['holiday_code_id'],
                 'hours'         => 0,
