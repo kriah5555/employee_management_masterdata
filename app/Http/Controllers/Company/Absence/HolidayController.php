@@ -42,6 +42,27 @@ class HolidayController extends Controller
         }
     }
 
+    public function getAllHolidaysForMobile()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->holidayService->getHolidaysMobile(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     public function employeeHolidays($employee_id, $status)
     {
         try {

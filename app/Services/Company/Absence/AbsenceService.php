@@ -305,7 +305,7 @@ class AbsenceService
          $absence_type =>  [1 => Holiday, 2 -> Leave], 
          $status => [1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled, 5 => approved but requested for cancellation]
     */
-    public function formatAbsenceDataForMobileOverview($absence, $status, $absence_type) 
+    public function formatAbsenceDataForMobileOverview($absence, $absence_type, $employee_flow = false) 
     {
         $response = [
             'pending'   => [],
@@ -314,7 +314,7 @@ class AbsenceService
             'rejected'  => [],
         ];
         
-        $absence->each(function ($leave) use ($status, &$response, $absence_type) {
+        $absence->each(function ($leave) use (&$response, $absence_type, $employee_flow) {
 
             $absence_data =  [
                 'id'             => $leave->id,
@@ -329,7 +329,7 @@ class AbsenceService
                 'manager_id'     => $leave->manager ? $leave->manager->id : null,
                 'manager_name'   => $leave->manager ? $leave->manager->full_name : null,
                 'reason'         => $leave->reason,
-                'actions'        => $this->getAbsenceActions($leave->absence_type, $leave->absence_status),
+                'actions'        => $this->getAbsenceActions($leave->absence_type, $leave->absence_status, $employee_flow),
             ];
 
             if ($leave->absence_status == config('absence.PENDING') || $leave->absence_status == config('absence.REQUEST_CANCEL')) {
@@ -346,7 +346,7 @@ class AbsenceService
         return $response;
     }
 
-    public function getAbsenceActions($absence_type, $status) #$absence_type =>  [1 => Holiday, 2 -> Leave]
+    public function getAbsenceActions($absence_type, $status, $employee_flow = false) # $absence_type =>  [1 => Holiday, 2 -> Leave]
     {
         $actions = ['approve' => false, 'reject' => false, 'change_manager' => false, 'request_cancel' => false, 'cancel' => false];
         if ($absence_type == config('absence.LEAVE')) {
@@ -354,6 +354,20 @@ class AbsenceService
                 $actions = $actions['approve'] = $actions['reject'] = true;
             } elseif ($status == config('absence.APPROVE')) {
                 $actions['cancel'] = true;
+            }
+        } elseif ($absence_type == config('absence.HOLIDAY')) {    
+            if ($employee_flow) {
+                if ($status == config('absence.PENDING')) {
+                    $actions['cancel'] = true;
+                } elseif ($status == config('absence.APPROVE')) {
+                    $actions['request_cancel'] = true;
+                }
+            } else {
+                if ($status == config('absence.PENDING')) {
+                    $actions['approve'] = $actions['reject'] = $actions['change_manager'] = true;
+                } elseif ($status == config('absence.APPROVE') || $status == config('absence.REQUEST_CANCEL')) {
+                    $actions['cancel'] = true;
+                }
             }
         }
 
