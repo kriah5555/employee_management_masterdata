@@ -22,7 +22,7 @@ class PlanStartRule implements ValidationRule
 
         if ($plan) {
             $started_plans = app(PlanningRepository::class)->getStartedPlanForEmployee($plan->employee_profile_id, '', $value);
-            if ($started_plans->count() > 1) {
+            if ($started_plans->count() > 0) {
                 $location    = $started_plans->first()->location->location_name;
                 $workstation = $started_plans->first()->workstation->workstation_name;
                 $fail("Please stop plan at location: $location, workstation: $workstation");

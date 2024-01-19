@@ -423,7 +423,7 @@ class PlanningService implements PlanningInterface
     {
         $startPlan = $stopPlan = false;
         $sendPlanDimona = $details->dimona_status ? false : true;
-        if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
+        // if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
             if ($details->plan_started) {
                 $startPlan = false;
                 $stopPlan = true;
@@ -431,7 +431,7 @@ class PlanningService implements PlanningInterface
                 $startPlan = true;
                 $stopPlan = false;
             }
-        }
+        // }
         $response = [
             'start_time'       => date('H:i', strtotime($details->start_date_time)),
             'end_time'         => date('H:i', strtotime($details->end_date_time)),
