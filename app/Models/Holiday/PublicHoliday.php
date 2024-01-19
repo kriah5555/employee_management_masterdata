@@ -38,6 +38,16 @@ class PublicHoliday extends BaseModel
         'deleted_at'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($publicHoliday) {
+            $publicHoliday->date = date('Y-m-d', strtotime($publicHoliday->date));
+    //        dd($publicHoliday->toArray());
+        });
+    }
+
     public function getDateAttribute($value)
     {
         return Carbon::parse($value)->format('d-m-Y');
