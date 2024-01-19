@@ -32,7 +32,8 @@ class EmployeeIdCard extends BaseModel
 
     public function getFileUrlAttribute()
     {
-        return asset('storage/tenants/public/'.$this->files->file_path);
+        // return Storage::disk('tenant')->url($this->files->file_path); # for this we need to set the APP_URL in .env file to work 
+        return asset('storage/tenants/'.$this->files->file_path);
     }
 
     public function files()

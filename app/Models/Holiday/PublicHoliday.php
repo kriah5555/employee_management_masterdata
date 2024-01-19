@@ -11,13 +11,12 @@ use Illuminate\Support\Carbon;
 
 class PublicHoliday extends BaseModel
 {
-    use HasFactory, SoftDeletes;
 
     protected $connection = 'master';
 
     protected static $sort = ['name', 'date'];
 
-    protected $dateFormat = 'd-m-Y'; // Use 'd-m-Y' format for the date attribute
+    // protected $dateFormat = 'd-m-Y'; // Use 'd-m-Y' format for the date attribute
 
     protected $table = 'public_holidays';
 
@@ -38,6 +37,16 @@ class PublicHoliday extends BaseModel
         'updated_at',
         'deleted_at'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($publicHoliday) {
+            $publicHoliday->date = date('Y-m-d', strtotime($publicHoliday->date));
+    //        dd($publicHoliday->toArray());
+        });
+    }
 
     public function getDateAttribute($value)
     {

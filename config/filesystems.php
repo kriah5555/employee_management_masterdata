@@ -58,8 +58,8 @@ return [
 
         'tenant' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/tenants/' . tenant('id') . '/public'),
-            'url' => env('APP_URL') . '/storage/public/tenants/' . tenant('id') . '/public',
+            'root' => storage_path('app/public/tenants/' . tenant('id')),
+            'url' => env('APP_URL') . '/storage/tenants/' . tenant('id'),
             'visibility' => 'public',
             'throw' => false,
         ],
