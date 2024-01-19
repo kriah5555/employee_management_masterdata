@@ -587,7 +587,7 @@ class PlanningService implements PlanningInterface
         foreach ($plans as $plan) {
             if (!$plan->dimona_status && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
                 $response[] = [
-                    'plan_id' => $plan->id,
+                    'id' => $plan->id,
                     'name'    => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name,
                     'timings' => date('H:i', strtotime($plan->start_date_time)) . '-' . date('H:i', strtotime($plan->end_date_time)) . ' ' . numericToEuropean($plan->contract_hours),
                 ];

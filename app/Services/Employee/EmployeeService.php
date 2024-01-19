@@ -6,6 +6,7 @@ use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Company\Employee\LongTermEmployeeContract;
 use App\Models\EmployeeType\EmployeeType;
+use App\Models\Planning\PlanningBase;
 use App\Models\User\CompanyUser;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Repositories\Employee\EmployeeFunctionDetailsRepository;
@@ -108,28 +109,28 @@ class EmployeeService
     {
         $employee_basic_details = $employee->user->userBasicDetails;
         $userBasicDetails = [
-            "username"               => $employee->user->username,
-            "responsible_person_id"  => $employee->responsible_person_id,
-            "responsible_person_name"=> ($employee->responsiblePerson) ? $employee->responsiblePerson->full_name : null,
-            "first_name"             => $employee_basic_details ? $employee->user->userBasicDetails->first_name : null,
-            "last_name"              => $employee_basic_details ? $employee->user->userBasicDetails->last_name : null,
-            "nationality"            => $employee_basic_details ? $employee->user->userBasicDetails->nationality : null,
-            "date_of_birth"          => $employee_basic_details ? $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null : null,
-            "place_of_birth"         => $employee_basic_details ? $employee->user->userBasicDetails->place_of_birth : null,
-            "license_expiry_date"    => $employee_basic_details ? $employee->user->userBasicDetails->license_expiry_date ? date('d-m-Y', strtotime($employee->user->userBasicDetails->license_expiry_date)) : null : null,
-            "extra_info"             => $employee_basic_details ? $employee->user->userBasicDetails->extra_info : null,
-            "social_security_number" => $employee->user->social_security_number,
-            "gender"                 => $employee_basic_details ? $employee->user->userBasicDetails->gender : null,
-            "street_house_no"        => $employee->user->userAddress ? $employee->user->userAddress->street_house_no : null,
-            "postal_code"            => $employee->user->userAddress ? $employee->user->userAddress->postal_code : null,
-            "city"                   => $employee->user->userAddress ? $employee->user->userAddress->city : null,
-            "country"                => $employee->user->userAddress ? $employee->user->userAddress->country : null,
-            "latitude"               => $employee->user->userAddress ? $employee->user->userAddress->latitude : null,
-            "longitude"              => $employee->user->userAddress ? $employee->user->userAddress->longitude : null,
-            "email"                  => $employee->user->userContactDetails ? $employee->user->userContactDetails->email : null,
-            "phone_number"           => $employee->user->userContactDetails ? $employee->user->userContactDetails->phone_number : null,
-            "account_number"         => $employee->user->userBankAccount ? $employee->user->userBankAccount->account_number : null,
-            "children"               => $employee->user->userFamilyDetails->children,
+            "username"                => $employee->user->username,
+            "responsible_person_id"   => $employee->responsible_person_id,
+            "responsible_person_name" => ($employee->responsiblePerson) ? $employee->responsiblePerson->full_name : null,
+            "first_name"              => $employee_basic_details ? $employee->user->userBasicDetails->first_name : null,
+            "last_name"               => $employee_basic_details ? $employee->user->userBasicDetails->last_name : null,
+            "nationality"             => $employee_basic_details ? $employee->user->userBasicDetails->nationality : null,
+            "date_of_birth"           => $employee_basic_details ? $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null : null,
+            "place_of_birth"          => $employee_basic_details ? $employee->user->userBasicDetails->place_of_birth : null,
+            "license_expiry_date"     => $employee_basic_details ? $employee->user->userBasicDetails->license_expiry_date ? date('d-m-Y', strtotime($employee->user->userBasicDetails->license_expiry_date)) : null : null,
+            "extra_info"              => $employee_basic_details ? $employee->user->userBasicDetails->extra_info : null,
+            "social_security_number"  => $employee->user->social_security_number,
+            "gender"                  => $employee_basic_details ? $employee->user->userBasicDetails->gender : null,
+            "street_house_no"         => $employee->user->userAddress ? $employee->user->userAddress->street_house_no : null,
+            "postal_code"             => $employee->user->userAddress ? $employee->user->userAddress->postal_code : null,
+            "city"                    => $employee->user->userAddress ? $employee->user->userAddress->city : null,
+            "country"                 => $employee->user->userAddress ? $employee->user->userAddress->country : null,
+            "latitude"                => $employee->user->userAddress ? $employee->user->userAddress->latitude : null,
+            "longitude"               => $employee->user->userAddress ? $employee->user->userAddress->longitude : null,
+            "email"                   => $employee->user->userContactDetails ? $employee->user->userContactDetails->email : null,
+            "phone_number"            => $employee->user->userContactDetails ? $employee->user->userContactDetails->phone_number : null,
+            "account_number"          => $employee->user->userBankAccount ? $employee->user->userBankAccount->account_number : null,
+            "children"                => $employee->user->userFamilyDetails->children,
         ];
         if ($employee->user->userBasicDetails->language) {
             $userBasicDetails['language'] = [
@@ -602,5 +603,60 @@ class EmployeeService
             error_log($e->getMessage());
             throw $e;
         }
+    }
+
+    public function deleteEmployee($employeeProfileId)
+    {
+        $hasWorked = $this->checkEmployeeHasWorked($employeeProfileId);
+        if ($hasWorked) {
+            $this->archiveEmployee($employeeProfileId);
+        } else {
+            $this->deleteEmployeeFromCompany($employeeProfileId);
+        }
+        // try {
+        //     return $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId)->signature;
+        // } catch (Exception $e) {
+        //     error_log($e->getMessage());
+        //     throw $e;
+        // }
+    }
+
+    public function checkEmployeeHasWorked($employeeProfileId)
+    {
+        $plannings = PlanningBase::where('employee_profile_id', $employeeProfileId)->get();
+        return count($plannings) ? true : false;
+    }
+
+    public function archiveEmployee($employeeProfileId)
+    {
+        $employeeProfile = EmployeeProfile::findOrFail($employeeProfileId);
+    }
+
+    public function deleteEmployeeFromCompany($employeeProfileId)
+    {
+        $employeeProfile = EmployeeProfile::findOrFail($employeeProfileId);
+        dd($employeeProfile);
+    }
+
+    public function getCompanyUserObjectForEmployee($userId, $companyId)
+    {
+        return CompanyUser::where('user_id', $userId)->where('company_id', $companyId)->get();
+    }
+
+    public function getCompanyEmployees()
+    {
+        $response = [];
+        $employees = $this->employeeProfileRepository->getAllEmployeeProfiles([
+            'user.userBasicDetails',
+        ]);
+        $response = [];
+        foreach ($employees as $employee) {
+            $response[] = [
+                'value' => $employee->id,
+                'label' => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name
+            ];
+        }
+
+        return sortArrayByKey($response, 'label');
     }
 }

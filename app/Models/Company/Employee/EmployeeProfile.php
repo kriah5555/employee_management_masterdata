@@ -13,6 +13,7 @@ use App\Models\Company\Employee\EmployeeCommute;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeBenefits;
 use App\Models\Company\Employee\EmployeeSignature;
+use App\Models\User\CompanyUser;
 
 class EmployeeProfile extends BaseModel
 {
@@ -146,5 +147,9 @@ class EmployeeProfile extends BaseModel
             ->where('start_date_time', '>=', date('Y-m-d 00:00:00', strtotime($date)))
             ->where('start_date_time', '<=', date('Y-m-d 23:59:59', strtotime($date)))
             ->get();
+    }
+    public function companyUser()
+    {
+        return $this->hasOne(CompanyUser::class, 'employee_profile_id');
     }
 }

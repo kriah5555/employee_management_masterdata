@@ -25,16 +25,16 @@ class EmployeeRequest extends ApiRequest
      */
     public function rules(): array
     {
-        $companyId = getCompanyId();
-
-        $employeeId = $this->route('employee'); // Assuming your route parameter is named 'employee'
-
-        $allowedLanguageValues = array_keys(config('constants.LANGUAGE_OPTIONS'));
         if ($this->isMethod('post') || $this->isMethod('put')) {
+            $companyId = getCompanyId();
+
+            $employeeId = $this->route('employee'); // Assuming your route parameter is named 'employee'
+
+            $allowedLanguageValues = array_keys(config('constants.LANGUAGE_OPTIONS'));
             $rules = [
-                'first_name'          => 'required|string|max:255',
-                'last_name'           => 'required|string|max:255',
-                'gender_id'           => [
+                'first_name'            => 'required|string|max:255',
+                'last_name'             => 'required|string|max:255',
+                'gender_id'             => [
                     'bail',
                     'required',
                     'integer',
@@ -60,8 +60,8 @@ class EmployeeRequest extends ApiRequest
                     'integer',
                     // Rule::exists('marital_statuses', 'id'),
                 ],
-                'dependent_spouse'    => 'string|max:255',
-                'children'            => 'nullable|integer',
+                'dependent_spouse'      => 'string|max:255',
+                'children'              => 'nullable|integer',
             ];
             if ($this->isMethod('post')) {
                 $rules['fuel_card'] = 'nullable|boolean';
