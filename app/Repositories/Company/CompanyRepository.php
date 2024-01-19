@@ -20,6 +20,10 @@ class CompanyRepository implements CompanyRepositoryInterface
     {
         return Company::where('status', '=', true)->get();
     }
+    public function getArchivedCompanies()
+    {
+        return Company::where('status', '=', false)->get();
+    }
 
     public function getCompanyById(string $companyId, array $relations = []): Collection|Builder|Company
     {
