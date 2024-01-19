@@ -3,6 +3,7 @@
 namespace App\Services\Parameter;
 
 use App\Models\Parameter\CompanyParameter;
+use App\Models\Parameter\LocationParameter;
 use App\Models\Parameter\Parameter;
 use Exception;
 use App\Repositories\ParameterRepository;
@@ -131,7 +132,11 @@ class ParameterService
                 $details['description'] = $parameter->description;
                 $details['default_value'] = $details['value'] = $parameter->value;
             }
-            $companyParameters = $this->parameterRepository->getCompanyParameter($parameter);
+            if ($values['type'] == 5) {
+                $companyParameters = $this->parameterRepository->getCompanyLocationParameter($parameter, $values['location_id']);
+            } else {
+                $companyParameters = $this->parameterRepository->getCompanyParameter($parameter);
+            }
             if ($companyParameters) {
                 $details['use_default'] = false;
                 $details['value'] = $companyParameters->value;
@@ -151,28 +156,49 @@ class ParameterService
             $parameter = $this->parameterRepository->getSectorParameter($defaultParameter->id, $values['sector_id']);
         } elseif ($defaultParameter->type == 3) {
             $parameter = $this->parameterRepository->getEmployeeTypeSectorParameter($defaultParameter->id, $values['employee_type_id'], $values['sector_id']);
-        } elseif ($defaultParameter->type == 4) {
-            $parameter = $this->parameterRepository->getEmployeeTypeParameter($defaultParameter->id);
-        } elseif ($defaultParameter->type == 5) {
-            $parameter = $this->parameterRepository->getEmployeeTypeParameter($defaultParameter->id, $values['location_id']);
+        } elseif ($defaultParameter->type == 4 || $defaultParameter->type == 5) {
+            $parameter = $this->parameterRepository->getParameterByName($parameterName);
         }
-        if ($values['use_default']) {
-            $this->deleteCompanyParameter($parameter);
+        if ($defaultParameter->type == 5) {
+            if ($values['use_default']) {
+                $this->deleteCompanyLocationParameter($parameter, $values['location_id']);
+            } else {
+                $this->createCompanyLocationParameter($parameter, $values);
+            }
         } else {
-            $this->createCompanyParameter($parameter, $values);
+            if ($values['use_default']) {
+                $this->deleteCompanyParameter($parameter);
+            } else {
+                $this->createCompanyParameter($parameter, $values);
+            }
         }
     }
     public function createCompanyParameter($parameter, $values)
     {
-        return CompanyParameter::create([
+        $obj = CompanyParameter::firstOrCreate([
             'parameter_id'   => $parameter->id,
             'parameter_type' => get_class($parameter),
-            'value'          => $values['value'],
         ]);
+        $obj->value = $values['value'];
+        $obj->save();
     }
     public function deleteCompanyParameter($parameter)
     {
         return CompanyParameter::where('parameter_id', $parameter->id)
-            ->where('parameter_type', get_class($parameter))->get()->delete();
+            ->where('parameter_type', get_class($parameter))->delete();
+    }
+    public function createCompanyLocationParameter($parameter, $values)
+    {
+        $obj = LocationParameter::firstOrCreate([
+            'parameter_id' => $parameter->id,
+            'location_id'  => $values['location_id'],
+        ]);
+        $obj->value = $values['value'];
+        $obj->save();
+    }
+    public function deleteCompanyLocationParameter($parameter, $location_id)
+    {
+        return LocationParameter::where('parameter_id', $parameter->id)
+            ->where('location_id', $location_id)->delete();
     }
 }
