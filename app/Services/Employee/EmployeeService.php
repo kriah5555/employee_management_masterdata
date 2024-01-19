@@ -642,4 +642,21 @@ class EmployeeService
     {
         return CompanyUser::where('user_id', $userId)->where('company_id', $companyId)->get();
     }
+
+    public function getCompanyEmployees()
+    {
+        $response = [];
+        $employees = $this->employeeProfileRepository->getAllEmployeeProfiles([
+            'user.userBasicDetails',
+        ]);
+        $response = [];
+        foreach ($employees as $employee) {
+            $response[] = [
+                'value' => $employee->id,
+                'label' => $employee->user->userBasicDetails->first_name . ' ' . $employee->user->userBasicDetails->last_name
+            ];
+        }
+
+        return sortArrayByKey($response, 'label');
+    }
 }

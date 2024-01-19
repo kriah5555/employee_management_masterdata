@@ -235,5 +235,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         });
 
         Route::put('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
+        Route::get('get-company-employees', [EmployeeController::class, 'getCompanyEmployees']);
     });
 });
