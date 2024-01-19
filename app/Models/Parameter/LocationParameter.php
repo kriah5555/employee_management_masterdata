@@ -50,7 +50,7 @@ class LocationParameter extends BaseModel
      */
     protected $fillable = [
         'location_id',
-        'parameter_name',
+        'parameter_id',
         'value',
         'created_by',
         'updated_by'
