@@ -132,7 +132,11 @@ class ParameterService
                 $details['description'] = $parameter->description;
                 $details['default_value'] = $details['value'] = $parameter->value;
             }
-            $companyParameters = $this->parameterRepository->getCompanyParameter($parameter);
+            if ($values['type'] == 5) {
+                $companyParameters = $this->parameterRepository->getCompanyLocationParameter($parameter, $values['location_id']);
+            } else {
+                $companyParameters = $this->parameterRepository->getCompanyParameter($parameter);
+            }
             if ($companyParameters) {
                 $details['use_default'] = false;
                 $details['value'] = $companyParameters->value;
@@ -155,10 +159,9 @@ class ParameterService
         } elseif ($defaultParameter->type == 4 || $defaultParameter->type == 5) {
             $parameter = $this->parameterRepository->getParameterByName($parameterName);
         }
-        dd($parameter, $defaultParameter->type);
-        if ($defaultParameter->type == 4) {
+        if ($defaultParameter->type == 5) {
             if ($values['use_default']) {
-                $this->deleteCompanyLocationParameter($parameter);
+                $this->deleteCompanyLocationParameter($parameter, $values['location_id']);
             } else {
                 $this->createCompanyLocationParameter($parameter, $values);
             }
@@ -172,28 +175,30 @@ class ParameterService
     }
     public function createCompanyParameter($parameter, $values)
     {
-        return CompanyParameter::create([
+        $obj = CompanyParameter::firstOrCreate([
             'parameter_id'   => $parameter->id,
             'parameter_type' => get_class($parameter),
-            'value'          => $values['value'],
         ]);
+        $obj->value = $values['value'];
+        $obj->save();
     }
     public function deleteCompanyParameter($parameter)
     {
         return CompanyParameter::where('parameter_id', $parameter->id)
-            ->where('parameter_type', get_class($parameter))->get()->destroy();
+            ->where('parameter_type', get_class($parameter))->delete();
     }
     public function createCompanyLocationParameter($parameter, $values)
     {
-        return LocationParameter::create([
-            'parameter_id'   => $parameter->id,
-            'parameter_type' => get_class($parameter),
-            'value'          => $values['value'],
+        $obj = LocationParameter::firstOrCreate([
+            'parameter_id' => $parameter->id,
+            'location_id'  => $values['location_id'],
         ]);
+        $obj->value = $values['value'];
+        $obj->save();
     }
-    public function deleteCompanyLocationParameter($parameter)
+    public function deleteCompanyLocationParameter($parameter, $location_id)
     {
         return LocationParameter::where('parameter_id', $parameter->id)
-            ->where('parameter_type', get_class($parameter))->get()->destroy();
+            ->where('location_id', $location_id)->delete();
     }
 }

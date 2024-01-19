@@ -102,10 +102,11 @@ class ParameterController extends Controller
     }
     public function updateCompanyParameter(ParameterRequest $request, $parameterName)
     {
+        $this->parameterService->updateCompanyParameter($parameterName, $request->validated());
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->parameterService->updateCompanyParameter($parameterName, $request->validated()),
+                'message' => 'Parameter updated',
             ],
             JsonResponse::HTTP_OK,
         );

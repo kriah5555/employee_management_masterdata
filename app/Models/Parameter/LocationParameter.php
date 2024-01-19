@@ -4,6 +4,7 @@ namespace App\Models\Parameter;
 
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
+use App\Models\Parameter\Parameter;
 
 class LocationParameter extends BaseModel
 {
@@ -55,4 +56,8 @@ class LocationParameter extends BaseModel
         'created_by',
         'updated_by'
     ];
+    public function parameter()
+    {
+        return $this->belongsTo(Parameter::class);
+    }
 }

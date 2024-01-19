@@ -223,6 +223,11 @@ class ParameterRepository implements ParameterRepositoryInterface
         return CompanyParameter::where('parameter_id', $parameter->id)
             ->where('parameter_type', get_class($parameter))->get()->first();
     }
+    public function getCompanyLocationParameter(Parameter $parameter, $locationId): LocationParameter|null
+    {
+        return LocationParameter::where('parameter_id', $parameter->id)
+            ->where('location_id', $locationId)->get()->first();
+    }
     public function getCompanyParameterByName(string $parameterName): CompanyParameter|null
     {
         return CompanyParameter::where('parameter_name', $parameterName)->get()->first();
