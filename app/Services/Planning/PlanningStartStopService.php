@@ -58,13 +58,27 @@ class PlanningStartStopService
         $plan->plan_started = false;
         $plan->save();
         $timeRegistration = $plan->timeRegistrations->last();
-        $timeRegistration->actual_end_time = date('Y-m-d H:i', strtotime($values['stop_time']));
+        $timeRegistration->actual_end_time = $this->getActualStopTime($plan->start_date_time, $values['stop_time']);
         $timeRegistration->ended_by = $values['ended_by'];
         if (!empty($values['reason_id'])) {
             $timeRegistration->stop_reason_id = $values['reason_id'];
         }
         $timeRegistration->save();
         DB::connection('tenant')->commit();
+    }
+
+    public function getActualStopTime($plan_start_date_time, $actual_stop_time)
+    {
+        $start_time = strtotime(date('H:i', strtotime($plan_start_date_time)));
+        $end_time   = strtotime($actual_stop_time);
+
+        if ($start_time == $end_time || $start_time > $end_time) {
+            $actual_stop_time = date('Y-m-d', strtotime($plan_start_date_time . '+ 1 day')) . ' ' . date('H:i', $end_time);
+        } else {
+            $actual_stop_time = date('Y-m-d', strtotime($plan_start_date_time)) . ' ' . date('H:i', $end_time);
+        }
+        
+        return $actual_stop_time;
     }
 
     public function startPlanByEmployee($values)
