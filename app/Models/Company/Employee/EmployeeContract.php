@@ -61,6 +61,16 @@ class EmployeeContract extends BaseModel
         'employee_type_id'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($employeeContract) {
+            $employeeContract->start_date = $employeeContract->start_date ? date('Y-m-d', strtotime($employeeContract->start_date)) : null;
+            $employeeContract->end_date = $employeeContract->end_date ? date('Y-m-d', strtotime($employeeContract->end_date)) : null;
+        });
+    }
+   
     public function employeeType()
     {
         return $this->belongsTo(EmployeeType::class);

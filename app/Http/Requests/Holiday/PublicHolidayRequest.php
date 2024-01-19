@@ -27,10 +27,8 @@ class PublicHolidayRequest extends ApiRequest
             'date'   => [
                 'bail',
                 'required',
-		'date_format:Y-m-d',
-		Rule::unique('public_holidays', 'date')->where(function ($query) {
-                    $query->where('deleted_at', null);
-                })->ignore($this->route('public_holiday')),
+                'date_format:d-m-Y',
+                Rule::unique('public_holidays', 'date')->ignore($this->route('public_holiday')), # check if the date is unique or not
             ],
 
             'status' => 'required|boolean',
@@ -42,13 +40,14 @@ class PublicHolidayRequest extends ApiRequest
             ],
         ];
     }
-    
-    protected function prepareForValidation()
+
+    /*protected function prepareForValidation()
     {
         $this->merge([
             'date' => \Carbon\Carbon::parse($this->date)->format('Y-m-d'),
         ]);
     }
+     */
 
     public function messages()
     {

@@ -31,7 +31,7 @@ class EmployeeInvitationService
             'company_id' => $companyId
         ]);
         $url = env('FRONTEND_URL', 'http://api-gateway.indii2.local');
-        $url = $url . "/employee-invitation/" . $token;
+        $url = $url . "/employee-invitations/" . $token;
         $company = app(CompanyService::class)->getCompanyById($companyId);
         $values['url'] = $url;
         $values['company_name'] = $company->company_name;
