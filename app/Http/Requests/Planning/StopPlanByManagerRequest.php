@@ -21,7 +21,6 @@ class StopPlanByManagerRequest extends ApiRequest
             'reason_id' => [
                 'nullable',
                 'integer',
-                // Rule::exists('employee_types', 'id'),
             ],
             'reason'    => 'required_if:reason_id,null:string',
             'stop_time' => 'required|date_format:H:i',

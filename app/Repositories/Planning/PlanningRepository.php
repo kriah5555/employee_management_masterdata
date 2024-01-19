@@ -131,10 +131,17 @@ class PlanningRepository implements PlanningRepositoryInterface
         return $query->get();
     }
 
-    public function getStartedPlanForEmployee($employee_profile_id, $location_id)
+    public function getStartedPlanForEmployee($employee_profile_id, $location_id = '', $ignore_plan_id = '')
     {
         $query = PlanningBase::query();
-        $query->where('location_id', $location_id);
+        if (!empty($location_id)) {
+            $query->where('location_id', $location_id);
+        }
+
+        if (!empty($ignore_plan_id)) {
+            $query->where('id', '!=', $ignore_plan_id);
+        }
+        
         $query->where('employee_profile_id', $employee_profile_id);
         $query->where('plan_started', true);
         $query->orderBy('start_date_time');
