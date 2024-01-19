@@ -431,6 +431,11 @@ class PlanningService implements PlanningInterface
                 $startPlan = true;
                 $stopPlan = false;
             }
+
+            if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
+                $startPlan = false;
+            }
+            
         // }
         $response = [
             'start_time'       => date('H:i', strtotime($details->start_date_time)),

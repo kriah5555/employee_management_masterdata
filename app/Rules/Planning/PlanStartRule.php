@@ -25,7 +25,8 @@ class PlanStartRule implements ValidationRule
             if ($started_plans->count() > 0) {
                 $location    = $started_plans->first()->location->location_name;
                 $workstation = $started_plans->first()->workstation->workstation_name;
-                $fail("Please stop plan at location: $location, workstation: $workstation");
+                $plan_date   = $started_plans->first()->plan_date;
+                $fail("Please stop plan at location: $location, workstation: $workstation on $plan_date");
                 return ;
             }
 
