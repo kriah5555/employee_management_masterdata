@@ -426,19 +426,46 @@ class PlanningService implements PlanningInterface
         $startPlan = $stopPlan = false;
         $sendPlanDimona = $details->dimona_status ? false : true;
         // if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-            if ($details->plan_started) {
-                $startPlan = false;
-                $stopPlan = true;
-            } else {
-                $startPlan = true;
-                $stopPlan = false;
-            }
+            // if ($details->plan_started) {
+            //     $startPlan = false;
+            //     $stopPlan = true;
+            // } else {
+            //     $startPlan = true;
+            //     $stopPlan = false;
+            // }
 
-            if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-                $startPlan = false;
-            }
+            // if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
+            //     $startPlan = false;
+            // }
             
         // }
+
+        // Get the current date and time
+        $currentDateTime = strtotime(date('Y-m-d H:i'));
+
+        // Initialize variables for start and stop plans
+        $startPlan = $stopPlan = false;
+
+        // Check if the start time is less than or equal to the current time
+        if (strtotime($details->start_date_time) <= $currentDateTime) {
+            $startPlan = $stopPlan = false; // Don't start or stop the plan
+        } 
+        // Check if start time is less than or equal to the current time and end time is greater than or equal to the current time
+        elseif (strtotime($details->start_date_time) <= $currentDateTime && strtotime($details->end_date_time) >= $currentDateTime) {
+            $startPlan = true; // Start the plan
+            $stopPlan  = false; // Don't stop the plan
+        } 
+        // Check if end time is greater than the current time
+        elseif (strtotime($details->end_date_time) > $currentDateTime) {
+            $startPlan = $stopPlan = false; // Don't start or stop the plan
+        }
+
+        // Check if the plan has already been started
+        if ($details->plan_started) {
+            $startPlan = false; // Don't start the plan
+            $stopPlan  = true;  // Stop the plan
+        }
+
         $response = [
             'start_time'       => date('H:i', strtotime($details->start_date_time)),
             'end_time'         => date('H:i', strtotime($details->end_date_time)),

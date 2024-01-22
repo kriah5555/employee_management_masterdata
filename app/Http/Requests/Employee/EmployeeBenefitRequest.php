@@ -17,7 +17,7 @@ class EmployeeBenefitRequest extends ApiRequest
             'fuel_card'               => 'required|boolean',
             'company_car'             => 'required|boolean',
             'extra_info'              => 'nullable|string',
-            'clothing_compensation'   => ['required', new BelgiumCurrencyFormatRule],
+            'clothing_compensation'   => ['nullable', new BelgiumCurrencyFormatRule],
             'social_secretary_number' => 'nullable|string|max:255',
             'contract_number'         => 'nullable|string|max:255',
             'meal_voucher_id'         => [
