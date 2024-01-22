@@ -5,7 +5,7 @@ namespace App\Repositories\Planning;
 use App\Models\Company\Company;
 use App\Models\Planning\PlanningBase;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection; 
+use Illuminate\Database\Eloquent\Collection;
 use App\Exceptions\ModelDeleteFailedException;
 use App\Exceptions\ModelUpdateFailedException;
 use App\Interfaces\Planning\PlanningRepositoryInterface;
@@ -102,7 +102,7 @@ class PlanningRepository implements PlanningRepositoryInterface
             $query->whereBetween('start_date_time', [$from_date, $to_date]);
         } elseif (!empty($from_date_time) && !empty($to_date_time)) {
             $from_date_time = date('Y-m-d H:i:s', strtotime($from_date_time));
-            $to_date_time   = date('Y-m-d H:i:s', strtotime($to_date_time));
+            $to_date_time = date('Y-m-d H:i:s', strtotime($to_date_time));
 
             $query->where(function ($query) use ($from_date_time, $to_date_time) { # to get the plans which are overlapping to the given date time
                 $query->where('start_date_time', '<=', $from_date_time)
@@ -123,7 +123,7 @@ class PlanningRepository implements PlanningRepositoryInterface
         $query->where(function ($query) use ($dates_array) {
             foreach ($dates_array as $date) {
                 $startOfDay = date('Y-m-d 00:00:00', strtotime($date));
-                $endOfDay   = date('Y-m-d 23:59:59', strtotime($date));
+                $endOfDay = date('Y-m-d 23:59:59', strtotime($date));
                 $query->orWhereBetween('start_date_time', [$startOfDay, $endOfDay]);
             }
         });
@@ -159,24 +159,24 @@ class PlanningRepository implements PlanningRepositoryInterface
     }
 
     public function getPlanningsForTimings($employee_profile_id, $date_timings = [])
-{
-    $query = PlanningBase::where('employee_profile_id', $employee_profile_id);
+    {
+        $query = PlanningBase::where('employee_profile_id', $employee_profile_id);
 
-    $query->where(function ($query) use ($date_timings) {
-        foreach ($date_timings as $date_timing) {
-            $start_date_time = date('Y-m-d H:i:s', strtotime($date_timing['start_date_time']));
-            $end_date_time   = date('Y-m-d H:i:s', strtotime($date_timing['end_date_time']));
-            
-            $query->orWhere(function ($query) use ($start_date_time, $end_date_time) {
-                $query->where('start_date_time', $start_date_time)
-                    ->where('end_date_time', $end_date_time);
-            });
-        }
-    });
+        $query->where(function ($query) use ($date_timings) {
+            foreach ($date_timings as $date_timing) {
+                $start_date_time = date('Y-m-d H:i:s', strtotime($date_timing['start_date_time']));
+                $end_date_time = date('Y-m-d H:i:s', strtotime($date_timing['end_date_time']));
 
-    $query->orderBy('start_date_time');
-    $query->orderBy('end_date_time');
+                $query->orWhere(function ($query) use ($start_date_time, $end_date_time) {
+                    $query->where('start_date_time', $start_date_time)
+                        ->where('end_date_time', $end_date_time);
+                });
+            }
+        });
 
-    return $query->get();
-}
+        $query->orderBy('start_date_time');
+        $query->orderBy('end_date_time');
+
+        return $query->get();
+    }
 }

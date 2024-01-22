@@ -2,6 +2,7 @@
 
 namespace App\Services\Company;
 
+use App\Models\Planning\PlanningBase;
 use App\Services\Employee\EmployeeService;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Company;
@@ -123,6 +124,13 @@ class CompanyService implements CompanyServiceInterface
         // $company->save();
         $this->companyRepository->updateCompany($company, ['status' => false]);
         // $this->companyRepository->deleteCompany($companyId);
+    }
+
+    public function checkCompanyHasWorkedPeriod($companyId)
+    {
+        setTenantDBByCompanyId($companyId);
+        $plannings = PlanningBase::whereHas('timeRegistration')->get();
+        return count($plannings) ? true : false;
     }
 
     public function getCompanySectors(Company $company)

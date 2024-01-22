@@ -4,6 +4,7 @@ namespace App\Services\Planning;
 
 use App\Models\Planning\PlanningBase;
 use App\Interfaces\Planning\PlanningInterface;
+use App\Repositories\Planning\PlanningRepository;
 use App\Services\Employee\EmployeeContractService;
 use App\Services\Planning\PlanningService;
 use App\Repositories\Company\CompanyRepository;
@@ -16,6 +17,7 @@ class PlanningMobileService implements PlanningInterface
         protected PlanningService $planningService,
         protected CompanyRepository $companyRepository,
         protected EmployeeContractService $employeeContractService,
+        protected PlanningRepository $planningRepository,
     ) {
     }
 
@@ -187,11 +189,11 @@ class PlanningMobileService implements PlanningInterface
             $time_registrations = $plan->timeRegistrations;
             $breaks = $plan->breaks;
 
-            $contract_hours       = $plan->contract_hours;
-            $planned_hours        = $plan->planned_hours;
-            $over_time            = 0;
-            $worked_hours         = (($time_registrations) ? $time_registrations->flatten()->pluck('worked_hours')->sum() : 0);
-            $break                = ($breaks) ? $breaks->flatten()->pluck('break_hours')->sum() : 0;
+            $contract_hours = $plan->contract_hours;
+            $planned_hours = $plan->planned_hours;
+            $over_time = 0;
+            $worked_hours = (($time_registrations) ? $time_registrations->flatten()->pluck('worked_hours')->sum() : 0);
+            $break = ($breaks) ? $breaks->flatten()->pluck('break_hours')->sum() : 0;
 
             if (!isset($return[$plan->employeeType->name])) { # will add this data only once
                 $return[$plan->employeeType->name] = [
@@ -205,11 +207,11 @@ class PlanningMobileService implements PlanningInterface
                     'break_hours'          => 0,
                 ];
             }
-            $return[$plan->employeeType->name]['total_worked_hours']   = ($return[$plan->employeeType->name]['total_worked_hours'] ?? 0) + $worked_hours;
+            $return[$plan->employeeType->name]['total_worked_hours'] = ($return[$plan->employeeType->name]['total_worked_hours'] ?? 0) + $worked_hours;
             $return[$plan->employeeType->name]['total_contract_hours'] = ($return[$plan->employeeType->name]['total_contract_hours'] ?? 0) + $contract_hours;
-            $return[$plan->employeeType->name]['total_planned_hours']  = ($return[$plan->employeeType->name]['total_planned_hours'] ?? 0) + $planned_hours;
-            $return[$plan->employeeType->name]['overtime']             = ($return[$plan->employeeType->name]['overtime'] ?? 0) + $over_time;
-            $return[$plan->employeeType->name]['break_hours']          = ($return[$plan->employeeType->name]['break_hours'] ?? 0) + $break;
+            $return[$plan->employeeType->name]['total_planned_hours'] = ($return[$plan->employeeType->name]['total_planned_hours'] ?? 0) + $planned_hours;
+            $return[$plan->employeeType->name]['overtime'] = ($return[$plan->employeeType->name]['overtime'] ?? 0) + $over_time;
+            $return[$plan->employeeType->name]['break_hours'] = ($return[$plan->employeeType->name]['break_hours'] ?? 0) + $break;
             $return[$plan->employeeType->name]['plans'][] = [
                 'plan_date'                => $plan->plan_date,
                 'start_time'               => $plan->start_time,
@@ -248,5 +250,43 @@ class PlanningMobileService implements PlanningInterface
             $employeeDetails['plannings'] = $plannings;
         }
         return $employeeDetails;
+    }
+    public function getDayPlansManager($values)
+    {
+        $response = [];
+        $plans = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], '', $values['date'], $values['date'], '', [
+            'employeeType',
+            'workstation',
+            'functionTitle',
+            'employeeProfile',
+            'employeeProfile.user.userBasicDetails',
+            'timeRegistrations',
+            'timeRegistrations.startedBy',
+            'timeRegistrations.endedBy',
+            'contracts',
+            'breaks'
+        ]);
+        foreach ($plans as $plan) {
+            $startPlan = $stopPlan = false;
+            if (strtotime($plan->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($plan->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
+                if ($plan->plan_started) {
+                    $startPlan = false;
+                    $stopPlan = true;
+                } else {
+                    $startPlan = true;
+                    $stopPlan = false;
+                }
+            }
+            $response[] = [
+                'start_time'    => date('H:i', strtotime($plan->start_date_time)),
+                'end_time'      => date('H:i', strtotime($plan->end_date_time)),
+                'employee_type' => $plan->employeeType->name,
+                'function'      => $plan->functionTitle->name,
+                'workstation'   => $plan->workstation->workstation_name,
+                'start_plan'    => $startPlan,
+                'stop_plan'     => $stopPlan,
+            ];
+        }
+        return $response;
     }
 }
