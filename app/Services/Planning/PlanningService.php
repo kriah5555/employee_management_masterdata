@@ -291,6 +291,8 @@ class PlanningService implements PlanningInterface
                 'function_name'            => $plan->functionTitle->name,
                 'employee_profile_id'      => $plan->employee_profile_id,
                 'employee_name'            => $plan->employeeProfile->full_name,
+                'employee_type_id'         => $plan->employee_type_id,
+                'employee_type'            => $plan->employeeType->name,
                 'leave_status'             => $leave_status,
                 'leave_reason'             => $leave_status ? "Something" : null,
             ];

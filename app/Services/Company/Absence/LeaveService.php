@@ -31,7 +31,7 @@ class LeaveService
     public function getLeavesMobile() # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return $this->formatLeaves($this->leave_repository->getLeaves(), '', true);
+            return $this->formatLeaves($this->leave_repository->getLeaves(), true);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

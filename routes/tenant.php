@@ -96,7 +96,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
 
             Route::post('leaves-status/{leave_id}/{status}', 'updateLeaveStatus')
-                ->where(['status' => '(cancel)']);
+                ->where(['status' => '(cancel|approve)']);
 
             Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave');
         });
