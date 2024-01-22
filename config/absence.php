@@ -68,6 +68,6 @@ return [
         6 => 'First and second half', 
         7 => 'Multiple dates',
         8 => 'Full day', 
-        // 9 => 'Leave for plannings', 
+        9 => 'Leave for plannings', 
     ],
 ];

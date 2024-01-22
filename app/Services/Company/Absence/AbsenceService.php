@@ -209,9 +209,6 @@ class AbsenceService
         }
     }
 
-    
-
-
     public function getAbsenceForDate($date)
     {
         try {
@@ -372,5 +369,74 @@ class AbsenceService
         }
 
         return $actions;
+    }
+
+    public function formatDurationTypeForApplyingAbsence($half_day, $multiple_holiday_codes) # $half_day [0-> full day, 1-> morning, 2-> evening, 3-> both ]
+    {
+        if ($half_day == 0) {
+            return config('absence.FULL_DAYS');
+        } elseif ($half_day == 1 && $multiple_holiday_codes) {
+            return config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF');
+        } elseif ($half_day == 2 && $multiple_holiday_codes) {
+            return config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF');
+        } elseif ($half_day == 1) {
+            return config('absence.FIRST_HALF');
+        } elseif ($half_day == 2) {
+            return config('absence.SECOND_HALF');
+        } elseif ($half_day == 3) {
+            return config('absence.FIRST_AND_SECOND_HALF');
+        } elseif ($multiple_holiday_codes) {
+            return config('absence.MULTIPLE_HOLIDAY_CODES');
+        }
+    }
+
+    public function formatHolidayCodeCountsForApplyingAbsence($half_day, $multiple_holiday_codes, $holiday_code_counts, $holiday_code, $holiday_code_mornings, $holiday_code_evening)
+    {
+        $duration_type = $this->formatDurationTypeForApplyingAbsence($half_day, $multiple_holiday_codes);
+
+        $return_data = empty($holiday_code_counts) ? collect([]) : collect($holiday_code_counts);
+
+        $return_data->map(function ($holiday_count_details) {
+            $holiday_count_details['duration_type'] = '';
+        });
+
+        if (in_array($duration_type, [
+            config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'), 
+            config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), 
+            config('absence.FIRST_HALF'), 
+            config('absence.SECOND_HALF'), 
+            config('absence.FULL_DAYS'), 
+            ])) {
+
+            $d_type = $d_type = '';
+            if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $duration_type == config('absence.FIRST_HALF') ) {
+                $d_type = config('absence.FIRST_HALF');
+                $h_code = $holiday_code_mornings;
+            } if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF') || $duration_type == config('absence.SECOND_HALF') ) {
+                $d_type = config('absence.FIRST_HALF');
+                $h_code = $holiday_code_mornings;
+            } else  { # fill day
+                $h_code = $holiday_code;
+            }
+
+            $return_data->push([
+                'holiday_code'  => $h_code,
+                'hours'         => '',
+                'duration_type' => $d_type,
+            ]);
+
+        } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) {
+            $return_data->merge([[
+                'holiday_code'  => $holiday_code_mornings,
+                'hours'         => '',
+                'duration_type' => config('absence.FIRST_HALF'),
+            ], [
+                'holiday_code'  => $holiday_code_evening,
+                'hours'         => '',
+                'duration_type' => config('absence.SECOND_HALF'),
+            ]]);
+        }
+
+        return $return_data->toArray();
     }
 }

@@ -4,13 +4,14 @@ namespace App\Http\Requests\Company\Absence;
 
 use PSpell\Config;
 use App\Rules\HolidayTypeRule;
-use App\Rules\HolidayCodeDurationTypeRule;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
 use App\Rules\AbsenceDatesValidationRule;
 use App\Rules\EmployeeHolidayBalanceRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
+use App\Rules\HolidayCodeDurationTypeRule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
+use App\Services\Company\Absence\AbsenceService;
 
 class HolidayRequest extends ApiRequest
 {
@@ -54,14 +55,49 @@ class HolidayRequest extends ApiRequest
         ];
     }
 
+    protected function prepareForValidation()
+    {
+        $absenceService = app(AbsenceService::class);
+        if ($this->route()->getName() == 'employee-apply-holidays-mobile') {
+            $this->replace([
+                'employee_profile_id' => $this->input('employee_profile_id'),
+                'reason'              => $this->input('reason'),
+                'dates'               => $this->input('dates'),
+                'holiday_code_counts'       => $absenceService->formatHolidayCodeCountsForApplyingAbsence(
+                                            $this->input('half_day'), 
+                                            $this->input('multiple_holiday_codes'),
+                                            $this->input('holiday_code_counts'), 
+                                            $this->input('holiday_code'), 
+                                            $this->input('holiday_code_morning'), 
+                                            $this->input('holiday_code_evening')
+                                        ),
+                'duration_type' => $absenceService->formatDurationTypeForApplyingAbsence($this->input('half_day'), $this->input('multiple_holiday_codes')),
+            ]);
+            // dd([
+            //     'employee_profile_id' => $this->input('employee_profile_id'),
+            //     'reason'              => $this->input('reason'),
+            //     'dates'               => $this->input('dates'),
+            //     'holiday_code_counts'       => $absenceService->formatHolidayCodeCountsForApplyingAbsence(
+            //                                 $this->input('half_day'), 
+            //                                 $this->input('multiple_holiday_codes'),
+            //                                 $this->input('holiday_code_counts'), 
+            //                                 $this->input('holiday_code'), 
+            //                                 $this->input('holiday_code_morning'), 
+            //                                 $this->input('holiday_code_evening')
+            //                             ),
+            //     'duration_type' => $absenceService->formatDurationTypeForApplyingAbsence($this->input('half_day'), $this->input('multiple_holiday_codes')),
+            //                         ]);
+        }
+    }
+
     public function messages()
     {
         return [
             'duration_type.required' => 'Duration type is required.',
-            'duration_type.in' => 'Invalid duration type selected.',
+            'duration_type.in'       => 'Invalid duration type selected.',
 
             'absence_status.required' => 'Absence status type name is required.',
-            'absence_status.in' => 'Invalid absence status type selected.',
+            'absence_status.in'       => 'Invalid absence status type selected.',
         ];
     }
 }

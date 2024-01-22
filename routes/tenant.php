@@ -68,7 +68,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::controller(HolidayController::class)->group(function () {
 
-            Route::resource('holidays', HolidayController::class)->except(['edit']);
+            Route::resource('holidays', HolidayController::class)->except(['edit', 'store', 'update']);
 
             Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
 
@@ -82,6 +82,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('holidays-status/{holiday_id}/{status}', 'updateHolidayStatus')
                 ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
+
+            Route::post('employee-apply-holidays-mobile', [HolidayController::class, 'store'])->name('employee-apply-holidays-mobile');
+
         });
 
         Route::controller(LeaveController::class)->group(function () {
