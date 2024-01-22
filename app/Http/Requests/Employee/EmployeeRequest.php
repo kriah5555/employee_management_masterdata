@@ -67,7 +67,7 @@ class EmployeeRequest extends ApiRequest
                 $rules['fuel_card'] = 'nullable|boolean';
                 $rules['company_car'] = 'nullable|boolean';
                 $rules['extra_info'] = 'nullable|string';
-                $rules['clothing_compensation'] = [nullable, new BelgiumCurrencyFormatRule];
+                $rules['clothing_compensation'] = ['bail', 'nullable', new BelgiumCurrencyFormatRule()];
                 $rules['social_secretary_number'] = 'nullable|string|max:255';
                 $rules['contract_number'] = 'nullable|string|max:255';
                 $rules['social_security_number'] = ['required', 'string', new ValidateLengthIgnoringSymbolsRule(11, 11, [',', '.', '-']), new DuplicateSocialSecurityNumberRule()];

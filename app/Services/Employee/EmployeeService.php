@@ -634,8 +634,20 @@ class EmployeeService
 
     public function deleteEmployeeFromCompany($employeeProfileId)
     {
+        DB::connection('tenant')->beginTransaction();
+        DB::connection('master')->beginTransaction();
         $employeeProfile = EmployeeProfile::findOrFail($employeeProfileId);
-        dd($employeeProfile);
+        $employeeProfile->employeeSocialSecretaryDetails->delete();
+        foreach ($employeeProfile->employeeContracts as $employeeContract) {
+            $employeeContract->delete();
+        }
+        foreach ($employeeProfile->employeeCommute as $employeeCommute) {
+            $employeeCommute->delete();
+        }
+        CompanyUser::where('company_id', getCompanyId())->where('user_id', $employeeProfile->user_id)->delete();
+        $employeeProfile->delete();
+        DB::connection('master')->commit();
+        DB::connection('tenant')->commit();
     }
 
     public function getCompanyUserObjectForEmployee($userId, $companyId)

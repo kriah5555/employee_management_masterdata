@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Planning;
 
+use App\Services\Planning\PlanningService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -9,12 +10,14 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\Planning\PlanningMobileService;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Planning\SwitchPlanningRequest;
+use Illuminate\Validation\Rule;
 
 
 class PlanningMobileController extends Controller
 {
     public function __construct(
         protected PlanningMobileService $planningMobileService,
+        protected PlanningService $planningService,
     ) {
     }
 
@@ -75,7 +78,7 @@ class PlanningMobileController extends Controller
                 );
             }
 
-            $userId      = Auth::guard('web')->user()->id;
+            $userId = Auth::guard('web')->user()->id;
             $company_ids = getUserCompanies($userId);
             return returnResponse(
                 [
@@ -170,6 +173,49 @@ class PlanningMobileController extends Controller
                 'trace'   => $e->getTraceAsString(),
                 'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getDayPlansManager(Request $request)
+    {
+        $rules = [
+            'location_id' => [
+                'bail',
+                'required',
+                'integer',
+                Rule::exists('locations', 'id'),
+            ],
+            'date'        => 'date_format:d-m-Y'
+        ];
+
+        $request_data = request()->all();
+
+        $validator = Validator::make($request_data, $rules, []);
+        if ($validator->fails()) {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => $validator->errors()->all()
+                ],
+                JsonResponse::HTTP_BAD_REQUEST,
+            );
+        }
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningService->getDayPlansManager($validator->validated())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }
