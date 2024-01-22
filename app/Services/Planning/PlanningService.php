@@ -450,10 +450,10 @@ class PlanningService implements PlanningInterface
         if (strtotime($details->start_date_time) <= $currentDateTime) {
             $startPlan = $stopPlan = false; // Don't start or stop the plan
         } 
-        // Check if start time is less than or equal to the current time and end time is greater than or equal to the current time
-        elseif (strtotime($details->start_date_time) <= $currentDateTime && strtotime($details->end_date_time) >= $currentDateTime) {
-            $startPlan = true; // Start the plan
-            $stopPlan  = false; // Don't stop the plan
+        // if current time is in between start and end time
+        elseif ($currentDateTime >= strtotime($details->start_date_time) && $currentDateTime <= strtotime($details->end_date_time)) {
+            $startPlan = true; 
+            $stopPlan  = false; 
         } 
         // Check if end time is greater than the current time
         elseif (strtotime($details->end_date_time) > $currentDateTime) {
