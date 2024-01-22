@@ -248,24 +248,14 @@ class EmployeeController extends Controller
      */
     public function destroy($employeeProfileId)
     {
-        try {
-            // $this->employeeService->deleteEmployee($employeeProfileId);
-            return returnResponse(
-                [
-                    'success' => true,
-                    'message' => 'Employee deleted successfully'
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
+        $this->employeeService->deleteEmployee($employeeProfileId);
+        return returnResponse(
+            [
+                'success' => true,
+                'message' => 'Employee deleted successfully'
+            ],
+            JsonResponse::HTTP_OK,
+        );
     }
 
     public function getFunctionSalaryToCreateEmployee(Request $request)

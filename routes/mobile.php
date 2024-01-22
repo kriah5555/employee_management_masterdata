@@ -41,11 +41,11 @@ Route::middleware([SetActiveUser::class])->group(function () {
     Route::controller(PlanningStartStopController::class)->group(function () {
 
         Route::post('start-plan-by-employee', 'startPlanByEmployee');
-        
+
         Route::post('stop-plan-by-employee', 'stopPlanByEmployee');
 
         Route::post('stop-forgot-plan-by-employee', 'stopForgotPlanByEmployee');
-        
+
     });
 
     Route::middleware([InitializeTenancy::class])->group(function () {
@@ -53,6 +53,8 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::get('get-employees-to-switch-plan', [PlanningMobileController::class, 'getEmployeesToSwitchPlan']);
 
         Route::post('get-day-planning', [PlanningController::class, 'getDayPlanningMobile'])->name('get-day-planning-mobile');
+
+        Route::post('get-day-plans-manager', [PlanningMobileController::class, 'getDayPlansManager']);
 
     });
 
