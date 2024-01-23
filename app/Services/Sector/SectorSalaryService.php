@@ -108,7 +108,7 @@ class SectorSalaryService
                 foreach ($salaries as $key => $salary) {
                     if ($key != 'level') {
                         $oldSalary = europeanToNumeric($salary);
-                        $data['salaries'][$index][$key] = number_format(($coefficient / 100 * $oldSalary) + $oldSalary, 4);
+                        $data['salaries'][$index][$key] = numericToEuropean(($coefficient / 100 * $oldSalary) + $oldSalary, 4);
                     }
                 }
 

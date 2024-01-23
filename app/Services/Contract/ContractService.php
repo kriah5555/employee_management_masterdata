@@ -80,6 +80,7 @@ class ContractService
                 $plan = app(PlanningRepository::class)->getPlanningById($values['plan_id']);
                 
                 $employee_contract_file = $this->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.SIGNED'), $values['plan_id'], $values['company_id'] ?? '', $values['signature'], '');
+                
             DB::connection('tenant')->commit();
             return $employee_contract_file;
         } catch (\Exception $e) {

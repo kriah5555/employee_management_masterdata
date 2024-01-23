@@ -76,7 +76,9 @@ class EmployeeBenefits extends BaseModel
         parent::boot();
 
         static::saving(function ($employeeBenefits) {
-            $employeeBenefits->clothing_compensation = formatToCommonHours($employeeBenefits->clothing_compensation);
+            if (!empty($employeeBenefits->clothing_compensation)) {
+                $employeeBenefits->clothing_compensation = formatToNumber($employeeBenefits->clothing_compensation);
+            }
         });
     }
 

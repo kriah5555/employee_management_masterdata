@@ -60,7 +60,7 @@ class HolidayRequest extends ApiRequest
         $absenceService = app(AbsenceService::class);
         if ($this->route()->getName() == 'employee-apply-holidays-mobile') {
             $this->replace([
-                'employee_profile_id' => $this->input('employee_profile_id'),
+                'employee_profile_id' => getEmployeeProfileByUserId($this->input('user_id')),
                 'reason'              => $this->input('reason'),
                 'dates'               => $this->input('dates'),
                 'holiday_code_counts'       => $absenceService->formatHolidayCodeCountsForApplyingAbsence(
@@ -73,20 +73,6 @@ class HolidayRequest extends ApiRequest
                                         ),
                 'duration_type' => $absenceService->formatDurationTypeForApplyingAbsence($this->input('half_day'), $this->input('multiple_holiday_codes')),
             ]);
-            // dd([
-            //     'employee_profile_id' => $this->input('employee_profile_id'),
-            //     'reason'              => $this->input('reason'),
-            //     'dates'               => $this->input('dates'),
-            //     'holiday_code_counts'       => $absenceService->formatHolidayCodeCountsForApplyingAbsence(
-            //                                 $this->input('half_day'), 
-            //                                 $this->input('multiple_holiday_codes'),
-            //                                 $this->input('holiday_code_counts'), 
-            //                                 $this->input('holiday_code'), 
-            //                                 $this->input('holiday_code_morning'), 
-            //                                 $this->input('holiday_code_evening')
-            //                             ),
-            //     'duration_type' => $absenceService->formatDurationTypeForApplyingAbsence($this->input('half_day'), $this->input('multiple_holiday_codes')),
-            //                         ]);
         }
     }
 
