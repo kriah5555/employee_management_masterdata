@@ -12,6 +12,8 @@ use App\Rules\EmployeeLinkedToCompanyRule;
 use App\Rules\HolidayCodeDurationTypeRule;
 use App\Rules\HolidayCodeLinkedToCompanyRule;
 use App\Services\Company\Absence\AbsenceService;
+use App\Rules\ResponsiblePersonExistsRule;
+use App\Repositories\Employee\EmployeeProfileRepository;
 
 class HolidayRequest extends ApiRequest
 {
@@ -52,6 +54,11 @@ class HolidayRequest extends ApiRequest
                 new HolidayCodeDurationTypeRule(request()->input('duration_type'), $companyId, $absence_id),
                 new EmployeeHolidayBalanceRule(request()->input('employee_profile_id'), request()->input('duration_type'), $absence_id)
             ],
+            'manager_id' => [
+                'bail',
+                'nullable',
+                new ResponsiblePersonExistsRule(getCompanyId()),
+            ],
         ];
     }
 
@@ -61,6 +68,7 @@ class HolidayRequest extends ApiRequest
         if ($this->route()->getName() == 'employee-apply-holidays-mobile') {
             $this->replace([
                 'employee_profile_id' => getEmployeeProfileByUserId($this->input('user_id')),
+                'manager_id'          => $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId(getEmployeeProfileByUserId($this->input('user_id'))),
                 'reason'              => $this->input('reason'),
                 'dates'               => $this->input('dates'),
                 'holiday_code_counts'       => $absenceService->formatHolidayCodeCountsForApplyingAbsence(
@@ -73,6 +81,8 @@ class HolidayRequest extends ApiRequest
                                         ),
                 'duration_type' => $absenceService->formatDurationTypeForApplyingAbsence($this->input('half_day'), $this->input('multiple_holiday_codes')),
             ]);
+        } else {
+            $this->merge(['manager_id' => $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId($this->input('employee_profile_id'))]);
         }
     }
 

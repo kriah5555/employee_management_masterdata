@@ -85,6 +85,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('employee-apply-holidays-mobile', [HolidayController::class, 'store'])->name('employee-apply-holidays-mobile');
 
+            Route::post('manager-add-employee-holiday', [HolidayController::class, 'store'])->name('manager-add-employee-holiday');
+
         });
 
         Route::controller(LeaveController::class)->group(function () {

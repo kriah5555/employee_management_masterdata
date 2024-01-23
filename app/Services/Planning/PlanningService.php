@@ -167,6 +167,7 @@ class PlanningService implements PlanningInterface
                     'employee_id'   => $plan->employeeProfile->id,
                     'employee_name' => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name
                 ];
+                $response['workstation_data'][$workstationId]['employee'][$profile]['employee_types'][$plan->employeeType->name] = $plan->employeeType->employeeTypeConfig->icon_color;
                 $response['workstation_data'][$workstationId]['employee'][$profile]['total'] = [
                     'cost'           => 0,
                     'contract_hours' => 0
