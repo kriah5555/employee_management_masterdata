@@ -34,7 +34,7 @@ class EmployeeFunctionDetailsRule implements ValidationRule
                 $functionTitle = $this->functionService->getFunctionTitleDetails($data['function_id']);
                 $usedFunction[] = $functionTitle->id;
             }
-            if (!array_key_exists('salary', $data) || !is_numeric(str_replace(',', '.', $data['salary']))) {
+            if (!array_key_exists('salary', $data) || !is_numeric(europeanToNumeric($data['salary']))) {
                 $fail('Please enter correct salary');
             }
             if (array_key_exists('experience', $data) && !is_numeric(str_replace(',', '.', $data['experience']))) {
