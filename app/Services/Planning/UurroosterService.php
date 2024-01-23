@@ -16,7 +16,7 @@ use App\Models\EmployeeType\EmployeeType;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Services\Employee\EmployeeService;
 use App\Services\Planning\PlanningContractService;
-
+use App\Services\Company\Absence\AbsenceService;
 
 class UurroosterService implements PlanningInterface
 {
@@ -63,6 +63,7 @@ class UurroosterService implements PlanningInterface
     }
     public function formatUurroosterData($plannings, $response)
     {
+        $absenceService = app(AbsenceService::class);
         foreach ($plannings as $planning) {
             $employeeName = $planning->employeeProfile->user->userBasicDetails->first_name . ' ' . $planning->employeeProfile->user->userBasicDetails->last_name;
             $timeRegistrations = [
@@ -77,8 +78,9 @@ class UurroosterService implements PlanningInterface
                 $timeRegistrations['end_time'][] = $timeRegistration->actual_end_time ? date('H:i', strtotime($timeRegistration->actual_end_time)) : '';
                 $timeRegistrations['end_dimona_status'][] = null;
             }
+            $absence = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);
             $response['planning_data'][$planning->workStation->id]['plannings'][] = [
-                'employee_id'          => $planning->employeeProfile->id,
+                'employee_id'          => $planning->employee_profile_id,
                 'employee_name'        => $employeeName,
                 'function_name'        => $planning->functionTitle->name,
                 'start_time'           => date('H:i', strtotime($planning->start_date_time)),
@@ -88,7 +90,9 @@ class UurroosterService implements PlanningInterface
                 'actual_end_timings'   => $timeRegistrations['end_time'],
                 'end_dimona_status'    => $timeRegistrations['end_dimona_status'],
                 'break_timings'        => [],
-                'cost'                 => 10
+                'cost'                 => 10,
+                'absence_status'       => $absence->isNotEmpty(),
+                'absence_holiday_codes'=> $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
             ];
         }
         $response['planning_data'] = array_values($response['planning_data']);

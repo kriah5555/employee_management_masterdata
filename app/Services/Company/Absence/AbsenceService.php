@@ -209,25 +209,34 @@ class AbsenceService
         }
     }
 
-    public function getAbsenceForDate($date)
+    public function getAbsenceForDate($date, $absence_type = '', $employee_profile_id = '') #$absence_type = [1 => Holiday, 2 -> Leave]
     {
         try {
             $absenceIds = AbsenceDates::where(function ($query) use ($date) {
                 $query->where('dates_type', config('absence.DATES_MULTIPLE')) // Multiple dates
                     ->whereJsonContains('dates', $date);
             })
-           /* ->orWhere(function ($query) use ($date) {
-                $query->where('dates_type', config('absence.DATES_FROM_TO')) // From and To date
+            ->orWhere(function ($query) use ($date) {
+                    $results = $query->where('dates_type', config('absence.DATES_FROM_TO')) // From and To date
                     ->get()
                     ->filter(function ($absence) use ($date) {
                         $dates = $absence->dates;
                         return strtotime($date) >= strtotime($dates['from_date']) && strtotime($date) <= strtotime($dates['to_date']);
                     });
-	        })
-	    */
-            ->pluck('absence_id');
-            return Absence::whereIn('id', $absenceIds)->get();
 
+                    if ($results->isEmpty()) {
+                        $query->whereRaw('false');
+                    }
+                })
+            ->pluck('absence_id');
+            return Absence::whereIn('id', $absenceIds)
+                ->when(!empty($absence_type), function ($query) use ($absence_type) {
+                    $query->where('absence_type', $absence_type);
+                })
+                ->when(!empty($employee_profile_id), function ($query) use ($employee_profile_id) {
+                    $query->where('employee_profile_id', $employee_profile_id);
+                })
+                ->get();
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
