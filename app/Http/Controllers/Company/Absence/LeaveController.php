@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company\Absence;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use App\Services\Company\Absence\LeaveService;
 use App\Services\Company\Absence\AbsenceService;
 use App\Http\Requests\Company\Absence\LeaveRequest;
@@ -85,11 +86,10 @@ class LeaveController extends Controller
         }
     }
 
-    public function updateLeaveStatus($leave_id, $status)
+    public function updateLeaveStatus(Request $request)
     {
         try {
-            $status = config('absence.' . strtoupper($status));
-            $this->leave_service->updateLeaveStatus($leave_id, $status);
+            $this->leave_service->updateLeaveStatus($request->leave_id, $request->status, $request->reason);
             return returnResponse(
                 [
                     'success' => true,

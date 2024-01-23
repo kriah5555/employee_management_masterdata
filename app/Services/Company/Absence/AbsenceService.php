@@ -71,14 +71,15 @@ class AbsenceService
             ->pluck('id');
     }
 
-    public function updateAbsenceStatus(Absence $absence, $status)
+    public function updateAbsenceStatus(Absence $absence, $status, $reason = '')
     {
         try {
                 if (array_key_exists($status, config('absence.STATUS'))) {
-                    $absence->update(['absence_status' => $status]);
-                    // if ($status == config('absence.CANCEL') || $status == config('absence.REJECT')) {
-                    //     $this->deleteAbsenceRelatedData($absence);
-                    // }
+                    $data['absence_status'] = $status;
+                    if (!empty($reason)) {
+                        $data['reason'] = $status;
+                    }
+                    $absence->update();
                 }
                 return $absence;
         } catch (Exception $e) {
@@ -259,6 +260,8 @@ class AbsenceService
                 'dates'                  => $absence->absenceDates->dates,
                 'reason'                 => $absence->reason,
                 'plan_timings'           => $absence->plan_timings,
+                'plan_ids'               => $absence->plan_ids,
+                'shift_leave'            => !empty($absence->plan_ids),
                 'employee'               => [
                     'value' => $absence->employee_profile_id,
                     'label' => $absence->employee->full_name,

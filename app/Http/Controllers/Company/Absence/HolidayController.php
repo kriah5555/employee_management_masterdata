@@ -85,11 +85,10 @@ class HolidayController extends Controller
         }
     }
 
-    public function updateHolidayStatus($holiday_id, $status)
+    public function updateHolidayStatus(Request $request)
     {
         try {
-            $status = config('absence.'.strtoupper($status));
-            $this->holidayService->updateHolidayStatus($holiday_id, $status);
+            $this->holidayService->updateHolidayStatus($request->holiday_id, $request->status, $request->reason);
             return returnResponse(
                 [
                     'success' => true,

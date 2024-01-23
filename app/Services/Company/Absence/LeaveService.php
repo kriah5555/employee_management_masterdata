@@ -98,14 +98,14 @@ class LeaveService
         }
     }
 
-    public function updateLeaveStatus($leave_id, $status)
+    public function updateLeaveStatus($leave_id, $status, $reason = '')
     {
         try {
             DB::connection('tenant')->beginTransaction();
-
+            
                 $leave =  $this->getLeaveById($leave_id);
 
-                $this->absence_service->updateAbsenceStatus($leave, $status);
+                $this->absence_service->updateAbsenceStatus($leave, $status, $reason);
 
             DB::connection('tenant')->commit();
 

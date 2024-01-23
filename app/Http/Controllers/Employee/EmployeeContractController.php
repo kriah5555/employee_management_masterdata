@@ -141,7 +141,7 @@ class EmployeeContractController extends Controller
     public function getActiveContractEmployees(Request $request)
     {
         $weekNumber = $request->input('week_number');
-        $year = $request->input('year');
+        $year       = $request->input('year');
         try {
             return returnResponse(
                 [

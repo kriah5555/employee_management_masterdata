@@ -80,12 +80,12 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('holidays-list-manager-mobile', [HolidayController::class, 'getAllHolidaysForMobile']);
 
-            Route::post('holidays-status/{holiday_id}/{status}', 'updateHolidayStatus')
-                ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
+            Route::post('holidays-status', 'updateHolidayStatus');
+                // ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
 
             Route::post('employee-apply-holidays-mobile', [HolidayController::class, 'store'])->name('employee-apply-holidays-mobile');
 
-            Route::post('manager-add-employee-holiday', [HolidayController::class, 'store'])->name('manager-add-employee-holiday');
+            Route::post('manager-add-employee-holiday-mobile', [HolidayController::class, 'store'])->name('manager-add-employee-holiday-mobile');
 
         });
 
@@ -100,8 +100,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::get('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
 
-            Route::post('leaves-status/{leave_id}/{status}', 'updateLeaveStatus')
-                ->where(['status' => '(cancel|approve)']);
+            Route::post('leaves-status', 'updateLeaveStatus');
 
             Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave');
         });

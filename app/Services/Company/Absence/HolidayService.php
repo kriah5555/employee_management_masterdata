@@ -115,14 +115,14 @@ class HolidayService
         }
     }
 
-    public function updateHolidayStatus($holiday_id, $status)
+    public function updateHolidayStatus($holiday_id, $status, $reason = '')
     {
         try {
             DB::connection('tenant')->beginTransaction();
 
                 $holiday =  $this->getHolidayById($holiday_id);
 
-                $this->absence_service->updateAbsenceStatus($holiday, $status);
+                $this->absence_service->updateAbsenceStatus($holiday, $status, $reason);
 
             DB::connection('tenant')->commit();
 

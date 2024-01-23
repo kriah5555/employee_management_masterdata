@@ -44,7 +44,7 @@ class EmployeeProfileRepository implements EmployeeProfileRepositoryInterface
         // create($employeeProfileDetails);
     }
 
-    public function getEmployeeResponsiblePersonId(array $employee_profile_id)
+    public function getEmployeeResponsiblePersonId($employee_profile_id)
     {
         $employee_profile = EmployeeProfile::findOrFail($employee_profile_id);
 
