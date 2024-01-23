@@ -47,6 +47,7 @@ class UurroosterService implements PlanningInterface
             foreach ($workstationsRaw['workstations'] as $value) {
                 $response['planning_data'][$value->id]['workstation_id'] = $value->workstation_name;
                 $response['planning_data'][$value->id]['workstation_name'] = $value->workstation_name;
+                $response['planning_data'][$value->id]['count'] = 0;
                 $response['planning_data'][$value->id]['plannings'] = [];
             }
             $data = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle', 'timeRegistrations']);
@@ -71,11 +72,17 @@ class UurroosterService implements PlanningInterface
                 'end_time'            => [],
                 'end_dimona_status'   => [],
             ];
+            if (count($planning->timeRegistrations)) {
+                $count = 0;
+            } else {
+                $count = 1;
+            }
             foreach ($planning->timeRegistrations as $timeRegistration) {
                 $timeRegistrations['start_time'][] = $timeRegistration->actual_start_time ? date('H:i', strtotime($timeRegistration->actual_start_time)) : '';
                 $timeRegistrations['start_dimona_status'][] = null;
                 $timeRegistrations['end_time'][] = $timeRegistration->actual_end_time ? date('H:i', strtotime($timeRegistration->actual_end_time)) : '';
                 $timeRegistrations['end_dimona_status'][] = null;
+                $count += 1;
             }
             $response['planning_data'][$planning->workStation->id]['plannings'][] = [
                 'employee_id'          => $planning->employeeProfile->id,
@@ -88,8 +95,10 @@ class UurroosterService implements PlanningInterface
                 'actual_end_timings'   => $timeRegistrations['end_time'],
                 'end_dimona_status'    => $timeRegistrations['end_dimona_status'],
                 'break_timings'        => [],
-                'cost'                 => 10
+                'cost'                 => 10,
+                'count'                => $count
             ];
+            $response['planning_data'][$planning->workStation->id]['count'] += $count;
         }
         $response['planning_data'] = array_values($response['planning_data']);
         return $response;
