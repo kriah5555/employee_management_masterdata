@@ -57,14 +57,14 @@ class DimonaOverviewService
     {
         $data = [];
         foreach ($response as $each) {
-            // dd($each);
             $temp = [];
             $temp['unique'] = $each['unique_id'];
 
-            //Plan details.
-            array_map(function ($plan) use (&$temp) {
-                $plan_base = $plan['planning_base'];
-                $temp['plan_id'] = $plan_base['id'];
+	    //Plan details.
+	    //dd($each);
+            array_map(function ($each) use (&$temp) {
+                $plan_base = $each['planning_base'];
+                #$temp['plan_id'] = $plan_base['id'];
                 $temp['location'] = $plan_base['location_id'];
                 $temp['location'] = $plan_base['location']['location_name'];
                 $temp['employee_name'] = $plan_base['employee_profile']['full_name'];
