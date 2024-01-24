@@ -22,18 +22,19 @@ class DimonaSenderService
 
     public function sendDimonaByPlan($companyId, $planId)
     {
-        try {
-            setTenantDBByCompanyId($companyId);
-            $dimona = ['unique_id' => Str::uuid()];
-            $this->setCompanyData($companyId, $dimona);
-            $this->setEmployeeAndPlanningData($planId, $dimona);
-            DB::connection('tenant')->beginTransaction();
-            // $this->createDimonaRecords($dimona);
-            $this->requestDimona->sendDimonaRequest($dimona);
-            DB::connection('tenant')->commit();
-        } catch (Exception $e) {
-            DB::connection('tenant')->rollback();
-        }
+        // try {
+        setTenantDBByCompanyId($companyId);
+        $dimona = ['unique_id' => Str::uuid()];
+        $this->setCompanyData($companyId, $dimona);
+        $this->setEmployeeAndPlanningData($planId, $dimona);
+        DB::connection('tenant')->beginTransaction();
+        $this->createDimonaRecords($dimona);
+        $this->requestDimona->sendDimonaRequest($dimona);
+        DB::connection('tenant')->commit();
+        // } catch (Exception $e) {
+        //     DB::connection('tenant')->rollback();
+        //     dd('here');
+        // }
     }
     public function createDimonaRecords(&$dimona)
     {
@@ -49,8 +50,8 @@ class DimonaSenderService
         $dimonaBaseRecord->dimonaDetails()->create(
             [
                 'dimona_type'     => $dimona['type'],
-                'start_date_time' => $dimona['start_date_time'],
-                'end_date_time'   => $dimona['end_date_time'],
+                'start_date_time' => $dimona['start_date'] . ' ' . ($dimona['start_time'] ?? '00:00'),
+                'end_date_time'   => $dimona['end_date'] . ' ' . ($dimona['end_time'] ?? '00:00'),
             ]
         );
     }

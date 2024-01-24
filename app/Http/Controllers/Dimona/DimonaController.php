@@ -57,7 +57,7 @@ class DimonaController extends Controller
             $companyId = getCompanyId();
             foreach ($data['plans'] as $planId) {
                 app(DimonaSenderService::class)->sendDimonaByPlan($companyId, $planId);
-                // dispatch(new SendDimonaByPlanJob($companyId, $planId));
+                dispatch(new SendDimonaByPlanJob($companyId, $planId));
             }
             return returnResponse(
                 [
@@ -97,25 +97,6 @@ class DimonaController extends Controller
         }
     }
 
-
-    public function updateDimonaStatus(Request $request)
-    {
-        $data = '';
-        try {
-            $data = $request->all();
-            $data = $this->dimonaBaseService->updateDimonaStatusService($data);
-
-        } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'file'    => $e->getFile(),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString(),
-                ]
-            );
-        }
-        return $data;
-    }
     public function updateDimonaResponse(Request $request)
     {
         try {

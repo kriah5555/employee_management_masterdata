@@ -133,3 +133,10 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     });
     Route::post('get-plans-to-send-dimona', [PlanningController::class, 'getPlansToSendDimona']);
 });
+
+Route::middleware([InitializeTenancy::class])->group(function () {
+    Route::controller(DimonaController::class)->group(function () {
+        Route::post('/update-dimona-response', [DimonaController::class, 'updateDimonaResponse']);
+    });
+
+});
