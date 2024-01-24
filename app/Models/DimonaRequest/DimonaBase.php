@@ -4,6 +4,7 @@ namespace App\Models\DimonaRequest;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 // use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DimonaBase extends Model
@@ -49,22 +50,13 @@ class DimonaBase extends Model
      *
      * @var array
      */
-     protected $fillable = [
+    protected $fillable = [
         'unique_id',
-        // 'dimona_type',
         'dimona_channel',
         'employee_id',
         'employee_rsz',
         'status',
         'dimona_code',
-        // 'company_vat',
-        // 'company_rsz',
-        // 'company_smals_id',
-        // 'employee_name',
-        // 'start_date_time',
-        // 'end_date_time',
-        // 'send_status',
-        // 'response_status',
     ];
 
     public function longtermDimona()

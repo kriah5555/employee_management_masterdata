@@ -78,11 +78,32 @@ class UurroosterService implements PlanningInterface
             } else {
                 $count = 1;
             }
+            $messages = [
+                [
+                    'status'  => 'success',
+                    'message' => ['Dimona is successful']
+                ],
+                [
+                    'status'  => 'warning',
+                    'message' => ['Dimona is pending']
+                ],
+                [
+                    'status'  => 'failed',
+                    'message' => ['0000-000:Failed to send dimona']
+                ],
+                [
+                    'status'  => 'failed',
+                    'message' => [
+                        '0777-555:Double dimona period',
+                        '0777-005:Invalid dimona'
+                    ]
+                ],
+            ];
             foreach ($planning->timeRegistrations as $timeRegistration) {
                 $timeRegistrations['start_time'][] = $timeRegistration->actual_start_time ? date('H:i', strtotime($timeRegistration->actual_start_time)) : '';
-                $timeRegistrations['start_dimona_status'][] = null;
+                $timeRegistrations['start_dimona_status'][] = $messages[$planning->id % 4];
                 $timeRegistrations['end_time'][] = $timeRegistration->actual_end_time ? date('H:i', strtotime($timeRegistration->actual_end_time)) : '';
-                $timeRegistrations['end_dimona_status'][] = null;
+                $timeRegistrations['end_dimona_status'][] = $timeRegistration->actual_end_time ? $messages[$planning->id % 4] : null;
                 $count += 1;
             }
             $absence = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);

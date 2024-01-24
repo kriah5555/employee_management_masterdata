@@ -224,6 +224,8 @@ class DimonaBaseService
 
     public function updateDimonaResponse($uniqueId, $reponse)
     {
-
+        $dimonaBase = DimonaBase::where('unique_id', $uniqueId)->get();
+        dd($dimonaBase);
+        dd($uniqueId, $reponse);
     }
 }
