@@ -23,10 +23,15 @@ class DimonaOverviewController extends Controller
             $to_date = date('Y-m-d', strtotime($data['to_date'])) ?? date('Y-m-d');
             $type = $data['type'] ?? '';
 
-            $response = $this->dimonaOverviewService->getDimonaOverviewDetails($from_date, $to_date, $type);
+            $data = $this->dimonaOverviewService->getDimonaOverviewDetails($from_date, $to_date, $type);
+            $response = [
+                'status' => true,
+                'data'   => $data,
+            ];
 
         } catch (\Exception $e) {
             $response = [
+                'status'  => false,
                 'file'    => $e->getFile(),
                 'message' => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
