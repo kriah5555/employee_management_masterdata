@@ -11,11 +11,13 @@ use App\Models\DimonaRequest\{
 
 class DimonaOverviewService
 {
-    public function __construct(protected DimonaBase $dimonaBase) {}
+    public function __construct(protected DimonaBase $dimonaBase)
+    {
+    }
 
     public function getRelations($type)
     {
-        $array =  [
+        $array = [
             'dimonaDetails.dimonaError',
             'dimonaDetails.dimonaResponse',
         ];
@@ -38,8 +40,10 @@ class DimonaOverviewService
 
     public function filterData(&$query, $filters)
     {
-        $query->where('created_at', '>=', $filters['from_date']);
-        $query->where('created_at', '<=', $filters['to_date']);
+        $fromData = date('Y-m-d 00:00', strtotime($filters['from_date']));
+        $toData = date('Y-m-d 00:00', strtotime($filters['to_date']));
+        $query->where('created_at', '>=', $fromData);
+        $query->where('created_at', '<=', $toData);
     }
 
     public function getDimonaBase($from_date, $to_date, $type = '')
@@ -52,13 +56,13 @@ class DimonaOverviewService
     public function formatData($response)
     {
         $data = [];
-        foreach($response as $each) {
+        foreach ($response as $each) {
             // dd($each);
             $temp = [];
             $temp['unique'] = $each['unique_id'];
 
             //Plan details.
-            array_map(function($plan) use(&$temp) {
+            array_map(function ($plan) use (&$temp) {
                 $plan_base = $plan['planning_base'];
                 $temp['plan_id'] = $plan_base['id'];
                 $temp['location'] = $plan_base['location_id'];
@@ -69,7 +73,7 @@ class DimonaOverviewService
             }, $each['planning_dimona']);
 
             //Dimona details.
-            array_map(function($array) use(&$temp){
+            array_map(function ($array) use (&$temp) {
                 if (count($array['dimona_error']) > 0) {
                     foreach ($array['dimona_error'] as $error) {
                         $temp[$error['type']][] = $error['error_code'];

@@ -102,7 +102,9 @@ class UurroosterService implements PlanningInterface
                 $timeRegistrations['start_time'][] = $timeRegistration->actual_start_time ? date('H:i', strtotime($timeRegistration->actual_start_time)) : '';
                 $timeRegistrations['start_dimona_status'][] = $messages[$planning->id % 4];
                 $timeRegistrations['end_time'][] = $timeRegistration->actual_end_time ? date('H:i', strtotime($timeRegistration->actual_end_time)) : '';
-                $timeRegistrations['end_dimona_status'][] = $timeRegistration->actual_end_time ? $messages[$planning->id % 4] : null;
+                if ($timeRegistration->actual_end_time) {
+                    $timeRegistrations['end_dimona_status'][] = $messages[$planning->id % 4];
+                }
                 $count += 1;
             }
             $response['planning_data'][$planning->workStation->id]['plannings'][] = [
