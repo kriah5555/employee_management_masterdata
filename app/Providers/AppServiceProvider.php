@@ -9,6 +9,7 @@ use App\Services\Email\MailService;
 use App\Services\Email\EmailTemplateService;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Repositories\Company\CompanyRepository;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        JsonResource::withoutWrapping();
     }
 
 }

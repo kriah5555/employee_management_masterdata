@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dimona\DimonaErrorCodeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
@@ -177,6 +178,10 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         'availability'                => [
             'controller' => EmployeeAvailabilityController::class,
             'methods'    => ['store']
+        ],
+        'dimona-error-codes'          => [
+            'controller' => DimonaErrorCodeController::class,
+            'methods'    => ['index', 'update']
         ],
     ];
     foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
