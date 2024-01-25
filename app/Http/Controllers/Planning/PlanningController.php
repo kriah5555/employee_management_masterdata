@@ -336,7 +336,7 @@ class PlanningController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->planningService->getWeeklyPlanningForEmployee($request->input('employee_profile_id'), $request->input('location'), $request->input('workstations'), $request->input('employee_types'), $request->input('week'), $request->input('year'))
+                    'data'    => $this->planningService->getWeeklyPlanningForEmployee($request->input('employee_profile_id'), $request->input('location'), $request->input('workstations'), $request->input('employee_types'), $request->input('week'), $request->input('year'), $request->input('workstation_id'))
                 ],
                 JsonResponse::HTTP_OK,
             );

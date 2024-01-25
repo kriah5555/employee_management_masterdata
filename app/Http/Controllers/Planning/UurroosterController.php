@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\Planning\UurroosterService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Planning\GetWeeklyPlanningRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
 

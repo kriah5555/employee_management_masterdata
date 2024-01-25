@@ -50,7 +50,7 @@ class UurroosterService implements PlanningInterface
                 $response['planning_data'][$value->id]['count'] = 0;
                 $response['planning_data'][$value->id]['plannings'] = [];
             }
-            $data = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle', 'timeRegistrations']);
+            $data = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType.employeeTypeConfig', 'functionTitle', 'timeRegistrations']);
             return $this->formatUurroosterData($data, $response);
             // } else {
             //     $tokenData = $this->dashboardAccessService->decodeDashboardToken($dashboardToken);
@@ -110,20 +110,22 @@ class UurroosterService implements PlanningInterface
             }
             $absence = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);
             $response['planning_data'][$planning->workStation->id]['plannings'][] = [
-                'employee_id'          => $planning->employee_profile_id,
-                'employee_name'        => $employeeName,
-                'function_name'        => $planning->functionTitle->name,
-                'start_time'           => date('H:i', strtotime($planning->start_date_time)),
-                'actual_start_timings' => $timeRegistrations['start_time'],
-                'start_dimona_status'  => $timeRegistrations['start_dimona_status'],
-                'end_time'             => date('H:i', strtotime($planning->end_date_time)),
-                'actual_end_timings'   => $timeRegistrations['end_time'],
-                'end_dimona_status'    => $timeRegistrations['end_dimona_status'],
-                'break_timings'        => [],
-                'cost'                 => 10,
-                'absence_status'       => $absence->isNotEmpty(),
-                'absence_holiday_codes'=> $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
-                'count'                => $count
+                'employee_id'           => $planning->employee_profile_id,
+                'employee_type'         => $planning->employeeType->name,
+                'employee_type_color'   => $planning->employeeType->employeeTypeConfig->icon_color,
+                'employee_name'         => $employeeName,
+                'function_name'         => $planning->functionTitle->name,
+                'start_time'            => date('H:i', strtotime($planning->start_date_time)),
+                'actual_start_timings'  => $timeRegistrations['start_time'],
+                'start_dimona_status'   => $timeRegistrations['start_dimona_status'],
+                'end_time'              => date('H:i', strtotime($planning->end_date_time)),
+                'actual_end_timings'    => $timeRegistrations['end_time'],
+                'end_dimona_status'     => $timeRegistrations['end_dimona_status'],
+                'break_timings'         => [],
+                'cost'                  => '',
+                'absence_status'        => $absence->isNotEmpty(),
+                'absence_holiday_codes' => $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
+                'count'                 => $count
             ];
             $response['planning_data'][$planning->workStation->id]['count'] += $count;
         }
