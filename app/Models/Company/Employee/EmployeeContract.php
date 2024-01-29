@@ -40,8 +40,6 @@ class EmployeeContract extends BaseModel
         'created_at',
         'updated_at',
         'deleted_at',
-        'start_date',
-        'end_date',
     ];
 
     /**

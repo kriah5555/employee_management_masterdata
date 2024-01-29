@@ -114,4 +114,7 @@ return [
     'COMPANY_LOGO_PATH' => 'public/company_logos',
 
     'EMPLOYEE_ID_PATH' => 'employee_id_cards',
+
+    'SWITCH_PLAN_PENDING'  => 1,
+    'SWITCH_PLAN_APPROVED' => 2,
 ];

@@ -240,7 +240,7 @@ class EmployeeContractService
             })->first();
     }
 
-    public function getEmployeeWithActiveType($date, $employeeTypeId, $functionId)
+    public function getEmployeeWithActiveType($date, $employeeTypeId, $functionId = '')
     {
         return EmployeeContract::with('employeeProfile.user.userBasicDetails')
             ->where('employee_type_id', $employeeTypeId)

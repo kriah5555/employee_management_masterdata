@@ -325,21 +325,101 @@ class AbsenceService
         
         $absence->each(function ($leave) use (&$response, $absence_type, $employee_flow) {
 
-            $absence_data =  [
-                'id'             => $leave->id,
-                'applied_date'   => $leave->applied_date,
-                'duration_type'  => $leave->duration_type,
-                'dates'          => $leave->absenceDates->dates,
-                'dates_type'     => $leave->absenceDates->dates_type, # [1 =>  multiple dates, 2 => from and to date]
-                'leave_code'     => $absence_type == config('absence.LEAVE') ? $leave->absenceHours->first()->holidayCode->holiday_code_name : null,
-                'absence_status' => $leave->absence_status,
-                'employee_name'  => $leave->employee->full_name,
-                'employee_id'    => $leave->employee->id,
-                'manager_id'     => $leave->manager ? $leave->manager->id : null,
-                'manager_name'   => $leave->manager ? $leave->manager->full_name : null,
-                'reason'         => $leave->reason,
-                'actions'        => $this->getAbsenceActions($leave->absence_type, $leave->absence_status, $employee_flow),
-            ];
+            if ($absence_type == config('absence.LEAVE')) {
+                $absence_data =  [
+                    'id'             => $leave->id,
+                    'applied_date'   => $leave->applied_date,
+                    'duration_type'  => $leave->duration_type,
+                    'dates'          => $leave->absenceDates->dates,
+                    'dates_type'     => $leave->absenceDates->dates_type, # [1 =>  multiple dates, 2 => from and to date]
+                    'leave_code'     => $leave->absenceHours->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', '),
+                    'absence_status' => $leave->absence_status,
+                    'employee_name'  => $leave->employee->full_name,
+                    'employee_id'    => $leave->employee->id,
+                    'manager_id'     => $leave->manager ? $leave->manager->id : null,
+                    'manager_name'   => $leave->manager ? $leave->manager->full_name : null,
+                    'reason'         => $leave->reason,
+                    'plan_timings'   => $leave->plan_timings,
+                    'plan_ids'       => $leave->plan_ids,
+                    'actions'        => $this->getAbsenceActions($leave->absence_type, $leave->absence_status, $employee_flow),
+                ];
+            } else {  # Holiday
+                
+                $holiday_code           = [];
+                $holiday_code_morning   = [];
+                $holiday_code_evening   = [];
+                $multiple_holiday_codes = [];
+                
+                $duration_type = $leave->duration_type;
+                $half_day = null;
+                if ($duration_type == config('absence.FULL_DAYS')) {
+                    $half_day = 0;
+                } elseif ($duration_type == config('absence.FIRST_HALF')) {
+                    $half_day = 1;
+                } elseif ($duration_type == config('absence.SECOND_HALF')) {
+                    $half_day = 2;
+                } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) {
+                    $half_day = 3;
+                } elseif ($duration_type == config('absence.MULTIPLE_DATES')) {
+                    $half_day = 4;
+                }
+ 
+                
+                foreach ($leave->absenceHours as $absence_hours) {
+
+                    if ($absence_hours->duration_type == config('absence.FULL_DAYS') || $absence_hours->duration_type == config('absence.PLANNING_LEAVES') || $absence_hours->duration_type == config('absence.MULTIPLE_DATES')) {
+                        $holiday_code = [
+                            'id'   => $absence_hours->holiday_code_id,
+                            'name' => $absence_hours->holidayCode->holiday_code_name,
+                        ];
+                    } 
+
+                    if ($absence_hours->duration_type == config('absence.FIRST_HALF')) {
+                        $holiday_code_morning = [
+                            'id'   => $absence_hours->holiday_code_id,
+                            'name' => $absence_hours->holidayCode->holiday_code_name,
+                        ];
+                    } 
+                    
+                    if ($absence_hours->duration_type == config('absence.SECOND_HALF')) {
+                        $holiday_code_evening = [
+                            'id'   => $absence_hours->holiday_code_id,
+                            'name' => $absence_hours->holidayCode->holiday_code_name,
+                        ];
+                    }  
+
+                    if ($absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')) {
+                        $multiple_holiday_codes[] = [
+                            'id'   => $absence_hours->holiday_code_id,
+                            'name' => $absence_hours->holidayCode->holiday_code_name,
+                        ];
+                    }  
+                }
+
+                $absence_data = [
+                    'id' => $leave->id,
+                    'duration_type'                => $duration_type,
+                    'half_day'                     => $half_day,
+                    'multiple_holiday_code_status' => in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF')]),
+                    'dates'                        => $leave->absenceDates->dates,
+                    'dates_type'                   => $leave->absenceDates->dates_type, # [1 =>  multiple dates, 2 => from and to date]
+                    'reason'                       => $leave->reason,
+                    'plan_timings'                 => $leave->plan_timings,
+                    'plan_ids'                     => $leave->plan_ids,
+                    'shift_leave'                  => !empty($leave->plan_ids),
+                    'employee_name'                => $leave->employee->full_name,
+                    'employee_id'                  => $leave->employee->id,
+                    'manager_id'                   => $leave->manager ? $leave->manager->id : null,
+                    'manager_name'                 => $leave->manager ? $leave->manager->full_name : null,
+                    'reason'                       => $leave->reason,
+                    'actions'                      => $this->getAbsenceActions($leave->absence_type, $leave->absence_status, $employee_flow),
+                    'holiday_code'                 => $holiday_code,
+                    'holiday_code_morning'         => $holiday_code_morning,
+                    'holiday_code_evening'         => $holiday_code_evening,
+                    'multiple_holiday_codes'       => $multiple_holiday_codes,
+                ];
+            }
+            
 
             if ($leave->absence_status == config('absence.PENDING') || $leave->absence_status == config('absence.REQUEST_CANCEL')) {
                 $response['pending'][] = $absence_data;
