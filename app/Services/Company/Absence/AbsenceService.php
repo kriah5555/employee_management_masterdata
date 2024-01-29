@@ -193,7 +193,7 @@ class AbsenceService
                 }
 
 
-                $public_holiday = $company_repository->getCompanyPublicHolidays(getCompanyId(), [$date])->first();
+                $public_holiday = $company_repository->getCompanyPublicHolidays(getCompanyId(), [date('Y-m-d', strtotime($date))])->first();
                 if ($public_holiday) {
                     $return[$date]['public_holiday'] = [
                         'public_holidays_id'   => $public_holiday->id,
