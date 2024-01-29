@@ -13,7 +13,7 @@ use App\Services\Employee\EmployeeService;
 use App\Services\Planning\PlanningContractService;
 use App\Services\Planning\PlanningShiftsService;
 use App\Services\Company\Absence\AbsenceService;
-
+use App\Services\Employee\EmployeeContractService;
 
 class PlanningService implements PlanningInterface
 {
@@ -262,6 +262,8 @@ class PlanningService implements PlanningInterface
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year);
         $response = $this->formatWeeklyData($plannings, $response);
+        $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
+
         return $response;
     }
 

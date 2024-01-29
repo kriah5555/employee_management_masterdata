@@ -21,6 +21,7 @@ class LeaveRequest extends ApiRequest
         $companyId = getCompanyId();
         $route = request()->url();
         $absence_id = $this->isMethod('PUT') ? substr($route, strrpos($route, '/') + 1) : null;
+        
         $rules = [];
         if ($this->route()->getName() == 'add-leave') {
             $rules['duration_type'] = 'required|integer|in:1,2';
