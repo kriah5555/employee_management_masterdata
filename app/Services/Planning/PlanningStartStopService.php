@@ -7,6 +7,8 @@ use App\Services\Employee\EmployeeService;
 use Illuminate\Support\Facades\DB;
 use App\Models\Planning\TimeRegistration;
 use App\Repositories\Employee\EmployeeProfileRepository;
+use App\Services\Dimona\DimonaSenderService;
+use App\Jobs\SendDimonaJob;
 
 
 class PlanningStartStopService
@@ -29,14 +31,16 @@ class PlanningStartStopService
         $plan = $this->planningRepository->getPlanningById($values['plan_id']);
         $plan->plan_started = true;
         $plan->save();
-        TimeRegistration::create([
+        $timeRegistration = TimeRegistration::create([
             'plan_id'           => $plan->id,
             'actual_start_time' => date('Y-m-d H:i', strtotime($values['start_time'])),
             'status'            => true,
             'started_by'        => $values['started_by'],
             'start_reason_id'   => !empty($values['reason_id']) ? $values['reason_id'] : null
         ]);
+        // app(DimonaSenderService::class)->sendDimona(getCompanyId(), $timeRegistration->id, 'IN');
         DB::connection('tenant')->commit();
+        dispatch(new SendDimonaJob(getCompanyId(), $timeRegistration->id, 'IN'));
     }
 
     public function getPlanByQrCode($qr_data, $user_id, $start_time, $stop_time)
@@ -65,6 +69,7 @@ class PlanningStartStopService
         }
         $timeRegistration->save();
         DB::connection('tenant')->commit();
+        dispatch(new SendDimonaJob(getCompanyId(), $timeRegistration->id, 'UPDATE'));
     }
 
     public function getActualStopTime($plan_start_date_time, $actual_stop_time)

@@ -16,12 +16,11 @@ use App\Services\EmployeeFunction\FunctionService;
 class SectorController extends Controller
 {
     public function __construct(
-        protected SectorService $sectorService, 
-        protected EmployeeTypeService $employeeTypeService, 
+        protected SectorService $sectorService,
+        protected EmployeeTypeService $employeeTypeService,
         protected CompanyService $companyService,
         protected FunctionService $functionService
-        )
-    {
+    ) {
     }
     /**
      * Display a listing of the resource.

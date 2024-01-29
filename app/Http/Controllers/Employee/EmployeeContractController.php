@@ -11,6 +11,7 @@ use App\Services\EmployeeFunction\FunctionService;
 use App\Services\Employee\EmployeeContractService;
 use App\Http\Requests\Employee\EmployeeContractRequest;
 use Illuminate\Http\Request;
+use App\Services\Dimona\DimonaSenderService;
 
 
 class EmployeeContractController extends Controller
@@ -52,7 +53,7 @@ class EmployeeContractController extends Controller
     public function show($employee_id)
     {
         try {
-
+            app(DimonaSenderService::class)->sendLongTermDimona(getCompanyId(), 1);
             return returnResponse(
                 [
                     'success' => true,
@@ -141,7 +142,7 @@ class EmployeeContractController extends Controller
     public function getActiveContractEmployees(Request $request)
     {
         $weekNumber = $request->input('week_number');
-        $year       = $request->input('year');
+        $year = $request->input('year');
         try {
             return returnResponse(
                 [
