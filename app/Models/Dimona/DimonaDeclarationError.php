@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Models\DimonaRequest;
+namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class DimonaError extends Model
+class DimonaDeclarationError extends BaseModel
 {
-    use HasFactory;
 
     protected $connection = 'tenant';
 
@@ -16,7 +14,7 @@ class DimonaError extends Model
      *
      * @var string
      */
-    protected $table = 'dimona_errors';
+    protected $table = 'dimona_declaration_errors';
 
     /**
      * The primary key associated with the table.
@@ -48,14 +46,8 @@ class DimonaError extends Model
      *
      * @var array
      */
-     protected $fillable = [
-        'dimona_base_id',
-        'type',
-        'error_code'
+    protected $fillable = [
+        'dimona_declaration_id',
+        'dimona_error_code_id',
     ];
-
-    public function dimonaBase()
-    {
-        return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
-    }
 }

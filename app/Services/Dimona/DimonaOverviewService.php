@@ -2,16 +2,14 @@
 
 namespace App\Services\Dimona;
 
-use App\Models\DimonaRequest\{
-    DimonaBase,
-    EmployeeContractLongDimonas,
-    PlanningDimona,
+use App\Models\Dimona\{
+    Dimona,
 };
 
 
 class DimonaOverviewService
 {
-    public function __construct(protected DimonaBase $dimonaBase)
+    public function __construct(protected Dimona $dimonaBase)
     {
     }
 
@@ -48,7 +46,7 @@ class DimonaOverviewService
 
     public function getDimonaBase($from_date, $to_date, $type = '')
     {
-        $query = $this->dimonaBase->with($this->getRelations($type));
+        $query = Dimona::with($this->getRelations($type));
         $this->filterData($query, ['from_date' => $from_date, 'to_date' => $to_date]);
         return $query->get()->toArray();
     }
@@ -58,52 +56,66 @@ class DimonaOverviewService
         $data = [];
         foreach ($response as $each) {
             $temp = [];
-            $temp['unique'] = $each['unique_id'];
-
-	    //Plan details.
-	    //dd($each);
-            array_map(function ($each) use (&$temp) {
-                $plan_base = $each['planning_base'];
-                #$temp['plan_id'] = $plan_base['id'];
-                $temp['location'] = $plan_base['location_id'];
-                $temp['location'] = $plan_base['location']['location_name'];
-                $temp['employee_name'] = $plan_base['employee_profile']['full_name'];
-                $temp['start_date_time'] = $plan_base['start_date_time'];
-                $temp['end_date_time'] = $plan_base['end_date_time'];
-            }, $each['planning_dimona']);
-
-            //Dimona details.
-            array_map(function ($array) use (&$temp) {
-                if (count($array['dimona_error']) > 0) {
-                    foreach ($array['dimona_error'] as $error) {
-                        $temp[$error['type']][] = $error['error_code'];
-                    }
-                } else {
-                    $temp['warn'] = '';
-                    $temp['error'] = '';
-                }
-                if (count($array['dimona_response']) > 0) {
-                    foreach ($array['dimona_response'] as $resp) {
-                        $temp['result'] = $resp['result'];
-                    }
-                }
-
-
-            }, $each['dimona_details']);
-
-            $temp['employee_rsz'] = $each['employee_rsz'];
-
+            $temp['id'] = $each->id;
+            $temp['dimona_period_id'] = $each->dimona_period_id;
+            if ($each->type == 'long_term') {
+                // $start =
+            } elseif ($each->type == 'plan') {
+                $temp['name'] = $each->planningDimona->planningBase->employeeProfile->full_name;
+                $temp['start'] = date('d-m-Y H:i', strtotime($each->planningDimona->planningBase->start_date_time));
+                $temp['end'] = date('d-m-Y H:i', strtotime($each->planningDimona->planningBase->end_date_time));
+                $temp['employee_type'] = $each->planningDimona->planningBase->employeeType->name;
+            }
             $data[] = $temp;
         }
 
         return $data;
     }
 
-    public function getDimonaOverviewDetails($from_date, $to_date, $type)
+    public function getDimonaOverview($from_date, $to_date, $type)
+    {
+        $from_date = date('Y-m-d 00:00:00', strtotime($from_date)) ?? date('Y-m-d');
+        $to_date = date('Y-m-d 23:59:59', strtotime($to_date)) ?? date('Y-m-d');
+        $query = Dimona::whereBetween('created_at', [$from_date, $to_date]);
+        if ($type == 'plan') {
+            $query->where('type', 'plan');
+            $query->with([
+                'planningDimona.planningBase.employeeProfile.user.userBasicDetails'
+            ]);
+        } elseif ($type == 'long_term') {
+            $query->where('type', 'long_term');
+            $query->with([
+                'longtermDimona.employeeContract.employeeProfile.user.userBasicDetails'
+            ]);
+        } else {
+            $query->with([
+                'planningDimona.planningBase.employeeProfile.user.userBasicDetails',
+                'longtermDimona.employeeContract.employeeProfile.user.userBasicDetails'
+            ]);
+        }
+        $response = $query->get();
+        return $this->formatData($response);
+    }
+
+    public function getDimonaDetails($dimonaId)
     {
         $response = [];
-        $response = $this->getDimonaBase($from_date, $to_date, $type);
-        // dd($response);
-        return $this->formatData($response);
+        $dimona = Dimona::with([
+            'dimonaDeclarations',
+            'planningDimona.planningBase.employeeProfile.user.userBasicDetails',
+            'longtermDimona.employeeContract.employeeProfile.user.userBasicDetails'
+
+        ])->findOrFail($dimonaId);
+        if ($dimona->type == 'plan') {
+            $response['name'] = $dimona->planningDimona->planningBase->employeeProfile->full_name;
+        }
+        $response['dimona_sent_date'] = date('d-m-Y', strtotime($dimona->created_at));
+        foreach ($dimona->dimonaDeclarations as $dimonaDeclaration) {
+            $data = [];
+            $data['dimona_type'] = $dimonaDeclaration->type;
+            $data['dimona_status'] = $dimonaDeclaration->dimona_declartion_status;
+            $response['declarations'][] = $data;
+        }
+        return $response;
     }
 }

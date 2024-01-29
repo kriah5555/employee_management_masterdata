@@ -429,17 +429,17 @@ class PlanningService implements PlanningInterface
         $startPlan = $stopPlan = false;
         $sendPlanDimona = $details->dimona_status ? false : true;
         // if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-            // if ($details->plan_started) {
-            //     $startPlan = false;
-            //     $stopPlan = true;
-            // } else {
-            //     $startPlan = true;
-            //     $stopPlan = false;
-            // }
+        // if ($details->plan_started) {
+        //     $startPlan = false;
+        //     $stopPlan = true;
+        // } else {
+        //     $startPlan = true;
+        //     $stopPlan = false;
+        // }
 
-            // if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-            //     $startPlan = false;
-            // }
+        // if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
+        //     $startPlan = false;
+        // }
 
         // }
 
@@ -460,13 +460,13 @@ class PlanningService implements PlanningInterface
         // if current time is in between start and end time
         if ($currentDateTime >= strtotime($details->start_date_time) && $currentDateTime <= strtotime($details->end_date_time)) {
             $startPlan = true;
-            $stopPlan  = false;
+            $stopPlan = false;
         }
 
         // Check if the plan has already been started
         if ($details->plan_started) {
             $startPlan = false; // Don't start the plan
-            $stopPlan  = true;  // Stop the plan
+            $stopPlan = true;  // Stop the plan
         }
 
         $response = [
@@ -622,9 +622,9 @@ class PlanningService implements PlanningInterface
         $activeDimonaEmployeeTypes = $company->dimoanEmployeeTypes->pluck('id')->toArray();
         $plans = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], '', $values['date'], $values['date'], '', ['employeeProfile.user.userBasicDetails']);
         foreach ($plans as $plan) {
-            if (!$plan->dimona_status && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
+            if ($plan->employeeType->employeeTypeCategory->id != 1 && !$plan->dimona_status && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
                 $response[] = [
-                    'id' => $plan->id,
+                    'id'      => $plan->id,
                     'name'    => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name,
                     'timings' => date('H:i', strtotime($plan->start_date_time)) . '-' . date('H:i', strtotime($plan->end_date_time)) . ' ' . numericToEuropean($plan->contract_hours),
                 ];

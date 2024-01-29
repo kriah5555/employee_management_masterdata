@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\DimonaRequest;
+namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
+use App\Models\Dimona\DimonaDeclaration;
+use App\Models\Dimona\LongTermDimona;
 
-class DimonaDetails extends Model
+class Dimona extends BaseModel
 {
-    use HasFactory;
 
     protected $connection = 'tenant';
 
@@ -16,7 +16,7 @@ class DimonaDetails extends Model
      *
      * @var string
      */
-    protected $table = 'dimona_details';
+    protected $table = 'dimonas';
 
     /**
      * The primary key associated with the table.
@@ -48,26 +48,23 @@ class DimonaDetails extends Model
      *
      * @var array
      */
-     protected $fillable = [
-        'dimona_base_id',
-        'dimona_type',
-        'status',
-        'start_date_time',
-        'end_date_time'
+    protected $fillable = [
+        'type',
+        'dimona_period_id',
     ];
 
-    public function dimonaBase()
+    public function dimonaDeclarations()
     {
-        return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
+        return $this->hasMany(DimonaDeclaration::class, 'dimona_id');
     }
 
-    public function dimonaError()
+    public function longtermDimona()
     {
-        return $this->hasMany(DimonaError::class, 'dimona_details_id');
+        return $this->hasOne(LongTermDimona::class, 'dimona_id');
     }
 
-    public function dimonaResponse()
+    public function planningDimona()
     {
-        return $this->hasMany(DimonaResponse::class, 'dimona_details_id');
+        return $this->hasOne(PlanningDimona::class, 'dimona_id');
     }
 }

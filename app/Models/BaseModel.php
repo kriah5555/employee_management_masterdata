@@ -11,7 +11,7 @@ use App\Traits\DatabaseFieldDateFormat;
 
 class BaseModel extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity, DatabaseFieldDateFormat;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected static $sort = [];
 
@@ -64,4 +64,35 @@ class BaseModel extends Model
         return $values;
     }
     protected $dates = [];
+    protected $dateFields = [];
+    protected $dateTimeFields = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Registering the creating event
+        static::creating(function ($model) {
+            $model->formatDateFields();
+        });
+
+        // Registering the updating event
+        static::updating(function ($model) {
+            $model->formatDateFields();
+        });
+    }
+
+    protected function formatDateFields()
+    {
+        foreach ($this->dateFields as $field) {
+            if ($this->$field) {
+                $this->$field = Carbon::createFromFormat('Y-m-d', $this->$field)->format('Y-m-d');
+            }
+        }
+        foreach ($this->dateTimeFields as $field) {
+            if ($this->$field) {
+                $this->$field = Carbon::createFromFormat('Y-m-d H:i:s', $this->$field)->format('Y-m-d');
+            }
+        }
+    }
 }

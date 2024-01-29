@@ -81,7 +81,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('holidays-list-manager-mobile', [HolidayController::class, 'getAllHolidaysForMobile']);
 
             Route::post('holidays-status', 'updateHolidayStatus');
-                // ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
+            // ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
 
             Route::post('employee-apply-holidays-mobile', [HolidayController::class, 'store'])->name('employee-apply-holidays-mobile');
 

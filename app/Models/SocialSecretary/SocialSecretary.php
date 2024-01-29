@@ -19,6 +19,7 @@ class SocialSecretary extends BaseModel
 
     protected $fillable = [
         'name',
+        'daily_registration',
         'status',
         'created_by',
         'updated_by'

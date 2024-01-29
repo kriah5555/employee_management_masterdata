@@ -2,10 +2,12 @@
 
 namespace App\Services\Dimona;
 
+use App\Models\Dimona\DimonaDeclaration;
+use App\Models\Dimona\DimonaErrorCode;
 use App\Models\Planning\PlanningBase;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Company;
-use App\Models\DimonaRequest\DimonaBase;
+use App\Models\Dimona\Dimona;
 use App\Services\Dimona\RequestDimona;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -13,7 +15,11 @@ use Illuminate\Support\Str;
 //$uuid = Str::uuid();
 class DimonaBaseService
 {
-    protected $company, $employeeContract, $planningBase, $requestDimona, $dimonaBase;
+    protected $company;
+    protected $employeeContract;
+    protected $planningBase;
+    protected $requestDimona;
+    protected $dimona;
 
     public function __construct()
     {
@@ -21,7 +27,7 @@ class DimonaBaseService
         $this->planningBase = new PlanningBase();
         $this->employeeContract = new EmployeeContract();
         $this->requestDimona = new RequestDimona();
-        $this->dimonaBase = new DimonaBase();
+        $this->dimona = new Dimona();
     }
 
 
@@ -170,7 +176,7 @@ class DimonaBaseService
     public function createDimonaRecords($dimonaDetails, $dimona)
     {
         if (count($dimonaDetails) == 0) {
-            $dimonaBaseRecord = $this->dimonaBase->create([
+            $dimonaBaseRecord = $this->dimona->create([
                 'unique_id'    => $dimona['unique_id'],
                 'dimona_code'  => $dimona['employee_type_code'],
                 'employee_id'  => $dimona['user_id'],
@@ -188,7 +194,7 @@ class DimonaBaseService
             );
         } else {
             $lastDimona = end($dimonaDetails);
-            $dimonaBaseRecord = $this->dimonaBase->find($lastDimona['id']);
+            $dimonaBaseRecord = $this->dimona->find($lastDimona['id']);
             $dimonaBaseRecord->dimonaDetails()->create(
                 [
                     'dimona_type'     => $dimona['type'],
@@ -222,10 +228,30 @@ class DimonaBaseService
 
     }
 
-    public function updateDimonaResponse($uniqueId, $reponse)
+    public function updateDimonaResponse($uniqueId, $response)
     {
-        $dimonaBase = DimonaBase::where('unique_id', $uniqueId)->get();
-        dd($dimonaBase);
-        dd($uniqueId, $reponse);
+        $dimonaDeclaration = DimonaDeclaration::where('unique_id', $uniqueId)->first();
+        if ($response['status']) {
+            $body = $response['body'];
+            if ($body['declarationStatus']['result'] == 'A') {
+                $dimonaDeclaration->dimona_declartion_status = 'success';
+                $dimonaDeclaration->save();
+            } elseif ($body['declarationStatus']['result'] == 'B') {
+                $dimonaDeclaration->dimona_declartion_status = 'failed';
+                $dimonaDeclaration->save();
+                foreach ($body['declarationStatus']['anomaliesCollection'] as $dimonaError) {
+                    $dimonaErrorCode = DimonaErrorCode::where('error_code', $dimonaError['errorId'])->first();
+                    if (!$dimonaErrorCode) {
+                        $dimonaErrorCode = DimonaErrorCode::create([
+                            'error_code'  => $dimonaError['errorId'],
+                            'description' => $dimonaError['labelNl'],
+                        ]);
+                    }
+                    $dimonaDeclaration->dimonaDeclarationErrors()->create([
+                        'dimona_error_code_id' => $dimonaErrorCode->id
+                    ]);
+                }
+            }
+        }
     }
 }

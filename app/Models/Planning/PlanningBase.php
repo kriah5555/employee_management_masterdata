@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Company\{Workstation, Location};
 use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Planning\{PlanningBreak, PlanningContracts, TimeRegistration};
-use App\Models\DimonaRequest\PlanningDimona;
+use App\Models\Dimona\PlanningDimona;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use Illuminate\Support\Carbon;
@@ -85,10 +85,10 @@ class PlanningBase extends BaseModel
 
     public function getPlannedHoursAttribute()
     {
-            $start = Carbon::parse($this->start_date_time);
-            $end   = Carbon::parse($this->end_date_time);
+        $start = Carbon::parse($this->start_date_time);
+        $end = Carbon::parse($this->end_date_time);
 
-            return $start->diffInHours($end);
+        return $start->diffInHours($end);
     }
 
     public function getContractHoursFormattedAttribute()
@@ -199,7 +199,10 @@ class PlanningBase extends BaseModel
     {
         $query = $this->select(
             [
-                'planning_base.*', 'w.*', 'l.*', 'ep.*',
+                'planning_base.*',
+                'w.*',
+                'l.*',
+                'ep.*',
                 DB::raw("EXTRACT('week' FROM start_date_time) as week_number"),
                 DB::raw("start_date_time::date as start_date"),
                 DB::raw("start_date_time::time as start_time"),

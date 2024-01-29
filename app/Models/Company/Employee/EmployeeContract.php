@@ -53,7 +53,7 @@ class EmployeeContract extends BaseModel
         'start_date',
         'end_date'
     ];
-    
+
     protected $apiValues = [
         'employee_profile_id',
         'employee_type_id'
@@ -68,7 +68,7 @@ class EmployeeContract extends BaseModel
             $employeeContract->end_date = $employeeContract->end_date ? date('Y-m-d', strtotime($employeeContract->end_date)) : null;
         });
     }
-   
+
     public function employeeType()
     {
         return $this->belongsTo(EmployeeType::class);
@@ -88,19 +88,19 @@ class EmployeeContract extends BaseModel
     {
         return $this->hasMany(EmployeeContractFile::class)->where('status', true);
     }
-    
+
     public function employeeFunctionDetails()
     {
         return $this->hasMany(EmployeeFunctionDetails::class);
     }
 
-    public function getStartDateAttribute($value)
-    {
-        return Carbon::parse($value)->format('d-m-Y');
-    }
+    // public function getStartDateAttribute($value)
+    // {
+    //     return Carbon::parse($value)->format('d-m-Y');
+    // }
 
-    public function getEndDateAttribute($value)
-    {
-        return $value ? Carbon::parse($value)->format('d-m-Y') : null;
-    }
+    // public function getEndDateAttribute($value)
+    // {
+    //     return $value ? Carbon::parse($value)->format('d-m-Y') : null;
+    // }
 }

@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Models\DimonaRequest;
+namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
+use App\Models\Planning\TimeRegistration;
 
-// use Illuminate\Database\Eloquent\SoftDeletes;
-
-class DimonaBase extends Model
+class DimonaDeclaration extends BaseModel
 {
-    use HasFactory;
 
     protected $connection = 'tenant';
 
@@ -18,7 +15,7 @@ class DimonaBase extends Model
      *
      * @var string
      */
-    protected $table = 'dimona_base';
+    protected $table = 'dimona_declarations';
 
     /**
      * The primary key associated with the table.
@@ -52,25 +49,16 @@ class DimonaBase extends Model
      */
     protected $fillable = [
         'unique_id',
-        'dimona_channel',
-        'employee_id',
-        'employee_rsz',
-        'status',
-        'dimona_code',
+        'dimona_id',
+        'type',
+        'dimona_declartion_status',
     ];
-
-    public function longtermDimona()
+    public function dimonaDeclarationErrors()
     {
-        return $this->hasMany(EmployeeContractLongDimonas::class, 'dimona_base_id');
+        return $this->hasMany(DimonaDeclarationError::class, 'dimona_declaration_id');
     }
-
-    public function planningDimona()
+    public function timeRegistrations()
     {
-        return $this->hasMany(PlanningDimona::class, 'dimona_base_id');
-    }
-
-    public function dimonaDetails()
-    {
-        return $this->hasMany(DimonaDetails::class, 'dimona_base_id');
+        return $this->belongsToMany(TimeRegistration::class, 'dimona_declaration_time_registration');
     }
 }

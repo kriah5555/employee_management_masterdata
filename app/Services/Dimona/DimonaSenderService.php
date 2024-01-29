@@ -2,13 +2,15 @@
 
 namespace App\Services\Dimona;
 
+use App\Models\Dimona\DimonaErrorCode;
+use App\Models\Planning\TimeRegistration;
+use App\Services\Employee\EmployeeContractService;
 use App\Services\Planning\PlanningService;
 use Exception;
-use App\Models\Company\Company;
 use Illuminate\Support\Facades\DB;
 use App\Services\CompanyService;
 use Illuminate\Support\Str;
-use App\Models\DimonaRequest\DimonaBase;
+use App\Models\Dimona\Dimona;
 
 class DimonaSenderService
 {
@@ -16,93 +18,172 @@ class DimonaSenderService
     public function __construct(
         protected CompanyService $companyService,
         protected PlanningService $planningService,
+        protected EmployeeContractService $employeeContractService,
         protected RequestDimona $requestDimona,
     ) {
     }
 
-    public function sendDimonaByPlan($companyId, $planId)
+    public function sendLongTermDimona($companyId, $employeeContractId)
     {
+        DB::connection('tenant')->beginTransaction();
         // try {
         setTenantDBByCompanyId($companyId);
         $dimona = ['unique_id' => Str::uuid()];
+        $dimona['employee_contract_id'] = $employeeContractId;
+        $dimona['type'] = 'long_term';
+        $dimona['dimona_type'] = 'IN';
+        $employeeContract = $this->employeeContractService->getEmployeeContractDetails(
+            $employeeContractId,
+            ['employeeType', 'longTermEmployeeContract', 'employeeProfile.user.userBasicDetails']
+        );
+        $dimonaDeclarations = $this->createDimonaRecords($dimona);
         $this->setCompanyData($companyId, $dimona);
-        $this->setEmployeeAndPlanningData($planId, $dimona);
-        DB::connection('tenant')->beginTransaction();
-        $this->createDimonaRecords($dimona);
-        $this->requestDimona->sendDimonaRequest($dimona);
+        $this->setEmployeeData($employeeContract->employeeProfile, $dimona);
+        $this->setContractData($employeeContract, $dimona);
         DB::connection('tenant')->commit();
+        $response = $this->requestDimona->sendDimonaRequest($dimona, "/api/send-long-term-dimona");
+        if (!$response) {
+            $this->setDimonaRequestFailed($dimonaDeclarations);
+        }
         // } catch (Exception $e) {
         //     DB::connection('tenant')->rollback();
-        //     dd('here');
         // }
     }
+
+    public function sendDimonaByPlan($companyId, $planId)
+    {
+        try {
+            DB::connection('tenant')->beginTransaction();
+            setTenantDBByCompanyId($companyId);
+            $dimona = ['unique_id' => Str::uuid()];
+            $dimona['plan_id'] = $planId;
+            $dimona['type'] = 'plan';
+            $dimona['dimona_type'] = 'IN';
+            $dimonaDeclarations = $this->createDimonaRecords($dimona);
+            $plan = $this->planningService->getPlanningById($planId);
+            $this->setCompanyData($companyId, $dimona);
+            $this->setEmployeeData($plan->employeeProfile, $dimona);
+            $this->setPlanningData($planId, $dimona);
+            $response = $this->requestDimona->sendDimonaRequest($dimona, '/api/send-planning-dimona');
+            if (!$response) {
+                $this->setDimonaRequestFailed($dimonaDeclarations);
+            }
+            DB::connection('tenant')->commit();
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+        }
+    }
+
+    public function setDimonaRequestFailed($dimonaDeclarations)
+    {
+        $dimonaError = DimonaErrorCode::where('error_code', '00000-000')->first();
+        $dimonaDeclarations->dimonaDeclarationErrors()->create([
+            'dimona_error_code_id' => $dimonaError->id
+        ]);
+    }
+
+    // public function check
     public function createDimonaRecords(&$dimona)
     {
-        $dimonaBaseRecord = DimonaBase::create([
-            'unique_id'    => $dimona['unique_id'],
-            'dimona_code'  => $dimona['employee_type_code'],
-            'employee_id'  => $dimona['user_id'],
-            'employee_rsz' => $dimona['social_security_number'],
-            'status'       => 1,
+        $dimonaRecord = Dimona::create([
+            'type' => $dimona['type'],
         ]);
-
-        $dimonaBaseRecord->planningDimona()->create(['planning_base_id' => $dimona['plan_id']]);
-        $dimonaBaseRecord->dimonaDetails()->create(
+        $dimonaDeclarations = $dimonaRecord->dimonaDeclarations()->create(
             [
-                'dimona_type'     => $dimona['type'],
-                'start_date_time' => $dimona['start_date'] . ' ' . ($dimona['start_time'] ?? '00:00'),
-                'end_date_time'   => $dimona['end_date'] . ' ' . ($dimona['end_time'] ?? '00:00'),
+                'unique_id' => $dimona['unique_id'],
+                'type'      => $dimona['dimona_type']
             ]
         );
+        if ($dimona['type'] == 'plan') {
+            $this->createPlanningDimonaRecords($dimonaRecord, $dimona['plan_id']);
+        } elseif ($dimona['type'] == 'long_term') {
+            $this->createLongTermDimonaRecords($dimonaRecord, $dimona['employee_contract_id']);
+            // } elseif ($dimona['type'] == 'flex_check') {
+        }
+        return $dimonaDeclarations;
     }
-    public function setEmployeeAndPlanningData($planId, &$dimona)
+    public function createPlanningDimonaRecords($dimonaRecord, $planId)
     {
-        $hours = null;
+        $dimonaRecord->planningDimona()->create(
+            ['planning_id' => $planId]
+        );
+    }
+    public function createLongTermDimonaRecords($dimonaRecord, $employeeContractId)
+    {
+        $dimonaRecord->longtermDimona()->create(
+            ['employee_contract_id' => $employeeContractId]
+        );
+    }
+    public function setEmployeeData($employeeProfile, &$dimona)
+    {
+        $dimona['employee'] = [
+            'social_security_number' => getRSZNumberFormat($employeeProfile->user->social_security_number ?? '')
+        ];
+    }
+    public function setPlanningData($planId, &$dimona)
+    {
         $plan = $this->planningService->getPlanningById($planId);
 
-        $employeeDetails = $plan->employeeProfile->toArray() ?? [];
         $plan->employeeType->dimonaConfig->dimonaType;
         $employeeType = $plan->employeeType->toArray() ?? [];
 
-        // plan details.
-        $dimona['plan_id'] = $planId;
-
-        //Employee details.
-        if (count($employeeDetails)) {
-            $dimona['employee_name'] = $employeeDetails['full_name'];
-            $dimona['user_id'] = $employeeDetails['user_id'];
-            $dimona['social_security_number'] = getRSZNumberFormat($employeeDetails['user']['social_security_number'] ?? '');
+        //Employee type.
+        if (count($employeeType)) {
+            $dimona['declaration']['employee_type'] = $employeeType['name'];
+            $dimona['declaration']['employee_type_code'] = $employeeType['dimona_code'] ?? '';
+            $dimona['declaration']['employee_type_category'] = $employeeType['employee_type_category_id'];
+            $dimona['declaration']['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
+            $dimona['declaration']['start_date'] = date('Y-m-d', strtotime($plan->start_date_time));
+            $dimona['declaration']['start_time'] = date('H:i', strtotime($plan->start_date_time));
+            $dimona['declaration']['end_date'] = date('Y-m-d', strtotime($plan->end_date_time));
+            $dimona['declaration']['end_time'] = date('H:i', strtotime($plan->end_date_time));
         }
+    }
+    public function setActualPlanningData($timeRegistration, &$dimona)
+    {
+        $plan = $timeRegistration->planningBase;
+
+        $plan->employeeType->dimonaConfig->dimonaType;
+        $employeeType = $plan->employeeType->toArray() ?? [];
 
         //Employee type.
         if (count($employeeType)) {
-            $dimona['employee_type'] = $employeeType['name'];
-            $dimona['employee_type_code'] = $employeeType['dimona_code'] ?? '';
-            $dimona['employee_type_category'] = $employeeType['employee_type_category_id'];
-            $dimona['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
+            $dimona['declaration']['employee_type'] = $employeeType['name'];
+            $dimona['declaration']['employee_type_code'] = $employeeType['dimona_code'] ?? '';
+            $dimona['declaration']['employee_type_category'] = $employeeType['employee_type_category_id'];
+            $dimona['declaration']['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
+            $dimona['declaration']['start_date'] = date('Y-m-d', strtotime($timeRegistration->actual_start_time));
+            $dimona['declaration']['start_time'] = date('H:i', strtotime($timeRegistration->actual_start_time));
         }
-        $dimona['type'] = 'IN';
-        $hours = timeDifferenceinHours($plan['start_date_time'], $plan['end_date_time']);
-        $dimona += [
-            'start_date' => date('Y-m-d', strtotime($plan['start_date_time'])),
-            'start_time' => date('H:i', strtotime($plan['start_date_time'])),
-            'end_date'   => date('Y-m-d', strtotime($plan['end_date_time'])),
-            'end_time'   => date('H:i', strtotime($plan['end_date_time'])),
-            'hours'      => $hours,
-        ];
+        if ($dimona['dimona_type'] == 'UPDATE') {
+            $dimona['declaration']['end_date'] = date('Y-m-d', strtotime($plan->actual_end_time));
+            $dimona['declaration']['end_time'] = date('H:i', strtotime($plan->actual_end_time));
+        }
+    }
+    public function setContractData($employeeContract, &$dimona)
+    {
+        $employeeContract->employeeType->dimonaConfig->dimonaType;
+        $employeeType = $employeeContract->employeeType->toArray() ?? [];
+
+        $dimona['declaration']['employee_type'] = $employeeType['name'];
+        $dimona['declaration']['employee_type_code'] = $employeeType['dimona_code'] ?? '';
+        $dimona['declaration']['employee_type_category'] = $employeeType['employee_type_category_id'];
+        $dimona['declaration']['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
+        $dimona['declaration']['start_date'] = $employeeContract['start_date'] ?? '';
+        $dimona['declaration']['end_date'] = $employeeContract['end_date'] ?? null;
     }
 
     public function setCompanyData($companyId, &$dimona)
     {
-        $companyData = Company::where('id', $companyId)->get()->toArray();
-        $companyData = reset($companyData);
-        $dimona += [
-            'company_id'         => $companyData['id'],
-            'company_name'       => $companyData['company_name'],
-            'company_vat_number' => getVatNumberFormat($companyData['vat_number']),
-            'company_rsz_number' => getRSZNumberFormat($companyData['rsz_number']),
-            'company_username'   => $companyData['username'],
-            'company_oauth'      => $companyData['oauth_key'] ?? 'self_service_expeditor_' . $companyData['sender_number'],
+        $companyData = $this->companyService->getCompanyById($companyId)->toArray();
+        $dimona['employer'] = [
+            'company_id'            => $companyData['id'],
+            'company_name'          => $companyData['company_name'],
+            'company_vat_number'    => getVatNumberFormat($companyData['vat_number']),
+            'company_rsz_number'    => getRSZNumberFormat($companyData['rsz_number']),
+            'company_username'      => $companyData['username'],
+            'company_sender_number' => $companyData['sender_number'],
+            'company_oauth'         => $companyData['oauth_key'] ?? 'self_service_expeditor_' . $companyData['sender_number'],
         ];
     }
 
@@ -131,7 +212,7 @@ class DimonaSenderService
         try {
             DB::beginTransaction();
 
-            $company = Company::findOrFail($company_id);
+            $company = $this->companyService->getCompanyById($company_id);
             $employee_type_ids = $values['employee_type_ids'] ?? [];
 
             // Sync the holiday codes to the company
@@ -140,7 +221,7 @@ class DimonaSenderService
             $company->refresh();
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             error_log($e->getMessage());
             throw $e;
@@ -149,8 +230,34 @@ class DimonaSenderService
 
     public function getAllEmployeeTypeIDsForCompany($company_id)
     {
-        $company = Company::findOrFail($company_id);
+        $company = $this->companyService->getCompanyById($company_id);
         return $company->dimoanEmployeeTypes()->pluck('employee_types.id')->toArray();
+    }
+
+    public function sendDimona($companyId, $timeRegistrationId, $dimona_type = 'IN')
+    {
+        try {
+            setTenantDBByCompanyId($companyId);
+            DB::connection('tenant')->beginTransaction();
+            $timeRegistration = TimeRegistration::findOrFail($timeRegistrationId);
+            $dimona = ['unique_id' => Str::uuid()];
+            $dimona['time_registration_id'] = $timeRegistration->id;
+            $dimona['plan_id'] = $timeRegistration->planningBase->id;
+            $dimona['type'] = 'plan';
+            $dimona['dimona_type'] = $dimona_type;
+            $dimonaDeclarations = $this->createDimonaRecords($dimona);
+            $dimonaDeclarations->timeRegistrations()->attach($timeRegistrationId);
+            $this->setCompanyData($companyId, $dimona);
+            $this->setEmployeeData($timeRegistration->planningBase->employeeProfile, $dimona);
+            $this->setActualPlanningData($timeRegistration, $dimona);
+            $response = $this->requestDimona->sendDimonaRequest($dimona, '/api/send-actual-dimona');
+            if (!$response) {
+                $this->setDimonaRequestFailed($dimonaDeclarations);
+            }
+            DB::connection('tenant')->commit();
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
+        }
     }
 
 

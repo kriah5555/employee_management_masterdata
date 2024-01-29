@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Models\DimonaRequest;
+namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Planning\PlanningBase;
+use App\Models\BaseModel;
+use App\Traits\UserAudit;
 
-class PlanningDimona extends Model
+class DimonaErrorCode extends BaseModel
 {
-    use HasFactory;
+    use UserAudit;
 
-    protected $connection = 'tenant';
+    protected $connection = 'master';
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'planning_dimonas';
+    protected $table = 'dimona_error_codes';
 
     /**
      * The primary key associated with the table.
@@ -49,18 +48,11 @@ class PlanningDimona extends Model
      *
      * @var array
      */
-     protected $fillable = [
-        'planning_base_id',
-        'dimona_base_id',
+    protected $fillable = [
+        'error_code',
+        'description',
     ];
+    protected static $sort = ['error_code'];
 
-    public function dimonaBase()
-    {
-        return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
-    }
-
-    public function planningBase()
-    {
-        return $this->belongsTo(PlanningBase::class, 'planning_base_id');
-    }
+    protected $columnsToLog = ['error_code', 'description'];
 }

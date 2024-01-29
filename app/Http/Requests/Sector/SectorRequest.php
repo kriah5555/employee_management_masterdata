@@ -18,13 +18,14 @@ class SectorRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'name'               => 'required|string|max:255',
-            'paritair_committee' => 'required|string|max:255',
-            'category'           => 'required|integer|max:50',
-            'description'        => 'nullable|string',
-            'status'             => 'required|boolean',
-            'employee_types'     => 'nullable|array',
-            'employee_types.*'   => [
+            'name'                  => 'required|string|max:255',
+            'paritair_committee'    => 'required|string|max:255',
+            'category'              => 'required|integer|max:50',
+            'description'           => 'nullable|string',
+            'status'                => 'required|boolean',
+            'employee_types'        => 'nullable|array',
+            'dimona_codes'          => 'nullable|array',
+            'employee_types.*'      => [
                 'bail',
                 'integer',
                 Rule::exists('employee_types', 'id'),
