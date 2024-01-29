@@ -3,6 +3,7 @@
 namespace App\Services\Sector;
 
 use App\Models\Sector\Sector;
+use App\Models\Sector\SectorDimonaCode;
 use Illuminate\Support\Facades\DB;
 use App\Models\Sector\SectorSalaryConfig;
 use App\Models\Sector\SectorSalarySteps;
@@ -34,7 +35,8 @@ class SectorService
             'employeeTypes',
             'salaryConfig',
             'salaryConfig.salarySteps',
-            'sectorAgeSalary'
+            'sectorAgeSalary',
+            'sectorDimonaCodes.employeeType'
         ]);
     }
 
@@ -66,6 +68,14 @@ class SectorService
             $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
+            foreach ($values['dimona_codes'] as $dimonaCode) {
+                $dimonaCodeObj = SectorDimonaCode::firstOrCreate([
+                    'employee_type_id' => $dimonaCode['employee_type_id'],
+                    'sector_id'        => $sector->id,
+                ]);
+                $dimonaCodeObj->dimona_code = $dimonaCode['dimona_code'];
+                $dimonaCodeObj->save();
+            }
             return $sector;
         });
     }
@@ -85,6 +95,14 @@ class SectorService
             $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
+            foreach ($values['dimona_codes'] as $dimonaCode) {
+                $dimonaCode = SectorDimonaCode::firstOrCreate([
+                    'employee_type_id' => $dimonaCode['employee_type_id'],
+                    'sector_id'        => $sector->id,
+                ]);
+                $dimonaCode->dimona_code = $dimonaCode['dimona_code'];
+                $dimonaCode->save();
+            }
             return $sector;
         });
     }
