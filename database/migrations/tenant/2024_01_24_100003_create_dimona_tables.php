@@ -35,7 +35,7 @@ return new class extends Migration {
         Schema::create('dimona_declaration_time_registration', function (Blueprint $table) {
             $table->id();
             $table->foreignId('dimona_declaration_id')->nullable()->references('id')->on('dimona_declarations')->onDelete('cascade');
-            $table->foreignId('time_registration_id')->nullable()->references('id')->on('time_registrations')->onDelete('cascade');
+            $table->foreignId('time_registration_id')->nullable()->references('id')->on('time_registration')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
