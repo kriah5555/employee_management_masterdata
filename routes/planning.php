@@ -124,12 +124,13 @@ Route::middleware([InitializeTenancy::class, SetActiveUser::class])->group(funct
     }
     Route::controller(DimonaController::class)->group(function () {
         Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'testDimona']);
-        Route::post('/send-dimona', [DimonaController::class, 'sendDimonaByPlan']);
+        Route::post('/send-dimona-by-plan', [DimonaController::class, 'sendDimonaByPlan']);
         Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
     });
 
     Route::controller(DimonaOverviewController::class)->group(function () {
-        Route::post('/dimona-overview', [DimonaOverviewController::class, 'getDimonaDetails']);
+        Route::post('/dimona-overview', [DimonaOverviewController::class, 'getDimonaOverview']);
+        Route::post('/dimona-details/{dimona_id}', [DimonaOverviewController::class, 'getDimonaDetails']);
     });
     Route::post('get-plans-to-send-dimona', [PlanningController::class, 'getPlansToSendDimona']);
 });

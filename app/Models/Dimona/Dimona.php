@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Models\DimonaRequest;
+namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
+use App\Models\Dimona\DimonaDeclaration;
+use App\Models\Dimona\LongTermDimona;
 
-// use Illuminate\Database\Eloquent\SoftDeletes;
-
-class DimonaBase extends Model
+class Dimona extends BaseModel
 {
-    use HasFactory;
 
     protected $connection = 'tenant';
 
@@ -18,7 +16,7 @@ class DimonaBase extends Model
      *
      * @var string
      */
-    protected $table = 'dimona_base';
+    protected $table = 'dimonas';
 
     /**
      * The primary key associated with the table.
@@ -51,26 +49,22 @@ class DimonaBase extends Model
      * @var array
      */
     protected $fillable = [
-        'unique_id',
-        'dimona_channel',
-        'employee_id',
-        'employee_rsz',
-        'status',
-        'dimona_code',
+        'type',
+        'dimona_period_id',
     ];
+
+    public function dimonaDeclarations()
+    {
+        return $this->hasMany(DimonaDeclaration::class, 'dimona_id');
+    }
 
     public function longtermDimona()
     {
-        return $this->hasMany(EmployeeContractLongDimonas::class, 'dimona_base_id');
+        return $this->hasOne(LongTermDimona::class, 'dimona_id');
     }
 
     public function planningDimona()
     {
-        return $this->hasMany(PlanningDimona::class, 'dimona_base_id');
-    }
-
-    public function dimonaDetails()
-    {
-        return $this->hasMany(DimonaDetails::class, 'dimona_base_id');
+        return $this->hasOne(PlanningDimona::class, 'dimona_id');
     }
 }

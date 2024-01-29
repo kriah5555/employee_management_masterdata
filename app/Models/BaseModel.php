@@ -64,8 +64,10 @@ class BaseModel extends Model
         return $values;
     }
     protected $dates = [];
+    protected $dateFields = [];
+    protected $dateTimeFields = [];
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 
@@ -82,11 +84,14 @@ class BaseModel extends Model
 
     protected function formatDateFields()
     {
-        dd($this->dates);
-        exit;
-        foreach ($this->dates as $field) {
+        foreach ($this->dateFields as $field) {
             if ($this->$field) {
                 $this->$field = Carbon::createFromFormat('Y-m-d', $this->$field)->format('Y-m-d');
+            }
+        }
+        foreach ($this->dateTimeFields as $field) {
+            if ($this->$field) {
+                $this->$field = Carbon::createFromFormat('Y-m-d H:i:s', $this->$field)->format('Y-m-d');
             }
         }
     }

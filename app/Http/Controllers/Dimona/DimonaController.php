@@ -56,7 +56,7 @@ class DimonaController extends Controller
             $data = $validator->validated();
             $companyId = getCompanyId();
             foreach ($data['plans'] as $planId) {
-                app(DimonaSenderService::class)->sendDimonaByPlan($companyId, $planId);
+                // app(DimonaSenderService::class)->sendDimonaByPlan($companyId, $planId);
                 dispatch(new SendDimonaByPlanJob($companyId, $planId));
             }
             return returnResponse(
@@ -102,7 +102,7 @@ class DimonaController extends Controller
         try {
             $rules = [
                 'unique_id' => 'required|string',
-                'data'      => 'required|string'
+                'data'      => 'required'
             ];
             $validator = Validator::make(request()->all(), $rules);
             if ($validator->fails()) {
@@ -119,18 +119,21 @@ class DimonaController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Dimona request sent.',
+                ],
+                JsonResponse::HTTP_OK,
+            );
+            return returnResponse(
+                [
+                    'success' => true,
                 ],
                 JsonResponse::HTTP_OK,
             );
         } catch (\Exception $e) {
             return returnResponse(
                 [
-                    'status'  => false,
-                    'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
+                    'success' => true,
                 ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+                JsonResponse::HTTP_OK,
             );
         }
     }

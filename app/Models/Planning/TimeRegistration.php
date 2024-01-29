@@ -3,6 +3,7 @@
 namespace App\Models\Planning;
 
 use App\Models\Company\Employee\EmployeeProfile;
+use App\Models\Dimona\DimonaDeclaration;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -71,7 +72,7 @@ class TimeRegistration extends Model
     {
         if ($this->actual_end_time && $this->status) {
             $start = Carbon::parse($this->actual_start_time);
-            $end   = Carbon::parse($this->actual_end_time);
+            $end = Carbon::parse($this->actual_end_time);
 
             $hours = $start->floatDiffInHours($end);
             return round($hours, 3);
@@ -99,5 +100,9 @@ class TimeRegistration extends Model
     public function endedBy()
     {
         return $this->belongsTo(User::class, 'ended_by');
+    }
+    public function dimonaDeclarations()
+    {
+        return $this->belongsToMany(DimonaDeclaration::class, 'dimona_declaration_time_registration');
     }
 }

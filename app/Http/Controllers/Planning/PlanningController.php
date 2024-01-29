@@ -360,7 +360,7 @@ class PlanningController extends Controller
                 'integer',
                 Rule::exists('locations', 'id'),
             ],
-            'date'        => 'date_format:d-m-Y'
+            'date'        => 'date_format:d-m-Y|after_or_equal:' . now()->format('Y-m-d')
         ];
 
         $request_data = request()->all();

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Dimona;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Dimona\DimonaOverviewService;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class DimonaOverviewController extends Controller
 {
@@ -12,32 +14,64 @@ class DimonaOverviewController extends Controller
     {
     }
 
-    public function getDimonaDetails(Request $request)
+    public function getDimonaOverview(Request $request)
     {
-
-        $response = [];
-
-        $data = $request->all();
+        $rules = [
+            'from_date' => 'required|date_format:d-m-Y',
+            'to_date'   => 'required|date_format:d-m-Y|after_or_equal:from_date',
+            'type'      => 'string|in:plan,long_term,flex_check'
+        ];
+        $validator = Validator::make(request()->all(), $rules);
+        if ($validator->fails()) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $validator->errors()->all()
+                ],
+                JsonResponse::HTTP_BAD_REQUEST,
+            );
+        }
+        $data = $validator->validated();
         try {
-            $from_date = date('Y-m-d', strtotime($data['from_date'])) ?? date('Y-m-d');
-            $to_date = date('Y-m-d', strtotime($data['to_date'])) ?? date('Y-m-d');
-            $type = $data['type'] ?? '';
-
-            $data = $this->dimonaOverviewService->getDimonaOverviewDetails($from_date, $to_date, $type);
-            $response = [
-                'success' => true,
-                'data'   => $data,
-            ];
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->dimonaOverviewService->getDimonaOverview($data['from_date'], $data['to_date'], $data['type']),
+                ],
+                JsonResponse::HTTP_OK,
+            );
 
         } catch (\Exception $e) {
-            $response = [
-                'success'  => false,
-                'file'    => $e->getFile(),
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-            ];
+            return returnResponse(
+                [
+                    'status'  => false,
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
+    }
+    public function getDimonaDetails($dimonaId)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->dimonaOverviewService->getDimonaDetails($dimonaId),
+                ],
+                JsonResponse::HTTP_OK,
+            );
 
-        return $response;
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'status'  => false,
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

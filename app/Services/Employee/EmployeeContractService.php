@@ -154,7 +154,7 @@ class EmployeeContractService
                     $existingRecord->update(['experience' => $function_details['experience']]);
                     $existingRecord->salary()->update(['salary' => $function_details['salary']]);
                 } else {
-                    $function_details['salary_id']  = $this->employeeSalaryDetails::create($function_details)->id;
+                    $function_details['salary_id'] = $this->employeeSalaryDetails::create($function_details)->id;
                     $employee_function_detail_ids[] = $employeeContract->employeeFunctionDetails()->create($function_details)->id;
                 }
             }
@@ -253,5 +253,9 @@ class EmployeeContractService
                         });
                 });
             })->get();
+    }
+    public function getEmployeeContractDetails($employeeContractId, $with = [])
+    {
+        return EmployeeContract::with($with)->findOrFail($employeeContractId);
     }
 }

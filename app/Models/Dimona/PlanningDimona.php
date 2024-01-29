@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Models\DimonaRequest;
+namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
+use App\Models\Planning\PlanningBase;
 
-class DimonaResponse extends Model
+class PlanningDimona extends BaseModel
 {
-    use HasFactory;
 
     protected $connection = 'tenant';
 
@@ -16,7 +15,7 @@ class DimonaResponse extends Model
      *
      * @var string
      */
-    protected $table = 'dimona_responses';
+    protected $table = 'planning_dimonas';
 
     /**
      * The primary key associated with the table.
@@ -48,16 +47,13 @@ class DimonaResponse extends Model
      *
      * @var array
      */
-     protected $fillable = [
-        'dimona_details_id',
-        'result',
-        'dimona_period_id',
-        'registration_id',
-        'smals_response',
+    protected $fillable = [
+        'planning_id',
+        'dimona_id',
     ];
 
-    public function dimonaDetails()
+    public function planningBase()
     {
-        return $this->belongsTo(DimonaDetails::class, 'dimona_details_id');
+        return $this->belongsTo(PlanningBase::class, 'planning_id');
     }
 }

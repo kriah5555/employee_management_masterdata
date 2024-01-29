@@ -70,14 +70,13 @@ class PlanningStartStopService
     public function getActualStopTime($plan_start_date_time, $actual_stop_time)
     {
         $start_time = strtotime(date('H:i', strtotime($plan_start_date_time)));
-        $end_time   = strtotime($actual_stop_time);
+        $end_time = strtotime($actual_stop_time);
 
         if ($start_time == $end_time || $start_time > $end_time) {
             $actual_stop_time = date('Y-m-d', strtotime($plan_start_date_time . '+ 1 day')) . ' ' . date('H:i', $end_time);
         } else {
             $actual_stop_time = date('Y-m-d', strtotime($plan_start_date_time)) . ' ' . date('H:i', $end_time);
         }
-        
         return $actual_stop_time;
     }
 

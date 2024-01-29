@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Models\DimonaRequest;
+namespace App\Models\Dimona;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Planning\PlanningBase;
+use App\Models\BaseModel;
+use App\Models\Planning\TimeRegistration;
 
-class PlanningDimona extends Model
+class DimonaDeclaration extends BaseModel
 {
-    use HasFactory;
 
     protected $connection = 'tenant';
 
@@ -17,7 +15,7 @@ class PlanningDimona extends Model
      *
      * @var string
      */
-    protected $table = 'planning_dimonas';
+    protected $table = 'dimona_declarations';
 
     /**
      * The primary key associated with the table.
@@ -49,18 +47,18 @@ class PlanningDimona extends Model
      *
      * @var array
      */
-     protected $fillable = [
-        'planning_base_id',
-        'dimona_base_id',
+    protected $fillable = [
+        'unique_id',
+        'dimona_id',
+        'type',
+        'dimona_declartion_status',
     ];
-
-    public function dimonaBase()
+    public function dimonaDeclarationErrors()
     {
-        return $this->belongsTo(DimonaBase::class, 'dimona_base_id');
+        return $this->hasMany(DimonaDeclarationError::class, 'dimona_declaration_id');
     }
-
-    public function planningBase()
+    public function timeRegistrations()
     {
-        return $this->belongsTo(PlanningBase::class, 'planning_base_id');
+        return $this->belongsToMany(TimeRegistration::class, 'dimona_declaration_time_registration');
     }
 }
