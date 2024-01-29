@@ -18,10 +18,12 @@ class SendDimonaJob implements ShouldQueue
      */
     protected $companyId;
     protected $timeRegistraionId;
-    public function __construct($companyId, $timeRegistraionId)
+    protected $dimonaType;
+    public function __construct($companyId, $timeRegistraionId, $dimonaType)
     {
         $this->companyId = $companyId;
         $this->timeRegistraionId = $timeRegistraionId;
+        $this->dimonaType = $dimonaType;
     }
 
     /**
@@ -30,7 +32,7 @@ class SendDimonaJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            app(DimonaSenderService::class)->sendDimona($this->companyId, $this->timeRegistraionId);
+            app(DimonaSenderService::class)->sendDimona($this->companyId, $this->timeRegistraionId, $this->dimonaType);
         } catch (\Exception $e) {
             \Log::error('Error processing job: ' . $e->getMessage());
             throw $e; // Rethrow the exception to mark the job as failed

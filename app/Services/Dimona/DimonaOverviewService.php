@@ -55,7 +55,6 @@ class DimonaOverviewService
     {
         $data = [];
         foreach ($response as $each) {
-            dd($each);
             $temp = [];
             $temp['id'] = $each->id;
             $temp['dimona_period_id'] = $each->dimona_period_id;
@@ -67,41 +66,6 @@ class DimonaOverviewService
                 $temp['end'] = date('d-m-Y H:i', strtotime($each->planningDimona->planningBase->end_date_time));
                 $temp['employee_type'] = $each->planningDimona->planningBase->employeeType->name;
             }
-            dd($temp);
-
-            //Plan details.
-            //dd($each);
-            array_map(function ($each) use (&$temp) {
-                $plan_base = $each['planning_base'];
-                #$temp['plan_id'] = $plan_base['id'];
-                $temp['location'] = $plan_base['location_id'];
-                $temp['location'] = $plan_base['location']['location_name'];
-                $temp['employee_name'] = $plan_base['employee_profile']['full_name'];
-                $temp['start_date_time'] = $plan_base['start_date_time'];
-                $temp['end_date_time'] = $plan_base['end_date_time'];
-            }, $each['planning_dimona']);
-
-            //Dimona details.
-            array_map(function ($array) use (&$temp) {
-                if (count($array['dimona_error']) > 0) {
-                    foreach ($array['dimona_error'] as $error) {
-                        $temp[$error['type']][] = $error['error_code'];
-                    }
-                } else {
-                    $temp['warn'] = '';
-                    $temp['error'] = '';
-                }
-                if (count($array['dimona_response']) > 0) {
-                    foreach ($array['dimona_response'] as $resp) {
-                        $temp['result'] = $resp['result'];
-                    }
-                }
-
-
-            }, $each['dimona_details']);
-
-            $temp['employee_rsz'] = $each['employee_rsz'];
-
             $data[] = $temp;
         }
 
