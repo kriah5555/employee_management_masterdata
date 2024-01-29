@@ -9,6 +9,7 @@ use App\Models\DimonaRequest\DimonaBase;
 use App\Services\Dimona\RequestDimona;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+
 //$uuid = Str::uuid();
 class DimonaBaseService
 {
@@ -27,16 +28,16 @@ class DimonaBaseService
     //employee category: 1 -> Long term, 2-> Day contract, 3 -> External
     public function initiateDimonaByPlanService($companyId, $plannings, $type = '')
     {
-	$response= [];
+        $response = [];
         foreach ($plannings as $plan) {
             $dimona = ['unique_id' => Str::uuid()];
             $this->setCompanyData($companyId, $dimona);
             $dimonaDetails = $this->setEmployeeAndPlanningData($plan, $type, $dimona);
             $this->createDimonaRecords($dimonaDetails, $dimona);
             $response[] = $this->requestDimona->sendDimonaRequest($dimona);
-	}
+        }
 
-	return $response;
+        return $response;
     }
 
     public function getPlanningById($planId)
@@ -60,18 +61,18 @@ class DimonaBaseService
         $companyData = $this->company->where('id', $companyId)->get()->toArray();
         $companyData = reset($companyData);
         return $dimona += [
-            'company_id'   => $companyData['id'],
-            'company_name' => $companyData['company_name'],
+            'company_id'         => $companyData['id'],
+            'company_name'       => $companyData['company_name'],
             'company_vat_number' => getVatNumberFormat($companyData['vat_number']),
             'company_rsz_number' => getRSZNumberFormat($companyData['rsz_number']),
-            'company_username' => $companyData['username'],
-            'company_oauth' => $companyData['oauth_key'],
+            'company_username'   => $companyData['username'],
+            'company_oauth'      => $companyData['oauth_key'],
         ];
     }
 
     public function getEmployeeLongTermDetails()
     {
-        
+
     }
 
     public function setEmployeeAndPlanningData($plan, $type, &$dimona)
@@ -126,14 +127,14 @@ class DimonaBaseService
                 $lastTimeregistraion = end($timeRegistraion);
                 $dimona['start_date_time'] = $lastTimeregistraion['actual_start_time'];
                 $dimona['end_date_time'] = $lastTimeregistraion['actual_end_time'] ?? addHours($plan['end_date_time'], 1);
-                $dimona['hours'] =  timeDifferenceinHours($dimona['start_date_time'], $dimona['end_date_time']);
+                $dimona['hours'] = timeDifferenceinHours($dimona['start_date_time'], $dimona['end_date_time']);
             }
 
             //OTH Dimona.
             if ($dimona['dimona_catagory'] == 2) {
                 $dimona['start_date_time'] = $lastTimeregistraion['start_date_time'];
                 $dimona['end_date_time'] = $lastTimeregistraion['actual_end_time'] ?? addHours($plan['end_date_time'], 1);
-                $dimona['hours'] =  timeDifferenceinHours($dimona['start_date_time'], $dimona['end_date_time']);
+                $dimona['hours'] = timeDifferenceinHours($dimona['start_date_time'], $dimona['end_date_time']);
             }
 
             if (count($timeRegistraion) == 0) {
@@ -143,8 +144,8 @@ class DimonaBaseService
             $hours = timeDifferenceinHours($plan['start_date_time'], $plan['end_date_time']);
             $dimona += [
                 'start_date_time' => $plan['start_date_time'],
-                'end_date_time' => $plan['end_date_time'],
-                'hours' => $hours,
+                'end_date_time'   => $plan['end_date_time'],
+                'hours'           => $hours,
             ];
         }
         $dimona['type'] = $dimona_type;
@@ -155,7 +156,7 @@ class DimonaBaseService
     public function getWorkedHours($timeRegistraion, $plan)
     {
         $start_date_time = $end_date_time = $hours = null;
-        foreach($timeRegistraion as $time_registration) {
+        foreach ($timeRegistraion as $time_registration) {
             if ($time_registration['status'] == 1) {
                 $start_date_time = $time_registration['actual_start_time'];
                 $end_date_time = $time_registration['actual_end_time'] ?? addHours($plan['end_date_time'], 0);
@@ -170,19 +171,19 @@ class DimonaBaseService
     {
         if (count($dimonaDetails) == 0) {
             $dimonaBaseRecord = $this->dimonaBase->create([
-                'unique_id' => $dimona['unique_id'],
-                'dimona_code' => $dimona['employee_type_code'],
-                'employee_id' => $dimona['user_id'],
+                'unique_id'    => $dimona['unique_id'],
+                'dimona_code'  => $dimona['employee_type_code'],
+                'employee_id'  => $dimona['user_id'],
                 'employee_rsz' => $dimona['social_security_number'],
-                'status' => 1,
+                'status'       => 1,
             ]);
 
             $dimonaBaseRecord->planningDimona()->create(['planning_base_id' => $dimona['plan_id']]);
             $dimonaBaseRecord->dimonaDetails()->create(
                 [
-                    'dimona_type' => $dimona['type'],
+                    'dimona_type'     => $dimona['type'],
                     'start_date_time' => $dimona['start_date_time'],
-                    'end_date_time' => $dimona['end_date_time'],
+                    'end_date_time'   => $dimona['end_date_time'],
                 ]
             );
         } else {
@@ -190,9 +191,9 @@ class DimonaBaseService
             $dimonaBaseRecord = $this->dimonaBase->find($lastDimona['id']);
             $dimonaBaseRecord->dimonaDetails()->create(
                 [
-                    'dimona_type' => $dimona['type'],
+                    'dimona_type'     => $dimona['type'],
                     'start_date_time' => $dimona['start_date_time'],
-                    'end_date_time' => $dimona['end_date_time'],
+                    'end_date_time'   => $dimona['end_date_time'],
                 ]
             );
         }
@@ -219,5 +220,12 @@ class DimonaBaseService
     public function initiateDimonaByContract($type, $contract)
     {
 
+    }
+
+    public function updateDimonaResponse($uniqueId, $reponse)
+    {
+        $dimonaBase = DimonaBase::where('unique_id', $uniqueId)->get();
+        dd($dimonaBase);
+        dd($uniqueId, $reponse);
     }
 }

@@ -440,7 +440,7 @@ class PlanningService implements PlanningInterface
             // if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
             //     $startPlan = false;
             // }
-            
+
         // }
 
         // Get the current date and time
@@ -452,16 +452,16 @@ class PlanningService implements PlanningInterface
         // Check if the start time is less than or equal to the current time
         // if (strtotime($details->start_date_time) <= $currentDateTime) {
         //     $startPlan = $stopPlan = false; // Don't start or stop the plan
-        // } 
+        // }
         // if (strtotime($details->end_date_time) > $currentDateTime && strtotime($details->start_date_time) > $currentDateTime) {
         //     $startPlan = $stopPlan = false; // Don't start or stop the plan
         // }
-        
+
         // if current time is in between start and end time
         if ($currentDateTime >= strtotime($details->start_date_time) && $currentDateTime <= strtotime($details->end_date_time)) {
-            $startPlan = true; 
-            $stopPlan  = false; 
-        } 
+            $startPlan = true;
+            $stopPlan  = false;
+        }
 
         // Check if the plan has already been started
         if ($details->plan_started) {
@@ -520,7 +520,7 @@ class PlanningService implements PlanningInterface
             // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
             $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = [
                 'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
-                'Plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
+                'plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
                 'shift_leave' => false,
             ];
         }
@@ -532,10 +532,10 @@ class PlanningService implements PlanningInterface
         $monthDates = getStartAndEndDateOfMonth($month, $year);
         return $this->planningRepository->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $monthDates['start_date'], $monthDates['end_date']);
     }
-    public function getWeeklyPlanningForEmployee($employeId, $location, $workstations, $employee_types, $weekNo, $year)
+    public function getWeeklyPlanningForEmployee($employeId, $location, $workstations, $employee_types, $weekNo, $year, $workstationId)
     {
         //Getting the data from the query.
-        $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year, $employeId);
+        $plannings = $this->getWeeklyPlannings($location, [$workstationId], $employee_types, $weekNo, $year, $employeId);
         $employeeDetails = $this->employeeService->getEmployeeDetails($employeId);
         $response = [
             'employee_id'   => $employeId,
@@ -547,7 +547,7 @@ class PlanningService implements PlanningInterface
             'plans'         => []
         ];
         $this->getTotalsForWeeklyPlanning($location, $workstations, $employee_types, $weekNo, $year, $response);
-        return $this->formatWeeklyDataEmployee($plannings, $response);
+        return $this->formatWeeklyDataEmployee($plannings, $workstationId, $response);
     }
 
     public function getTotalsForWeeklyPlanning($location, $workstations, $employee_types, $weekNo, $year, &$response)
@@ -579,7 +579,7 @@ class PlanningService implements PlanningInterface
         }
         return $response;
     }
-    public function formatWeeklyDataEmployee($plannings, &$response)
+    public function formatWeeklyDataEmployee($plannings, $workstationId, &$response)
     {
         foreach ($plannings as $plan) {
             $contractHours = $plan->contract_hours;

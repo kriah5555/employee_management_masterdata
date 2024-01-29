@@ -15,7 +15,7 @@ class GetWeeklyPlanningRequest extends ApiRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'location'         => [
                 'required',
                 'integer',
@@ -42,6 +42,14 @@ class GetWeeklyPlanningRequest extends ApiRequest
                 Rule::exists('employee_profiles', 'id'),
             ],
         ];
+        if ($this->route()->getName() == 'week-planning-employee') {
+            $rules['workstation_id'] = [
+                'required',
+                'integer',
+                Rule::exists('workstations', 'id'),
+            ];
+        }
+        return $rules;
 
     }
     public function messages()
