@@ -69,6 +69,7 @@ class Company extends BaseModel
         'email',
         'phone',
         'logo_id',
+        'daily_registration',
         'status',
         'created_by',
         'updated_by'
@@ -140,7 +141,7 @@ class Company extends BaseModel
 
             if ($tenant) {
                 $tenant->delete();
-            }            
+            }
         });
 
     }
@@ -155,7 +156,7 @@ class Company extends BaseModel
     public function employeeTypes($companyId)
     {
         return $this->with('sectors.employeeTypesValue')
-        ->where('id', $companyId);
+            ->where('id', $companyId);
     }
 
     public function publicHolidays()

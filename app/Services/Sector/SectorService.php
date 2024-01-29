@@ -31,14 +31,26 @@ class SectorService
 
     public function getSectorDetails($id)
     {
-        return $this->sectorRepository->getSectorById($id, [
+        return $this->formatSectors($this->sectorRepository->getSectorById($id, [
             'employeeTypes',
             'salaryConfig',
             'salaryConfig.salarySteps',
             'sectorAgeSalary',
             'sectorDimonaCodes.employeeType'
-        ]);
+        ]));
     }
+
+    public function formatSectors($sector)
+    {
+        $sector = $sector->toArray();
+        $response = [];
+        foreach ($sector['sector_dimona_codes'] as $value) {
+            $response[$value['employee_type']['id']] = $value['dimona_code'];
+        }
+        $sector['dimona_codes'] = $response;
+        return $sector;
+    }
+
 
     public function getSectors()
     {
@@ -68,12 +80,12 @@ class SectorService
             $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
-            foreach ($values['dimona_codes'] as $dimonaCode) {
+            foreach ($values['dimona_codes'] as $employeeTypeId => $dimonaCode) {
                 $dimonaCodeObj = SectorDimonaCode::firstOrCreate([
-                    'employee_type_id' => $dimonaCode['employee_type_id'],
+                    'employee_type_id' => $employeeTypeId,
                     'sector_id'        => $sector->id,
                 ]);
-                $dimonaCodeObj->dimona_code = $dimonaCode['dimona_code'];
+                $dimonaCodeObj->dimona_code = $dimonaCode;
                 $dimonaCodeObj->save();
             }
             return $sector;
@@ -95,13 +107,13 @@ class SectorService
             $sector_salary_config = $this->updateSectorSalaryConfig($sector, $values['category'], count($values['experience']));
             $this->updateSectorSalarySteps($sector_salary_config, $values['experience']);
             $this->updateSectorAgeSalary($sector, $values['age']);
-            foreach ($values['dimona_codes'] as $dimonaCode) {
-                $dimonaCode = SectorDimonaCode::firstOrCreate([
-                    'employee_type_id' => $dimonaCode['employee_type_id'],
+            foreach ($values['dimona_codes'] as $employeeTypeId => $dimonaCode) {
+                $dimonaCodeObj = SectorDimonaCode::firstOrCreate([
+                    'employee_type_id' => $employeeTypeId,
                     'sector_id'        => $sector->id,
                 ]);
-                $dimonaCode->dimona_code = $dimonaCode['dimona_code'];
-                $dimonaCode->save();
+                $dimonaCodeObj->dimona_code = $dimonaCode;
+                $dimonaCodeObj->save();
             }
             return $sector;
         });

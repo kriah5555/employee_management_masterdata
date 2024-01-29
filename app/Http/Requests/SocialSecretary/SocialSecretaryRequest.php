@@ -14,8 +14,9 @@ class SocialSecretaryRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'name'   => 'required|string|max:255',
-            'status' => 'required|boolean',
+            'name'               => 'required|string|max:255',
+            'daily_registration' => 'required|boolean',
+            'status'             => 'required|boolean',
         ];
     }
 
