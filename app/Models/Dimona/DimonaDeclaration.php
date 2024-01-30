@@ -4,6 +4,7 @@ namespace App\Models\Dimona;
 
 use App\Models\BaseModel;
 use App\Models\Planning\TimeRegistration;
+use App\Models\Dimona\Dimona;
 
 class DimonaDeclaration extends BaseModel
 {
@@ -60,5 +61,10 @@ class DimonaDeclaration extends BaseModel
     public function timeRegistrations()
     {
         return $this->belongsToMany(TimeRegistration::class, 'dimona_declaration_time_registration');
+    }
+
+    public function dimona()
+    {
+        return $this->belongsTo(Dimona::class, 'dimona_id');
     }
 }

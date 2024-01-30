@@ -123,20 +123,26 @@ class DimonaSenderService
     public function setPlanningData($planId, &$dimona)
     {
         $plan = $this->planningService->getPlanningById($planId);
-
         $plan->employeeType->dimonaConfig->dimonaType;
         $employeeType = $plan->employeeType->toArray() ?? [];
+        $dimona['declaration']['dimona_type_category'] = $plan->employeeType->dimonaConfig->dimonaType->dimona_type_key;
+        $sectorDimonaCode = $plan->functionTitle->functionCategory->sector->sectorDimonaCodeForEmployeeType($employeeType['id']);
+        $dimonaCode = $sectorDimonaCode ? $sectorDimonaCode->dimona_code : "XXX";
 
         //Employee type.
         if (count($employeeType)) {
             $dimona['declaration']['employee_type'] = $employeeType['name'];
             $dimona['declaration']['employee_type_code'] = $employeeType['dimona_code'] ?? '';
+            $dimona['declaration']['joint_commission_number'] = $dimonaCode;
             $dimona['declaration']['employee_type_category'] = $employeeType['employee_type_category_id'];
             $dimona['declaration']['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
             $dimona['declaration']['start_date'] = date('Y-m-d', strtotime($plan->start_date_time));
             $dimona['declaration']['start_time'] = date('H:i', strtotime($plan->start_date_time));
             $dimona['declaration']['end_date'] = date('Y-m-d', strtotime($plan->end_date_time));
             $dimona['declaration']['end_time'] = date('H:i', strtotime($plan->end_date_time));
+            if ($dimona['declaration']['dimona_type_category'] == 'student') {
+                $dimona['declaration']['hours'] = (int) ceil(timeDifferenceinHours($plan->start_date_time, $plan->end_date_time));
+            }
         }
     }
     public function setActualPlanningData($timeRegistration, &$dimona)
