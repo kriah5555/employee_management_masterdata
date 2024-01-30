@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use App\Traits\DatabaseFieldDateFormat;
 
 class BaseModel extends Model
 {
@@ -86,12 +85,12 @@ class BaseModel extends Model
     {
         foreach ($this->dateFields as $field) {
             if ($this->$field) {
-                $this->$field = Carbon::createFromFormat('Y-m-d', $this->$field)->format('Y-m-d');
+                $this->$field = date('Y-m-d', strtotime($this->$field));
             }
         }
         foreach ($this->dateTimeFields as $field) {
             if ($this->$field) {
-                $this->$field = Carbon::createFromFormat('Y-m-d H:i:s', $this->$field)->format('Y-m-d');
+                $this->$field = date('Y-m-d H:i:s', strtotime($this->$field));
             }
         }
     }
