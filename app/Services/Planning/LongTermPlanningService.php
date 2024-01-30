@@ -107,6 +107,11 @@ class LongTermPlanningService
             ->get();
         return $this->formatEmployeeLongTermPlannings($longTermPlannings);
     }
+    public function getAllLongTermPlannings()
+    {
+        $longTermPlannings = LongTermPlanning::with(['longTermPlanningTimings', 'location', 'workstation', 'functionTitle'])->get();
+        return $this->formatEmployeeLongTermPlannings($longTermPlannings);
+    }
 
     public function formatEmployeeLongTermPlannings($longTermPlannings)
     {

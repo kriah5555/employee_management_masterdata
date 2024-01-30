@@ -108,6 +108,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
         Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
         Route::get('employee-long-term-plannings/{employee_id}', [LongTermPlanningController::class, 'getEmployeeLongTermPlannings']);
+        Route::get('get-all-long-term-plannings', [LongTermPlanningController::class, 'getAllLongTermPlannings']);
         Route::post('create-shift-plan', [PlanningShiftController::class, 'createShiftPlan']);
         $resources = [
             'long-term-planning' => [
