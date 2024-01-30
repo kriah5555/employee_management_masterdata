@@ -53,7 +53,6 @@ class EmployeeContractController extends Controller
     public function show($employee_id)
     {
         try {
-            app(DimonaSenderService::class)->sendLongTermDimona(getCompanyId(), 1);
             return returnResponse(
                 [
                     'success' => true,
