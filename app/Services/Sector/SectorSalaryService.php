@@ -21,7 +21,7 @@ class SectorSalaryService
     public function getMinimumSalariesBySectorId($sector_id, $salary_type = '')
     {
         $field = $this->getFieldBySalaryType($salary_type);
-        $sector = $this->sectorService->getSectorDetails($sector_id);
+        $sector = $this->sectorService->getSectorById($sector_id);
         $sector->load('salaryConfig.salarySteps.minimumSalary');
 
         $return = [
