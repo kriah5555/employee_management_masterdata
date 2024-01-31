@@ -74,7 +74,7 @@ class PlanningRepository implements PlanningRepositoryInterface
         return $query->get();
     }
 
-    public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = '', $employee_id = '', $relations = [], $from_date_time = '', $to_date_time = '')
+    public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = [], $employee_id = '', $relations = [], $from_date_time = '', $to_date_time = '')
     {
         $query = PlanningBase::query();
 

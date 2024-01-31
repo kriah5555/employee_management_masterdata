@@ -32,9 +32,18 @@ class EmployeeSwitchPlanningService
 
         $activeEmployees = [];
         foreach ($contracts as $contract) {
+            $plans = $this->planningRepository->getPlans('', '', '', '', [$plan->employee_type_id], $plan->employee_profile_id, [], $plan->start_date_time, $plan->end_date_time);
+            $plans = $plans->map(function ($plan) {
+                return [
+                    'start_time' => $plan->start_time,
+                    'end_time'   => $plan->end_time,
+                ];
+            });
             $activeEmployees[$contract->employeeProfile->id] = [
-                'value' => $contract->employeeProfile->id,
-                'label' => $contract->employeeProfile->user->userBasicDetails->first_name . ' ' . $contract->employeeProfile->user->userBasicDetails->last_name
+                'employee_id'         => $contract->employeeProfile->id,
+                'employee_name'       => $contract->employeeProfile->full_name,
+                'availability_status' => $contract->employeeProfile->availabilityForDate($plan_date)->isNotEmpty() ? $contract->employeeProfile->availabilityForDate($plan_date)->first()->availability : null,
+                'plan_timings'        => $plans,
             ];
         }
         
