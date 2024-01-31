@@ -107,6 +107,11 @@ class LongTermPlanningService
             ->get();
         return $this->formatEmployeeLongTermPlannings($longTermPlannings);
     }
+    public function getAllLongTermPlannings()
+    {
+        $longTermPlannings = LongTermPlanning::with(['longTermPlanningTimings', 'location', 'workstation', 'functionTitle'])->get();
+        return $this->formatEmployeeLongTermPlannings($longTermPlannings);
+    }
 
     public function formatEmployeeLongTermPlannings($longTermPlannings)
     {
@@ -131,24 +136,26 @@ class LongTermPlanningService
             ];
         }
         return [
-            'id'             => $longTermPlanning->id,
-            'start_date'     => date('d-m-Y', strtotime($longTermPlanning->start_date)),
-            'end_date'       => date('d-m-Y', strtotime($longTermPlanning->end_date)),
-            'repeating_week' => $longTermPlanning->repeating_week,
-            'auto_renew'     => $longTermPlanning->auto_renew,
-            'function'       => [
+            'id'                  => $longTermPlanning->id,
+            'employee_profile_id' => $longTermPlanning->employee_profile_id,
+            'employee_name'       => $longTermPlanning->employeeProfile->full_name,
+            'start_date'          => date('d-m-Y', strtotime($longTermPlanning->start_date)),
+            'end_date'            => date('d-m-Y', strtotime($longTermPlanning->end_date)),
+            'repeating_week'      => $longTermPlanning->repeating_week,
+            'auto_renew'          => $longTermPlanning->auto_renew,
+            'function'            => [
                 'value' => $longTermPlanning->functionTitle->id,
                 'label' => $longTermPlanning->functionTitle->name,
             ],
-            'workstation'    => [
+            'workstation'         => [
                 'value' => $longTermPlanning->workstation->id,
                 'label' => $longTermPlanning->workstation->workstation_name,
             ],
-            'location'       => [
+            'location'            => [
                 'value' => $longTermPlanning->location->id,
                 'label' => $longTermPlanning->location->location_name,
             ],
-            'plannings'      => array_values($plannings)
+            'plannings'           => array_values($plannings)
         ];
     }
 

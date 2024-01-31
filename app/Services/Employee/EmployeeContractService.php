@@ -48,9 +48,9 @@ class EmployeeContractService
     public function formatEmployeeContract($employeeContract)
     {
         $contractDetails = [
-            'id'                        => $employeeContract->id,
-            'start_date'                => $employeeContract->start_date,
-            'end_date'                  => $employeeContract->end_date,
+  	    'id'                        => $employeeContract->id,
+	    'start_date'                => date('d-m-Y', strtotime($employeeContract->start_date)),
+            'end_date'                  => $employeeContract->end_date ? date('d-m-Y', strtotime($employeeContract->end_date)) : '',
             'employee_type_id'          => $employeeContract->employeeType->id,
             'employee_type'             => $employeeContract->employeeType->name,
             'long_term'                 => false,

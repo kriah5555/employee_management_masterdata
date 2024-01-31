@@ -235,6 +235,8 @@ class DimonaBaseService
             $body = $response['body'];
             if ($body['declarationStatus']['result'] == 'A') {
                 $dimonaDeclaration->dimona_declartion_status = 'success';
+                $dimonaDeclaration->dimona->dimona_period_id = $body['declarationStatus']['dimonaPeriodId'];
+                $dimonaDeclaration->dimona->save();
                 $dimonaDeclaration->save();
             } elseif ($body['declarationStatus']['result'] == 'B') {
                 $dimonaDeclaration->dimona_declartion_status = 'failed';

@@ -29,6 +29,17 @@ class SectorService
         $this->employeeTypeService = $employeeTypeService;
     }
 
+    public function getSectorById($id)
+    {
+        return $this->sectorRepository->getSectorById($id, [
+            'employeeTypes',
+            'salaryConfig',
+            'salaryConfig.salarySteps',
+            'sectorAgeSalary',
+            'sectorDimonaCodes.employeeType'
+        ]);
+    }
+
     public function getSectorDetails($id)
     {
         return $this->formatSectors($this->sectorRepository->getSectorById($id, [

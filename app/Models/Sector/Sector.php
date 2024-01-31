@@ -104,4 +104,9 @@ class Sector extends BaseModel
     {
         return $this->hasMany(SectorDimonaCode::class);
     }
+
+    public function sectorDimonaCodeForEmployeeType($employeeTypeId)
+    {
+        return $this->hasMany(SectorDimonaCode::class)->where('employee_type_id', $employeeTypeId)->first();
+    }
 }

@@ -44,6 +44,7 @@ class EmployeeRequest extends ApiRequest
                 'responsible_person_id' => ['nullable', 'integer', new ResponsiblePersonExistsRule($companyId)],
                 'street_house_no'       => 'required|string|max:255',
                 'postal_code'           => 'required|string|max:50',
+                'place_of_birth'        => 'required|string|max:50',
                 'city'                  => 'required|string|max:50',
                 'country'               => 'required|string|max:50',
                 'nationality'           => 'required|string|max:50',

@@ -63,7 +63,6 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
             });
 
-            
         Route::controller(PlanningController::class)->group(function () {
 
             Route::post('get-week-planning-employee', 'getWeeklyPlanningForEmployee')->name('week-planning-employee');
@@ -109,6 +108,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
         Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
         Route::get('employee-long-term-plannings/{employee_id}', [LongTermPlanningController::class, 'getEmployeeLongTermPlannings']);
+        Route::get('get-all-long-term-plannings', [LongTermPlanningController::class, 'getAllLongTermPlannings']);
         Route::post('create-shift-plan', [PlanningShiftController::class, 'createShiftPlan']);
         $resources = [
             'long-term-planning' => [
@@ -125,12 +125,12 @@ Route::middleware([SetActiveUser::class])->group(function () {
         }
         Route::controller(DimonaController::class)->group(function () {
             Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'testDimona']);
-            Route::post('/send-dimona', [DimonaController::class, 'sendDimonaByPlan']);
+            Route::post('/send-dimona-by-plan', [DimonaController::class, 'sendDimonaByPlan']);
             Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
         });
 
         Route::controller(DimonaOverviewController::class)->group(function () {
-            Route::post('/dimona-overview', [DimonaOverviewController::class, 'getDimonaDetails']);
+            Route::post('/dimona-overview', [DimonaOverviewController::class, 'getDimonaOverview']);
             Route::post('/dimona-details/{dimona_id}', [DimonaOverviewController::class, 'getDimonaDetails']);
         });
         Route::post('get-plans-to-send-dimona', [PlanningController::class, 'getPlansToSendDimona']);

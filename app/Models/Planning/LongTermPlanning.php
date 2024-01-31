@@ -3,6 +3,7 @@
 namespace App\Models\Planning;
 
 use App\Models\BaseModel;
+use App\Models\Company\Employee\EmployeeProfile;
 use App\Models\Company\Workstation;
 use App\Models\EmployeeFunction\FunctionTitle;
 use App\Traits\UserAudit;
@@ -99,5 +100,9 @@ class LongTermPlanning extends BaseModel
                 ]);
             }
         }
+    }
+    public function employeeProfile()
+    {
+        return $this->belongsTo(EmployeeProfile::class);
     }
 }

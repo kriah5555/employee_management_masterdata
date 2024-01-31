@@ -25,6 +25,7 @@ class UserBasicDetails extends BaseModel
         'language',
         'extra_info'
     ];
+    protected $dateFields = ['date_of_birth', 'license_expiry_date'];
     /**
      * The table associated with the model.
      *

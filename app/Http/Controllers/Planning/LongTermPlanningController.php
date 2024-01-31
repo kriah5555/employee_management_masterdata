@@ -69,6 +69,29 @@ class LongTermPlanningController extends Controller
         }
     }
 
+    public function getAllLongTermPlannings()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->longTermPlanningService->getAllLongTermPlannings(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString(),
+                    'file'    => $e->getFile(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     public function destroy($longTermPlanningId)
     {
         try {
