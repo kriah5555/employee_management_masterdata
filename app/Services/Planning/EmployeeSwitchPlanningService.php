@@ -49,7 +49,7 @@ class EmployeeSwitchPlanningService
         
         $activeEmployees = array_values($activeEmployees);
         usort($activeEmployees, function ($a, $b) {
-            return strcmp($a['label'], $b['label']);
+            return strcmp($a['employee_name'], $b['employee_name']);
         });
         return $activeEmployees;    
     }
@@ -68,21 +68,19 @@ class EmployeeSwitchPlanningService
         }
     }
 
-    public function getAllSwitchPlanRequests($user_id, $company_ids)
+    public function getAllEmployeeRequestsForSwitchPlan($user_id, $company_ids)
     {
         try {
-            $return      = [
-                'requests' => null,
-                'accepted' => null,
-            ];
             $company_repository = app(CompanyRepository::class);
             foreach ($company_ids as $company_id) {
                 setTenantDBByCompanyId($company_id);
-                $company = $company_repository->getCompanyById($company_id);
+                $company              = $company_repository->getCompanyById($company_id);
                 $employee_profile_id  = getEmployeeProfileByUserId($user_id);
-                $switch_plan_requests = EmployeeSwitchPlanning::where(['request_from' => $employee_profile_id, 'request_to' => $employee_profile_id])->get();
-                $switch_plan_requests->each(function($switch_plan_request) use (&$return, $company) {
-                    $request_data = [
+                $switch_plan_requests = EmployeeSwitchPlanning::where(['request_from' => $employee_profile_id])->get();
+
+                // dd($switch_plan_requests->toarray());
+                return $switch_plan_requests->map(function($switch_plan_request) use (&$return, $company) {
+                    return [
                         'id' => $switch_plan_request->id,
                         'company_id' => $company->id,
                         'company_name' => $company->company_name,
@@ -91,7 +89,6 @@ class EmployeeSwitchPlanningService
                 });
             }
 
-            EmployeeSwitchPlanning::create($values);
         } catch (\Exception $e) {
             error_log($e->getMessage());
             throw $e;

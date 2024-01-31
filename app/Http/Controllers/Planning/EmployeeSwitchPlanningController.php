@@ -85,14 +85,14 @@ class EmployeeSwitchPlanningController extends Controller
         }
     } 
 
-    public function getAllRequestsForSwitchPlan()
+    public function getAllEmployeeRequestsForSwitchPlan()
     {
         try {
             $company_ids = getUserCompanies(Auth::guard('web')->user()->id);
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeSwitchPlanningService->getAllSwitchPlanRequests(Auth::guard('web')->user()->id, $company_ids),
+                    'data'    => $this->employeeSwitchPlanningService->getAllEmployeeRequestsForSwitchPlan(Auth::guard('web')->user()->id, $company_ids),
                 ],
                 JsonResponse::HTTP_OK,
             );
