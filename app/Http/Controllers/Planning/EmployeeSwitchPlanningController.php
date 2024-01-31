@@ -68,10 +68,11 @@ class EmployeeSwitchPlanningController extends Controller
     public function requestToSwitchPlan(EmployeeSwitchPlanningRequest $request)
     {
         try {
+            $this->employeeSwitchPlanningService->createSwitchPlanRequest($request->validated());
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeSwitchPlanningService->createSwitchPlanRequest($request->validated()),
+                    'message' => 'Request sent',
                 ],
                 JsonResponse::HTTP_OK,
             );

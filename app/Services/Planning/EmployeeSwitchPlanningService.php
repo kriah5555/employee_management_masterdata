@@ -39,11 +39,13 @@ class EmployeeSwitchPlanningService
                     'end_time'   => $plan->end_time,
                 ];
             });
+
             $activeEmployees[$contract->employeeProfile->id] = [
                 'employee_id'         => $contract->employeeProfile->id,
                 'employee_name'       => $contract->employeeProfile->full_name,
                 'availability_status' => $contract->employeeProfile->availabilityForDate($plan_date)->isNotEmpty() ? $contract->employeeProfile->availabilityForDate($plan_date)->first()->availability : null,
                 'plan_timings'        => $plans,
+                'request_status'      => '',
             ];
         }
         

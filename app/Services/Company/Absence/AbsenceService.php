@@ -388,7 +388,7 @@ class AbsenceService
                         ];
                     }  
 
-                    if ($absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')) {
+                    if ($absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF') || $absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES')) {
                         $multiple_holiday_codes[] = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
