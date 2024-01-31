@@ -122,12 +122,6 @@ class DimonaController extends Controller
                 ],
                 JsonResponse::HTTP_OK,
             );
-            return returnResponse(
-                [
-                    'success' => true,
-                ],
-                JsonResponse::HTTP_OK,
-            );
         } catch (\Exception $e) {
             return returnResponse(
                 [
