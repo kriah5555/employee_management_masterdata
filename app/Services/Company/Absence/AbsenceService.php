@@ -522,15 +522,19 @@ class AbsenceService
             ]);
 
         } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) {
-            $return_data->merge([[
-                'holiday_code'  => $holiday_code_first_half,
-                'hours'         => '',
-                'duration_type' => config('absence.FIRST_HALF'),
-            ], [
-                'holiday_code'  => $holiday_code_second_half,
-                'hours'         => '',
-                'duration_type' => config('absence.SECOND_HALF'),
-            ]]);
+            
+            $return_data->push(
+                [
+                    'holiday_code'  => $holiday_code_first_half,
+                    'hours'         => '',
+                    'duration_type' => config('absence.FIRST_HALF'),
+                ],
+                [
+                    'holiday_code'  => $holiday_code_second_half,
+                    'hours'         => '',
+                    'duration_type' => config('absence.SECOND_HALF'),
+                ]
+            );
         }
 
         return $return_data->toArray();
