@@ -488,8 +488,9 @@ class AbsenceService
 
         $return_data = empty($holiday_code_counts) ? collect([]) : collect($holiday_code_counts);
 
-        $return_data->map(function ($holiday_count_details) {
+        $return_data->transform(function ($holiday_count_details) {
             $holiday_count_details['duration_type'] = '';
+            return $holiday_count_details;
         });
 
         if (in_array($duration_type, [
