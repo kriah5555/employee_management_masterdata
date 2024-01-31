@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Planning\EmployeeSwitchPlanningService;
 use App\Http\Requests\Planning\EmployeeSwitchPlanningRequest;
@@ -71,6 +72,27 @@ class EmployeeSwitchPlanningController extends Controller
                 [
                     'success' => true,
                     'data'    => $this->employeeSwitchPlanningService->createSwitchPlanRequest($request->validated()),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    } 
+
+    public function getAllRequestsForSwitchPlan()
+    {
+        try {
+            $company_ids = getUserCompanies(Auth::guard('web')->user()->id);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeSwitchPlanningService->getAllSwitchPlanRequests(Auth::guard('web')->user()->id, $company_ids),
                 ],
                 JsonResponse::HTTP_OK,
             );

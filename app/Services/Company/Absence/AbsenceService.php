@@ -465,20 +465,20 @@ class AbsenceService
 
     public function formatDurationTypeForApplyingAbsence($half_day, $multiple_holiday_codes) # $half_day [0-> full day, 1-> morning, 2-> evening, 3-> both ]
     {
-        if ($half_day == 0) {
+        if ($half_day == 0 && !$multiple_holiday_codes) {
             return config('absence.FULL_DAYS');
         } elseif ($half_day == 1 && $multiple_holiday_codes) {
             return config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF');
         } elseif ($half_day == 2 && $multiple_holiday_codes) {
             return config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF');
+        } elseif ($multiple_holiday_codes) {
+            return config('absence.MULTIPLE_HOLIDAY_CODES');
         } elseif ($half_day == 1) {
             return config('absence.FIRST_HALF');
         } elseif ($half_day == 2) {
             return config('absence.SECOND_HALF');
         } elseif ($half_day == 3) {
             return config('absence.FIRST_AND_SECOND_HALF');
-        } elseif ($multiple_holiday_codes) {
-            return config('absence.MULTIPLE_HOLIDAY_CODES');
         }
     }
 
