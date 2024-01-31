@@ -143,7 +143,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::post('request-to-switching-plan', 'requestToSwitchPlan');
 
-        Route::get('employee-switch-plans', 'getAllEmployeeRequestsForSwitchPlan');
+        Route::get('employee-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan');
 
     }); 
 });

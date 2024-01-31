@@ -40,12 +40,13 @@ class EmployeeSwitchPlanningService
                 ];
             });
 
+            $employee_switch_request = EmployeeSwitchPlanning::where(['request_to' => $contract->employeeProfile->id, 'plan_id' => $plan_id])->get();
             $activeEmployees[$contract->employeeProfile->id] = [
                 'employee_id'         => $contract->employeeProfile->id,
                 'employee_name'       => $contract->employeeProfile->full_name,
                 'availability_status' => $contract->employeeProfile->availabilityForDate($plan_date)->isNotEmpty() ? $contract->employeeProfile->availabilityForDate($plan_date)->first()->availability : null,
                 'plan_timings'        => $plans,
-                'request_status'      => '',
+                'request_status'      => $employee_switch_request->isNotEmpty(),
             ];
         }
         
@@ -80,7 +81,6 @@ class EmployeeSwitchPlanningService
                 $employee_profile_id  = getEmployeeProfileByUserId($user_id);
                 $switch_plan_requests = EmployeeSwitchPlanning::where(['request_from' => $employee_profile_id])->get();
 
-                // dd($switch_plan_requests->toarray());
                 return $switch_plan_requests->map(function($switch_plan_request) use (&$return, $company) {
                     return [
                         'id' => $switch_plan_request->id,

@@ -371,6 +371,7 @@ class AbsenceService
                         $holiday_code = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     } 
 
@@ -378,6 +379,7 @@ class AbsenceService
                         $holiday_code_morning = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     } 
                     
@@ -385,6 +387,7 @@ class AbsenceService
                         $holiday_code_evening = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     }  
 
@@ -392,6 +395,7 @@ class AbsenceService
                         $multiple_holiday_codes[] = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     }  
                 }
