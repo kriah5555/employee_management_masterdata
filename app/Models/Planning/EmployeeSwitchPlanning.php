@@ -16,7 +16,7 @@ class EmployeeSwitchPlanning extends Model
         'request_from',
         'request_to',
         'plan_id',
-        'request_status', # 1 => request pending # 2 => request approved
+        'request_status', # 1 => request pending # 2 => request accepted
         'status',
         'created_by',
         'updated_by',

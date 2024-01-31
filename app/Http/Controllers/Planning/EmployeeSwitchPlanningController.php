@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Planning\EmployeeSwitchPlanningService;
 use App\Http\Requests\Planning\EmployeeSwitchPlanningRequest;
+use App\Http\Requests\Planning\UpdateSwitchPlanningStatusRequest;
 
 class EmployeeSwitchPlanningController extends Controller
 {
@@ -67,10 +69,63 @@ class EmployeeSwitchPlanningController extends Controller
     public function requestToSwitchPlan(EmployeeSwitchPlanningRequest $request)
     {
         try {
+            $this->employeeSwitchPlanningService->createSwitchPlanRequest($request->validated());
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeSwitchPlanningService->createSwitchPlanRequest($request->validated()),
+                    'message' => 'Request sent',
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    } 
+
+    public function getAllEmployeeRequestsForSwitchPlan()
+    {
+        try {
+            $routeName = request()->route()->getName();
+
+            $company_ids = [];
+
+            if ($routeName == 'manager-get-switch-plan-requests') {
+                $employee_flow = false;
+            } else {
+                $employee_flow = true;
+                $company_ids = getUserCompanies(Auth::guard('web')->user()->id);
+            }
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeSwitchPlanningService->getAllEmployeeRequestsForSwitchPlan(Auth::guard('web')->user()->id, $company_ids, $employee_flow),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    } 
+
+    public function updateSwitchPlanStatus(UpdateSwitchPlanningStatusRequest $request)
+    {
+        try {
+            $this->employeeSwitchPlanningService->updateStatusOfSwitchPlanning($request->validated());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Status updated successfully.'
                 ],
                 JsonResponse::HTTP_OK,
             );

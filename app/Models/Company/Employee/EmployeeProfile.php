@@ -14,6 +14,7 @@ use App\Models\Company\Employee\EmployeeContract;
 use App\Models\Company\Employee\EmployeeBenefits;
 use App\Models\Company\Employee\EmployeeSignature;
 use App\Models\User\CompanyUser;
+use App\Models\Company\EmployeeAvailability;
 
 class EmployeeProfile extends BaseModel
 {
@@ -141,11 +142,11 @@ class EmployeeProfile extends BaseModel
             ->where('start_date_time', '<=', date('Y-m-d 23:59:59', strtotime($date)))
             ->get();
     }
+    
     public function availabilityForDate($date)
     {
-        return $this->hasMany(PlanningBase::class)
-            ->where('start_date_time', '>=', date('Y-m-d 00:00:00', strtotime($date)))
-            ->where('start_date_time', '<=', date('Y-m-d 23:59:59', strtotime($date)))
+        return $this->hasMany(EmployeeAvailability::class)
+            ->where(['date' => date('Y-m-d', strtotime($date))])
             ->get();
     }
     public function companyUser()

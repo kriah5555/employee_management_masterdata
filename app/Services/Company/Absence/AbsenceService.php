@@ -79,7 +79,7 @@ class AbsenceService
                     if (!empty($reason)) {
                         $data['reason'] = $status;
                     }
-                    $absence->update();
+                    $absence->update($data);
                 }
                 return $absence;
         } catch (Exception $e) {
@@ -371,6 +371,7 @@ class AbsenceService
                         $holiday_code = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     } 
 
@@ -378,6 +379,7 @@ class AbsenceService
                         $holiday_code_morning = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     } 
                     
@@ -385,19 +387,22 @@ class AbsenceService
                         $holiday_code_evening = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     }  
 
-                    if ($absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')) {
+                    if ($absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF') || $absence_hours->duration_type == config('absence.MULTIPLE_HOLIDAY_CODES')) {
                         $multiple_holiday_codes[] = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
+                            'hours' => $absence_hours->hours,
                         ];
                     }  
                 }
 
                 $absence_data = [
                     'id' => $leave->id,
+                    'applied_date'                 => $leave->applied_date,
                     'duration_type'                => $duration_type,
                     'half_day'                     => $half_day,
                     'multiple_holiday_code_status' => in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF')]),
@@ -465,31 +470,32 @@ class AbsenceService
 
     public function formatDurationTypeForApplyingAbsence($half_day, $multiple_holiday_codes) # $half_day [0-> full day, 1-> morning, 2-> evening, 3-> both ]
     {
-        if ($half_day == 0) {
+        if ($half_day == 0 && !$multiple_holiday_codes) {
             return config('absence.FULL_DAYS');
         } elseif ($half_day == 1 && $multiple_holiday_codes) {
             return config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF');
         } elseif ($half_day == 2 && $multiple_holiday_codes) {
             return config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF');
+        } elseif ($multiple_holiday_codes) {
+            return config('absence.MULTIPLE_HOLIDAY_CODES');
         } elseif ($half_day == 1) {
             return config('absence.FIRST_HALF');
         } elseif ($half_day == 2) {
             return config('absence.SECOND_HALF');
         } elseif ($half_day == 3) {
             return config('absence.FIRST_AND_SECOND_HALF');
-        } elseif ($multiple_holiday_codes) {
-            return config('absence.MULTIPLE_HOLIDAY_CODES');
         }
     }
 
-    public function formatHolidayCodeCountsForApplyingAbsence($half_day, $multiple_holiday_codes, $holiday_code_counts, $holiday_code, $holiday_code_mornings, $holiday_code_evening)
+    public function formatHolidayCodeCountsForApplyingAbsence($half_day, $multiple_holiday_codes, $holiday_code_counts, $holiday_code, $holiday_code_first_half, $holiday_code_second_half)
     {
         $duration_type = $this->formatDurationTypeForApplyingAbsence($half_day, $multiple_holiday_codes);
 
         $return_data = empty($holiday_code_counts) ? collect([]) : collect($holiday_code_counts);
 
-        $return_data->map(function ($holiday_count_details) {
+        $return_data->transform(function ($holiday_count_details) {
             $holiday_count_details['duration_type'] = '';
+            return $holiday_count_details;
         });
 
         if (in_array($duration_type, [
@@ -500,14 +506,17 @@ class AbsenceService
             config('absence.FULL_DAYS'), 
             ])) {
 
-            $d_type = $d_type = '';
-            if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $duration_type == config('absence.FIRST_HALF') ) {
+            $h_code = $d_type = '';
+            if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $duration_type == config('absence.FIRST_HALF')) {
                 $d_type = config('absence.FIRST_HALF');
-                $h_code = $holiday_code_mornings;
-            } if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF') || $duration_type == config('absence.SECOND_HALF') ) {
-                $d_type = config('absence.FIRST_HALF');
-                $h_code = $holiday_code_mornings;
-            } else  { # fill day
+                $h_code = $holiday_code_first_half;
+            } 
+            if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF') || $duration_type == config('absence.SECOND_HALF')) {
+                $d_type = config('absence.SECOND_HALF');
+                $h_code = $holiday_code_second_half;
+            } 
+            
+            if ($duration_type == config('absence.FULL_DAY') || $duration_type == config('absence.FULL_DAY')) { # fill day
                 $h_code = $holiday_code;
             }
 
@@ -518,15 +527,19 @@ class AbsenceService
             ]);
 
         } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) {
-            $return_data->merge([[
-                'holiday_code'  => $holiday_code_mornings,
-                'hours'         => '',
-                'duration_type' => config('absence.FIRST_HALF'),
-            ], [
-                'holiday_code'  => $holiday_code_evening,
-                'hours'         => '',
-                'duration_type' => config('absence.SECOND_HALF'),
-            ]]);
+            
+            $return_data->push(
+                [
+                    'holiday_code'  => $holiday_code_first_half,
+                    'hours'         => '',
+                    'duration_type' => config('absence.FIRST_HALF'),
+                ],
+                [
+                    'holiday_code'  => $holiday_code_second_half,
+                    'hours'         => '',
+                    'duration_type' => config('absence.SECOND_HALF'),
+                ]
+            );
         }
 
         return $return_data->toArray();

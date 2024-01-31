@@ -13,7 +13,7 @@ class HolidayRepository implements HolidayRepositoryInterface
     {
         $query = Absence::query();
         $query->where('absence_type', config('absence.HOLIDAY'));
-        if ($status != '') {
+        if (!empty($status)) {
             if ($status == config('absence.PENDING')) {
                 $query->whereIn('absence_status', [config('absence.PENDING'), config('absence.REQUEST_CANCEL')]);
             } else {
