@@ -137,9 +137,9 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::controller(EmployeeSwitchPlanningController::class)->group(function () {
     
-            // Route::get('manager-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan');
+            Route::get('manager-get-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan')->name('manager-get-switch-plan-requests');
 
-            // Route::post('manager-update-switch-plan-status', 'updateSwitchPlanStatus');
+            Route::post('manager-update-switch-plan-status', 'updateSwitchPlanStatus');
     
         }); 
     });

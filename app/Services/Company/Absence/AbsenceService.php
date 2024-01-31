@@ -402,6 +402,7 @@ class AbsenceService
 
                 $absence_data = [
                     'id' => $leave->id,
+                    'applied_date'                 => $leave->applied_date,
                     'duration_type'                => $duration_type,
                     'half_day'                     => $half_day,
                     'multiple_holiday_code_status' => in_array($duration_type, [config('absence.MULTIPLE_HOLIDAY_CODES'), config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'), config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF')]),

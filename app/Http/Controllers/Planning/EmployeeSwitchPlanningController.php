@@ -90,11 +90,21 @@ class EmployeeSwitchPlanningController extends Controller
     public function getAllEmployeeRequestsForSwitchPlan()
     {
         try {
-            $company_ids = getUserCompanies(Auth::guard('web')->user()->id);
+            $routeName = request()->route()->getName();
+
+            $company_ids = [];
+
+            if ($routeName == 'manager-get-switch-plan-requests') {
+                $employee_flow = false;
+            } else {
+                $employee_flow = true;
+                $company_ids = getUserCompanies(Auth::guard('web')->user()->id);
+            }
+
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeSwitchPlanningService->getAllEmployeeRequestsForSwitchPlan(Auth::guard('web')->user()->id, $company_ids),
+                    'data'    => $this->employeeSwitchPlanningService->getAllEmployeeRequestsForSwitchPlan(Auth::guard('web')->user()->id, $company_ids, $employee_flow),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -111,11 +121,11 @@ class EmployeeSwitchPlanningController extends Controller
     public function updateSwitchPlanStatus(UpdateSwitchPlanningStatusRequest $request)
     {
         try {
-            $company_ids = getUserCompanies(Auth::guard('web')->user()->id);
+            $this->employeeSwitchPlanningService->updateStatusOfSwitchPlanning($request->validated());
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeSwitchPlanningService->getAllEmployeeRequestsForSwitchPlan(Auth::guard('web')->user()->id, $company_ids),
+                    'message' => 'Status updated successfully.'
                 ],
                 JsonResponse::HTTP_OK,
             );

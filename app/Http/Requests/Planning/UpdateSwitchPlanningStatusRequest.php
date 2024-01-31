@@ -15,17 +15,12 @@ class UpdateSwitchPlanningStatusRequest extends ApiRequest
     public function rules()
     {
         return [
-            'plan_id' => [
-                'required',
-                'integer',
-                Rule::exists('tenant.planning_base', 'id')->where('deleted_at', null),
-            ],
-            'employee_switch_plan_id' => [
+            'plan_switch_id' => [
                 'required',
                 'integer',
                 Rule::exists('tenant.employee_profiles', 'id')->where('deleted_at', null),
             ],
-            'status' => 'required|'
+            'status' => 'required|in:' . config('constants.SWITCH_PLAN_APPROVE') . ',' . config('constants.SWITCH_PLAN_REJECT')
         ];
     }
 
@@ -49,21 +44,24 @@ class UpdateSwitchPlanningStatusRequest extends ApiRequest
 
     protected function validatePlanForSwitch()
     {
-        $employee_switch_plan_id = $this->input('employee_switch_plan_id');
+        $plan_switch_id = $this->input('plan_switch_id');
+        $status         = $this->input('status');
 
-        $employee_switch_plan_data = EmployeeSwitchPlanning::where('status', true)->find($employee_switch_plan_id);
-        if (!empty($employee_switch_plan_data)) {
-            $this->validator->errors()->add('employee_switch_plan_id', "The ");
-        } else {
-
-            $planDetails = $employee_switch_plan_data->plan;
+        $employee_switch_plan_data = EmployeeSwitchPlanning::where('status', true)->find($plan_switch_id);
+        if ($status == config('constants.SWITCH_PLAN_APPROVE')) {
+            if (empty($employee_switch_plan_data)) {
+                $this->validator->errors()->add('plan_switch_id', "The plan is not longer available to switch.");
+            } else {
     
-            if (strtotime($planDetails->start_date_time) <= strtotime(now())) {
-                $this->validator->errors()->add('plan_id', "Cannot update status plan end time has exceeded");
-            }
-    
-            if (count($planDetails->timeRegistrations)) {
-                $this->validator->errors()->add('plan_id', "Cannot switch plan which is already started");
+                $planDetails = $employee_switch_plan_data->plan;
+        
+                if (strtotime($planDetails->start_date_time) <= strtotime(now())) {
+                    $this->validator->errors()->add('plan_id', "Cannot update status, plan end time has exceeded.");
+                }
+        
+                if (count($planDetails->timeRegistrations)) {
+                    $this->validator->errors()->add('plan_id', "Cannot switch plan which is already started");
+                }
             }
         }
     }
