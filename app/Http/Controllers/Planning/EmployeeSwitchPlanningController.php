@@ -27,13 +27,13 @@ class EmployeeSwitchPlanningController extends Controller
                 'company_id' => [
                     'required',
                     'integer',
-                    Rule::exists('master.companies', 'id')->whereNull('deleted_at')->where('status', true),
+                    Rule::exists('master.companies', 'id')->whereNull('deleted_at'),
                 ],
                 'plan_id' => [
                     'bail',
                     'integer',
                     'required',
-                    Rule::exists('tenant.planning_base', 'id')->whereNull('deleted_at')->where('status', true),
+                    Rule::exists('tenant.planning_base', 'id')->whereNull('deleted_at'),
                 ]
             ];
             setTenantDBByCompanyId($request->company_id);

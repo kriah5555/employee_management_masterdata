@@ -47,7 +47,7 @@ class UpdateSwitchPlanningStatusRequest extends ApiRequest
         });
     }
 
-    protected function validatePlanIsAvailableToSwitch()
+    protected function validatePlanForSwitch()
     {
         $employee_switch_plan_id = $this->input('employee_switch_plan_id');
 
@@ -56,20 +56,12 @@ class UpdateSwitchPlanningStatusRequest extends ApiRequest
             $this->validator->errors()->add('employee_switch_plan_id', "The ");
         } else {
 
-        }
-    }
-
-    protected function validatePlanForSwitch()
-    {
-        $planId = $this->input('plan_id');
-
-        if (!empty($planId)) {
-            $planDetails = app(PlanningService::class)->getPlanningById($planId);
-
+            $planDetails = $employee_switch_plan_data->plan;
+    
             if (strtotime($planDetails->start_date_time) <= strtotime(now())) {
-                $this->validator->errors()->add('plan_id', "Cannot switch plan after plan start time is crossed");
+                $this->validator->errors()->add('plan_id', "Cannot update status plan end time has exceeded");
             }
-
+    
             if (count($planDetails->timeRegistrations)) {
                 $this->validator->errors()->add('plan_id', "Cannot switch plan which is already started");
             }
