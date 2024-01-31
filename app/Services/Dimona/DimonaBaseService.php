@@ -254,6 +254,19 @@ class DimonaBaseService
                     ]);
                 }
             }
+        } else {
+            $dimonaDeclaration->dimona_declartion_status = 'failed';
+            $dimonaDeclaration->save();
+            $dimonaErrorCode = DimonaErrorCode::where('error_code', '00000-001')->first();
+            if (!$dimonaErrorCode) {
+                $dimonaErrorCode = DimonaErrorCode::create([
+                    'error_code'  => '00000-001',
+                    'description' => 'No response received',
+                ]);
+            }
+            $dimonaDeclaration->dimonaDeclarationErrors()->create([
+                'dimona_error_code_id' => $dimonaErrorCode->id
+            ]);
         }
     }
 }
