@@ -78,8 +78,8 @@ class HolidayRequest extends ApiRequest
                                             $this->input('multiple_holiday_codes'),
                                             $this->input('holiday_code_counts'), 
                                             $this->input('holiday_code'), 
-                                            $this->input('holiday_code_morning'), 
-                                            $this->input('holiday_code_evening')
+                                            $this->input('holiday_code_first_half'), 
+                                            $this->input('holiday_code_second_half')
                                         ),
                 'duration_type' => $absenceService->formatDurationTypeForApplyingAbsence($this->input('half_day'), $this->input('multiple_holiday_codes')),
             ]);

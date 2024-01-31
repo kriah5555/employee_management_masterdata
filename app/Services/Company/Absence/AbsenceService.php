@@ -482,7 +482,7 @@ class AbsenceService
         }
     }
 
-    public function formatHolidayCodeCountsForApplyingAbsence($half_day, $multiple_holiday_codes, $holiday_code_counts, $holiday_code, $holiday_code_mornings, $holiday_code_evening)
+    public function formatHolidayCodeCountsForApplyingAbsence($half_day, $multiple_holiday_codes, $holiday_code_counts, $holiday_code, $holiday_code_first_half, $holiday_code_second_half)
     {
         $duration_type = $this->formatDurationTypeForApplyingAbsence($half_day, $multiple_holiday_codes);
 
@@ -501,14 +501,17 @@ class AbsenceService
             config('absence.FULL_DAYS'), 
             ])) {
 
-            $d_type = $d_type = '';
-            if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $duration_type == config('absence.FIRST_HALF') ) {
+            $h_code = $d_type = '';
+            if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') || $duration_type == config('absence.FIRST_HALF')) {
                 $d_type = config('absence.FIRST_HALF');
-                $h_code = $holiday_code_mornings;
-            } if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF') || $duration_type == config('absence.SECOND_HALF') ) {
-                $d_type = config('absence.FIRST_HALF');
-                $h_code = $holiday_code_mornings;
-            } else  { # fill day
+                $h_code = $holiday_code_first_half;
+            } 
+            if ($duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF') || $duration_type == config('absence.SECOND_HALF')) {
+                $d_type = config('absence.SECOND_HALF');
+                $h_code = $holiday_code_second_half;
+            } 
+            
+            if ($duration_type == config('absence.FULL_DAY') || $duration_type == config('absence.FULL_DAY')) { # fill day
                 $h_code = $holiday_code;
             }
 
@@ -520,11 +523,11 @@ class AbsenceService
 
         } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) {
             $return_data->merge([[
-                'holiday_code'  => $holiday_code_mornings,
+                'holiday_code'  => $holiday_code_first_half,
                 'hours'         => '',
                 'duration_type' => config('absence.FIRST_HALF'),
             ], [
-                'holiday_code'  => $holiday_code_evening,
+                'holiday_code'  => $holiday_code_second_half,
                 'hours'         => '',
                 'duration_type' => config('absence.SECOND_HALF'),
             ]]);
