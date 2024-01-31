@@ -64,13 +64,14 @@ class DimonaSenderService
             $this->setCompanyData($companyId, $dimona);
             $this->setEmployeeData($plan->employeeProfile, $dimona);
             $this->setPlanningData($planId, $dimona);
+            DB::connection('tenant')->commit();
             $response = $this->requestDimona->sendDimonaRequest($dimona, '/api/send-planning-dimona');
             if (!$response) {
                 $this->setDimonaRequestFailed($dimonaDeclarations);
             }
-            DB::connection('tenant')->commit();
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
+            throw $e;
         }
     }
 

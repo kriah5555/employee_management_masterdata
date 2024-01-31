@@ -68,7 +68,6 @@ class DimonaOverviewService
             }
             $data[] = $temp;
         }
-
         return $data;
     }
 
@@ -82,6 +81,7 @@ class DimonaOverviewService
             $query->with([
                 'planningDimona.planningBase.employeeProfile.user.userBasicDetails'
             ]);
+            $query->whereHas('planningDimona.planningBase');
         } elseif ($type == 'long_term') {
             $query->where('type', 'long_term');
             $query->with([
