@@ -116,5 +116,6 @@ return [
     'EMPLOYEE_ID_PATH' => 'employee_id_cards',
 
     'SWITCH_PLAN_PENDING'  => 1,
-    'SWITCH_PLAN_APPROVED' => 2,
+    'SWITCH_PLAN_APPROVE'  => 2,
+    'SWITCH_PLAN_REJECT'   => 3,
 ];

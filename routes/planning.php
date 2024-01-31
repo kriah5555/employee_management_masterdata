@@ -134,6 +134,14 @@ Route::middleware([SetActiveUser::class])->group(function () {
             Route::post('/dimona-details/{dimona_id}', [DimonaOverviewController::class, 'getDimonaDetails']);
         });
         Route::post('get-plans-to-send-dimona', [PlanningController::class, 'getPlansToSendDimona']);
+
+        Route::controller(EmployeeSwitchPlanningController::class)->group(function () {
+    
+            // Route::get('manager-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan');
+
+            // Route::post('manager-update-switch-plan-status', 'updateSwitchPlanStatus');
+    
+        }); 
     });
 
 
@@ -142,6 +150,8 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::post('get-employees-for-switching-plan', 'getEmployeeListForSwitchingPlan');
 
         Route::post('request-to-switching-plan', 'requestToSwitchPlan');
+
+        Route::post('employee-update-switch-plan-status', 'updateSwitchPlanStatus');
 
         Route::get('employee-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan');
 

@@ -79,7 +79,7 @@ class AbsenceService
                     if (!empty($reason)) {
                         $data['reason'] = $status;
                     }
-                    $absence->update();
+                    $absence->update($data);
                 }
                 return $absence;
         } catch (Exception $e) {

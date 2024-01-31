@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Planning\EmployeeSwitchPlanningService;
 use App\Http\Requests\Planning\EmployeeSwitchPlanningRequest;
+use App\Http\Requests\Planning\UpdateSwitchPlanningStatusRequest;
 
 class EmployeeSwitchPlanningController extends Controller
 {
@@ -26,13 +27,13 @@ class EmployeeSwitchPlanningController extends Controller
                 'company_id' => [
                     'required',
                     'integer',
-                    Rule::exists('master.companies', 'id')->whereNull('deleted_at'),
+                    Rule::exists('master.companies', 'id')->whereNull('deleted_at')->where('status', true),
                 ],
                 'plan_id' => [
                     'bail',
                     'integer',
                     'required',
-                    Rule::exists('tenant.planning_base', 'id')->whereNull('deleted_at'),
+                    Rule::exists('tenant.planning_base', 'id')->whereNull('deleted_at')->where('status', true),
                 ]
             ];
             setTenantDBByCompanyId($request->company_id);
@@ -87,6 +88,27 @@ class EmployeeSwitchPlanningController extends Controller
     } 
 
     public function getAllEmployeeRequestsForSwitchPlan()
+    {
+        try {
+            $company_ids = getUserCompanies(Auth::guard('web')->user()->id);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeSwitchPlanningService->getAllEmployeeRequestsForSwitchPlan(Auth::guard('web')->user()->id, $company_ids),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    } 
+
+    public function updateSwitchPlanStatus(UpdateSwitchPlanningStatusRequest $request)
     {
         try {
             $company_ids = getUserCompanies(Auth::guard('web')->user()->id);

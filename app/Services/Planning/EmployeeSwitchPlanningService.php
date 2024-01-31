@@ -40,7 +40,7 @@ class EmployeeSwitchPlanningService
                 ];
             });
 
-            $employee_switch_request = EmployeeSwitchPlanning::where(['request_to' => $contract->employeeProfile->id, 'plan_id' => $plan_id])->get();
+            $employee_switch_request = EmployeeSwitchPlanning::where(['request_to' => $contract->employeeProfile->id, 'plan_id' => $plan_id, 'status' => true])->get();
             $activeEmployees[$contract->employeeProfile->id] = [
                 'employee_id'         => $contract->employeeProfile->id,
                 'employee_name'       => $contract->employeeProfile->full_name,
@@ -71,7 +71,7 @@ class EmployeeSwitchPlanningService
         }
     }
 
-    public function getAllEmployeeRequestsForSwitchPlan($user_id, $company_ids)
+    public function getAllEmployeeRequestsForSwitchPlan($user_id, $company_ids = [])
     {
         try {
             $company_repository = app(CompanyRepository::class);
@@ -79,17 +79,35 @@ class EmployeeSwitchPlanningService
                 setTenantDBByCompanyId($company_id);
                 $company              = $company_repository->getCompanyById($company_id);
                 $employee_profile_id  = getEmployeeProfileByUserId($user_id);
-                $switch_plan_requests = EmployeeSwitchPlanning::where(['request_from' => $employee_profile_id])->get();
-
-                return $switch_plan_requests->map(function($switch_plan_request) use (&$return, $company) {
+                $switch_plan_requests = EmployeeSwitchPlanning::where(['request_to' => $employee_profile_id->id])->get();
+                return $switch_plan_requests->map(function($switch_plan_request) use ($company) {
                     return [
-                        'id' => $switch_plan_request->id,
-                        'company_id' => $company->id,
-                        'company_name' => $company->company_name,
-                        'company_name' => $company->company_name,
+                        'id'               => $switch_plan_request->id,
+                        'company_id'       => $company->id,
+                        'company_name'     => $company->company_name,
+                        'plan_id'          => $switch_plan_request->plan->id,
+                        'plan_timings'     => $switch_plan_request->plan->start_time . '-' . $switch_plan_request->plan->end_time,
+                        'plan_function'    => $switch_plan_request->plan->functionTitle->name,
+                        'employee_type'    => $switch_plan_request->plan->employeeType->name,
+                        'request_to'       => $switch_plan_request->requestTo->full_name,
+                        'request_from'     => $switch_plan_request->requestFrom->full_name,
+                        'location_id'      => $switch_plan_request->plan->location->id,
+                        'location_name'    => $switch_plan_request->plan->location->location_name,
+                        'workstation_id'   => $switch_plan_request->plan->workstation->id,
+                        'workstation_name' => $switch_plan_request->plan->workstation->workstation_name,
                     ];
                 });
             }
+
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateStatusOfSwitchPlanning($values)
+    {
+        try {
 
         } catch (\Exception $e) {
             error_log($e->getMessage());
