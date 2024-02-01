@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class Handler extends ExceptionHandler
 {
@@ -78,6 +79,15 @@ class Handler extends ExceptionHandler
                     'message' => 'Route not found',
                 ],
                 JsonResponse::HTTP_NOT_FOUND,
+            );
+        }
+        if ($exception instanceof AuthorizationException) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => 'Not authorized',
+                ],
+                JsonResponse::HTTP_FORBIDDEN,
             );
         }
         return parent::render($request, $exception);

@@ -253,6 +253,13 @@ if (!function_exists('getCompanyId')) {
     }
 }
 
+if (!function_exists('getCurrentCompanyId')) {
+    function getCurrentCompanyId()
+    {
+        return tenancy()->tenant->company_id;
+    }
+}
+
 if (!function_exists('formatToEuropeCurrency')) { # will convert number format to europe currency format
     function formatToEuropeCurrency($currency)
     {

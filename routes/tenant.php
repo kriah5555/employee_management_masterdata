@@ -245,6 +245,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::get('get-company-employees', [EmployeeController::class, 'getCompanyEmployees']);
         Route::get('get-dashboard-access-key-for-company', [DashboardAccessController::class, 'getDashboardAccessKeyForCompany']);
         Route::get('get-dashboard-access-key-for-location/{location_id}', [DashboardAccessController::class, 'getDashboardAccessKeyForLocation']);
+        Route::get('validate-company-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'validateCompanyDashboardAccessKey']);
+        Route::get('validate-location-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'validateLocationDashboardAccessKey']);
         Route::delete('revoke-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'revokeDashboardAccessKey']);
     });
 });

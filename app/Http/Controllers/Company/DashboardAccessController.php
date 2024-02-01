@@ -31,7 +31,7 @@ class DashboardAccessController extends Controller
                         'access_key' => $this->dashboardService->getDashboardAccessKeyForCompany($companyId)
                     ]
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
             );
         } catch (Exception $e) {
             return returnResponse(
@@ -54,7 +54,7 @@ class DashboardAccessController extends Controller
                         'access_key' => $this->dashboardService->getDashboardAccessKeyForLocation($companyId, $locationId)
                     ]
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
             );
         } catch (Exception $e) {
             return returnResponse(
@@ -75,7 +75,51 @@ class DashboardAccessController extends Controller
                     'success' => true,
                     'message' => t('Dashboard access revoked for all devices')
                 ],
-                JsonResponse::HTTP_CREATED,
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    public function validateCompanyDashboardAccessKey($access_key)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'access' => $this->dashboardService->validateCompanyDashboardAccessKey($access_key)
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    public function validateLocationDashboardAccessKey($access_key)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'access' => $this->dashboardService->validateLocationDashboardAccessKey($access_key)
+                    ]
+                ],
+                JsonResponse::HTTP_OK,
             );
         } catch (Exception $e) {
             return returnResponse(

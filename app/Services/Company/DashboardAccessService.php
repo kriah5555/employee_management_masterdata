@@ -56,4 +56,31 @@ class DashboardAccessService
             throw $e;
         }
     }
+    public function validateCompanyDashboardAccessKey($access_key)
+    {
+        try {
+            return DashboardAccess::where('type', 'company')->where('access_key', $access_key)->first() ? true : false;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+    public function validateLocationDashboardAccessKey($access_key)
+    {
+        try {
+            return DashboardAccess::where('type', 'location')->where('access_key', $access_key)->first() ? true : false;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+    public function validateAccessKey($access_key)
+    {
+        try {
+            return DashboardAccess::where('access_key', $access_key)->first() ? true : false;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
 }
