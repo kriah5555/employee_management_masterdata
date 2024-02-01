@@ -27,7 +27,9 @@ class DashboardAccessController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->dashboardService->getDashboardAccessKeyForCompany($companyId)
+                    'data'    => [
+                        'access_key' => $this->dashboardService->getDashboardAccessKeyForCompany($companyId)
+                    ]
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -48,7 +50,9 @@ class DashboardAccessController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->dashboardService->getDashboardAccessKeyForLocation($companyId, $locationId)
+                    'data'    => [
+                        'access_key' => $this->dashboardService->getDashboardAccessKeyForLocation($companyId, $locationId)
+                    ]
                 ],
                 JsonResponse::HTTP_CREATED,
             );
