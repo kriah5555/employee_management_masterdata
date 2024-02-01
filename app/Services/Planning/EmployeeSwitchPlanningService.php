@@ -32,7 +32,7 @@ class EmployeeSwitchPlanningService
 
         $activeEmployees = [];
         foreach ($contracts as $contract) {
-            $plans = $this->planningRepository->getPlans('', '', '', '', [$plan->employee_type_id], $plan->employee_profile_id, [], $plan->start_date_time, $plan->end_date_time);
+            $plans = $this->planningRepository->getPlans('', '', '', '', [$plan->employee_type_id], $contract->employeeProfile->id, [], $plan->start_date_time, $plan->end_date_time);
             $plans = $plans->map(function ($plan) {
                 return [
                     'start_time' => $plan->start_time,
