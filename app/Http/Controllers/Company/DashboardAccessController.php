@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Company;
 
-use Illuminate\Http\Request;
-use App\Models\DashboardAccess;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Services\Company\DashboardAccessService;
-use App\Http\Requests\Company\DashboardAccessRequest;
+use Exception;
 
 class DashboardAccessController extends Controller
 {
@@ -22,48 +20,16 @@ class DashboardAccessController extends Controller
         $this->dashboardService = $dashboardService;
     }
 
-    public function index()
+    public function getDashboardAccessKeyForCompany()
     {
         try {
+            $companyId = getCompanyId();
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->dashboardService->getDashboardAccess(request()),
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (Exception $e) {
-            return returnResponse(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            );
-        }
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-
-    public function store(DashboardAccessRequest $request)
-    {
-        try {
-            return returnResponse(
-                [
-                    'success' => true,
-                    'message' => t('Dashboard Access created successfully'),
-                    'data'    => $this->dashboardService->createDashboardAccess($request->all())
+                    'data'    => [
+                        'access_key' => $this->dashboardService->getDashboardAccessKeyForCompany($companyId)
+                    ]
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -77,39 +43,48 @@ class DashboardAccessController extends Controller
             );
         }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Request $dashboardAccess)
+    public function getDashboardAccessKeyForLocation($locationId)
     {
+        try {
+            $companyId = getCompanyId();
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => [
+                        'access_key' => $this->dashboardService->getDashboardAccessKeyForLocation($companyId, $locationId)
+                    ]
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(DashboardAccess $dashboardAccess)
+    public function revokeDashboardAccessKey($access_key)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, DashboardAccess $dashboardAccess)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($unique_key)
-    {
-        $this->dashboardService->deleteDashboardAccess($unique_key);
-        return response()->json([
-            'success' => true,
-            'message' => t('Dashboard Access deleted successfully')
-        ]);
+        try {
+            $this->dashboardService->deleteDashboardAccessKey($access_key);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => t('Dashboard access revoked for all devices')
+                ],
+                JsonResponse::HTTP_CREATED,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

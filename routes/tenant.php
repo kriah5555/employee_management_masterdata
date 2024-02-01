@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Company\DashboardAccessController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\InitializeTenancy;
 use App\Http\Middleware\SetActiveUser;
@@ -113,9 +114,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
 
             Route::get('location-workstations/{location_id}', 'locationWorkstations')->where(['location_id' => $integerRule]);
-            Route::post('activate-location', 'activateLocation');
-            Route::post('deactivate-location', 'deactivateLocation');
-            Route::post('deactivate-location-on-all-system', 'deactivateLocationOnAllSystems');
             Route::get('get-locations-list', 'getLocationsList');
 
         });
@@ -250,5 +248,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::put('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
         Route::get('get-company-employees', [EmployeeController::class, 'getCompanyEmployees']);
+        Route::get('get-dashboard-access-key-for-company', [DashboardAccessController::class, 'getDashboardAccessKeyForCompany']);
+        Route::get('get-dashboard-access-key-for-location/{location_id}', [DashboardAccessController::class, 'getDashboardAccessKeyForLocation']);
+        Route::delete('revoke-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'revokeDashboardAccessKey']);
     });
 });
