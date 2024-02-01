@@ -18,7 +18,7 @@ class UpdateSwitchPlanningStatusRequest extends ApiRequest
             'plan_switch_id' => [
                 'required',
                 'integer',
-                Rule::exists('tenant.employee_profiles', 'id')->where('deleted_at', null),
+                Rule::exists('tenant.employee_switch_plannings', 'id')->where('deleted_at', null),
             ],
             'status' => 'required|in:' . config('constants.SWITCH_PLAN_APPROVE') . ',' . config('constants.SWITCH_PLAN_REJECT')
         ];

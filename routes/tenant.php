@@ -68,7 +68,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::controller(HolidayController::class)->group(function () {
 
-            Route::resource('holidays', HolidayController::class)->except(['edit', 'store', 'update']);
+            Route::resource('holidays', HolidayController::class)->except(['edit']);
 
             Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
 
