@@ -56,7 +56,7 @@ class EmployeeContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->employeeContractService->getEmployeeContracts($employee_id)
+                    'data'    => $this->employeeContractService->getEmployeeContractsList($employee_id)
                 ],
                 JsonResponse::HTTP_OK,
             );

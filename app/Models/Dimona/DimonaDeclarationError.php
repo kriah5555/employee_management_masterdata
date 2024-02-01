@@ -3,6 +3,7 @@
 namespace App\Models\Dimona;
 
 use App\Models\BaseModel;
+use App\Models\Dimona\DimonaErrorCode;
 
 class DimonaDeclarationError extends BaseModel
 {
@@ -50,4 +51,8 @@ class DimonaDeclarationError extends BaseModel
         'dimona_declaration_id',
         'dimona_error_code_id',
     ];
+    public function dimonaErrorCode()
+    {
+        return $this->belongsTo(DimonaErrorCode::class, 'dimona_error_code_id');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Employee;
 
+use App\Models\Company\Employee\EmployeeProfile;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeType\EmployeeType;
@@ -22,7 +23,7 @@ class EmployeeContractService
     ) {
     }
 
-    public function getEmployeeContracts($employee_id)
+    public function getEmployeeContractsList($employee_id)
     {
         $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employee_id, ['employeeContracts']);
         $employeeContracts = [
@@ -48,8 +49,8 @@ class EmployeeContractService
     public function formatEmployeeContract($employeeContract)
     {
         $contractDetails = [
-  	    'id'                        => $employeeContract->id,
-	    'start_date'                => date('d-m-Y', strtotime($employeeContract->start_date)),
+            'id'                        => $employeeContract->id,
+            'start_date'                => date('d-m-Y', strtotime($employeeContract->start_date)),
             'end_date'                  => $employeeContract->end_date ? date('d-m-Y', strtotime($employeeContract->end_date)) : '',
             'employee_type_id'          => $employeeContract->employeeType->id,
             'employee_type'             => $employeeContract->employeeType->name,
@@ -258,4 +259,30 @@ class EmployeeContractService
     {
         return EmployeeContract::with($with)->findOrFail($employeeContractId);
     }
+
+    // public function getEmployeeContracts($employeeProfileId)
+    // {
+    //     $employeeProfile = $this->employeeProfileRepository->getEmployeeProfileById($employeeProfileId, ['employeeContracts']);
+    //     dd($employeeProfile->employeeContracts);
+    //     $employeeContracts = [
+    //         'active_contracts'  => [],
+    //         'expired_contracts' => []
+    //     ];
+
+    //     $employee_contracts = $employeeProfile->employeeContracts;
+    // }
+
+    // public function getEmployeeActiveContracts($employeeProfileId)
+    // {
+    //     $employee = EmployeeProfile::find($employeeProfileId);
+    //     if (count($employee->employeeContracts)) {
+    //         $employee->employeeContracts->where('start_date', function ($query) use ($from_date, $to_date) {
+    //             $query->whereBetween('start_date', [$from_date, $to_date]);
+    //         });
+    //         // $employee->employeeContracts->whereHas('planningDimona.planningBase', function ($query) use ($from_date, $to_date) {
+    //         //     $query->whereBetween('start_date_time', [$from_date, $to_date]);
+    //         // });
+    //         dd($employee->employeeContracts);
+    //     }
+    // }
 }
