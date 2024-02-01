@@ -71,7 +71,7 @@ class LeaveService
         try {
             $leave = $this->leave_repository->createLeave($details);
 
-            $leave = $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data);
+            $leave = $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data, isset($details['plan_timings']) ? $details['plan_timings'] : '');
             
             return $leave;
         } catch (Exception $e) {
@@ -117,7 +117,7 @@ class LeaveService
         }
     }
 
-    public function applyLeave(array $details)
+    public function applyLeave(array $details, $status = '')
     {
         try {
             DB::connection('tenant')->beginTransaction();

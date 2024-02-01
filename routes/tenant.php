@@ -102,7 +102,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('leaves-status', 'updateLeaveStatus');
 
-            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave');
+            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave'); # add and update as manager
+
+            Route::post('employee-apply-leave', [LeaveController::class, 'addLeave'])->name('employee-apply-leave'); # apply and update as employee
         });
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
