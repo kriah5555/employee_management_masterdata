@@ -354,9 +354,9 @@ class AbsenceService
                 $half_day = null;
                 if ($duration_type == config('absence.FULL_DAYS')) {
                     $half_day = 0;
-                } elseif ($duration_type == config('absence.FIRST_HALF')) {
+                } elseif ($duration_type == config('absence.FIRST_HALF') || $duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF')) {
                     $half_day = 1;
-                } elseif ($duration_type == config('absence.SECOND_HALF')) {
+                } elseif ($duration_type == config('absence.SECOND_HALF') || $duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')) {
                     $half_day = 2;
                 } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) {
                     $half_day = 3;

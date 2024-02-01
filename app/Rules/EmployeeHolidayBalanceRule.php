@@ -53,28 +53,6 @@ class EmployeeHolidayBalanceRule implements ValidationRule
                     ->where('count', '>', 0)
                     ->value('count');
 
-                // // Fetch absences with hours for the specified employee and holiday code
-                // $absences = Absence::with(['absenceHours' => function ($query) use ($holidayCodeId) {
-                //     $query->select('absence_id', 'hours')
-                //         ->where('holiday_code_id', $holidayCodeId)
-                //         ->where('hours', '>', 0);
-                //     }])
-                //     ->where('absence_type', config('absence.HOLIDAY'))
-                //     ->where('employee_profile_id', $this->employee_id);
-
-                // if (!empty($this->absence_id)) {
-                //     $absences->where('id', '!=', $this->absence_id);
-                // }
-
-                // $absences = $absences->get(['id', 'employee_profile_id']);
-
-                // // $employee_holiday_hours_used = $absences->pluck('absenceHours')->flatten()->pluck('hours');
-                // $employee_holiday_hours_used = 0;
-
-                // foreach ($absences as $absence) {
-                //     $employee_holiday_hours_used = $absence->absenceDates ?  count($absence->absenceDates->absence_dates_array) * $absences->pluck('absenceHours')->flatten()->pluck('hours')->sum() : 0;
-                // }
-
                 $employee_holiday_hours_used = $absenceService->getEmployeeAbsenceCounts($this->employee_id, config('absence.HOLIDAY'), $holidayCodeId);
 
                 $remaining_holiday_count = $holiday_code_Count - $employee_holiday_hours_used;
