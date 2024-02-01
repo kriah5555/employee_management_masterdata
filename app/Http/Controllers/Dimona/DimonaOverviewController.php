@@ -19,7 +19,7 @@ class DimonaOverviewController extends Controller
         $rules = [
             'from_date' => 'required|date_format:d-m-Y',
             'to_date'   => 'required|date_format:d-m-Y|after_or_equal:from_date',
-            'type'      => 'string|in:plan,long_term,flex_check'
+            'type'      => 'required|string|in:all,plan,long_term,flex_check'
         ];
         $validator = Validator::make(request()->all(), $rules);
         if ($validator->fails()) {

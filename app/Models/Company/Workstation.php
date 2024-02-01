@@ -2,15 +2,10 @@
 
 namespace App\Models\Company;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\EmployeeFunction\FunctionTitle;
 use App\Models\Company\Location;
-use App\Models\Company\Company;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\WorkstationToFunctions;
 use App\Models\BaseModel;
+use App\Models\Company\CostCenter;
 
 class Workstation extends BaseModel
 {
@@ -51,5 +46,9 @@ class Workstation extends BaseModel
             ]);
         }
 
+    }
+    public function costCenters()
+    {
+        return $this->belongsToMany(CostCenter::class, 'cost_center_workstations', 'workstation_id', 'cost_center_id');
     }
 }

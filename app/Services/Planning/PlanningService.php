@@ -28,6 +28,7 @@ class PlanningService implements PlanningInterface
         protected PlanningRepository $planningRepository,
         protected PlanningContractService $planningContractService,
         protected PlanningShiftsService $planningShiftsService,
+        protected EmployeeContractService $employeeContractService,
     ) {
     }
 
@@ -215,25 +216,46 @@ class PlanningService implements PlanningInterface
 
         $response['workstation_data'] = array_values($response['workstation_data']);
         foreach ($response['workstation_data'] as $id => $value) {
+            usort($value['employee'], function ($a, $b) {
+                return strcmp($a['employee_name'], $b['employee_name']);
+            });
             $response['workstation_data'][$id]['employee'] = array_values($value['employee']);
         }
         return $response;
     }
 
-    public function getWeeklyPlanningService($location, $workstations, $employee_types, $weekNo, $year)
+    public function getWeeklyPlanningService($locationId, $workstationIds, $employee_types, $weekNo, $year)
     {
         $response = [
             'workstation_data' => [],
             'total'            => [],
         ];
         //Week dates.
-        $workstationsRaw = $this->location->with('workstationsValues')->get()->toArray();
-        $workstationsRaw = $this->getWorkstations($workstationsRaw);
-        foreach ($workstationsRaw[$location] as $value) {
-            $response['workstation_data'][$value['value']]['workstation_id'] = $value['value'];
-            $response['workstation_data'][$value['value']]['workstation_name'] = $value['label'];
-            $response['workstation_data'][$value['value']]['employee'] = [];
-            $shifts = $this->planningShiftsService->getPlanningShifts($location, $value['value']);
+        $location = Location::find($locationId)->with('workstations')->first();
+        $workstations = $location->workstations;
+        if ($workstationIds && count($workstationIds)) {
+            $workstations = $location->workstations->whereIn('id', $workstationIds);
+        }
+        foreach ($workstations as $workstation) {
+            $response['workstation_data'][$workstation->id]['workstation_id'] = $workstation->id;
+            $response['workstation_data'][$workstation->id]['workstation_name'] = $workstation->workstation_name;
+            $response['workstation_data'][$workstation->id]['employee'] = [];
+            foreach ($workstation->costCenters as $costcenter) {
+                foreach ($costcenter->employees as $employee) {
+                    // $contracts = $this->employeeContractService->getEmployeeActiveContracts($employee->id);
+                    $response['workstation_data'][$workstation->id]['employee'][$employee->id] = [
+                        'employee_id'    => $employee->id,
+                        'employee_name'  => $employee->full_name,
+                        'employee_types' => [],
+                        'total'          => [
+                            'cost'           => 0,
+                            'contract_hours' => 0
+                        ],
+                        'plans'          => []
+                    ];
+                }
+            }
+            $shifts = $this->planningShiftsService->getPlanningShifts($locationId, $workstation->id);
             $shiftsFormatted = [];
             foreach ($shifts as $shift) {
                 $shiftsFormatted[] = [
@@ -244,7 +266,7 @@ class PlanningService implements PlanningInterface
                     'time'           => date('H:i', strtotime($shift->start_time)) . '-' . date('H:i', strtotime($shift->end_time))
                 ];
             }
-            $response['workstation_data'][$value['value']]['shifts'] = $shiftsFormatted;
+            $response['workstation_data'][$workstation->id]['shifts'] = $shiftsFormatted;
         }
         $weekDates = getWeekDates($weekNo, $year);
         foreach ($weekDates as $date) {
@@ -260,7 +282,7 @@ class PlanningService implements PlanningInterface
         ];
 
         //Getting the data from the query.
-        $plannings = $this->getWeeklyPlannings($location, $workstations, $employee_types, $weekNo, $year);
+        $plannings = $this->getWeeklyPlannings($locationId, $workstationIds, $employee_types, $weekNo, $year);
         $response = $this->formatWeeklyData($plannings, $response);
         $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
 
