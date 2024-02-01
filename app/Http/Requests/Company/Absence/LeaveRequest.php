@@ -56,7 +56,7 @@ class LeaveRequest extends ApiRequest
     protected function prepareForValidation()
     {
         $route_name = $this->route()->getName();
-        if ($route_name == 'add-leave' || $route_name == 'update-leave' || $route_name == 'employee-apply-leave') {
+        if ($route_name == 'add-leave' || $route_name == 'update-leave') {
 
             $formattedData                        = [];
             $formattedData['employee_profile_id'] = request()->input('employee_profile_id');
@@ -79,16 +79,19 @@ class LeaveRequest extends ApiRequest
                 'duration_type' => null
             ];
 
-            if ($route_name == 'add-leave') { # as manager
-                $user_id                     = Auth::guard('web')->user()->id;
-                $employee_profile            = getEmployeeProfileByUserId($user_id);
-                $formattedData['manager_id'] = $employee_profile->id;
-            } else {
-                $formattedData['manager_id'] = $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId(request()->input('employee_profile_id'));
-            }
+        } elseif ($route_name == 'employee-shift-leave' || $route_name == 'shift-leave') { # employee can request for shift leave only
 
-            $this->replace($formattedData);
         }
+
+        if ($route_name == 'add-leave') { # as manager
+            $user_id                     = Auth::guard('web')->user()->id;
+            $employee_profile            = getEmployeeProfileByUserId($user_id);
+            $formattedData['manager_id'] = $employee_profile->id;
+        } else {
+            $formattedData['manager_id'] = $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId(request()->input('employee_profile_id'));
+        }
+
+        $this->replace($formattedData);
     }
 
 

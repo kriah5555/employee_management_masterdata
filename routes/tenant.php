@@ -72,16 +72,15 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
 
-            Route::get('employee-holidays/{employee_id}/{status}', [HolidayController::class, 'employeeHolidays'])
-                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for employee flow
+            Route::get('employee-holidays', [HolidayController::class, 'employeeHolidays'])
+                ->where(['status' => '(approve|cancel|pending|reject)']); # for employee flow
 
             Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
-                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for managers flow
+                ->where(['status' => '(approve|cancel|pending|reject)']); # for managers flow
 
             Route::get('holidays-list-manager-mobile', [HolidayController::class, 'getAllHolidaysForMobile']);
 
             Route::post('holidays-status', 'updateHolidayStatus');
-            // ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
 
             Route::post('employee-apply-holidays-mobile', [HolidayController::class, 'store'])->name('employee-apply-holidays-mobile');
 
@@ -106,7 +105,9 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::put('update-leave/{id}', [LeaveController::class, 'update'])->name('update-leave'); # add and update as manager
 
-            Route::post('employee-apply-leave', [LeaveController::class, 'addLeave'])->name('employee-apply-leave'); # apply and update as employee
+            Route::post('employee-shift-leave', [LeaveController::class, 'addLeave'])->name('employee-shift-leave'); # apply and update as employee
+
+            Route::post('shift-leave', [LeaveController::class, 'addLeave'])->name('shift-leave'); # apply and update as employee
         });
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
