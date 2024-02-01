@@ -367,7 +367,7 @@ class AbsenceService
                 
                 foreach ($leave->absenceHours as $absence_hours) {
 
-                    if ($absence_hours->duration_type == config('absence.FULL_DAYS') || $absence_hours->duration_type == config('absence.PLANNING_LEAVES') || $absence_hours->duration_type == config('absence.MULTIPLE_DATES')) {
+                    if ($absence_hours->duration_type == config('absence.FULL_DAYS') || $absence_hours->duration_type == config('absence.MULTIPLE_DATES')) {
                         $holiday_code = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,

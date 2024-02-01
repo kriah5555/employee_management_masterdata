@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
 use App\Rules\AbsenceDatesValidationRule;
 use App\Repositories\Employee\EmployeeProfileRepository;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveRequest extends ApiRequest
 {
@@ -26,7 +27,7 @@ class LeaveRequest extends ApiRequest
             'duration_type'       => [
                 'bail',
                 'required',
-                Rule::in([config('absence.PLANNING_LEAVES'), config('absence.MULTIPLE_DATES'), config('absence.FULL_DAYS')]),
+                Rule::in([config('absence.MULTIPLE_DATES'), config('absence.FULL_DAYS')]),
             ],
             'employee_profile_id' => [
                 'bail',
@@ -55,14 +56,14 @@ class LeaveRequest extends ApiRequest
     protected function prepareForValidation()
     {
         $route_name = $this->route()->getName();
-        if ($route_name == 'add-leave' || $route_name == 'employee-apply-leave') {exit;
+        if ($route_name == 'add-leave' || $route_name == 'update-leave' || $route_name == 'employee-apply-leave') {
 
-            $formattedData = [];
+            $formattedData                        = [];
             $formattedData['employee_profile_id'] = request()->input('employee_profile_id');
-            $formattedData['reason'] = request()->input('reason');
+            $formattedData['reason']              = request()->input('reason');
             if (request()->input('duration_type') == 1) {
-                $formattedData['dates'] = request()->input('dates');
-                $formattedData['duration_type'] = config('absence.FULL_DAYS');exit;
+                $formattedData['dates']         = request()->input('dates');
+                $formattedData['duration_type'] = config('absence.FULL_DAYS');
             } else {
                 $formattedData['dates'] = [
                     'from_date' => request()->input('from_date'),
@@ -70,8 +71,8 @@ class LeaveRequest extends ApiRequest
                 ];
                 $formattedData['duration_type'] = config('absence.MULTIPLE_DATES');
             }
-            $pid = request()->input('pid');
-            $formattedData['plan_timings'] = !empty($pid) ? $pid :null;
+            $plan_ids = request()->input('plan_ids');
+            $formattedData['plan_timings']          = !empty($plan_ids) ? $plan_ids : null;
             $formattedData['holiday_code_counts'][] = [
                 'holiday_code'  => request()->input('holiday_code_id'),
                 'hours'         => 0,

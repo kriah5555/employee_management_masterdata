@@ -104,6 +104,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave'); # add and update as manager
 
+            Route::put('update-leave/{id}', [LeaveController::class, 'update'])->name('update-leave'); # add and update as manager
+
             Route::post('employee-apply-leave', [LeaveController::class, 'addLeave'])->name('employee-apply-leave'); # apply and update as employee
         });
 
@@ -128,7 +130,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             ],
             'cost-centers'               => [
                 'controller' => CostCenterController::class,
-                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'showyteyyd', 'create', 'store', 'update', 'destroy']
             ],
             'company-contract-templates' => [
                 'controller' => CompanyContractTemplateController::class,

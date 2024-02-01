@@ -122,7 +122,7 @@ class LeaveService
         try {
             DB::connection('tenant')->beginTransaction();
 
-                $formatted_data = $this->absence_service->getAbsenceFormattedDataToSave($details, config('absence.APPROVE'));
+                $formatted_data = $this->absence_service->getAbsenceFormattedDataToSave($details, (!empty($status)) ? $status : config('absence.APPROVE'));
 
                 $leave = $this->leave_repository->createLeave($formatted_data['details']);
 

@@ -162,12 +162,12 @@ class LeaveController extends Controller
     public function addLeave(LeaveRequest $request)
     {
         try {
-            dd($request->route()->getName());
+            $absence_status = $request->route()->getName() == 'add-leave' ? config('absence.APPROVE') : config('absence.PENDING');
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Leave created successfully'),
-                    'data'    => $this->leave_service->applyLeave($request->validated())
+                    'data'    => $this->leave_service->applyLeave($request->validated(), $absence_status)
                 ],
                 JsonResponse::HTTP_CREATED,
             );
