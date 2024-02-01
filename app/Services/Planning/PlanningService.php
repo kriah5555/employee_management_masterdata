@@ -153,7 +153,7 @@ class PlanningService implements PlanningInterface
         return $employeeFormat;
     }
 
-    public function formatWeeklyData($plannings, &$response)
+    public function formatWeeklyData($plannings, $weekNo, $year, &$response)
     {
         foreach ($plannings as $plan) {
             $workstationId = $plan->workstation_id;
@@ -168,11 +168,15 @@ class PlanningService implements PlanningInterface
                     'employee_id'   => $plan->employeeProfile->id,
                     'employee_name' => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name
                 ];
-                $response['workstation_data'][$workstationId]['employee'][$profile]['employee_types'][$plan->employeeType->name] = $plan->employeeType->employeeTypeConfig->icon_color;
                 $response['workstation_data'][$workstationId]['employee'][$profile]['total'] = [
                     'cost'           => 0,
                     'contract_hours' => 0
                 ];
+                $weekDates = getWeekDates($weekNo, $year);
+                $contracts = $this->employeeContractService->getEmployeeContractsBetweenDates($plan->employeeProfile->id, reset($weekDates), end($weekDates));
+                foreach ($contracts as $contract) {
+                    $response['workstation_data'][$workstationId]['employee'][$profile]['employee_types'][$contract->employeeType->name] = $contract->employeeType->employeeTypeConfig->icon_color;
+                }
             }
             $planDetails = [
                 "plan_id"        => $plan->id,
@@ -231,6 +235,7 @@ class PlanningService implements PlanningInterface
             'total'            => [],
         ];
         //Week dates.
+        $weekDates = getWeekDates($weekNo, $year);
         $location = Location::find($locationId)->with('workstations')->first();
         $workstations = $location->workstations;
         if ($workstationIds && count($workstationIds)) {
@@ -242,7 +247,6 @@ class PlanningService implements PlanningInterface
             $response['workstation_data'][$workstation->id]['employee'] = [];
             foreach ($workstation->costCenters as $costcenter) {
                 foreach ($costcenter->employees as $employee) {
-                    // $contracts = $this->employeeContractService->getEmployeeActiveContracts($employee->id);
                     $response['workstation_data'][$workstation->id]['employee'][$employee->id] = [
                         'employee_id'    => $employee->id,
                         'employee_name'  => $employee->full_name,
@@ -253,6 +257,10 @@ class PlanningService implements PlanningInterface
                         ],
                         'plans'          => []
                     ];
+                    $contracts = $this->employeeContractService->getEmployeeContractsBetweenDates($employee->id, reset($weekDates), end($weekDates));
+                    foreach ($contracts as $contract) {
+                        $response['workstation_data'][$workstation->id]['employee'][$employee->id]['employee_types'][$contract->employeeType->name] = $contract->employeeType->employeeTypeConfig->icon_color;
+                    }
                 }
             }
             $shifts = $this->planningShiftsService->getPlanningShifts($locationId, $workstation->id);
@@ -268,7 +276,6 @@ class PlanningService implements PlanningInterface
             }
             $response['workstation_data'][$workstation->id]['shifts'] = $shiftsFormatted;
         }
-        $weekDates = getWeekDates($weekNo, $year);
         foreach ($weekDates as $date) {
             $date = date('d-m-Y', strtotime($date));
             $response['total'][$date] = [
@@ -283,7 +290,7 @@ class PlanningService implements PlanningInterface
 
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($locationId, $workstationIds, $employee_types, $weekNo, $year);
-        $response = $this->formatWeeklyData($plannings, $response);
+        $response = $this->formatWeeklyData($plannings, $weekNo, $year, $response);
         $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
 
         return $response;
@@ -568,6 +575,11 @@ class PlanningService implements PlanningInterface
             ],
             'plans'         => []
         ];
+        $weekDates = getWeekDates($weekNo, $year);
+        $contracts = $this->employeeContractService->getEmployeeContractsBetweenDates($employeId, reset($weekDates), end($weekDates));
+        foreach ($contracts as $contract) {
+            $response['employee_types'][$contract->employeeType->name] = $contract->employeeType->employeeTypeConfig->icon_color;
+        }
         $this->getTotalsForWeeklyPlanning($location, $workstations, $employee_types, $weekNo, $year, $response);
         return $this->formatWeeklyDataEmployee($plannings, $workstationId, $response);
     }

@@ -272,17 +272,14 @@ class EmployeeContractService
     //     $employee_contracts = $employeeProfile->employeeContracts;
     // }
 
-    // public function getEmployeeActiveContracts($employeeProfileId)
-    // {
-    //     $employee = EmployeeProfile::find($employeeProfileId);
-    //     if (count($employee->employeeContracts)) {
-    //         $employee->employeeContracts->where('start_date', function ($query) use ($from_date, $to_date) {
-    //             $query->whereBetween('start_date', [$from_date, $to_date]);
-    //         });
-    //         // $employee->employeeContracts->whereHas('planningDimona.planningBase', function ($query) use ($from_date, $to_date) {
-    //         //     $query->whereBetween('start_date_time', [$from_date, $to_date]);
-    //         // });
-    //         dd($employee->employeeContracts);
-    //     }
-    // }
+    public function getEmployeeContractsBetweenDates($employeeProfileId, $from_date, $to_date)
+    {
+        return EmployeeContract::where('employee_profile_id', $employeeProfileId)
+            ->where('start_date', '<=', $to_date)
+            ->where(function ($query) use ($from_date) {
+                $query->where('end_date', '>=', $from_date)
+                    ->orWhereNull('end_date');
+            })->get();
+    }
 }
+
