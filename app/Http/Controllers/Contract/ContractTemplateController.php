@@ -10,6 +10,7 @@ use App\Services\Contract\ContractTemplateService;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\ContractTemplate\ContractTemplateResource;
 
 class ContractTemplateController extends Controller
 {
@@ -26,7 +27,7 @@ class ContractTemplateController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->contractTemplateService->index(),
+                    'data'    => ContractTemplateResource::collection($this->contractTemplateService->getAllContractTemplates()),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -123,7 +124,7 @@ class ContractTemplateController extends Controller
             $validator = Validator::make($request->all(), [
                 'pdf_file' => 'required|mimes:pdf|max:10240', // Adjust max file size as needed
             ]);
-    
+
             if ($validator->fails()) {
                 return returnResponse(
                     [
@@ -135,14 +136,14 @@ class ContractTemplateController extends Controller
             }
 
             $pdfFilePath = $request->file('pdf_file')->getPathname();
-            $file_name   = storage_path('app/pdf_output.html');
+            $file_name = storage_path('app/pdf_output.html');
 
             // $htmlOutput = shell_exec("pdftohtml -i -noframes -stdout '$pdfFilePath'"); # will give html with green background
 
             // // $htmlOutput = shell_exec("pdftohtml -i -noframes -p -c -nodrm '$pdfFilePath' $file_name"); # will give page
 
             $htmlOutput = shell_exec("pdftohtml -i -noframes -stdout '$pdfFilePath'");
-            
+
             // $htmlOutput = html_entity_decode($htmlOutput, ENT_QUOTES, 'UTF-8'); # Decode HTML entities
 
             // dd($htmlOutput);

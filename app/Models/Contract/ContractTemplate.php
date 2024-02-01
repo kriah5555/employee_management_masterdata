@@ -21,13 +21,13 @@ class ContractTemplate extends BaseModel
     protected $fillable = [
         'body',
         'status',
-        'employee_type_id',
+        'contract_type_id',
     ];
     public $translatable = ['body'];
 
-    public function employeeType()
+    public function contractType()
     {
-        return $this->belongsTo(EmployeeType::class, 'employee_type_id');
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
     }
 
     public function socialSecretary()

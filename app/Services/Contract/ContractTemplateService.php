@@ -10,6 +10,7 @@ use App\Services\Sector\SectorService;
 use App\Services\CompanyService;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Models\EmployeeType\EmployeeType;
+use App\Http\Resources\OptionsFormatResource;
 
 class ContractTemplateService
 {
@@ -25,8 +26,9 @@ class ContractTemplateService
     public function getOptionsToCreate()
     {
         try {
+            $columnNames = ['id', 'name'];
             return [
-                'sectors'            => $this->sector_service->getActiveSectors(),
+                'sectors'            => OptionsFormatResource::collection($this->sector_service->getActiveSectors(), $columnNames),
                 'social_secretaries' => $this->social_secretaryService->getActiveSocialSecretaries(),
                 'companies'          => $this->company_service->getActiveCompanies(),
                 'employee_types'     => $this->employee_type_service->getActiveEmployeeTypes(),
@@ -67,9 +69,9 @@ class ContractTemplateService
         }
     }
 
-    public function index()
+    public function getAllContractTemplates($with = [])
     {
-        return ContractTemplate::with('employeeType')->get();
+        return ContractTemplate::with($with)->get();
     }
 
     public function get($id)
