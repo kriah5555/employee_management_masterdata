@@ -173,7 +173,7 @@ class AbsenceService
         return $absence->update(['manager_id' => $responsible_person_id]);
     }
 
-    public function getAbsenceDetailsForWeek($week_number, $year)
+    public function getAbsenceDetailsForWeek($week_number, $year, $employee_profile_id = '')
     {
         try {
             $dates  = getWeekDates($week_number, $year, 'd-m-Y');
@@ -187,7 +187,7 @@ class AbsenceService
 
             
             foreach ($dates as $date) {
-                $absences = $this->getAbsenceForDate($date);
+                $absences = $this->getAbsenceForDate($date, '', $employee_profile_id);
                 foreach ($absences as $absence) {
                     $return[$date][$absence->absence_type == config('absence.Holiday') ? 'holidays' : 'leaves'][] = $this->formatAbsenceDataForOverview($absence);
                 }

@@ -24,6 +24,7 @@ class AbsenceController extends Controller
             $rules = [
                 'week' => 'required|integer|min:1|max:53',
                 'year' => 'required|date_format:Y',
+                'employee_profile_id' => 'nullable',
             ];
     
             $validator = Validator::make(request()->all(), $rules, []);
@@ -39,7 +40,7 @@ class AbsenceController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->absenceService->getAbsenceDetailsForWeek($request->week, $request->year),
+                    'data'    => $this->absenceService->getAbsenceDetailsForWeek($request->week, $request->year, $request->employee_profile_id),
                 ],
                 JsonResponse::HTTP_OK,
             );
