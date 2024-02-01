@@ -7,15 +7,7 @@ use App\Interfaces\Planning\PlanningInterface;
 use App\Repositories\Planning\PlanningRepository;
 use App\Services\Company\CompanyService;
 use App\Services\Company\DashboardAccessService;
-use App\Services\WorkstationService;
-use App\Services\EmployeeFunction\FunctionService;
-use App\Models\Company\Workstation;
 use App\Models\Company\Location;
-use App\Models\Company\Company;
-use App\Models\EmployeeType\EmployeeType;
-use App\Models\EmployeeFunction\FunctionTitle;
-use App\Services\Employee\EmployeeService;
-use App\Services\Planning\PlanningContractService;
 use App\Services\Company\Absence\AbsenceService;
 
 class UurroosterService implements PlanningInterface

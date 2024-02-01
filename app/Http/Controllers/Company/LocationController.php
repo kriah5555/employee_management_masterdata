@@ -158,47 +158,6 @@ class LocationController extends Controller
         ]);
     }
 
-    public function activateLocation(Request $request)
-    {
-        try {
-            $rules = [
-                'location_id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('locations', 'id'),
-                ],
-            ];
-
-            $customMessages = [
-                'location.required' => 'Location id is required',
-            ];
-            $validator = Validator::make(request()->all(), $rules, $customMessages);
-            if ($validator->fails()) {
-                return returnResponse(
-                    [
-                        'success' => true,
-                        'message' => $validator->errors()->all()
-                    ],
-                    JsonResponse::HTTP_BAD_REQUEST,
-                );
-            }
-            $location = $this->locationService->getLocationById($request->get('location_id'));
-            return returnResponse(
-                [
-                    'success' => true,
-                    'data'    => $this->dashboardAccessService->activateLocation($location)
-                ],
-                JsonResponse::HTTP_OK,
-            );
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'file'    => $e->getFile(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
 
     public function getLocationsList()
     {

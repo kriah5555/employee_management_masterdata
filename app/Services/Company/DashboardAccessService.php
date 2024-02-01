@@ -11,86 +11,49 @@ use Illuminate\Support\Str;
 
 class DashboardAccessService
 {
-    protected $locations = [];
-    public function getDashboardAccess($request)
+    public function getDashboardAccessKeyForCompany($companyId)
     {
         try {
-            $unique_key = $request->input('unique_key');
-            $dashboardAccessData = DashboardAccess::where('unique_key', $unique_key)->get();
-
-            if ($dashboardAccessData->pluck('type')->first() == config('constants.COMPANY')) {
-                $this->locations = Location::get();
-            } else if ($dashboardAccessData->pluck('type')->first() == config('constants.LOCATIONS')) {
-                $this->locations = Location::where('id', $dashboardAccessData->pluck('location_id'))->get();
-            }
-            if ($this->locations->count() > 0) {
-                return $this->generateQrCodeWithLocations();
-            }
+            return $this->getDashboardAccessKey('company', $companyId)->access_key;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+    public function getDashboardAccessKeyForLocation($companyId, $locationId)
+    {
+        try {
+            return $this->getDashboardAccessKey('location', $companyId, $locationId)->access_key;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
         }
     }
 
-    public function generateQrCodeWithLocations()
+    public function getDashboardAccessKey($type, $companyId, $locationId = null)
     {
-
-        $today = Carbon::now()->toDateString();
-
-        foreach ($this->locations as $location) {
-
-            $locationName = $location['location_name'];
-
-            $qrCodeData = "Location: $locationName, Date: $today";
-
-            $qrCodeImage = QrCode::size(300)->generate($qrCodeData);
-
-            $base64Image = base64_encode($qrCodeImage);
-
-            $location['qrCode'] = $base64Image;
+        $query = DashboardAccess::where('type', $type)->where('company_id', $companyId);
+        if ($type == 'location') {
+            $query->where('location_id', $locationId);
         }
-
-        return $this->locations;
+        $dashboardAccess = $query->first();
+        if (!$dashboardAccess) {
+            $dashboardAccess = DashboardAccess::create([
+                'access_key'  => Str::uuid(),
+                'type'        => $type,
+                'company_id'  => $companyId,
+                'location_id' => $locationId
+            ]);
+        }
+        return $dashboardAccess;
     }
-
-    public function createDashboardAccess($dashboardAccess)
+    public function deleteDashboardAccessKey($access_key)
     {
         try {
-            return DashboardAccess::create($dashboardAccess);
+            return DashboardAccess::where('access_key', $access_key)->delete();
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
         }
-    }
-
-    public function deleteDashboardAccess($unique_key)
-    {
-        try {
-            return DashboardAccess::where('unique_key', $unique_key)->first()->delete();
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function activateLocation(Location $location)
-    {
-        $companyId = getCompanyId();
-        $accessToken = encodeData([
-            'location_id' => $location->id,
-            'company_id'  => $companyId,
-        ]
-        );
-        DashboardAccess::create([
-            'access_key'  => $accessToken,
-            'company_id'  => $companyId,
-            'location_id' => $location->id,
-            'type'        => 2
-        ]);
-        return $accessToken;
-    }
-    public function deactivateLocation(string $access_key)
-    {
-        DashboardAccess::where('access_key', $access_key)->delete();
     }
 }
