@@ -105,7 +105,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
 
         Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
-        Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData']);
+        Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData'])->name('uurrooster');
         Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
         Route::get('employee-long-term-plannings/{employee_id}', [LongTermPlanningController::class, 'getEmployeeLongTermPlannings']);
         Route::get('get-all-long-term-plannings', [LongTermPlanningController::class, 'getAllLongTermPlannings']);
@@ -136,12 +136,12 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::post('get-plans-to-send-dimona', [PlanningController::class, 'getPlansToSendDimona']);
 
         Route::controller(EmployeeSwitchPlanningController::class)->group(function () {
-    
+
             Route::get('manager-get-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan')->name('manager-get-switch-plan-requests');
 
             Route::post('manager-update-switch-plan-status', 'updateSwitchPlanStatus');
-    
-        }); 
+
+        });
     });
 
 
@@ -155,9 +155,10 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::get('employee-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan');
 
-    }); 
+    });
 });
 
+Route::post('open-uurrooster', [UurroosterController::class, 'getUurroosterData'])->name('open-uurrooster');
 
 Route::middleware([InitializeTenancy::class])->group(function () {
     Route::controller(DimonaController::class)->group(function () {

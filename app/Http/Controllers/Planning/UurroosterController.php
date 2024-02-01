@@ -7,6 +7,7 @@ use App\Services\Planning\UurroosterService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Planning\UurroosterRequest;
 
 
 class UurroosterController extends Controller
@@ -15,19 +16,39 @@ class UurroosterController extends Controller
     {
     }
 
-    public function getUurroosterData(Request $request)
+    public function getUurroosterData(UurroosterRequest $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->uurroosterService->getUurroosterData($request->all())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function getActivatedUurroosterData(Request $request)
     {
         try {
             $rules = [
-                'date'            => [
+                'date'        => [
                     'required',
                     'date_format:d-m-Y',
                 ],
-                'location_id'     => [
+                'location_id' => [
                     'required',
                     'integer',
                 ],
-                'dashboard_token' => [
+                'access_key'  => [
+                    'required',
                     'string',
                 ],
             ];
