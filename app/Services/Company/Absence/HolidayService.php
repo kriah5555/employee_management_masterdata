@@ -28,10 +28,10 @@ class HolidayService
         }
     }
 
-    public function getHolidaysMobile() # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    public function getHolidaysMobile($employee_profile_id = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return $this->formatHoliday($this->holiday_repository->getHolidays(), '', false, true);
+            return $this->formatHoliday($this->holiday_repository->getHolidays($employee_profile_id), '', false, true);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

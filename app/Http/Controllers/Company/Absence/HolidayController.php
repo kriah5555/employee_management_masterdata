@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company\Absence;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\Company\Absence\AbsenceService;
 use App\Services\Company\Absence\HolidayService;
@@ -63,14 +64,15 @@ class HolidayController extends Controller
         }
     }
 
-    public function employeeHolidays($employee_id, $status)
+    public function employeeHolidays()
     {
         try {
-            $status = config('absence.'.strtoupper($status));
+            $user_id          = Auth::guard('web')->user()->id;
+            $employee_profile = getEmployeeProfileByUserId($user_id);
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getHolidays($employee_id, $status, true),
+                    'data'    => $this->holidayService->getHolidaysMobile($employee_profile->id),
                 ],
                 JsonResponse::HTTP_OK,
             );
