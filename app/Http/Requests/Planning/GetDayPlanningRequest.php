@@ -22,7 +22,8 @@ class GetDayPlanningRequest extends ApiRequest
                 'integer',
                 Rule::exists('locations', 'id'),
             ],
-            'workstations'     => 'nullable|array',
+            'workstations'        => 'nullable|array',
+            'employee_profile_id' => 'nullable|integer',
             'workstations.*'   => [
                 'bail',
                 'integer',

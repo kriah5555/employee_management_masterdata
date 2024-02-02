@@ -73,8 +73,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
 
-            Route::get('employee-holidays', [HolidayController::class, 'employeeHolidays'])
-                ->where(['status' => '(approve|cancel|pending|reject)']); # for employee flow
+            Route::get('employee-holidays', [HolidayController::class, 'employeeHolidays']);
 
             Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
                 ->where(['status' => '(approve|cancel|pending|reject)']); # for managers flow

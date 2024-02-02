@@ -6,6 +6,7 @@ use PSpell\Config;
 use App\Rules\HolidayTypeRule;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
+use Illuminate\Support\Facades\Auth;
 use App\Rules\AbsenceDatesValidationRule;
 use App\Rules\EmployeeHolidayBalanceRule;
 use App\Rules\EmployeeLinkedToCompanyRule;
@@ -66,8 +67,10 @@ class HolidayRequest extends ApiRequest
     {
         $absenceService = app(AbsenceService::class);
         if ($this->route()->getName() == 'employee-apply-holidays-mobile' || $this->route()->getName() == 'manager-add-employee-holiday') {
-            $employee_profile_id   = $this->route()->getName() != 'manager-add-employee-holiday' ? $this->input('employee_profile_id') : getEmployeeProfileByUserId($this->input('user_id'));
-            $responsible_person_id = $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId($employee_profile_id);
+            $user_id                     = Auth::guard('web')->user()->id;
+            $employee_profile            = getEmployeeProfileByUserId($user_id);
+            $employee_profile_id         = $this->route()->getName() == 'manager-add-employee-holiday' ? $this->input('employee_profile_id') : $employee_profile->id;
+            $responsible_person_id       = $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId($employee_profile_id);
             $this->replace([
                 'employee_profile_id' => $employee_profile_id,
                 'manager_id'          => $responsible_person_id,
