@@ -43,13 +43,13 @@ class LeaveController extends Controller
         }
     }
 
-    public function getAllLeavesForMobile($employee_profile_id = '')
+    public function getAllLeavesForMobile(Request $request)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->leave_service->getLeavesMobile(),
+                    'data'    => $this->leave_service->getLeavesMobile($request->employee_profile_id),
                 ],
                 JsonResponse::HTTP_OK,
             );

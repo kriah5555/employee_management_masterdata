@@ -28,10 +28,10 @@ class LeaveService
         }
     }
 
-    public function getLeavesMobile() # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    public function getLeavesMobile($employee_profile_id = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return $this->formatLeaves($this->leave_repository->getLeaves(), true);
+            return $this->formatLeaves($this->leave_repository->getLeaves($employee_profile_id), true);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
