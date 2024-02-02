@@ -73,13 +73,12 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
 
-            Route::get('employee-holidays', [HolidayController::class, 'employeeHolidays'])
-                ->where(['status' => '(approve|cancel|pending|reject)']); # for employee flow
+            Route::get('employee-holidays', [HolidayController::class, 'employeeHolidays']);
 
             Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
                 ->where(['status' => '(approve|cancel|pending|reject)']); # for managers flow
 
-            Route::get('holidays-list-manager-mobile', [HolidayController::class, 'getAllHolidaysForMobile']);
+            Route::post('holidays-list-manager-mobile', [HolidayController::class, 'getAllHolidaysForMobile']);
 
             Route::post('holidays-status', 'updateHolidayStatus');
 
@@ -98,11 +97,11 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
                 ->where(['status' => '(approve|pending)']); # to get leaves list
 
-            Route::get('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
+            Route::post('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
 
             Route::post('leaves-status', 'updateLeaveStatus');
 
-            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave'); # add and update as manager
+            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave'); # add as manager
 
             Route::put('update-leave/{id}', [LeaveController::class, 'update'])->name('update-leave'); # add and update as manager
 

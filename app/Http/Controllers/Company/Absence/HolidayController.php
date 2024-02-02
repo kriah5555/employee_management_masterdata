@@ -43,13 +43,13 @@ class HolidayController extends Controller
         }
     }
 
-    public function getAllHolidaysForMobile()
+    public function getAllHolidaysForMobile(Request $request)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->holidayService->getHolidaysMobile(),
+                    'data'    => $this->holidayService->getHolidaysMobile($request->employee_profile_id),
                 ],
                 JsonResponse::HTTP_OK,
             );
