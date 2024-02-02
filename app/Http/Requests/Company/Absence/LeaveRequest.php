@@ -4,12 +4,14 @@ namespace App\Http\Requests\Company\Absence;
 
 use PSpell\Config;
 use App\Rules\HolidayTypeRule;
-use App\Rules\HolidayCodeDurationTypeRule;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\ApiRequest;
-use App\Rules\AbsenceDatesValidationRule;
-use App\Repositories\Employee\EmployeeProfileRepository;
 use Illuminate\Support\Facades\Auth;
+use App\Rules\AbsenceDatesValidationRule;
+use App\Rules\HolidayCodeDurationTypeRule;
+use App\Repositories\Planning\PlanningRepository;
+use App\Repositories\Employee\EmployeeProfileRepository;
+use Illuminate\Support\Facades\Validator;
 
 class LeaveRequest extends ApiRequest
 {
@@ -23,11 +25,12 @@ class LeaveRequest extends ApiRequest
         $companyId = getCompanyId();
         $route = request()->url();
         $absence_id = $this->isMethod('PUT') ? substr($route, strrpos($route, '/') + 1) : null;
+
         $rules = [
             'duration_type'       => [
                 'bail',
                 'required',
-                Rule::in([config('absence.MULTIPLE_DATES'), config('absence.FULL_DAYS')]),
+                Rule::in([config('absence.MULTIPLE_DATES'), config('absence.FULL_DAYS'), config('absence.SHIFT_LEAVE')]),
             ],
             'employee_profile_id' => [
                 'bail',
@@ -48,8 +51,11 @@ class LeaveRequest extends ApiRequest
                 'array',
                 new HolidayCodeDurationTypeRule(request()->input('duration_type'), $companyId, $absence_id),
             ],
-            'plan_timings'        => ['bail', 'nullable', 'array']
+            'plan_timings' => ['bail', 'nullable', 'array'],
+            'plan_ids'     => ['bail', 'nullable', 'array'],
         ];
+
+    
         return $rules;
     }
 
@@ -81,9 +87,21 @@ class LeaveRequest extends ApiRequest
 
         } elseif ($route_name == 'employee-shift-leave' || $route_name == 'shift-leave') { # employee can request for shift leave only
 
+            $plan = app(PlanningRepository::class)->getPlanningById(request()->input('plan_id'));
+            if ($plan) {
+                $formattedData = [
+                    'employee_profile_id' => $plan->employee_profile_id,
+                    'reason'              => request()->input('reason'),
+                    'dates'               => [$plan->plan_date],
+                    'duration_type'       => config('absence.SHIFT_LEAVE'),
+                    'plan_ids'            => [request()->input('plan_id')],
+                    'holiday_code_counts' => [['holiday_code' => request()->input('holiday_code_id'), 'hours' => 0, 'duration_type' => ""]],
+                    'plan_timings'        => [],
+                ];
+            }
         }
 
-        if ($route_name == 'add-leave') { # as manager
+        if ($route_name == 'add-leave' || $route_name == 'shift-leave' || $route_name == 'update-leave') { # as manager
             $user_id                     = Auth::guard('web')->user()->id;
             $employee_profile            = getEmployeeProfileByUserId($user_id);
             $formattedData['manager_id'] = $employee_profile->id;
@@ -94,6 +112,28 @@ class LeaveRequest extends ApiRequest
         $this->replace($formattedData);
     }
 
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $route_name = $this->route()->getName();
+            if ($route_name == 'employee-shift-leave' || $route_name == 'shift-leave') { 
+                if (empty($this->plan_ids)) {
+                    $this->validator->errors()->add('plan_ids', "Please select plan id");
+                }
+            }
+        });
+    }
+
+    protected function setEndDate()
+    {
+        $startDate = date('Y-m-d', strtotime($this->input('start_date')));
+        $endDate = $this->input('end_date');
+        $endDate = $endDate ? date('Y-m-d', strtotime($endDate)) : date('Y-m-d', strtotime($startDate . '+1 year'));
+        $this->merge([
+            'start_date' => $startDate,
+            'end_date'   => $endDate
+        ]);
+    }
 
     public function messages()
     {

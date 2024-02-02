@@ -61,10 +61,23 @@ class AbsenceDatesValidationRule implements ValidationRule
             $absence_data_with_half_day_dates = $query1->get();
             $absence_data_with_half_day_dates = $absence_data_with_half_day_dates->pluck('absenceDates.absence_dates_array')->flatten()->all();
             $overlapping_dates_on_error = !empty(array_intersect($absence_applied_dates, $absence_data_with_half_day_dates));
+        } elseif (in_array($this->duration_type, [config('absence.SHIFT_LEAVE')])) {
+            $query1 = clone $query;
+            $query1->where('duration_type', config('absence.SHIFT_LEAVE'));
+
+            $absence_data_with_half_day_dates = $query1->get();
+            $absence_data_with_half_day_dates = $absence_data_with_half_day_dates->pluck('absenceDates.absence_dates_array')->flatten()->all();
+            $overlapping_dates_on_error = !empty(array_intersect($absence_applied_dates, $absence_data_with_half_day_dates));
+
+            $plan_ids = request()->plan_ids;
+            $query1->whereHas('plans', function ($query) use ($plan_ids) {
+                $query->whereIn('planning_base_id', $plan_ids);
+            });
+            $absence_data_shift_leave   = $query1->get();
+            $overlapping_dates_on_error = $absence_data_shift_leave->pluck('plan_ids')->flatten()->isNotEmpty() && $overlapping_dates_on_error; # any data has the plan id then  throw error
         }
 
         $overlapping_dates = array_intersect($absence_applied_dates, $absence_dates_array);
-        
         if (!empty($overlapping_dates) && $overlapping_dates_on_error) {
             $overlapping_dates = implode(', ', $overlapping_dates);
             $fail("Absence already applied for dates {$overlapping_dates}");

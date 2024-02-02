@@ -20,10 +20,10 @@ class HolidayCodeDurationTypeRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-
+        
         foreach ($value as $index => $data) {
-
-            $duration_type_rules = $this->getHolidayCodeDurationTypeRule($fail, $this->companyId, $value, $data);
+            
+            $duration_type_rules = $this->getHolidayCodeDurationTypeRule($fail, $this->companyId, $value);
 
             $validator = \Validator::make($data, $duration_type_rules);
 
@@ -35,7 +35,7 @@ class HolidayCodeDurationTypeRule implements ValidationRule
             }
         }
     }
-    public function getHolidayCodeDurationTypeRule($fail, $companyId, $value, array $data)
+    public function getHolidayCodeDurationTypeRule($fail, $companyId, $value)
     {
 
         $durationTypeRule = [

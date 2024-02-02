@@ -97,7 +97,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
                 ->where(['status' => '(approve|pending)']); # to get leaves list
 
-            Route::get('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
+            Route::post('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
 
             Route::post('leaves-status', 'updateLeaveStatus');
 
