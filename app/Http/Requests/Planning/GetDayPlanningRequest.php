@@ -24,7 +24,7 @@ class GetDayPlanningRequest extends ApiRequest
             ],
             'workstations'        => 'nullable|array',
             'employee_profile_id' => 'nullable|integer',
-            'workstations.*'   => [
+            'workstations.*'      => [
                 'bail',
                 'integer',
                 Rule::exists('workstations', 'id'),
@@ -36,7 +36,7 @@ class GetDayPlanningRequest extends ApiRequest
                 Rule::exists('master.employee_types', 'id'),
             ],
             'date'             => 'required|date_format:' . config('constants.DEFAULT_DATE_FORMAT'),
-            'year'             => [$not_required_for_mobile ? 'nullable' : 'required', 'digits:4'],
+            // 'year'             => [$not_required_for_mobile ? 'nullable' : 'required', 'digits:4'],
         ];
 
     }
