@@ -515,8 +515,7 @@ class AbsenceService
                 $d_type = config('absence.SECOND_HALF');
                 $h_code = $holiday_code_second_half;
             } 
-            
-            if ($duration_type == config('absence.FULL_DAY') || $duration_type == config('absence.FULL_DAY')) { # fill day
+            if ($duration_type == config('absence.FULL_DAYS') || $duration_type == config('absence.FULL_DAYS')) { # fill day
                 $h_code = $holiday_code;
             }
 

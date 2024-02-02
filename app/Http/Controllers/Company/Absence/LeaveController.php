@@ -43,7 +43,7 @@ class LeaveController extends Controller
         }
     }
 
-    public function getAllLeavesForMobile()
+    public function getAllLeavesForMobile($employee_profile_id = '')
     {
         try {
             return returnResponse(
