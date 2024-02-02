@@ -129,7 +129,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             ],
             'cost-centers'               => [
                 'controller' => CostCenterController::class,
-                'methods'    => ['index', 'showyteyyd', 'create', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
             'company-contract-templates' => [
                 'controller' => CompanyContractTemplateController::class,
