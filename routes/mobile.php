@@ -35,7 +35,9 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::post('employee-sign-plan-contract', 'employeeSignPlanContract');
 
-        Route::get('get-employee-contracts', 'index');
+        Route::get('get-employee-contracts', 'index'); # employee flow
+
+        Route::get('manager-get-employee-contracts/{employee_profile_id}', 'index')->name('manager-get-employee-contracts'); # manager flow
     });
 
     Route::controller(PlanningStartStopController::class)->group(function () {
