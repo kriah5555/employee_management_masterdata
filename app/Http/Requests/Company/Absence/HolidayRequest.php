@@ -69,7 +69,7 @@ class HolidayRequest extends ApiRequest
         if ($this->route()->getName() == 'employee-apply-holidays-mobile' || $this->route()->getName() == 'manager-add-employee-holiday-mobile' || $this->route()->getName() == 'manager-add-employee-holiday') {
             $user_id                     = Auth::guard('web')->user()->id;
             $employee_profile            = getEmployeeProfileByUserId($user_id);
-            $employee_profile_id         = $this->route()->getName() == 'manager-add-employee-holiday' ? $this->input('employee_profile_id') : $employee_profile->id;
+            $employee_profile_id         = $this->route()->getName() == 'manager-add-employee-holiday' || $this->route()->getName() == 'manager-add-employee-holiday-mobile' ? $this->input('employee_profile_id') : $employee_profile->id;
             $responsible_person_id       = $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId($employee_profile_id);
             $this->replace([
                 'employee_profile_id' => $employee_profile_id,
