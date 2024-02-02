@@ -66,7 +66,7 @@ class HolidayRequest extends ApiRequest
     protected function prepareForValidation()
     {
         $absenceService = app(AbsenceService::class);
-        if ($this->route()->getName() == 'employee-apply-holidays-mobile' || $this->route()->getName() == 'manager-add-employee-holiday') {
+        if ($this->route()->getName() == 'employee-apply-holidays-mobile' || $this->route()->getName() == 'manager-add-employee-holiday-mobile' || $this->route()->getName() == 'manager-add-employee-holiday') {
             $user_id                     = Auth::guard('web')->user()->id;
             $employee_profile            = getEmployeeProfileByUserId($user_id);
             $employee_profile_id         = $this->route()->getName() == 'manager-add-employee-holiday' ? $this->input('employee_profile_id') : $employee_profile->id;
