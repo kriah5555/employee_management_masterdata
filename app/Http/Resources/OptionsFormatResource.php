@@ -17,7 +17,6 @@ class OptionsFormatResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        dd($this->columnNames);
         return [
             'value' => $this->{$this->columnNames[0]},
             'label' => $this->{$this->columnNames[1]},

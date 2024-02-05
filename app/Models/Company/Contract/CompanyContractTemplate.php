@@ -2,9 +2,9 @@
 
 namespace App\Models\Company\Contract;
 
+use App\Models\Contract\ContractType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
-use App\Models\EmployeeType\EmployeeType;
 use Spatie\Translatable\HasTranslations;
 
 class CompanyContractTemplate extends BaseModel
@@ -21,12 +21,12 @@ class CompanyContractTemplate extends BaseModel
         'body',
         'language',
         'status',
-        'employee_type_id'
+        'contract_type_id'
     ];
     public $translatable = ['body'];
 
-    public function employeeType()
+    public function contractType()
     {
-        return $this->belongsTo(EmployeeType::class, 'employee_type_id');
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
     }
 }

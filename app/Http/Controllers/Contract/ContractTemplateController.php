@@ -10,12 +10,17 @@ use App\Services\Contract\ContractTemplateService;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\ContractTemplate\ContractTemplateResource;
+use App\Http\Resources\Contract\ContractTemplateResource;
+use App\Services\SocialSecretary\SocialSecretaryService;
+use App\Services\Contract\ContractTypeService;
 
 class ContractTemplateController extends Controller
 {
-    public function __construct(protected ContractTemplateService $contractTemplateService)
-    {
+    public function __construct(
+        protected SocialSecretaryService $social_secretaryService,
+        protected ContractTemplateService $contractTemplateService,
+        protected ContractTypeService $contractTypeService
+    ) {
     }
 
     /**
@@ -51,7 +56,20 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->getOptionsToCreate(),
+                'data'    => [
+                    'contract_types'     => $this->contractTypeService->getActiveContractTypes(),
+                    'social_secretaries' => $this->social_secretaryService->getActiveSocialSecretaries(),
+                    'tokens'             => array_merge(
+                        config('tokens.EMPLOYEE_TOKENS'),
+                        config('tokens.COMPANY_TOKENS'),
+                        config('tokens.CONTRACT_TOKENS'),
+                        config('tokens.ATTACHMENT_TOKENS'),
+                        config('tokens.SIGNATURE_TOKENS'),
+                        config('tokens.FLEX_SALARY_TOKENS'),
+                        config('tokens.ADDITIONAL_TOKENS'),
+                        config('tokens.PLANNING_TOKENS'),
+                    ),
+                ],
             ],
             JsonResponse::HTTP_OK,
         );
@@ -80,7 +98,7 @@ class ContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->contractTemplateService->get($id)
+                'data'    => new ContractTemplateResource($this->contractTemplateService->get($id)),
             ],
             JsonResponse::HTTP_OK,
         );
