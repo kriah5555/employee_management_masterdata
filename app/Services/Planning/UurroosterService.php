@@ -26,6 +26,7 @@ class UurroosterService implements PlanningInterface
         $response = [
             'location_selection' => $values['location_selection']
         ];
+        $location_id = $values['location_id'] ?? null;
         if ($values['access_type'] == 'company') {
             $locations = app(LocationService::class)->getActiveLocations();
             $locations = $locations->map(function ($item) {
@@ -34,11 +35,11 @@ class UurroosterService implements PlanningInterface
                     'label' => $item->location_name,
                 ];
             })->toArray();
-            if (!$values['location_id'] && count($locations)) {
-                $values['location_id'] = end($locations)->id;
+            if (!$location_id && count($locations)) {
+                $location_id = end($locations)['value'];
             }
         } else {
-            $locations = app(LocationService::class)->getLocationById($values['location_id']);
+            $locations = app(LocationService::class)->getLocationById($location_id);
             $locations = [
                 [
                     'value' => $locations->id,
@@ -50,14 +51,14 @@ class UurroosterService implements PlanningInterface
             $response['locations'] = $locations;
         }
         $date = date('Y-m-d', strtotime($values['date']));
-        if ($values['location_id']) {
+        if ($location_id) {
             $qr_token = [
                 'company_id'  => getCurrentCompanyId(),
-                'location_id' => $values['location_id'],
+                'location_id' => $location_id,
             ];
             $qr_token = encodeData($qr_token);
             //Week dates.
-            $workstationsRaw = Location::find($values['location_id'])->with('workstations')->first();
+            $workstationsRaw = Location::find($location_id)->with('workstations')->first();
             $response['qr_token'] = $qr_token;
             $response['location_name'] = $workstationsRaw->location_name;
             $response['planning_data'] = [];
@@ -67,7 +68,7 @@ class UurroosterService implements PlanningInterface
                 $response['planning_data'][$value->id]['count'] = 0;
                 $response['planning_data'][$value->id]['plannings'] = [];
             }
-            $data = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType.employeeTypeConfig', 'functionTitle', 'timeRegistrations']);
+            $data = $this->planningRepository->getPlansBetweenDates($location_id, [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType.employeeTypeConfig', 'functionTitle', 'timeRegistrations']);
             return $this->formatUurroosterData($data, $response);
         } else {
             $response['qr_token'] = null;

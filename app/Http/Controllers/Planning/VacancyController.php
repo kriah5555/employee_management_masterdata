@@ -196,7 +196,7 @@ class VacancyController extends Controller
             }
             return returnResponse(
                 [
-                    
+
                     'success' => true,
                     'message' => $message,
                     'data'    => $this->vacancyService->applyVacancyService($data)
