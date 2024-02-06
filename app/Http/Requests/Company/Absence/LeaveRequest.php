@@ -104,7 +104,7 @@ class LeaveRequest extends ApiRequest
         if ($route_name == 'add-leave' || $route_name == 'shift-leave' || $route_name == 'update-leave') { # as manager
             $user_id                     = Auth::guard('web')->user()->id;
             $employee_profile            = getEmployeeProfileByUserId($user_id);
-            $formattedData['manager_id'] = $employee_profile->id;
+            $formattedData['manager_id'] = ($employee_profile) ? $employee_profile->id : null;
         } else {
             $formattedData['manager_id'] = $this->input('manager_id') ?? app(EmployeeProfileRepository::class)->getEmployeeResponsiblePersonId(request()->input('employee_profile_id'));
         }
