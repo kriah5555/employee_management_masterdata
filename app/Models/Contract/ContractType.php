@@ -9,10 +9,11 @@ use App\Traits\UserAudit;
 class ContractType extends BaseModel
 {
     use UserAudit;
-    
+
     protected static $sort = ['name'];
 
     protected $columnsToLog = ['name', 'description', 'contract_renewal_type_id', 'status'];
+    protected $connection = 'master';
     /**
      * The table associated with the model.
      *

@@ -62,7 +62,7 @@ class CompanyContractTemplateService extends BaseService
     public function getAll(array $args = [])
     {
         try {
-            return $this->model::with(['employeeType'])->get();
+            return $this->model::with(['contractType'])->get();
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -71,7 +71,13 @@ class CompanyContractTemplateService extends BaseService
     public function update($companyContractTemplate, $values)
     {
         try {
+            $body = $values['body'];
+            unset($values['body']);
             $companyContractTemplate->update($values);
+            foreach (config('app.available_locales') as $locale) {
+                $companyContractTemplate->setTranslation('body', $locale, $body[$locale]);
+            }
+            $companyContractTemplate->save();
             return $companyContractTemplate;
         } catch (Exception $e) {
             error_log($e->getMessage());
