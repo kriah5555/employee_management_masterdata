@@ -160,4 +160,25 @@ class EmployeeContractController extends Controller
             );
         }
     }
+
+    public function getActiveContractEmployeesWithAvailabilityStatus(Request $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeContractService->getActiveContractEmployeesWithAvailabilityStatus(date('Y-m-d', strtotime($request->date)))
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }

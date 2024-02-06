@@ -226,6 +226,30 @@ class EmployeeContractService
         return $activeEmployees;
     }
 
+    public function getActiveContractEmployeesWithAvailabilityStatus($date) 
+    {
+        $activeEmployees = [];
+
+        if (!empty($date)) {
+            $contracts = $this->getEmployeeWithActiveType($date);
+            foreach ($contracts as $contract) {
+                $activeEmployees[$contract->employeeProfile->id] = [
+                    'employee_id'         => $contract->employeeProfile->full_name,
+                    'employee_name'       => $contract->employeeProfile->id,
+                    'availability_status' => $contract->employeeProfile->availabilityForDate($date)->isNotEmpty() ? $contract->employeeProfile->availabilityForDate($date)->first()->availability : null,
+                    'plan_status'         => $contract->employeeProfile->planningsForDate($date)->isNotEmpty()
+                ];
+            }
+            
+            $activeEmployees = array_values($activeEmployees);
+            usort($activeEmployees, function ($a, $b) {
+                return strcmp($a['employee_name'], $b['employee_name']);
+            });
+        }
+
+        return $activeEmployees;
+    }
+
     public function checkContractExistForLongTermPlanning($employeeProfileId, $startDate, $endDate)
     {
         return EmployeeContract::with('employeeProfile.user.userBasicDetails')
@@ -241,11 +265,13 @@ class EmployeeContractService
             })->first();
     }
 
-    public function getEmployeeWithActiveType($date, $employeeTypeId, $functionId = '')
+    public function getEmployeeWithActiveType($date, $employeeTypeId = '', $functionId = '')
     {
         return EmployeeContract::with('employeeProfile.user.userBasicDetails')
-            ->where('employee_type_id', $employeeTypeId)
-            ->where(function ($query) use ($date) {
+                ->when(!empty($employeeProfileId), function ($query, $employeeProfileId) {
+                    $query->where('employee_profile_id', $employeeProfileId);
+                })            
+                ->where(function ($query) use ($date) {
                 $query->where(function ($query) use ($date) {
                     $query->where('start_date', '<=', $date)
                         ->where(function ($query) use ($date) {
@@ -255,6 +281,7 @@ class EmployeeContractService
                 });
             })->get();
     }
+
     public function getEmployeeContractDetails($employeeContractId, $with = [])
     {
         return EmployeeContract::with($with)->findOrFail($employeeContractId);

@@ -209,6 +209,8 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
 
             Route::post('get-active-contract-employees', 'getActiveContractEmployees');
 
+            Route::post('get-employees-with-availability', 'getActiveContractEmployeesWithAvailabilityStatus');
+
         });
 
         Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
