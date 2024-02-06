@@ -93,7 +93,7 @@ class PlanningStartStopService
             });
 
         }
-        return $return;
+        return array_values($return);
     }
 
     public function stopPlanByManager($values)
