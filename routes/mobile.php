@@ -58,6 +58,10 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::post('get-day-plans-manager', [PlanningMobileController::class, 'getDayPlansManager']);
 
+        Route::post('get-plannings-to-start-stop', [PlanningStartStopController::class, 'getDayPlanningToStartAndStop']); # manager flow
+
     });
+
+    
 
 });

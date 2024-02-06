@@ -57,9 +57,9 @@ use App\Http\Controllers\ReasonController;
 
 $integerRule = '[0-9]+'; # allow only integer values
 
-Route::middleware([InitializeTenancy::class])->group(function () use ($integerRule) {
+Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) {
 
-    Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) {
+    Route::middleware([InitializeTenancy::class])->group(function () use ($integerRule) {
 
         Route::get('/testing-tenant', function () {
             return response()->json([
@@ -253,4 +253,13 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::get('validate-location-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'validateLocationDashboardAccessKey']);
         Route::delete('revoke-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'revokeDashboardAccessKey']);
     });
+
+    Route::controller(LeaveController::class)->group(function () {
+    
+        Route::post('employee-shift-leave', [LeaveController::class, 'addLeave'])->name('employee-shift-leave'); # apply and update as employee
+    
+        Route::get('responsible-persons-for-chat', [ResponsiblePersonController::class, 'getResponsiblePersonListForChat']);
+
+    });
 });
+
