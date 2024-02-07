@@ -20,7 +20,7 @@ class PlanningBreakRequest extends ApiRequest
         if ($routeName == 'start-break') {
             $rules['start_time'] = 'required|date_format:H:i';
         } elseif ($routeName == 'stop-break') {
-            $rules['stop_time'] = 'required|date_format:H:i';
+            $rules['end_time'] = 'required|date_format:H:i';
         }
         return $rules;
     }
