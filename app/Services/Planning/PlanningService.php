@@ -508,6 +508,8 @@ class PlanningService implements PlanningInterface
             'workstation'      => $details->workstation->workstation_name,
             'start_plan'       => $startPlan,
             'stop_plan'        => $stopPlan,
+            'start_break'      => $startPlan,
+            'stop_break'       => $stopPlan,
             'send_plan_dimona' => $sendPlanDimona,
             'contract'         => $this->planningContractService->getPlanningContractContract($details),
         ];

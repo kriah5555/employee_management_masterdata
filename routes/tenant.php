@@ -15,6 +15,7 @@ use App\Http\Controllers\Company\{
     Absence\LeaveController,
     Absence\HolidayController,
     Absence\AbsenceController,
+    Absence\AbsenceRequestController,
     Contract\ContractConfigurationController,
     Contract\CompanyContractTemplateController,
     EmployeeAvailabilityController,
@@ -105,10 +106,17 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
 
             Route::put('update-leave/{id}', [LeaveController::class, 'update'])->name('update-leave'); # add and update as manager
 
-            Route::post('employee-shift-leave', [LeaveController::class, 'addLeave'])->name('employee-shift-leave'); # apply and update as employee
-
             Route::post('shift-leave', [LeaveController::class, 'addLeave'])->name('shift-leave'); # apply and update as employee
         });
+
+        Route::post('employee-request-shift-leave', [AbsenceRequestController::class , 'employeeLeaveRequest']);
+
+        Route::controller(AbsenceController::class)->group(function () {
+
+            Route::post('get-absence-details-for-week', 'getAbsenceDetailsForWeek');
+
+        });
+
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
 
@@ -241,12 +249,6 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
 
         Route::post('get-company-parameters', [ParameterController::class, 'getCompanyParameters'])->name('get-company-parameters');
 
-        Route::controller(AbsenceController::class)->group(function () {
-
-            Route::post('get-absence-details-for-week', 'getAbsenceDetailsForWeek');
-
-        });
-
         Route::put('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
         Route::get('get-company-employees', [EmployeeController::class, 'getCompanyEmployees']);
         Route::get('get-dashboard-access-key-for-company', [DashboardAccessController::class, 'getDashboardAccessKeyForCompany']);
@@ -257,9 +259,7 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
     });
 
     Route::controller(LeaveController::class)->group(function () {
-    
-        Route::post('employee-shift-leave', [LeaveController::class, 'addLeave'])->name('employee-shift-leave'); # apply and update as employee
-    
+        
         Route::get('responsible-persons-for-chat', [ResponsiblePersonController::class, 'getResponsiblePersonListForChat']);
 
     });
