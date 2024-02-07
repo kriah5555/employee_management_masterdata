@@ -41,7 +41,7 @@ class EmployeeBreakRequest extends ApiRequest
         $plans            = app(PlanningRepository::class)->getStartedPlanForEmployee($employee_profile->id, $qr_data['location_id']);
         
         $this->merge([
-            'pid' => $plans->first() ? $plans->first()->id : null,
+            'plan_id' => $plans->first() ? $plans->first()->id : null,
             $this->route()->getName() == 'start-break-by-employee' ? 'started_by' : 'ended_by' => Auth::id(),
             $this->route()->getName() == 'start-break-by-employee' ? 'start_time' : 'end_time' => date('H:i')
         ]);

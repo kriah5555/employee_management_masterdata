@@ -21,7 +21,7 @@ class AbsenceRequestService
         try {
             DB::connection('tenant')->beginTransaction();
     
-            $file_ids = [$this->saveAbsenceRequestFiles($values['plan_id'], $values['file'])];
+            $file_ids = [$this->saveAbsenceRequestFiles($values['plan_id'], $values['file'])]; # currently it is single file but the module can link multiple files to the request make change here to link multiple files
 
             $absence_request = AbsenceRequest::create($values);
 

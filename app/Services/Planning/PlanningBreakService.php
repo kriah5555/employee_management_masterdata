@@ -24,10 +24,10 @@ class PlanningBreakService
         try {
             DB::connection('tenant')->beginTransaction();
             $startTime = date('Y-m-d H:i', strtotime($values['start_time']));
-            PlanningBase::where('id', $values['pid'])->update(['break_started' => true]);
+            PlanningBase::where('id', $values['plan_id'])->update(['break_started' => true]);
             $data = PlanningBreak::create(
                 [
-                    'plan_id'          => $values['pid'],
+                    'plan_id'          => $values['plan_id'],
                     'break_start_time' => $startTime,
                     'started_by'       => $values['started_by'],
                 ]
@@ -43,8 +43,8 @@ class PlanningBreakService
     public function stopBreak($values)
     {
         $endTime = date('Y-m-d H:i', strtotime($values['end_time']));
-        PlanningBase::where('id', $values['pid'])->update(['break_started' => false]);
-        $break = PlanningBreak::where('plan_id', $values['pid'])->get()->last();
+        PlanningBase::where('id', $values['plan_id'])->update(['break_started' => false]);
+        $break = PlanningBreak::where('plan_id', $values['plan_id'])->get()->last();
         $break->ended_by = $values['ended_by'];
         $break->break_end_time = $endTime;
         $break->save();
