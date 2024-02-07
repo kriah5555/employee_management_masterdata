@@ -26,7 +26,7 @@ class PlanningBreakController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Plan started'
+                    'message' => 'Break started'
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -50,7 +50,7 @@ class PlanningBreakController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Plan started'
+                    'message' => 'Break stopped'
                 ],
                 JsonResponse::HTTP_OK,
             );
