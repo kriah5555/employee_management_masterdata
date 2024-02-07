@@ -27,13 +27,6 @@ class PlanningBreakRequest extends ApiRequest
     public function messages()
     {
         return [
-            'name.required'      => t('Employee type name is required.'),
-            'name.string'        => 'Employee type must be a string.',
-            'name.max'           => 'Employee type cannot be greater than 255 characters.',
-            'description.string' => 'Description must be a string.',
-            'description.max'    => 'Description cannot be greater than 255 characters.',
-            'status.boolean'     => 'Status must be a boolean value.',
-            'contract_types.*'   => 'Invalid contract type'
         ];
     }
 }

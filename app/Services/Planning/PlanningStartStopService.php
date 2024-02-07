@@ -63,7 +63,6 @@ class PlanningStartStopService
 
             $absenceService = app(AbsenceService::class);
             $plannings->each(function ($plan) use ($absenceService, &$return) {
-                $leave_status = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'))->isNotEmpty();
                 if (!isset($return[$plan->workstation->id])) {
                     $return[$plan->workstation->id] = [
                         'workstation_id'   => $plan->workstation->id,
@@ -72,6 +71,8 @@ class PlanningStartStopService
                     ];
                 }
                 
+                $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'));
+                $leave_status = $leaves->isNotEmpty();
                 $return[$plan->workstation->id]['plan_list'][] = [
                     'plan_id'                  => $plan->id,
                     'plan_date'                => $plan->plan_date,
@@ -87,13 +88,16 @@ class PlanningStartStopService
                     'employee_type'            => $plan->employeeType->name,
                     'employee_type'            => $plan->employeeType->name,
                     'leave_status'             => $leave_status,
-                    'leave_reason'             => $leave_status ? "Something" : null,
-                    'deletable'                => $plan->timeRegistrations->isEmpty() &&!$leave_status
+                    'leave_reason'             => $leave_status ? $leaves->pluck('reason')->implode(', ') : null,
+                    'leave_codes'              => $leave_status ? $leaves->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
+                    'plan_started'             => $plan->plan_started ?? false,
+                    'break_started'            => $plan->break_started ?? false,
+                    'deletable'                => $plan->timeRegistrations->isEmpty() &&!$leave_status,
                 ];
             });
 
         }
-        return $return;
+        return array_values($return);
     }
 
     public function stopPlanByManager($values)

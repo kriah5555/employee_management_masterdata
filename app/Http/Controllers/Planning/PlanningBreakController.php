@@ -6,8 +6,9 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\Planning\PlanningBreakRequest;
 use App\Services\Planning\PlanningBreakService;
+use App\Http\Requests\Planning\PlanningBreakRequest;
+use App\Http\Requests\Planning\EmployeeBreakRequest;
 
 class PlanningBreakController extends Controller
 {
@@ -16,7 +17,7 @@ class PlanningBreakController extends Controller
     ) {
     }
 
-    public function startBreak(PlanningBreakRequest $request)
+    public function startBreak(PlanningBreakRequest $request) # manager flow
     {
         try {
             $input = $request->validated();
@@ -40,7 +41,7 @@ class PlanningBreakController extends Controller
         }
     }
 
-    public function stopBreak(PlanningBreakRequest $request)
+    public function stopBreak(PlanningBreakRequest $request) # manager flow
     {
         try {
             $input = $request->validated();
@@ -50,6 +51,50 @@ class PlanningBreakController extends Controller
                 [
                     'success' => true,
                     'message' => 'Plan started'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        }
+    }
+
+    public function startBreakByEmployee(EmployeeBreakRequest $request)
+    {
+        try {
+            $this->planningBreakService->startBreak($request->all());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Break started'
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        }
+    }
+
+    public function stopBreakByEmployee(EmployeeBreakRequest $request)
+    {
+        try {
+            $this->planningBreakService->stopBreak($request->all());
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Break stopped'
                 ],
                 JsonResponse::HTTP_OK,
             );

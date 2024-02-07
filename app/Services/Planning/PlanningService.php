@@ -307,7 +307,8 @@ class PlanningService implements PlanningInterface
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         $absenceService = app(AbsenceService::class);
         return $plannings->map(function ($plan) use ($absenceService) {
-            $leave_status = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'))->isNotEmpty();
+            $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'));
+            $leave_status = $leaves->isNotEmpty();
             return [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
@@ -326,7 +327,8 @@ class PlanningService implements PlanningInterface
                 'employee_type_id'         => $plan->employee_type_id,
                 'employee_type'            => $plan->employeeType->name,
                 'leave_status'             => $leave_status,
-                'leave_reason'             => $leave_status ? "Something" : null,
+                'leave_reason'             => $leave_status ? $leaves->pluck('reason')->implode(', ') : null,
+                'leave_codes'              => $leave_status ? $leaves->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
             ];
         });
     }

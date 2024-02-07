@@ -234,8 +234,8 @@ class EmployeeContractService
             $contracts = $this->getEmployeeWithActiveType($date);
             foreach ($contracts as $contract) {
                 $activeEmployees[$contract->employeeProfile->id] = [
-                    'employee_id'         => $contract->employeeProfile->full_name,
-                    'employee_name'       => $contract->employeeProfile->id,
+                    'employee_id'         => $contract->employeeProfile->id,
+                    'employee_name'       => $contract->employeeProfile->full_name,
                     'availability_status' => $contract->employeeProfile->availabilityForDate($date)->isNotEmpty() ? $contract->employeeProfile->availabilityForDate($date)->first()->availability : null,
                     'plan_status'         => $contract->employeeProfile->planningsForDate($date)->isNotEmpty()
                 ];
