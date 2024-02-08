@@ -49,19 +49,22 @@ class EmployeeContractService
     public function formatEmployeeContract($employeeContract)
     {
         $contractDetails = [
-            'id'                        => $employeeContract->id,
-            'start_date'                => date('d-m-Y', strtotime($employeeContract->start_date)),
-            'end_date'                  => $employeeContract->end_date ? date('d-m-Y', strtotime($employeeContract->end_date)) : '',
-            'employee_type_id'          => $employeeContract->employeeType->id,
-            'employee_type'             => $employeeContract->employeeType->name,
-            'long_term'                 => false,
-            'employee_function_details' => [],
+            'id'               => $employeeContract->id,
+            'start_date'       => date('d-m-Y', strtotime($employeeContract->start_date)),
+            'end_date'         => $employeeContract->end_date ? date('d-m-Y', strtotime($employeeContract->end_date)) : '',
+            'employee_type_id' => $employeeContract->employeeType->id,
+            'employee_type'    => $employeeContract->employeeType->name,
+            'long_term'        => false,
+            'student'          => false,
+            'send_dimona'      => false,
         ];
         $employee_sub_type = '';
         if ($employeeContract->longTermEmployeeContract()->exists()) {
             $longTermEmployeeContract = $employeeContract->longTermEmployeeContract;
             $employee_sub_type = $longTermEmployeeContract->sub_type ?? null;
             $contractDetails['long_term'] = true;
+            $contractDetails['send_dimona'] = $longTermEmployeeContract->dimona_period_id ? false : true;
+            $contractDetails['student'] = $employeeContract->employeeType->dimonaConfig->dimonaType->dimona_type_key == 'student' ? true : false;
             $contractDetails['sub_type'] = $employee_sub_type;
             $contractDetails['schedule_type'] = $longTermEmployeeContract->schedule_type ?? null;
             $contractDetails['employment_type'] = $longTermEmployeeContract->employment_type ?? null;
