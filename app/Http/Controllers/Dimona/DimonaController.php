@@ -82,7 +82,6 @@ class DimonaController extends Controller
 
     public function sendLongTermDimona(Request $request)
     {
-
         try {
             $rules = [
                 'contract_id'    => 'required|integer',
@@ -107,6 +106,7 @@ class DimonaController extends Controller
 
             }
             $companyId = getCompanyId();
+            // app(DimonaSenderService::class)->sendLongTermDimona($companyId, $data['contract_id']);
             dispatch(new SendLongTermDimonaJob($companyId, $data['contract_id']));
             return returnResponse(
                 [
@@ -119,7 +119,7 @@ class DimonaController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'message' => 'Dimona request sent.',
+                    'message' => 'Failed to send dimona.',
                 ],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
