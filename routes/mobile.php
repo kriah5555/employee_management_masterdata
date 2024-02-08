@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Planning\
 {
-    PlanningMobileController,
     PlanningController,
+    PlanningBreakController,
+    PlanningMobileController,
     PlanningStartStopController,
 };
 use App\Http\Controllers\{
@@ -35,7 +36,9 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::post('employee-sign-plan-contract', 'employeeSignPlanContract');
 
-        Route::get('get-employee-contracts', 'index');
+        Route::get('get-employee-contracts', 'index'); # employee flow
+
+        Route::get('manager-get-employee-contracts/{employee_profile_id}', 'index')->name('manager-get-employee-contracts'); # manager flow
     });
 
     Route::controller(PlanningStartStopController::class)->group(function () {
@@ -56,6 +59,16 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::post('get-day-plans-manager', [PlanningMobileController::class, 'getDayPlansManager']);
 
+        Route::post('get-plannings-to-start-stop', [PlanningStartStopController::class, 'getDayPlanningToStartAndStop']); # manager flow
+
     });
 
+    Route::controller(PlanningBreakController::class)->group(function () {
+
+        Route::post('start-break-by-employee', 'startBreakByEmployee')->name('start-break-by-employee');
+
+        Route::post('stop-break-by-employee', 'stopBreakByEmployee')->name('stop-break-by-employee');
+
+    });
+    
 });

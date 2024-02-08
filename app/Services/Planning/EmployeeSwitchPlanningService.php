@@ -32,7 +32,7 @@ class EmployeeSwitchPlanningService
 
         $activeEmployees = [];
         foreach ($contracts as $contract) {
-            $plans = $this->planningRepository->getPlans('', '', '', '', [$plan->employee_type_id], $plan->employee_profile_id, [], $plan->start_date_time, $plan->end_date_time);
+            $plans = $this->planningRepository->getPlans('', '', '', '', [$plan->employee_type_id], $contract->employeeProfile->id, [], $plan->start_date_time, $plan->end_date_time);
             $plans = $plans->map(function ($plan) {
                 return [
                     'start_time' => $plan->start_time,
@@ -119,24 +119,28 @@ class EmployeeSwitchPlanningService
     private function mapSwitchPlanRequests($requests, $company = null)
     {
         return $requests->map(function ($switchPlanRequest) use ($company) {
-            return [
-                'id'               => $switchPlanRequest->id,
-                'company_id'       => $company ? $company->id : null,
-                'company_name'     => $company ? $company->company_name : null,
-                'plan_id'          => $switchPlanRequest->plan->id,
-                'plan_date'        => $switchPlanRequest->plan->plan_date ,
-                'plan_timings'     => $switchPlanRequest->plan->start_time . '-' . $switchPlanRequest->plan->end_time,
-                'plan_function_id' => $switchPlanRequest->plan->functionTitle->id,
-                'plan_function'    => $switchPlanRequest->plan->functionTitle->name,
-                'employee_type'    => $switchPlanRequest->plan->employeeType->name,
-                'request_to'       => $switchPlanRequest->requestTo->full_name,
-                'request_from'     => $switchPlanRequest->requestFrom->full_name,
-                'location_id'      => $switchPlanRequest->plan->location->id,
-                'location_name'    => $switchPlanRequest->plan->location->location_name,
-                'workstation_id'   => $switchPlanRequest->plan->workstation->id,
-                'workstation_name' => $switchPlanRequest->plan->workstation->workstation_name,
-            ];
-        });
+            if ($switchPlanRequest->plan) {
+                return [
+                    'id'               => $switchPlanRequest->id,
+                    'company_id'       => $company ? $company->id : null,
+                    'company_name'     => $company ? $company->company_name : null,
+                    'plan_id'          => $switchPlanRequest->plan->id,
+                    'plan_date'        => $switchPlanRequest->plan->plan_date ,
+                    'plan_timings'     => $switchPlanRequest->plan->start_time . '-' . $switchPlanRequest->plan->end_time,
+                    'plan_function_id' => $switchPlanRequest->plan->functionTitle->id,
+                    'plan_function'    => $switchPlanRequest->plan->functionTitle->name,
+                    'employee_type'    => $switchPlanRequest->plan->employeeType->name,
+                    'request_to'       => $switchPlanRequest->requestTo->full_name,
+                    'request_from'     => $switchPlanRequest->requestFrom->full_name,
+                    'location_id'      => $switchPlanRequest->plan->location->id,
+                    'location_name'    => $switchPlanRequest->plan->location->location_name,
+                    'workstation_id'   => $switchPlanRequest->plan->workstation->id,
+                    'workstation_name' => $switchPlanRequest->plan->workstation->workstation_name,
+                ];
+            } else {
+                return null;
+            }
+        })->filter()->values();
     }
 
     public function updateStatusOfSwitchPlanning($values)

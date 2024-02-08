@@ -9,7 +9,7 @@ use App\Models\Planning\TimeRegistration;
 use App\Repositories\Employee\EmployeeProfileRepository;
 use App\Services\Dimona\DimonaSenderService;
 use App\Jobs\SendDimonaJob;
-
+use App\Services\Company\Absence\AbsenceService;
 
 class PlanningStartStopService
 {
@@ -53,6 +53,51 @@ class PlanningStartStopService
         if ($employee_profile) {
             return $this->planningRepository->getPlans('', '', $qr_data['location_id'], '', '', $employee_profile->id, [], date('d-m-Y') . ' ' . $start_time . ':00', date('d-m-Y') . ' ' . $stop_time . ':00');
         }
+    }
+
+    public function getDayPlanningToStartAndStop($location_id)
+    {
+        $return = [];
+        if (!empty($location_id)) {
+            $plannings = $this->planningRepository->getPlans('', '', $location_id, '', '', '', [], date('d-m-Y H:i'), date('d-m-Y H:i'));
+
+            $absenceService = app(AbsenceService::class);
+            $plannings->each(function ($plan) use ($absenceService, &$return) {
+                if (!isset($return[$plan->workstation->id])) {
+                    $return[$plan->workstation->id] = [
+                        'workstation_id'   => $plan->workstation->id,
+                        'workstation_name' => $plan->workstation->workstation_name,
+                        'plan_list'        => [],
+                    ];
+                }
+                
+                $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'));
+                $leave_status = $leaves->isNotEmpty();
+                $return[$plan->workstation->id]['plan_list'][] = [
+                    'plan_id'                  => $plan->id,
+                    'plan_date'                => $plan->plan_date,
+                    'employee_icon_color'      => $plan->employeeType->employeeTypeConfig->icon_color,
+                    'start_time'               => $plan->start_time,
+                    'end_time'                 => $plan->end_time,
+                    'contract_hours'           => $plan->contract_hours,
+                    'contract_hours_formatted' => $plan->contract_hours_formatted,
+                    'function_id'              => $plan->function_id,
+                    'function_name'            => $plan->functionTitle->name,
+                    'employee_profile_id'      => $plan->employee_profile_id,
+                    'employee_name'            => $plan->employeeProfile->full_name,
+                    'employee_type'            => $plan->employeeType->name,
+                    'employee_type'            => $plan->employeeType->name,
+                    'leave_status'             => $leave_status,
+                    'leave_reason'             => $leave_status ? $leaves->pluck('reason')->implode(', ') : null,
+                    'leave_codes'              => $leave_status ? $leaves->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
+                    'plan_started'             => $plan->plan_started ?? false,
+                    'break_started'            => $plan->break_started ?? false,
+                    'deletable'                => $plan->timeRegistrations->isEmpty() &&!$leave_status,
+                ];
+            });
+
+        }
+        return array_values($return);
     }
 
     public function stopPlanByManager($values)

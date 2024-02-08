@@ -43,13 +43,13 @@ class LeaveController extends Controller
         }
     }
 
-    public function getAllLeavesForMobile()
+    public function getAllLeavesForMobile(Request $request)
     {
         try {
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->leave_service->getLeavesMobile(),
+                    'data'    => $this->leave_service->getLeavesMobile($request->employee_profile_id),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -162,31 +162,14 @@ class LeaveController extends Controller
     public function addLeave(LeaveRequest $request)
     {
         try {
-            $data = $request->validated();
-            $formattedData = [];
-            $formattedData['employee_profile_id'] = $data['employee_profile_id'];
-            $formattedData['reason'] = $data['reason'];
-            if ($data['duration_type'] == 1) {
-                $formattedData['dates'] = $data['dates'];
-                $formattedData['duration_type'] = 8;
-            } else {
-                $formattedData['dates'] = [
-                    'from_date' => $data['from_date'],
-                    'to_date'   => $data['to_date']
-                ];
-                $formattedData['duration_type'] = 7;
-            }
-            $formattedData['plan_timings'] = isset($data['pid']) ? $data['pid'] :null;
-            $formattedData['holiday_code_counts'][] = [
-                'holiday_code'  => $data['holiday_code_id'],
-                'hours'         => 0,
-                'duration_type' => null
-            ];
+            $request_name   = $request->route()->getName();
+            $absence_status = $request_name == 'add-leave' || $request_name == 'update-leave' || $request_name == 'shift-leave' ? config('absence.APPROVE') : config('absence.PENDING');
+            $shift_leave    = in_array($request_name, ['shift-leave', 'employee-shift-leave']);
             return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Leave created successfully'),
-                    'data'    => $this->leave_service->applyLeave($formattedData)
+                    'data'    => $this->leave_service->applyLeave($request->validated(), $absence_status, $shift_leave)
                 ],
                 JsonResponse::HTTP_CREATED,
             );

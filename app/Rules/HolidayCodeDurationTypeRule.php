@@ -20,10 +20,10 @@ class HolidayCodeDurationTypeRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-
+        
         foreach ($value as $index => $data) {
-
-            $duration_type_rules = $this->getHolidayCodeDurationTypeRule($fail, $this->companyId, $value, $data);
+            
+            $duration_type_rules = $this->getHolidayCodeDurationTypeRule($fail, $this->companyId, $value);
 
             $validator = \Validator::make($data, $duration_type_rules);
 
@@ -35,7 +35,7 @@ class HolidayCodeDurationTypeRule implements ValidationRule
             }
         }
     }
-    public function getHolidayCodeDurationTypeRule($fail, $companyId, $value, array $data)
+    public function getHolidayCodeDurationTypeRule($fail, $companyId, $value)
     {
 
         $durationTypeRule = [
@@ -55,13 +55,23 @@ class HolidayCodeDurationTypeRule implements ValidationRule
                 break;
 
             case config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF'): # dont add break statement it should continue to next case because both have same validation
+                    if (!collect($value)->contains('duration_type', '')) { # at least one holiday code should be selected for multiple holiday code
+                        $fail("Please select holiday code for multiple holiday codes.");
+                    }
+
+                    if (!collect($value)->contains('duration_type', config('absence.SECOND_HALF'))) { # holiday code should be selected for First or second half holiday code
+                        $duration = $this->durationType == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') ? 'First half' : 'Second half';
+                        $fail("Holiday code for $duration is not selected.");
+                    }
+                    $durationTypeRule['hours'] = 'nullable|numeric|required_if:duration_type,null|required_if:duration_type,""';
+                    break;
             case config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF'):
 
                     if (!collect($value)->contains('duration_type', '')) { # at least one holiday code should be selected for multiple holiday code
                         $fail("Please select holiday code for multiple holiday codes.");
                     }
 
-                    if (!collect($value)->contains('duration_type', '1')) { # holiday code should be selected for First or second half holiday code
+                    if (!collect($value)->contains('duration_type', config('absence.FIRST_HALF'))) { # holiday code should be selected for First or second half holiday code
                         $duration = $this->durationType == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF') ? 'First half' : 'Second half';
                         $fail("Holiday code for $duration is not selected.");
                     }

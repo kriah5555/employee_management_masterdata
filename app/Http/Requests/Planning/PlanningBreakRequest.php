@@ -20,20 +20,13 @@ class PlanningBreakRequest extends ApiRequest
         if ($routeName == 'start-break') {
             $rules['start_time'] = 'required|date_format:H:i';
         } elseif ($routeName == 'stop-break') {
-            $rules['stop_time'] = 'required|date_format:H:i';
+            $rules['end_time'] = 'required|date_format:H:i';
         }
         return $rules;
     }
     public function messages()
     {
         return [
-            'name.required'      => t('Employee type name is required.'),
-            'name.string'        => 'Employee type must be a string.',
-            'name.max'           => 'Employee type cannot be greater than 255 characters.',
-            'description.string' => 'Description must be a string.',
-            'description.max'    => 'Description cannot be greater than 255 characters.',
-            'status.boolean'     => 'Status must be a boolean value.',
-            'contract_types.*'   => 'Invalid contract type'
         ];
     }
 }

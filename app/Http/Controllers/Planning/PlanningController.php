@@ -163,7 +163,8 @@ class PlanningController extends Controller
                         $request->input('location'),
                         $request->input('workstations'),
                         $request->input('employee_types'),
-                        date('Y-m-d', strtotime($request->input('date')))
+                        date('Y-m-d', strtotime($request->input('date'))),
+                        $request->input('employee_profile_id'),
                     )
                 ],
                 JsonResponse::HTTP_OK,
@@ -189,7 +190,8 @@ class PlanningController extends Controller
                         $request->input('location'),
                         $request->input('workstations'),
                         $request->input('employee_types'),
-                        date('Y-m-d', strtotime($request->input('date')))
+                        date('Y-m-d', strtotime($request->input('date'))),
+                        $request->input('employee_profile_id'),
                     )
                 ],
                 JsonResponse::HTTP_OK,

@@ -296,18 +296,19 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
-    public function getDayPlanningService($location, $workstations, $employee_types, $date)
+    public function getDayPlanningService($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
-        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         return $this->formatDayPlanning($plannings);
     }
 
-    public function getDayPlanningMobileService($location, $workstations, $employee_types, $date)
+    public function getDayPlanningMobileService($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
-        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         $absenceService = app(AbsenceService::class);
         return $plannings->map(function ($plan) use ($absenceService) {
-            $leave_status = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'))->isNotEmpty();
+            $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'));
+            $leave_status = $leaves->isNotEmpty();
             return [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
@@ -326,7 +327,8 @@ class PlanningService implements PlanningInterface
                 'employee_type_id'         => $plan->employee_type_id,
                 'employee_type'            => $plan->employeeType->name,
                 'leave_status'             => $leave_status,
-                'leave_reason'             => $leave_status ? "Something" : null,
+                'leave_reason'             => $leave_status ? $leaves->pluck('reason')->implode(', ') : null,
+                'leave_codes'              => $leave_status ? $leaves->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
             ];
         });
     }
@@ -334,7 +336,7 @@ class PlanningService implements PlanningInterface
     public function getEmployeeDayPlanningService($employee_profile_id, $date = '')
     {
         $date = $date == '' ? date('d-m-Y') : $date;
-        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         return $this->formatDayPlanning($plannings);
     }
 
@@ -506,6 +508,8 @@ class PlanningService implements PlanningInterface
             'workstation'      => $details->workstation->workstation_name,
             'start_plan'       => $startPlan,
             'stop_plan'        => $stopPlan,
+            'start_break'      => $startPlan,
+            'stop_break'       => $stopPlan,
             'send_plan_dimona' => $sendPlanDimona,
             'contract'         => $this->planningContractService->getPlanningContractContract($details),
         ];
@@ -531,7 +535,7 @@ class PlanningService implements PlanningInterface
 
     public function getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
-        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, $employee_profile_id, ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
 
     public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = '', $employee_id = '', $relations = [])

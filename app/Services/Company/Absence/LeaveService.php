@@ -28,10 +28,10 @@ class LeaveService
         }
     }
 
-    public function getLeavesMobile() # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
+    public function getLeavesMobile($employee_profile_id = '') # 1 => pending, 2 => approved, 3 => Rejected, 4 => Cancelled
     {
         try {
-            return $this->formatLeaves($this->leave_repository->getLeaves(), true);
+            return $this->formatLeaves($this->leave_repository->getLeaves($employee_profile_id), true);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -71,7 +71,7 @@ class LeaveService
         try {
             $leave = $this->leave_repository->createLeave($details);
 
-            $leave = $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data);
+            $leave = $this->absence_service->createAbsenceRelatedData($leave, $leave_hours, $dates_data, isset($details['plan_timings']) ? $details['plan_timings'] : '');
             
             return $leave;
         } catch (Exception $e) {
@@ -117,16 +117,22 @@ class LeaveService
         }
     }
 
-    public function applyLeave(array $details)
+    public function applyLeave(array $details, $status = '', $shift_leave = '')
     {
         try {
             DB::connection('tenant')->beginTransaction();
 
-                $formatted_data = $this->absence_service->getAbsenceFormattedDataToSave($details, config('absence.APPROVE'));
+                $formatted_data = $this->absence_service->getAbsenceFormattedDataToSave($details, (!empty($status)) ? $status : config('absence.APPROVE'));
 
                 $leave = $this->leave_repository->createLeave($formatted_data['details']);
 
-                $leave = $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data'], $formatted_data['details']['plan_timings']);
+                $leave = $this->absence_service->createAbsenceRelatedData(
+                            $leave, 
+                            $formatted_data['absence_hours_data'], 
+                            $formatted_data['dates_data'], 
+                            $formatted_data['details']['plan_timings'], 
+                            $shift_leave ? $formatted_data['details']['plan_ids'] : []
+                        );
 
             DB::connection('tenant')->commit();
             

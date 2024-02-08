@@ -3,31 +3,38 @@
 namespace App\Http\Controllers\Company\Absence;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use App\Services\Company\Absence\AbsenceService;
+use App\Services\Company\Absence\AbsenceRequestService;
 
-class AbsenceController extends Controller
+class AbsenceRequestController extends Controller
 {
-    public function __construct(protected AbsenceService $absenceService)
+    public function __construct(protected AbsenceRequestService $absenceRequestService)
     {
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-
-    public function getAbsenceDetailsForWeek(Request $request)
+    public function employeeLeaveRequest(Request $request)
     {
         try {
             $rules = [
-                'week' => 'required|integer|min:1|max:53',
-                'year' => 'required|date_format:Y',
-                'employee_profile_id' => 'nullable',
+                'plan_id' => [
+                    'required',
+                    'numeric',
+                    Rule::unique('absence_requests')->where(function ($query) {
+                        $query->where('status', true)->whereNull('deleted_at');
+                    }),
+                ],                
+                'reason'  => 'nullable',
+                'file'    => 'nullable',
+            ];
+
+            $messages = [
+                'plan_id.unique' => 'Already requested leave for plan.',
             ];
     
-            $validator = Validator::make(request()->all(), $rules, []);
+            $validator = Validator::make(request()->all(), $rules, $messages);
             if ($validator->fails()) {
                 return returnResponse(
                     [
@@ -40,7 +47,8 @@ class AbsenceController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->absenceService->getAbsenceDetailsForWeek($request->week, $request->year, $request->employee_profile_id),
+                    'data'    => $this->absenceRequestService->employeeLeaveRequest($request->all()),
+                    'message' => 'Leave requested successfully',
                 ],
                 JsonResponse::HTTP_OK,
             );

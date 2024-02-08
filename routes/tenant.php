@@ -15,6 +15,7 @@ use App\Http\Controllers\Company\{
     Absence\LeaveController,
     Absence\HolidayController,
     Absence\AbsenceController,
+    Absence\AbsenceRequestController,
     Contract\ContractConfigurationController,
     Contract\CompanyContractTemplateController,
     EmployeeAvailabilityController,
@@ -57,9 +58,9 @@ use App\Http\Controllers\ReasonController;
 
 $integerRule = '[0-9]+'; # allow only integer values
 
-Route::middleware([InitializeTenancy::class])->group(function () use ($integerRule) {
+Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) {
 
-    Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) {
+    Route::middleware([InitializeTenancy::class])->group(function () use ($integerRule) {
 
         Route::get('/testing-tenant', function () {
             return response()->json([
@@ -69,20 +70,18 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::controller(HolidayController::class)->group(function () {
 
-            Route::resource('holidays', HolidayController::class)->except(['edit', 'store', 'update']);
+            Route::resource('holidays', HolidayController::class)->except(['edit']);
 
             Route::post('holidays-change-reporting-manager', [HolidayController::class, 'changeHolidayManager']);
 
-            Route::get('employee-holidays/{employee_id}/{status}', [HolidayController::class, 'employeeHolidays'])
-                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for employee flow
+            Route::get('employee-holidays', [HolidayController::class, 'employeeHolidays']);
 
             Route::get('holidays-list/{status}', [HolidayController::class, 'index'])
-                ->where(['status' => '(approve|cancel|pending|reject|request_cancel)']); # for managers flow
+                ->where(['status' => '(approve|cancel|pending|reject)']); # for managers flow
 
-            Route::get('holidays-list-manager-mobile', [HolidayController::class, 'getAllHolidaysForMobile']);
+            Route::post('holidays-list-manager-mobile', [HolidayController::class, 'getAllHolidaysForMobile']);
 
             Route::post('holidays-status', 'updateHolidayStatus');
-            // ->where(['status' => '(approve|cancel|request_cancel|reject)']); # fro all to update status of absence
 
             Route::post('employee-apply-holidays-mobile', [HolidayController::class, 'store'])->name('employee-apply-holidays-mobile');
 
@@ -99,12 +98,25 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             Route::get('leaves-list/{status}', [LeaveController::class, 'index'])
                 ->where(['status' => '(approve|pending)']); # to get leaves list
 
-            Route::get('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
+            Route::post('leaves-list-manager-mobile', [LeaveController::class, 'getAllLeavesForMobile']);
 
             Route::post('leaves-status', 'updateLeaveStatus');
 
-            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave');
+            Route::post('add-leave', [LeaveController::class, 'addLeave'])->name('add-leave'); # add as manager
+
+            Route::put('update-leave/{id}', [LeaveController::class, 'update'])->name('update-leave'); # add and update as manager
+
+            Route::post('shift-leave', [LeaveController::class, 'addLeave'])->name('shift-leave'); # apply and update as employee
         });
+
+        Route::post('employee-request-shift-leave', [AbsenceRequestController::class , 'employeeLeaveRequest']);
+
+        Route::controller(AbsenceController::class)->group(function () {
+
+            Route::post('get-absence-details-for-week', 'getAbsenceDetailsForWeek');
+
+        });
+
 
         Route::controller(LocationController::class)->group(function () use ($integerRule) {
 
@@ -124,7 +136,7 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
             ],
             'cost-centers'               => [
                 'controller' => CostCenterController::class,
-                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'showyteyyd', 'create', 'store', 'update', 'destroy']
             ],
             'company-contract-templates' => [
                 'controller' => CompanyContractTemplateController::class,
@@ -205,6 +217,8 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
             Route::post('get-active-contract-employees', 'getActiveContractEmployees');
 
+            Route::post('get-employees-with-availability', 'getActiveContractEmployeesWithAvailabilityStatus');
+
         });
 
         Route::post('company-additional-details', [CompanyController::class, 'storeAdditionalDetails']);
@@ -235,12 +249,6 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
 
         Route::post('get-company-parameters', [ParameterController::class, 'getCompanyParameters'])->name('get-company-parameters');
 
-        Route::controller(AbsenceController::class)->group(function () {
-
-            Route::post('get-absence-details-for-week', 'getAbsenceDetailsForWeek');
-
-        });
-
         Route::put('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
         Route::get('get-company-employees', [EmployeeController::class, 'getCompanyEmployees']);
         Route::get('get-dashboard-access-key-for-company', [DashboardAccessController::class, 'getDashboardAccessKeyForCompany']);
@@ -249,4 +257,11 @@ Route::middleware([InitializeTenancy::class])->group(function () use ($integerRu
         Route::get('validate-location-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'validateLocationDashboardAccessKey']);
         Route::delete('revoke-dashboard-access-key/{access_key}', [DashboardAccessController::class, 'revokeDashboardAccessKey']);
     });
+
+    Route::controller(LeaveController::class)->group(function () {
+        
+        Route::get('responsible-persons-for-chat', [ResponsiblePersonController::class, 'getResponsiblePersonListForChat']);
+
+    });
 });
+
