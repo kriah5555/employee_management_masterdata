@@ -7,11 +7,15 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Contract\ContractTemplateRequest;
 use App\Services\Company\Contract\CompanyContractTemplateService;
+use App\Services\Contract\ContractTypeService;
+use App\Http\Resources\Contract\CompanyContractTemplateResource;
 
 class CompanyContractTemplateController extends Controller
 {
-    public function __construct(protected CompanyContractTemplateService $companyContractTemplateService)
-    {
+    public function __construct(
+        protected CompanyContractTemplateService $companyContractTemplateService,
+        protected ContractTypeService $contractTypeService
+    ) {
     }
 
     /**
@@ -22,7 +26,7 @@ class CompanyContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->companyContractTemplateService->getAll(['with' => ['employeeType']]),
+                'data'    => CompanyContractTemplateResource::collection($this->companyContractTemplateService->getAll(['with' => ['contractType']])),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -36,7 +40,19 @@ class CompanyContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->companyContractTemplateService->getOptionsToCreate(),
+                'data'    => [
+                    'contract_types' => $this->contractTypeService->getActiveContractTypes(),
+                    'tokens'         => array_merge(
+                        config('tokens.EMPLOYEE_TOKENS'),
+                        config('tokens.COMPANY_TOKENS'),
+                        config('tokens.CONTRACT_TOKENS'),
+                        config('tokens.ATTACHMENT_TOKENS'),
+                        config('tokens.SIGNATURE_TOKENS'),
+                        config('tokens.FLEX_SALARY_TOKENS'),
+                        config('tokens.ADDITIONAL_TOKENS'),
+                        config('tokens.PLANNING_TOKENS'),
+                    ),
+                ],
             ],
             JsonResponse::HTTP_OK,
         );
@@ -65,7 +81,7 @@ class CompanyContractTemplateController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->companyContractTemplateService->get($id, ['employeeType'])
+                'data'    => new CompanyContractTemplateResource($this->companyContractTemplateService->get($id, ['contractType']))
             ],
             JsonResponse::HTTP_OK,
         );

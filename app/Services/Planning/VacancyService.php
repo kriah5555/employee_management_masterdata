@@ -221,12 +221,21 @@ class VacancyService implements VacancyInterface
                 $temp['function_id'] = $value['function_id'];
                 $temp['function_name'] = $value['functions']['name'];
                 $temp['total'] = $value['vacancy_count'];
-                $temp['applied'] = count($value['vacancy_post_employees']);
+                $temp['not_responded'] = array_filter($value['vacancy_post_employees'], function ($employee) {
+                    return $employee['request_status'] == 0;
+                });
+		$temp['not_responded'] = count($temp['not_responded']);
                 $temp['responded'] = array_filter($value['vacancy_post_employees'], function ($employee) {
-                    return $employee['request_status'] != 0;
+                    return ($employee['request_status'] != 0 && $employee['request_status'] != 3 && $employee['request_status'] != 4);
                 });
                 $temp['responded'] = count($temp['responded']);
-                $temp['employee_types'] = array_map(function ($employeeType) {
+                $temp['accepted'] = count(array_filter($value['vacancy_post_employees'], function($data) {
+                    return $data['request_status'] == 1;
+                }));
+                $temp['rejected'] = count(array_filter($value['vacancy_post_employees'], function($data) {
+                    return $data['request_status'] == 2;
+                }));
+		$temp['employee_types'] = array_map(function ($employeeType) {
                     return [
                         'label' => $employeeType['employee_type']['name'],
                         'value' => $employeeType['employee_types_id'],
@@ -235,22 +244,24 @@ class VacancyService implements VacancyInterface
 
                 $temp['employees'] = array_map(
                     function ($data) {
-                        $employee_basic_details = $data['employee_profile']['employee_basic_details'];
-                        return [
-                            'application_id' => $data['id'],
-                            'vacancy_id'     => $data['vacancy_id'],
-                            'employee_id'    => $data['employee_profile_id'],
-                            'employee_name'  => $employee_basic_details['first_name'] . ' ' . $employee_basic_details['last_name'],
-                            'status_name'    => self::REQUEST_STATUS[$data['request_status']],
-                            'status'         => $data['request_status'],
-                            'request_at'     => $data['request_at'],
-                            'responded_by'   => $data['responded_by'],
-                            'vacancy_date'   => date('d-m-Y', strtotime($data['vacancy_date']))
-                        ];
+			$employee_basic_details = $data['employee_profile']['employee_basic_details'];
+                        if ($data['request_status'] != 3 && $data['request_status'] != 4) {
+                            return [
+                                'application_id' => $data['id'],
+                                'vacancy_id'     => $data['vacancy_id'],
+                                'employee_id'    => $data['employee_profile_id'],
+                                'employee_name'  => $employee_basic_details['first_name'] . ' ' . $employee_basic_details['last_name'],
+                                'status_name'    => self::REQUEST_STATUS[$data['request_status']],
+                                'status'         => $data['request_status'],
+                                'request_at'     => $data['request_at'],
+                                'responded_by'   => $data['responded_by'],
+                                'vacancy_date'   => date('d-m-Y', strtotime($data['vacancy_date']))
+			    ];
+			}
                     },
                     $value['vacancy_post_employees']
-                );
-
+		);
+		$temp['employees'] = array_values(array_filter($temp['employees'], function($data) { return $data != null;}));		
                 $response[] = $temp;
             }
         }

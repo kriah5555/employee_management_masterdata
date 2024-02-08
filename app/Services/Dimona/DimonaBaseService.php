@@ -238,6 +238,11 @@ class DimonaBaseService
                 $dimonaDeclaration->dimona->dimona_period_id = $body['declarationStatus']['dimonaPeriodId'];
                 $dimonaDeclaration->dimona->save();
                 $dimonaDeclaration->save();
+                if ($dimonaDeclaration->dimona->type == 'long_term') {
+                    $longTermContract = $dimonaDeclaration->dimona->employeeContract->longTermEmployeeContract;
+                    $longTermContract->dimona_period_id = $body['declarationStatus']['dimonaPeriodId'];
+                    $longTermContract->save();
+                }
             } elseif ($body['declarationStatus']['result'] == 'B') {
                 $dimonaDeclaration->dimona_declartion_status = 'failed';
                 $dimonaDeclaration->save();

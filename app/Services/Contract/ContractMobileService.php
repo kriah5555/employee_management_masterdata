@@ -51,10 +51,10 @@ class ContractMobileService
                             'long_term_contract' => $contract->employeeContract ? true : false,
                         ];
     
-                        if ($contract->contract_status == 2) {
-                            $response['unsigned_contracts'][] = $contractData;
-                        } else {
+                        if ($contract->contract_status == config('contracts.CONTRACT_STATUS_SIGNED')) {
                             $response['signed_contracts'][] = $contractData;
+                        } else {
+                            $response['unsigned_contracts'][] = $contractData;
                         }
                     });
                 }

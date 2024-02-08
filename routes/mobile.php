@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Planning\
 {
-    PlanningMobileController,
     PlanningController,
+    PlanningBreakController,
+    PlanningMobileController,
     PlanningStartStopController,
 };
 use App\Http\Controllers\{
@@ -58,6 +59,16 @@ Route::middleware([SetActiveUser::class])->group(function () {
 
         Route::post('get-day-plans-manager', [PlanningMobileController::class, 'getDayPlansManager']);
 
+        Route::post('get-plannings-to-start-stop', [PlanningStartStopController::class, 'getDayPlanningToStartAndStop']); # manager flow
+
     });
 
+    Route::controller(PlanningBreakController::class)->group(function () {
+
+        Route::post('start-break-by-employee', 'startBreakByEmployee')->name('start-break-by-employee');
+
+        Route::post('stop-break-by-employee', 'stopBreakByEmployee')->name('stop-break-by-employee');
+
+    });
+    
 });

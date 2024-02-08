@@ -26,16 +26,15 @@ class AbsenceService
         }
     }
 
-    public function createAbsenceRelatedData(Absence $absence, $absence_hours, $dates_data, $plan_timings = [])
+    public function createAbsenceRelatedData(Absence $absence, $absence_hours, $dates_data, $plan_timings = [], $plan_ids = [])
     {
         try {
             $absence->absenceHours()->createMany($absence_hours);
 
             $absence->absenceDates()->create($dates_data);
 
-            if (!empty($plan_timings)) {
-                $plan_ids = $this->getPlanIdsForTimings($dates_data['dates'], $plan_timings, $absence->employee_profile_id);
-                // $plan_ids = $this->getPlanIdsForTimings(json_decode($dates_data['dates']), $plan_timings, $absence->employee_profile_id);
+            if (!empty($plan_timings) || !empty($plan_ids)) {
+                $plan_ids = !empty($plan_timings) ? $this->getPlanIdsForTimings($dates_data['dates'], $plan_timings, $absence->employee_profile_id) : $plan_ids;
                 $absence->plans()->sync($plan_ids);
             }
 
@@ -341,6 +340,7 @@ class AbsenceService
                     'reason'         => $leave->reason,
                     'plan_timings'   => $leave->plan_timings,
                     'plan_ids'       => $leave->plan_ids,
+                    'shift_leave'    => $leave->duration_type == config('absence.SHIFT_LEAVE'),
                     'actions'        => $this->getAbsenceActions($leave->absence_type, $leave->absence_status, $employee_flow),
                 ];
             } else {  # Holiday

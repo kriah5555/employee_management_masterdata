@@ -117,7 +117,7 @@ class LeaveService
         }
     }
 
-    public function applyLeave(array $details, $status = '')
+    public function applyLeave(array $details, $status = '', $shift_leave = '')
     {
         try {
             DB::connection('tenant')->beginTransaction();
@@ -126,7 +126,13 @@ class LeaveService
 
                 $leave = $this->leave_repository->createLeave($formatted_data['details']);
 
-                $leave = $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data'], $formatted_data['details']['plan_timings']);
+                $leave = $this->absence_service->createAbsenceRelatedData(
+                            $leave, 
+                            $formatted_data['absence_hours_data'], 
+                            $formatted_data['dates_data'], 
+                            $formatted_data['details']['plan_timings'], 
+                            $shift_leave ? $formatted_data['details']['plan_ids'] : []
+                        );
 
             DB::connection('tenant')->commit();
             
@@ -151,9 +157,13 @@ class LeaveService
 
                 $this->leave_repository->updateLeave($leave, $formatted_data['details']);
 
-                $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data'], $details['plan_timings']);
-
-                // return $leave;
+                $leave = $this->absence_service->createAbsenceRelatedData(
+                    $leave, 
+                    $formatted_data['absence_hours_data'], 
+                    $formatted_data['dates_data'], 
+                    $formatted_data['details']['plan_timings'], 
+                    $shift_leave ? $formatted_data['details']['plan_ids'] : []
+                );
 
             DB::connection('tenant')->commit();
             return $leave;

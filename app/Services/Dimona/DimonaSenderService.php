@@ -26,28 +26,34 @@ class DimonaSenderService
     public function sendLongTermDimona($companyId, $employeeContractId)
     {
         DB::connection('tenant')->beginTransaction();
-        // try {
-        setTenantDBByCompanyId($companyId);
-        $dimona = ['unique_id' => Str::uuid()];
-        $dimona['employee_contract_id'] = $employeeContractId;
-        $dimona['type'] = 'long_term';
-        $dimona['dimona_type'] = 'IN';
-        $employeeContract = $this->employeeContractService->getEmployeeContractDetails(
-            $employeeContractId,
-            ['employeeType', 'longTermEmployeeContract', 'employeeProfile.user.userBasicDetails']
-        );
-        $dimonaDeclarations = $this->createDimonaRecords($dimona);
-        $this->setCompanyData($companyId, $dimona);
-        $this->setEmployeeData($employeeContract->employeeProfile, $dimona);
-        $this->setContractData($employeeContract, $dimona);
-        DB::connection('tenant')->commit();
-        $response = $this->requestDimona->sendDimonaRequest($dimona, "/api/send-long-term-dimona");
-        if (!$response) {
-            $this->setDimonaRequestFailed($dimonaDeclarations);
+        try {
+            setTenantDBByCompanyId($companyId);
+            $dimona = ['unique_id' => Str::uuid()];
+            $dimona['employee_contract_id'] = $employeeContractId;
+            $dimona['type'] = 'long_term';
+            $dimona['dimona_type'] = 'IN';
+            $employeeContract = $this->employeeContractService->getEmployeeContractDetails(
+                $employeeContractId,
+                ['employeeType', 'longTermEmployeeContract', 'employeeProfile.user.userBasicDetails']
+            );
+            if ($employeeContract->longTermEmployeeContract->dimona_period_id) {
+                $dimona['dimona_type'] = 'UPDATE';
+                $dimona['dimona_period_id'] = $employeeContract->longTermEmployeeContract->dimona_period_id;
+            } else {
+                $dimona['dimona_type'] = 'IN';
+            }
+            $dimonaDeclarations = $this->createDimonaRecords($dimona);
+            $this->setCompanyData($companyId, $dimona);
+            $this->setEmployeeData($employeeContract->employeeProfile, $dimona);
+            $this->setContractData($employeeContract, $dimona);
+            DB::connection('tenant')->commit();
+            $response = $this->requestDimona->sendDimonaRequest($dimona, "/api/send-long-term-dimona");
+            if (!$response) {
+                $this->setDimonaRequestFailed($dimonaDeclarations);
+            }
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
         }
-        // } catch (Exception $e) {
-        //     DB::connection('tenant')->rollback();
-        // }
     }
 
     public function sendDimonaByPlan($companyId, $planId)
@@ -170,14 +176,26 @@ class DimonaSenderService
     public function setContractData($employeeContract, &$dimona)
     {
         $employeeContract->employeeType->dimonaConfig->dimonaType;
+        $function = $employeeContract->employeeFunctionDetails->first();
         $employeeType = $employeeContract->employeeType->toArray() ?? [];
-
+        $dimona['declaration']['dimona_type_category'] = $employeeContract->employeeType->dimonaConfig->dimonaType->dimona_type_key;
         $dimona['declaration']['employee_type'] = $employeeType['name'];
         $dimona['declaration']['employee_type_code'] = $employeeType['dimona_code'] ?? '';
         $dimona['declaration']['employee_type_category'] = $employeeType['employee_type_category_id'];
         $dimona['declaration']['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
         $dimona['declaration']['start_date'] = $employeeContract['start_date'] ?? '';
         $dimona['declaration']['end_date'] = $employeeContract['end_date'] ?? null;
+        $sectorDimonaCode = $function->functionTitle->functionCategory->sector->sectorDimonaCodeForEmployeeType($employeeType['id']);
+        $dimonaCode = $sectorDimonaCode ? $sectorDimonaCode->dimona_code : "XXX";
+
+        //Employee type.
+        if (count($employeeType)) {
+            $dimona['declaration']['employee_type'] = $employeeType['name'];
+            $dimona['declaration']['employee_type_code'] = $employeeType['dimona_code'] ?? '';
+            $dimona['declaration']['joint_commission_number'] = $dimonaCode;
+            $dimona['declaration']['employee_type_category'] = $employeeType['employee_type_category_id'];
+            $dimona['declaration']['dimona_catagory'] = $employeeType['dimona_config']['dimona_type_id'] ?? '';
+        }
     }
 
     public function setCompanyData($companyId, &$dimona)
