@@ -127,7 +127,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::controller(DimonaController::class)->group(function () {
             Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'testDimona']);
             Route::post('/send-dimona-by-plan', [DimonaController::class, 'sendDimonaByPlan']);
-            Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
+            Route::post('/send-long-term-dimona', [DimonaController::class, 'sendLongTermDimona']);
         });
 
         Route::controller(DimonaOverviewController::class)->group(function () {
