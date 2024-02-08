@@ -68,6 +68,8 @@ class EmployeeContractService
             $contractDetails['weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['formatted_weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['work_days_per_week'] = $longTermEmployeeContract->work_days_per_week;
+            $contractDetails['dimona_period_id'] = $longTermEmployeeContract->dimona_period_id;
+            $contractDetails['reserved_hours'] = $longTermEmployeeContract->reserved_hours;
         }
         foreach ($employeeContract->employeeFunctionDetails as $function) {
             $experience_in_months = ($function->salary) ? $function->experience : 0;
@@ -226,7 +228,7 @@ class EmployeeContractService
         return $activeEmployees;
     }
 
-    public function getActiveContractEmployeesWithAvailabilityStatus($date) 
+    public function getActiveContractEmployeesWithAvailabilityStatus($date)
     {
         $activeEmployees = [];
 
@@ -240,7 +242,7 @@ class EmployeeContractService
                     'plan_status'         => $contract->employeeProfile->planningsForDate($date)->isNotEmpty()
                 ];
             }
-            
+
             $activeEmployees = array_values($activeEmployees);
             usort($activeEmployees, function ($a, $b) {
                 return strcmp($a['employee_name'], $b['employee_name']);
@@ -268,10 +270,10 @@ class EmployeeContractService
     public function getEmployeeWithActiveType($date, $employeeTypeId = '', $functionId = '')
     {
         return EmployeeContract::with('employeeProfile.user.userBasicDetails')
-                ->when(!empty($employeeProfileId), function ($query, $employeeProfileId) {
-                    $query->where('employee_profile_id', $employeeProfileId);
-                })            
-                ->where(function ($query) use ($date) {
+            ->when(!empty($employeeProfileId), function ($query, $employeeProfileId) {
+                $query->where('employee_profile_id', $employeeProfileId);
+            })
+            ->where(function ($query) use ($date) {
                 $query->where(function ($query) use ($date) {
                     $query->where('start_date', '<=', $date)
                         ->where(function ($query) use ($date) {

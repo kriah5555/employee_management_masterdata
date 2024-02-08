@@ -210,9 +210,9 @@ class CompanyService
                 'name' => $employeeType->employeeTypeCategory->name
             ];
             $employeeTypeOptions[$employeeType->employeeTypeCategory->id][$employeeType->id] = [
-                'key'           => $employeeType->id,
-                'name'          => $employeeType->name,
-                'reserve_hours' => $reserveHours
+                'key'            => $employeeType->id,
+                'name'           => $employeeType->name,
+                'reserved_hours' => $reserveHours
             ];
             $employeeTypeCategoryConfig[$employeeType->employeeTypeCategory->id] = [
                 'sub_category_types' => $employeeType->employeeTypeCategory->sub_category_types,
