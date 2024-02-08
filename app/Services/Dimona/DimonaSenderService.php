@@ -187,7 +187,9 @@ class DimonaSenderService
         $dimona['declaration']['end_date'] = $employeeContract['end_date'] ?? null;
         $sectorDimonaCode = $function->functionTitle->functionCategory->sector->sectorDimonaCodeForEmployeeType($employeeType['id']);
         $dimonaCode = $sectorDimonaCode ? $sectorDimonaCode->dimona_code : "XXX";
-
+        if ($dimona['declaration']['dimona_type_category'] == 'student') {
+            $dimona['declaration']['hours'] = (int) $employeeContract->longTermEmployeeContract->reserved_hours;
+        }
         //Employee type.
         if (count($employeeType)) {
             $dimona['declaration']['employee_type'] = $employeeType['name'];

@@ -115,7 +115,7 @@ class DimonaOverviewService
             $temp = [];
             $temp['id'] = $each->id;
             $temp['dimona_period_id'] = $each->dimona_period_id;
-            $temp['type'] = 'Long term dimona';
+            $temp['type'] = 'Planning dimona';
             $temp['name'] = $each->planningDimona->planningBase->employeeProfile->full_name;
             $temp['start'] = date('d-m-Y H:i', strtotime($each->planningDimona->planningBase->start_date_time));
             $temp['end'] = date('d-m-Y H:i', strtotime($each->planningDimona->planningBase->end_date_time));
@@ -163,6 +163,8 @@ class DimonaOverviewService
         ])->findOrFail($dimonaId);
         if ($dimona->type == 'plan') {
             $response['name'] = $dimona->planningDimona->planningBase->employeeProfile->full_name;
+        } elseif ($dimona->type == 'long_term') {
+            $response['name'] = $dimona->longTermDimona->employeeContract->employeeProfile->full_name;
         }
         $response['dimona_sent_date'] = date('d-m-Y', strtotime($dimona->created_at));
         foreach ($dimona->dimonaDeclarations as $dimonaDeclaration) {
@@ -173,6 +175,12 @@ class DimonaOverviewService
                 $data['stop'] = date('d-m-Y H:i', strtotime($dimona->planningDimona->planningBase->end_date_time));
                 if ($dimona->planningDimona->planningBase->employeeType->dimonaConfig->dimonaType->dimona_type_key == 'student') {
                     $data['hours'] = (int) ceil(timeDifferenceinHours($dimona->planningDimona->planningBase->start_date_time, $dimona->planningDimona->planningBase->end_date_time));
+                }
+            } elseif ($dimona->type == 'long_term') {
+                $data['start'] = date('d-m-Y', strtotime($dimona->longTermDimona->employeeContract->start_date));
+                $data['stop'] = $dimona->longTermDimona->employeeContract->end_date ? date('d-m-Y', strtotime($dimona->longTermDimona->employeeContract->end_date)) : '';
+                if ($dimona->longTermDimona->employeeContract->employeeType->dimonaConfig->dimonaType->dimona_type_key == 'student') {
+                    $data['hours'] = (int) $dimona->longTermDimona->reserved_hours;
                 }
             }
             $data['errors'] = [];
