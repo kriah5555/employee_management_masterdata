@@ -157,9 +157,13 @@ class LeaveService
 
                 $this->leave_repository->updateLeave($leave, $formatted_data['details']);
 
-                $this->absence_service->createAbsenceRelatedData($leave, $formatted_data['absence_hours_data'], $formatted_data['dates_data'], $details['plan_timings']);
-
-                // return $leave;
+                $leave = $this->absence_service->createAbsenceRelatedData(
+                    $leave, 
+                    $formatted_data['absence_hours_data'], 
+                    $formatted_data['dates_data'], 
+                    $formatted_data['details']['plan_timings'], 
+                    $shift_leave ? $formatted_data['details']['plan_ids'] : []
+                );
 
             DB::connection('tenant')->commit();
             return $leave;
