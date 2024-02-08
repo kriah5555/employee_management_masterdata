@@ -2,10 +2,6 @@
 
 namespace App\Services\Email;
 
-use Config;
-use App\Mail\SendMail;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use App\Services\Email\EmailTemplateService;
 use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Employee\EmployeeProfileRepository;

@@ -200,13 +200,19 @@ class CompanyService
 
         $employeeTypeCategoryOptions = $employeeTypeOptions = $employeeTypeCategoryConfig = [];
         foreach ($employeeTypes as $employeeType) {
+            if ($employeeType->employeeTypeCategory->id == 1 && $employeeType->dimonaConfig->dimonaType->dimona_type_key == 'student') {
+                $reserveHours = true;
+            } else {
+                $reserveHours = false;
+            }
             $employeeTypeCategoryOptions[$employeeType->employeeTypeCategory->id] = [
                 'key'  => $employeeType->employeeTypeCategory->id,
                 'name' => $employeeType->employeeTypeCategory->name
             ];
             $employeeTypeOptions[$employeeType->employeeTypeCategory->id][$employeeType->id] = [
-                'key'  => $employeeType->id,
-                'name' => $employeeType->name
+                'key'           => $employeeType->id,
+                'name'          => $employeeType->name,
+                'reserve_hours' => $reserveHours
             ];
             $employeeTypeCategoryConfig[$employeeType->employeeTypeCategory->id] = [
                 'sub_category_types' => $employeeType->employeeTypeCategory->sub_category_types,
@@ -228,7 +234,7 @@ class CompanyService
             'employee_type_category_config' => $employeeTypeCategoryConfig
         ];
     }
-    
+
     public function getCompanyDetails($companyId)
     {
         return $this->companyRepository->getCompanyById($companyId, ['sectors', 'address', 'companySocialSecretaryDetails.socialSecretary', 'interimAgencies']);
