@@ -549,12 +549,17 @@ class PlanningService implements PlanningInterface
         $plans = $this->planningRepository->getPlansByDatesArray($dates_array, $employee_profile_id);
 
         foreach ($plans as $plan) {
-            // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
-            // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
+            if ($plan->absence->isNotEmpty()) {
+                dd($plan->id,$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,[
+                    'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
+                    'plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
+                    'shift_leave' => $plan->absence->isNotEmpty(), # add this status true if there is leave for this plan
+                ]);
+            }
             $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = [
                 'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
                 'plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
-                'shift_leave' => false,
+                'shift_leave' => $plan->absence->isNotEmpty(), # add this status true if there is leave for this plan
             ];
         }
         return array_values($return_data);
