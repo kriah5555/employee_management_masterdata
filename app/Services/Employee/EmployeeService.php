@@ -25,6 +25,7 @@ use App\Services\Email\MailService;
 use App\Services\Employee\EmployeeContractService;
 use App\Services\Employee\EmployeeBenefitService;
 use App\Services\Employee\EmployeeCommuteService;
+use App\Models\Company\Company;
 
 class EmployeeService
 {
@@ -468,22 +469,6 @@ class EmployeeService
             $contractDetails['work_days_per_week'] = $longTermEmployeeContract->work_days_per_week;
         }
         return $contractDetails;
-    }
-
-    public function getResponsibleCompaniesForUser($user)
-    {
-        $companies = [];
-        if ($user->is_admin || $user->is_moderator) {
-            $companies = $this->companyService->getActiveCompanies();
-        } else {
-            $companyUsers = CompanyUser::where('user_id', $user->id)->get();
-            foreach ($companyUsers as $companyUser) {
-                if ($companyUser->hasPermissionTo('Web app access')) {
-                    $companies[] = $companyUser->company;
-                }
-            }
-        }
-        return $companies;
     }
 
     public function update($employeeProfileId, $values)
