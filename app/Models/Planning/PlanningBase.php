@@ -29,7 +29,7 @@ class PlanningBase extends BaseModel
      */
     protected $table = 'planning_base';
 
-    protected static $sort = ['start_date_time'];
+    // protected static $sort = ['start_date_time'];
     /**
      * The primary key associated with the table.
      *
