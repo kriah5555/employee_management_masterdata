@@ -10,12 +10,13 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Company\Employee\ImportEmployee;
+use App\Services\Employee\ImportEmployeeService;
 
 class ImportEmployeeEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(protected ImportEmployee $importEmployee)
+    public function __construct(public ImportEmployee $importEmployee)
     {
     }
 

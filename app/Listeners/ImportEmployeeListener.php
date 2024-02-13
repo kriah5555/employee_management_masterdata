@@ -5,8 +5,9 @@ namespace App\Listeners;
 use App\Events\ImportEmployeeEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\Employee\ImportEmployeeService;
 
-class ImportEmployeeListener extends ShouldQueue
+class ImportEmployeeListener
 {
     public function __construct()
     {
@@ -15,7 +16,11 @@ class ImportEmployeeListener extends ShouldQueue
 
     public function handle(ImportEmployeeEvent $event): void
     {
-        $importEmployee = $event->importEmployee;
-
+        try {
+            app(ImportEmployeeService::class)->importEmployee($event->importEmployee);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 }

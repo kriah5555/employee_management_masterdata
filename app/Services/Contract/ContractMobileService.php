@@ -16,7 +16,7 @@ class ContractMobileService
     {}
 
 
-    public function getEmployeeContractFiles($company_ids, $user_id, $contract_status = '', $employee_contract_id = '', $plan_id ='', $employee_profile_id = '') # ['signed', 'unsigned']
+    public function getEmployeeContractFiles($company_ids, $user_id, $contract_status = '', $employee_contract_id = '', $plan_id ='', $employee_id = '') # ['signed', 'unsigned']
     {
         try {
             $response = [
@@ -27,7 +27,7 @@ class ContractMobileService
             foreach ($company_ids as $company_id) {
                 setTenantDBByCompanyId($company_id);
     
-                $employee_profile_id = !empty($employee_profile_id) ? $employee_profile_id : EmployeeProfile::where('user_id', $user_id)->first()->id;
+                $employee_profile_id = !empty($employee_id) ? $employee_id : EmployeeProfile::where('user_id', $user_id)->first()->id;
     
                 if (!empty($employee_profile_id)) {
     

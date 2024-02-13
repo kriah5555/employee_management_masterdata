@@ -47,8 +47,8 @@ class ImportEmployeeService
             $file_name      = str_replace(' ', '_', 'Import_planning_' . time() . '_' . $values['file']->getClientOriginalName());
             $file_id        = $this->fileService->saveFile($values['file'], $file_name, config('constants.ABSENCE_FILES_PATH'));
             $importEmployee = $this->importEmployeeRepository->createImportEmployeeFile(['file_id' => $file_id, 'import_status' => config('import_employee.IMPORT_STATUS_PENDING'), 'feedback' => ['']]);
-            $this->importEmployee($importEmployee);
-            // event(new ImportEmployeeEvent($importEmployee));
+            // $this->importEmployee($importEmployee);
+            event(new ImportEmployeeEvent($importEmployee));
             DB::connection('tenant')->commit();
 
             return $importEmployee;

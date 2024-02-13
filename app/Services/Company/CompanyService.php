@@ -77,6 +77,7 @@ class CompanyService implements CompanyServiceInterface
             $this->companyWorkstationService->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();
         } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
