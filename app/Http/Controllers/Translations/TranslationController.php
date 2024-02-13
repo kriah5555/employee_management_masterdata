@@ -104,7 +104,7 @@ class TranslationController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->translation_service->getTranslation($request->input('keys'))
+                'data'    => $this->translation_service->getTranslation($request->all())
             ],
             JsonResponse::HTTP_OK,
         );

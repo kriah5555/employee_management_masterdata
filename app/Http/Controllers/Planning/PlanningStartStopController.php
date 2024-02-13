@@ -143,7 +143,7 @@ class PlanningStartStopController extends Controller
                 $now             = Carbon::now();
                 $hoursDifference = $now->diffInHours($endTime);
 
-                if ($hoursDifference > config('constants.PLANNING_STOP_MAX_TIME')) {
+                if (strtotime(date('Y-m-d H:i')) > strtotime($plans->first()->end_date_time) && $hoursDifference > config('constants.PLANNING_STOP_MAX_TIME')) {
                     return response()->json([   
                         'success'             => false,
                         'message'             => t('Cannot stop plan, please enter stop time.'),
