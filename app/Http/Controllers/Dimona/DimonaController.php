@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Dimona;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company\Employee\EmployeeContract;
 use App\Services\Dimona\DimonaBaseService;
 use App\Services\Dimona\DimonaSenderService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use App\Jobs\SendDimonaByPlanJob;
+use App\Jobs\SendLongTermDimonaJob;
 
 class DimonaController extends Controller
 {
@@ -78,21 +80,48 @@ class DimonaController extends Controller
         }
     }
 
-    public function sendDimonaByEmployeeContract($dimonaType, $employeeContract)
+    public function sendLongTermDimona(Request $request)
     {
-        $data = NULL;
-
         try {
-            $data = $this->dimonaBaseService->initiateDimonaByContract($dimonaType, $employeeContract);
-            return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(
+            $rules = [
+                'contract_id'    => 'required|integer',
+                'reserved_hours' => 'nullable|integer'
+            ];
+            $validator = Validator::make(request()->all(), $rules);
+            if ($validator->fails()) {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => $validator->errors()->all()
+                    ],
+                    JsonResponse::HTTP_BAD_REQUEST,
+                );
+            }
+            $data = $validator->validated();
+            $employeeContract = EmployeeContract::findOrFail($data['contract_id']);
+            if ($employeeContract->employeeType->dimonaConfig->dimonaType->dimona_type_key == 'student') {
+                $longTermEmployeeContract = $employeeContract->longTermEmployeeContract;
+                $longTermEmployeeContract->reserved_hours = $data['reserved_hours'];
+                $longTermEmployeeContract->save();
+
+            }
+            $companyId = getCompanyId();
+            // app(DimonaSenderService::class)->sendLongTermDimona($companyId, $data['contract_id']);
+            dispatch(new SendLongTermDimonaJob($companyId, $data['contract_id']));
+            return returnResponse(
                 [
-                    'file'    => $e->getFile(),
-                    'message' => $e->getMessage(),
-                    'trace'   => $e->getTraceAsString(),
+                    'success' => true,
+                    'message' => 'Dimona request sent.',
                 ],
-                500
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'message' => 'Failed to send dimona.',
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
     }

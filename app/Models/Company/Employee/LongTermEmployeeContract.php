@@ -20,7 +20,8 @@ class LongTermEmployeeContract extends BaseModel
         'weekly_contract_hours',
         'work_days_per_week',
         'status',
-        'dimona_period_id'
+        'dimona_period_id',
+        'reserved_hours'
     ];
     /**
      * The table associated with the model.
@@ -63,7 +64,8 @@ class LongTermEmployeeContract extends BaseModel
         'weekly_contract_hours',
         'work_days_per_week',
         'status',
-        'dimona_period_id'
+        'dimona_period_id',
+        'reserved_hours'
     ];
 
     protected $appends = ['formatted_weekly_contract_hours'];

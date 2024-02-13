@@ -49,25 +49,30 @@ class EmployeeContractService
     public function formatEmployeeContract($employeeContract)
     {
         $contractDetails = [
-            'id'                        => $employeeContract->id,
-            'start_date'                => date('d-m-Y', strtotime($employeeContract->start_date)),
-            'end_date'                  => $employeeContract->end_date ? date('d-m-Y', strtotime($employeeContract->end_date)) : '',
-            'employee_type_id'          => $employeeContract->employeeType->id,
-            'employee_type'             => $employeeContract->employeeType->name,
-            'long_term'                 => false,
-            'employee_function_details' => [],
+            'id'               => $employeeContract->id,
+            'start_date'       => date('d-m-Y', strtotime($employeeContract->start_date)),
+            'end_date'         => $employeeContract->end_date ? date('d-m-Y', strtotime($employeeContract->end_date)) : '',
+            'employee_type_id' => $employeeContract->employeeType->id,
+            'employee_type'    => $employeeContract->employeeType->name,
+            'long_term'        => false,
+            'student'          => false,
+            'send_dimona'      => false,
         ];
         $employee_sub_type = '';
         if ($employeeContract->longTermEmployeeContract()->exists()) {
             $longTermEmployeeContract = $employeeContract->longTermEmployeeContract;
             $employee_sub_type = $longTermEmployeeContract->sub_type ?? null;
             $contractDetails['long_term'] = true;
+            $contractDetails['send_dimona'] = $longTermEmployeeContract->dimona_period_id ? false : true;
+            $contractDetails['student'] = $employeeContract->employeeType->dimonaConfig->dimonaType->dimona_type_key == 'student' ? true : false;
             $contractDetails['sub_type'] = $employee_sub_type;
             $contractDetails['schedule_type'] = $longTermEmployeeContract->schedule_type ?? null;
             $contractDetails['employment_type'] = $longTermEmployeeContract->employment_type ?? null;
             $contractDetails['weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['formatted_weekly_contract_hours'] = $longTermEmployeeContract->weekly_contract_hours;
             $contractDetails['work_days_per_week'] = $longTermEmployeeContract->work_days_per_week;
+            $contractDetails['dimona_period_id'] = $longTermEmployeeContract->dimona_period_id;
+            $contractDetails['reserved_hours'] = $longTermEmployeeContract->reserved_hours;
         }
         foreach ($employeeContract->employeeFunctionDetails as $function) {
             $experience_in_months = ($function->salary) ? $function->experience : 0;
@@ -226,7 +231,7 @@ class EmployeeContractService
         return $activeEmployees;
     }
 
-    public function getActiveContractEmployeesWithAvailabilityStatus($date) 
+    public function getActiveContractEmployeesWithAvailabilityStatus($date)
     {
         $activeEmployees = [];
 
@@ -240,7 +245,7 @@ class EmployeeContractService
                     'plan_status'         => $contract->employeeProfile->planningsForDate($date)->isNotEmpty()
                 ];
             }
-            
+
             $activeEmployees = array_values($activeEmployees);
             usort($activeEmployees, function ($a, $b) {
                 return strcmp($a['employee_name'], $b['employee_name']);
@@ -268,10 +273,10 @@ class EmployeeContractService
     public function getEmployeeWithActiveType($date, $employeeTypeId = '', $functionId = '')
     {
         return EmployeeContract::with('employeeProfile.user.userBasicDetails')
-                ->when(!empty($employeeProfileId), function ($query, $employeeProfileId) {
-                    $query->where('employee_profile_id', $employeeProfileId);
-                })            
-                ->where(function ($query) use ($date) {
+            ->when(!empty($employeeProfileId), function ($query, $employeeProfileId) {
+                $query->where('employee_profile_id', $employeeProfileId);
+            })
+            ->where(function ($query) use ($date) {
                 $query->where(function ($query) use ($date) {
                     $query->where('start_date', '<=', $date)
                         ->where(function ($query) use ($date) {

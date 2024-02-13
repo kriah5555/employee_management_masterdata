@@ -11,7 +11,7 @@ class EmployeeContractDetailsRule implements ValidationRule
     protected $employeeTypeService;
     public function __construct()
     {
-        $this->employeeTypeService = app(EmployeeTypeService::class);;
+        $this->employeeTypeService = app(EmployeeTypeService::class);
     }
     /**
      * Run the validation rule.
@@ -38,6 +38,14 @@ class EmployeeContractDetailsRule implements ValidationRule
                     $fail('Incorrect weekly contract hours');
                 }
 
+                if (array_key_exists('send_dimona', $value)) {
+                    if ($value['send_dimona'] && $employeeType->dimonaConfig->dimonaType->dimona_type_key == 'student' && (!array_key_exists('reserved_hours', $value) || !$value['reserved_hours'])) {
+                        $fail('Please enter hours to reserve for the student');
+                    }
+                } elseif (!is_numeric(str_replace(',', '.', $value['weekly_contract_hours']))) {
+                    $fail('Incorrect weekly contract hours');
+                }
+
                 if (!array_key_exists('work_days_per_week', $value)) {
                     $fail('Please enter work days per week');
                 } elseif ($value['work_days_per_week'] > 7) {
@@ -54,11 +62,11 @@ class EmployeeContractDetailsRule implements ValidationRule
                 if (!array_key_exists('employment_type', $value)) {
                     $fail('Please select employment type');
                 } elseif (!in_array($value['employment_type'], array_keys(config('constants.EMPLOYMENT_TYPE_OPTIONS')))) {
-                    $fail('Incorrect employment type'); 
+                    $fail('Incorrect employment type');
                 }
             }
         }
-        
+
         if (!array_key_exists('start_date', $value) || strtotime($value['start_date']) === false) {
             $fail('Please select correct contract start date');
         }
