@@ -137,7 +137,7 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
             ],
             'cost-centers'               => [
                 'controller' => CostCenterController::class,
-                'methods'    => ['index', 'showyteyyd', 'create', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
             'company-contract-templates' => [
                 'controller' => CompanyContractTemplateController::class,
