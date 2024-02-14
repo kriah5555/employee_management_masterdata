@@ -31,7 +31,8 @@ class PlanningContractService implements PlanningInterface
             $query->where('contract_renewal_type_id', 2);
 	})->get();
         if (!$dailyContract->isEmpty()) {
-            $template = $this->contractTemplateService->getTemplateForEmployeeType($plan->employeeType);
+            $template = null;
+            // $template = $this->contractTemplateService->getTemplateForEmployeeType($plan->employeeType); # un commend this when contract template flow changed
             if ($template) {
                 $tokenData = [
                     'employee_first_name' => $plan->employeeProfile->user->userBasicDetails->first_name,
