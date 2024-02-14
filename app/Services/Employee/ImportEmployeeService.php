@@ -9,7 +9,6 @@ use App\Models\User\MaritalStatus;
 use Illuminate\Support\Facades\DB;
 use App\Events\ImportEmployeeEvent;
 use App\Services\Company\FileService;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Validator;
 use App\Models\EmployeeType\EmployeeType;
 use App\Services\Employee\EmployeeService;
@@ -18,16 +17,22 @@ use App\Http\Requests\Employee\EmployeeRequest;
 use App\Repositories\Employee\ImportEmployeeRepository;
 
 
+# xl file operation
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
+# validation
+use App\Rules\MealVoucherRule;
+use App\Rules\User\GenderRule;
+use Illuminate\Validation\Rule;
+use App\Rules\BelgiumCurrencyFormatRule;
+use App\Rules\EmployeeCommuteDetailsRule;
+use App\Rules\EmployeeFunctionDetailsRule;
+use App\Rules\EmployeeContractDetailsRule;
+use App\Rules\ResponsiblePersonExistsRule;
 use App\Rules\DuplicateSocialSecurityNumberRule;
 use App\Rules\ValidateLengthIgnoringSymbolsRule;
-use Illuminate\Validation\Rule;
-use App\Rules\EmployeeContractDetailsRule;
-use App\Rules\EmployeeFunctionDetailsRule;
-use App\Rules\User\GenderRule;
-use App\Rules\EmployeeCommuteDetailsRule;
-use App\Rules\MealVoucherRule;
-use App\Rules\BelgiumCurrencyFormatRule;
-use App\Rules\ResponsiblePersonExistsRule;
 
 class ImportEmployeeService
 {
@@ -95,7 +100,7 @@ class ImportEmployeeService
             if (isset($data[config('import_employee.SSN')])) {
                 $errors = $this->validateFields($data);
                 if (!empty($errors)) {
-                    $sheet->setCellValue('Z' . ($index), $errors); // Example: 'Z' is the column for the extra data
+                    $sheet->setCellValue('Z' . ($index), $errors);
                 } else {
                     $gender_id         = $data[config('import_employee.GENDER')] ? ($this->getGenderByText($data[config('import_employee.GENDER')]) ? $this->getGenderByText($data[config('import_employee.GENDER')])->id : null ) : null;
     
@@ -149,9 +154,9 @@ class ImportEmployeeService
                         $errors[] = implode('; ', $validator->errors()->all());
                     } else {
                         $this->employeeService->createNewEmployee($employee_details, getCompanyId());
-                        $sheet->setCellValue('AI' . ($index + 1), t('Employee created successfully....')); // Example: 'Z' is the column for the extra data
+                        $sheet->setCellValue(config('import_employee.IMPORT_EMPLOYEE_FEEDBACK_COLUMN') . ($index + 1), t('Employee created successfully....'));
                     }
-                    $sheet->setCellValue('AI' . ($index + 1), implode('; ', $errors)); // Example: 'Z' is the column for the extra data
+                    $sheet->setCellValue(config('import_employee.IMPORT_EMPLOYEE_FEEDBACK_COLUMN') . ($index + 1), implode('; ', $errors));
                 }
             }
         }
@@ -308,5 +313,33 @@ class ImportEmployeeService
     public function getMaritalStatusText($text)
     {
         return MaritalStatus::whereRaw('LOWER(name) = LOWER(?)', [trim($text)])->first();
+    }
+
+    public function downloadSampleXlFile($type = 'employee')
+    {
+        if ($type == 'employee') {
+
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getActiveSheet()->getStyle('A'. 1 .":".config('import_employee.IMPORT_EMPLOYEE_FEEDBACK_COLUMN'). 1)->applyFromArray(
+                ['fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'color' => ['argb' => 'D9D9D9'],
+                    ],
+                ]        
+              ); # to fill the color to first row
+
+              
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->fromArray([array_keys(config('import_employee.IMPORT_EMPLOYEE_HEADERS'))], null, 'A1'); # add header data to sheet
+
+            $filename = "Import_$type-xlsx_file" . time() .'.xlsx';
+            $writer = IOFactory::createWriter($spreadsheet, "Xlsx");
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename='.$filename);
+            header('Cache-Control: must-revalidate');
+            ob_end_clean();
+            $writer->save("php://output");
+            exit;
+        }
     }
 }

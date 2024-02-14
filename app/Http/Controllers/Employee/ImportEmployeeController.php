@@ -16,7 +16,6 @@ class ImportEmployeeController extends Controller
         protected ImportEmployeeService $importEmployeeService,
     )
     {
-
     }
     public function index()
     {
@@ -25,6 +24,27 @@ class ImportEmployeeController extends Controller
                 [
                     'success' => true,
                     'data'    => $this->importEmployeeService->getImportEmployeeFiles(),
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    public function downloadImportEmployeeSampleFile()
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->importEmployeeService->downloadSampleXlFile(),
                 ],
                 JsonResponse::HTTP_OK,
             );
