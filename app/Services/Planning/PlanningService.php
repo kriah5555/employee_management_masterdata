@@ -480,10 +480,10 @@ class PlanningService implements PlanningInterface
         }
 
         return [
-            'startPlan' => $startPlan,
-            'stopPlan'  => $stopPlan,
-            'startPlan' => $startBreak,
-            'startPlan' => $stopBreak,
+            'startPlan'  => $startPlan,
+            'stopPlan'   => $stopPlan,
+            'startBreak' => $startBreak,
+            'stopBreak'  => $stopBreak,
         ];
     }
 
