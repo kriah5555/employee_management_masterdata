@@ -371,7 +371,7 @@ class ImportEmployeeService
                 $writer->save($path);
 
                 // Return the URL to the file
-                return asset('storage/'.$filename);
+                return secure_asset('storage/'.$filename);
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
