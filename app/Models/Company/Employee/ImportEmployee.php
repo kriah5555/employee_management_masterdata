@@ -41,6 +41,6 @@ class ImportEmployee extends BaseModel
 
     public function getFeedbackFileUrlAttribute()
     {
-        return $this->feedbackFile ? asset($this->feedbackFile->file_path) : null;
+        return $this->feedbackFile ? secure_asset($this->feedbackFile->file_path) : null;
     }
 }
