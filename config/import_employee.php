@@ -47,10 +47,12 @@ return [
     'FUNCTION'              => 27,
     'SALARY'                => 28,
     'EXPERIENCE'            => 29,
+    'COST_CENTER_NUMBER'    => 30,
 
+    'IMPORT_STATUS_PENDING'   => 1,
+    'IMPORT_STATUS_COMPLETED' => 2,
+    
     'IMPORT_EMPLOYEE_HEADERS' => [
-        'IMPORT_STATUS_PENDING'   => 1,
-        'IMPORT_STATUS_COMPLETED' => 2,
         
         # PERSONAL DETAILS
         # required
@@ -89,6 +91,7 @@ return [
         'FUNCTION'              => 27,
         'SALARY'                => 28,
         'EXPERIENCE'            => 29,
+        'COST_CENTER_NUMBER'    => 30,
     ],
 
 ];
