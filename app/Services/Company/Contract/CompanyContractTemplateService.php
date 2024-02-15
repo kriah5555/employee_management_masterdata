@@ -2,31 +2,24 @@
 
 namespace App\Services\Company\Contract;
 
-use Illuminate\Support\Facades\DB;
 use App\Models\Company\Contract\CompanyContractTemplate;
-use App\Services\BaseService;
 use Exception;
-use App\Services\SocialSecretary\SocialSecretaryService;
-use App\Services\Sector\SectorService;
-use App\Services\CompanyService;
 use App\Services\EmployeeType\EmployeeTypeService;
 
-class CompanyContractTemplateService extends BaseService
+class CompanyContractTemplateService
 {
     protected $employee_type_service;
 
     public function __construct()
     {
-        parent::__construct(CompanyContractTemplate::class);
         $this->employee_type_service = app(EmployeeTypeService::class);
     }
 
     public function getOptionsToCreate()
     {
-        $company_id = request()->header('Company-Id');
         try {
             return [
-                'employee_types' => $this->employee_type_service->getCompanyEmployeeTypes($company_id),
+                'employee_types' => $this->employee_type_service->getCompanyEmployeeTypes(getCurrentCompanyId()),
                 'tokens'         => array_merge(
                     config('tokens.EMPLOYEE_TOKENS'),
                     config('tokens.COMPANY_TOKENS'),
@@ -62,7 +55,7 @@ class CompanyContractTemplateService extends BaseService
     public function getAll(array $args = [])
     {
         try {
-            return $this->model::with(['contractType'])->get();
+            return CompanyContractTemplate::with(['contractType'])->get();
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

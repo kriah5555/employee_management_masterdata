@@ -291,7 +291,7 @@ class PlanningService implements PlanningInterface
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($locationId, $workstationIds, $employee_types, $weekNo, $year);
         $response = $this->formatWeeklyData($plannings, $weekNo, $year, $response);
-        $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
+        // $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
 
         return $response;
     }
@@ -307,7 +307,7 @@ class PlanningService implements PlanningInterface
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         $absenceService = app(AbsenceService::class);
         return $plannings->map(function ($plan) use ($absenceService) {
-            $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'));
+            $leaves = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'));
             $leave_status = $leaves->isNotEmpty();
             return [
                 'plan_id'                  => $plan->id,
@@ -550,7 +550,7 @@ class PlanningService implements PlanningInterface
 
         foreach ($plans as $plan) {
             if ($plan->absence->isNotEmpty()) {
-                dd($plan->id,$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,[
+                dd($plan->id, $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted, [
                     'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
                     'plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
                     'shift_leave' => $plan->absence->isNotEmpty(), # add this status true if there is leave for this plan
