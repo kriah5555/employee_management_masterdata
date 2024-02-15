@@ -10,11 +10,11 @@ use App\Models\Contract\ContractTemplate;
 use App\Repositories\Company\CompanyRepository;
 use App\Services\Employee\EmployeeIdCardService;
 use App\Repositories\Planning\PlanningRepository;
+use App\Services\Contract\ContractTemplateService;
 use App\Models\Company\Employee\EmployeeContractFile;
 use App\Repositories\Employee\EmployeeIdCardRepository;
 use App\Models\Company\Contract\CompanyContractTemplate;
 use App\Repositories\Employee\EmployeeContractRepository;
-
 class ContractService
 {
     public function __construct(
@@ -25,7 +25,7 @@ class ContractService
 
     }
 
-    public function generateEmployeeContract($employee_profile_id, $employee_contract_id = null, $contract_status, $plan_id = null, $company_id = '', $employee_signature = '', $employer_signature = '') 
+    public function generateEmployeeContract($employee_profile_id, $contract_type_id = null, $contract_status, $plan_id = null, $company_id = '', $employee_signature = '', $employer_signature = '') 
     {
         try {
             if (!empty($company_id)) {
@@ -34,7 +34,7 @@ class ContractService
 
             DB::connection('tenant')->beginTransaction();
                 $url  = env('CONTRACTS_URL') . config('contracts.GENERATE_CONTRACT_ENDPOINT');
-                $body = ['body' => $this->getEmployeeContractTemplate($employee_contract_id, $company_id, $plan_id), 'employee_signature' => $employee_signature, 'employer_signature' => $employer_signature];
+                $body = ['body' => app(ContractTemplateService::class)->getContractTemplate($contract_type_id, $company_id, ''), 'employee_signature' => $employee_signature, 'employer_signature' => $employer_signature];
 
                 if (!empty($body)) {
                     $response = makeApiRequest($url, 'POST', $body);
@@ -48,7 +48,7 @@ class ContractService
                         'file_id'              => $file->id,
                         'contract_status'      => $contract_status,
                         'employee_profile_id'  => $employee_profile_id,
-                        'employee_contract_id' => $employee_contract_id,
+                        'employee_contract_id' => $contract_type_id,
                         'planning_base_id'     => $plan_id,
                     ]);
 
@@ -92,8 +92,8 @@ class ContractService
 
     public function createEmployeeContractFileData($values) 
     {
-        if (!empty($values['employee_contract_id'])) {
-            $condition = ['employee_contract_id' => $values['employee_contract_id']];
+        if (!empty($values['contract_type_id'])) {
+            $condition = ['employee_contract_id' => $values['contract_type_id']];
         } else {
             $condition = ['planning_base_id' => $values['planning_base_id']];
         } 
@@ -102,67 +102,12 @@ class ContractService
         return  EmployeeContractFile::create($values);
     }
 
-    public function getEmployeeContractTemplate($employee_contract_id = '', $company_id = '', $plan_id = '')
-    {
-        try {
-            $contract_template   = '';
-
-            if (!empty($company_id)) { # if it is employee flow and he is trying to generate contract then there will br not tenant db set
-                setTenantDBByCompanyId($company_id);
-            }
-
-            if (!empty($employee_contract_id)) { # for employee long term contracts
-                $employeeContract     = $this->employeeContractRepository->getEmployeeContractById($employee_contract_id);
-                $employee_type_id     = $employeeContract->employee_type_id;
-                $employeeBasicDetails = $employeeContract->employeeProfile->employeeBasicDetails;
-            } else { # for planning contract
-                $plan = app(PlanningRepository::class)->getPlanningById($plan_id);
-                $employee_type_id     = $plan->employee_type_id;
-                $employeeBasicDetails = $plan->employeeProfile->employeeBasicDetails;
-            }   
-
-            $language = $employeeBasicDetails->language ?? config('constants.DEFAULT_LANGUAGE');
-
-            
-
-            $employee_contract_template = CompanyContractTemplate::where([
-                'employee_type_id' => $employee_type_id,
-                'status'           => true,
-            ])->get()->first();
-
-            if (!$employee_contract_template) {
-                $company = app(CompanyRepository::class)->getCompanyById(empty($company_id) ? getCompanyId() : $company_id, ['companySocialSecretaryDetails']);
-                if ($company->companySocialSecretaryDetails && $company->companySocialSecretaryDetails->company_social_secretary_id) {
-                    $company_social_secretary_id = $company->companySocialSecretaryDetails->social_secretary_id;
-                    $employee_contract_template  = ContractTemplate::query()->with(['socialSecretary' => function ($socialSecretary) {
-                        $socialSecretary->whereId('company_social_secretary_id', $company_social_secretary_id);
-                    }])
-                    ->where(['employee_type_id', $employee_type_id])
-                    ->get()->first();
-                }
-            }
-            
-            if (!$employee_contract_template) {
-                $employee_contract_template = ContractTemplate::where('employee_type_id', $employee_type_id)->get()->first();
-            }
-
-            if ($employee_contract_template) {
-                $contract_template = $employee_contract_template->getTranslation('body', $language);
-            }
-            
-            return $contract_template;
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function getEmployeeContractFiles($employee_profile_id = '', $contract_status = '', $employee_contract_id = '', $plan_id ='') # ['signed', 'unsigned']
+    public function getEmployeeContractFiles($employee_profile_id = '', $contract_status = '', $contract_type_id = '', $plan_id ='') # ['signed', 'unsigned']
     {
         try {
             return EmployeeContractFile::query()
                 ->when(!empty($employee_profile_id), fn ($query) => $query->where('employee_profile_id', $employee_profile_id))
-                ->when(!empty($employee_contract_id), fn ($query) => $query->where('employee_contract_id', $employee_contract_id))
+                ->when(!empty($employee_contract_id), fn ($query) => $query->where('contract_type_id', $employee_contract_id))
                 ->when(!empty($contract_status), fn ($query) => $query->where('contract_status', $contract_status))
                 ->when(!empty($plan_id), fn ($query) => $query->where('planning_base_id', $plan_id))
                 ->where('status', true)
@@ -185,7 +130,7 @@ class ContractService
 
                 if ($contract->planning_base_id) {
                     $type = 'Plan contract';
-                } elseif ($contract->employee_contract_id) {
+                } elseif ($contract->contract_type_id) {
                     $type = 'long term contract';
                 }
 

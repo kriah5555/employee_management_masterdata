@@ -22,6 +22,11 @@ class ContractRequest extends ApiRequest
                 'integer',
                 'required',
             ],
+            'contract_type_id' => [
+                'bail',
+                'integer',
+                'required',
+            ],
         ];
     }
 }
