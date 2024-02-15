@@ -458,27 +458,30 @@ class PlanningService implements PlanningInterface
     public function getPlanStartStopStatus($plan) # $plan => object of planning Base model
     {
         $currentDateTime = strtotime(date('Y-m-d H:i'));
-        $startPlan       = $stopPlan = $startBreak = $stopBreak =false;
+        $startPlan = $stopPlan = $startBreak = $stopBreak =false;
 
         if ($currentDateTime >= strtotime($plan->start_date_time) && $currentDateTime <= strtotime($plan->end_date_time)) {
             $startPlan = true;
-            $stopPlan = false;
+            $stopPlan  = false;
         }
-
         // Check if the plan has already been started
         if ($plan->plan_started) {
             $startPlan = false; // Don't start the plan
             $stopPlan  = true;  // Stop the plan
         }
 
-        if ($plan->break_started) {
+        if ($plan->break_started) { # if plan already started and break is also started
             $startBreak = false;
             $stopBreak  = true;
-        } elseif ($startPlan) {
+        } elseif ($stopPlan) {
             $startBreak = true;
             $stopBreak  = false;
         }
 
+        if ($stopBreak) { # cannot stop plan if break is active
+            $startPlan = false;
+            $stopPlan  = false;
+        }
         return [
             'startPlan'  => $startPlan,
             'stopPlan'   => $stopPlan,
@@ -496,10 +499,6 @@ class PlanningService implements PlanningInterface
         $currentDateTime = strtotime(date('Y-m-d H:i'));
 
         $plan_status = $this->getPlanStartStopStatus($details);
-        $startPlan   = $plan_status['startPlan'];
-        $stopPlan    = $plan_status['startPlan'];
-        $startBreak  = $plan_status['startBreak'];
-        $stopBreak   = $plan_status['stopBreak'];
 
         $response = [
             'start_time'       => date('H:i', strtotime($details->start_date_time)),
@@ -507,10 +506,10 @@ class PlanningService implements PlanningInterface
             'employee_type'    => $details->employeeType->name,
             'function'         => $details->functionTitle->name,
             'workstation'      => $details->workstation->workstation_name,
-            'start_plan'       => $startPlan,
-            'stop_plan'        => $stopPlan,
-            'start_break'      => $startBreak,
-            'stop_break'       => $stopBreak,
+            'start_plan'       => $plan_status['startPlan'],
+            'stop_plan'        => $plan_status['stopPlan'],
+            'start_break'      => $plan_status['startBreak'],
+            'stop_break'       => $plan_status['stopBreak'],
             'send_plan_dimona' => $sendPlanDimona,
             'contract'         => $this->planningContractService->getPlanningContractContract($details),
         ];
