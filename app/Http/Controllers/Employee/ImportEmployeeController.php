@@ -20,10 +20,11 @@ class ImportEmployeeController extends Controller
     public function index()
     {
         try {
+            $data = $this->importEmployeeService->getImportEmployeeFiles();
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->importEmployeeService->getImportEmployeeFiles(),
+                    'data'    => $data,
                 ],
                 JsonResponse::HTTP_OK,
             );
