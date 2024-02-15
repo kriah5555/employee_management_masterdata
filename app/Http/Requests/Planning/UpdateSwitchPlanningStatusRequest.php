@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\Planning\PlanningService;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Planning\EmployeeSwitchPlanning;
+use App\Repositories\Planning\PlanningRepository;
 use App\Services\Employee\EmployeeContractService;
 
 class UpdateSwitchPlanningStatusRequest extends ApiRequest
@@ -61,6 +62,11 @@ class UpdateSwitchPlanningStatusRequest extends ApiRequest
         
                 if (count($planDetails->timeRegistrations)) {
                     $this->validator->errors()->add('plan_id', "Cannot switch plan which is already started");
+                }
+
+                $overlapping_plans = app(PlanningRepository::class)->getPlans('', '', '', '', [$planDetails->employee_type_id], $employee_switch_plan_data->request_to, [], $planDetails->start_date_time, $planDetails->end_date_time);
+                if ($overlapping_plans->isNotEmpty()) {
+                    $this->validator->errors()->add('plan_id', "Plan is overlapping cannot switch.");
                 }
             }
         }

@@ -135,7 +135,7 @@ class ContractService
                 if ($company->companySocialSecretaryDetails && $company->companySocialSecretaryDetails->company_social_secretary_id) {
                     $company_social_secretary_id = $company->companySocialSecretaryDetails->social_secretary_id;
                     $employee_contract_template  = ContractTemplate::query()->with(['socialSecretary' => function ($socialSecretary) {
-                        $socialSecretary->whereId('company_social_secretary_id');
+                        $socialSecretary->whereId('company_social_secretary_id', $company_social_secretary_id);
                     }])
                     ->where(['employee_type_id', $employee_type_id])
                     ->get()->first();

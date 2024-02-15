@@ -307,7 +307,7 @@ class PlanningService implements PlanningInterface
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         $absenceService = app(AbsenceService::class);
         return $plannings->map(function ($plan) use ($absenceService) {
-            $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'));
+            $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'), $plan->employee_profile_id);
             $leave_status = $leaves->isNotEmpty();
             return [
                 'plan_id'                  => $plan->id,
@@ -455,50 +455,51 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
-    public function formatPlanDetailsForDayOverview($details)
+    public function getPlanStartStopStatus($plan) # $plan => object of planning Base model
     {
-        $startPlan = $stopPlan = false;
-        $sendPlanDimona = $details->dimona_status ? false : true;
-        // if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-        // if ($details->plan_started) {
-        //     $startPlan = false;
-        //     $stopPlan = true;
-        // } else {
-        //     $startPlan = true;
-        //     $stopPlan = false;
-        // }
-
-        // if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-        //     $startPlan = false;
-        // }
-
-        // }
-
-        // Get the current date and time
         $currentDateTime = strtotime(date('Y-m-d H:i'));
+        $startPlan       = $stopPlan = $startBreak = $stopBreak =false;
 
-        // Initialize variables for start and stop plans
-        $startPlan = $stopPlan = false;
-
-        // Check if the start time is less than or equal to the current time
-        // if (strtotime($details->start_date_time) <= $currentDateTime) {
-        //     $startPlan = $stopPlan = false; // Don't start or stop the plan
-        // }
-        // if (strtotime($details->end_date_time) > $currentDateTime && strtotime($details->start_date_time) > $currentDateTime) {
-        //     $startPlan = $stopPlan = false; // Don't start or stop the plan
-        // }
-
-        // if current time is in between start and end time
-        if ($currentDateTime >= strtotime($details->start_date_time) && $currentDateTime <= strtotime($details->end_date_time)) {
+        if ($currentDateTime >= strtotime($plan->start_date_time) && $currentDateTime <= strtotime($plan->end_date_time)) {
             $startPlan = true;
             $stopPlan = false;
         }
 
         // Check if the plan has already been started
-        if ($details->plan_started) {
+        if ($plan->plan_started) {
             $startPlan = false; // Don't start the plan
-            $stopPlan = true;  // Stop the plan
+            $stopPlan  = true;  // Stop the plan
         }
+
+        if ($plan->break_started) {
+            $startBreak = false;
+            $stopBreak  = true;
+        } elseif ($startPlan) {
+            $startBreak = true;
+            $stopBreak  = false;
+        }
+
+        return [
+            'startPlan'  => $startPlan,
+            'stopPlan'   => $stopPlan,
+            'startBreak' => $startBreak,
+            'stopBreak'  => $stopBreak,
+        ];
+    }
+
+    public function formatPlanDetailsForDayOverview($details)
+    {
+        $startPlan = $stopPlan = false;
+        $sendPlanDimona = $details->dimona_status ? false : true;
+
+        // Get the current date and time
+        $currentDateTime = strtotime(date('Y-m-d H:i'));
+
+        $plan_status = $this->getPlanStartStopStatus($details);
+        $startPlan   = $plan_status['startPlan'];
+        $stopPlan    = $plan_status['startPlan'];
+        $startBreak  = $plan_status['startBreak'];
+        $stopBreak   = $plan_status['stopBreak'];
 
         $response = [
             'start_time'       => date('H:i', strtotime($details->start_date_time)),
@@ -508,8 +509,8 @@ class PlanningService implements PlanningInterface
             'workstation'      => $details->workstation->workstation_name,
             'start_plan'       => $startPlan,
             'stop_plan'        => $stopPlan,
-            'start_break'      => $startPlan,
-            'stop_break'       => $stopPlan,
+            'start_break'      => $startBreak,
+            'stop_break'       => $stopBreak,
             'send_plan_dimona' => $sendPlanDimona,
             'contract'         => $this->planningContractService->getPlanningContractContract($details),
         ];

@@ -1,14 +1,15 @@
 <?php
-use Spatie\TranslationLoader\LanguageLine;
-use App\Models\User\User;
-use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Request;
+use App\Models\User\User;
 use App\Services\CompanyService;
 use App\Models\User\CompanyUser;
-use App\Models\Company\Employee\EmployeeProfile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Spatie\TranslationLoader\LanguageLine;
+use App\Models\Company\Employee\EmployeeProfile;
 
 if (!function_exists('returnResponse')) {
     function returnResponse($data, $status_code)
@@ -596,5 +597,20 @@ if (!function_exists('addHours')) {
     {
         $start = new Carbon($dateTime);
         return $start->addHours($hours)->format('Y-m-d H:i:s');
+    }
+}
+
+if (!function_exists('convertXlsintoArray')) {
+    function convertXlsintoArray($full_path)
+    { 
+        $inputFileType = IOFactory::identify($full_path); # will get the extension of the file
+        $objReader = IOFactory::createReader($inputFileType); # will create the reader
+        $objReader->setReadDataOnly(true); # will ifnore all styling data and read only the cell data
+        $objPHPExcel = $objReader->load($full_path); # load the data of xl sheet
+        $objWorksheet = $objPHPExcel->setActiveSheetIndex(0); # The following line of code sets the active sheet index to the first sheet
+
+        $maxCell = $objWorksheet->getHighestRowAndColumn();
+
+        return $objWorksheet->rangeToArray('A1:' . $maxCell['column'] . $maxCell['row']);
     }
 }

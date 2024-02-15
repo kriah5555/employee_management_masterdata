@@ -39,10 +39,14 @@ use App\Http\Controllers\{
     Dimona\EmployeeTypeDimoanConfigurationController,
 };
 
+use App\Http\Controllers\Employee\{
+    EmployeeInvitationController,
+    ImportEmployeeController
+};
+
 use App\Http\Controllers\Planning\VacancyController;
 use App\Models\User\CompanyUser;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Employee\EmployeeInvitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -264,3 +268,5 @@ Route::post('/translate', [TranslationController::class, 'getStringTranslation']
 Route::post('validate-employee-invitations', [EmployeeInvitationController::class, 'validateEmployeeInvitation'])->name('validate-employee-invitations');
 
 Route::post('employee-registration', [EmployeeInvitationController::class, 'employeeRegistration'])->name('employee-registration');
+
+Route::get('import-employee-sample-file', [ImportEmployeeController::class, 'downloadImportEmployeeSampleFile']);
