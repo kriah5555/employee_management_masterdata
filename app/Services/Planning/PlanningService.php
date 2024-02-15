@@ -458,27 +458,30 @@ class PlanningService implements PlanningInterface
     public function getPlanStartStopStatus($plan) # $plan => object of planning Base model
     {
         $currentDateTime = strtotime(date('Y-m-d H:i'));
-        $startPlan       = $stopPlan = $startBreak = $stopBreak =false;
+        $startPlan = $stopPlan = $startBreak = $stopBreak =false;
 
         if ($currentDateTime >= strtotime($plan->start_date_time) && $currentDateTime <= strtotime($plan->end_date_time)) {
             $startPlan = true;
-            $stopPlan = false;
+            $stopPlan  = false;
         }
-
         // Check if the plan has already been started
         if ($plan->plan_started) {
             $startPlan = false; // Don't start the plan
             $stopPlan  = true;  // Stop the plan
         }
 
-        if ($plan->break_started) {
+        if ($plan->break_started) { # if plan already started and break is also started
             $startBreak = false;
             $stopBreak  = true;
-        } elseif ($startPlan) {
+        } elseif ($stopPlan) {
             $startBreak = true;
             $stopBreak  = false;
         }
 
+        if ($stopBreak) { # cannot stop plan if break is active
+            $startPlan = false;
+            $stopPlan  = false;
+        }
         return [
             'startPlan'  => $startPlan,
             'stopPlan'   => $stopPlan,
