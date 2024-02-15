@@ -499,10 +499,6 @@ class PlanningService implements PlanningInterface
         $currentDateTime = strtotime(date('Y-m-d H:i'));
 
         $plan_status = $this->getPlanStartStopStatus($details);
-        $startPlan   = $plan_status['startPlan'];
-        $stopPlan    = $plan_status['startPlan'];
-        $startBreak  = $plan_status['startBreak'];
-        $stopBreak   = $plan_status['stopBreak'];
 
         $response = [
             'start_time'       => date('H:i', strtotime($details->start_date_time)),
@@ -510,10 +506,10 @@ class PlanningService implements PlanningInterface
             'employee_type'    => $details->employeeType->name,
             'function'         => $details->functionTitle->name,
             'workstation'      => $details->workstation->workstation_name,
-            'start_plan'       => $startPlan,
-            'stop_plan'        => $stopPlan,
-            'start_break'      => $startBreak,
-            'stop_break'       => $stopBreak,
+            'start_plan'       => $plan_status['startPlan'],
+            'stop_plan'        => $plan_status['stopPlan'],
+            'start_break'      => $plan_status['startBreak'],
+            'stop_break'       => $plan_status['stopBreak'],
             'send_plan_dimona' => $sendPlanDimona,
             'contract'         => $this->planningContractService->getPlanningContractContract($details),
         ];
