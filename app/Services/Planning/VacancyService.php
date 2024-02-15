@@ -312,6 +312,7 @@ class VacancyService implements VacancyInterface
         $query = $this->vacancyPostEmployees->findOrFail($data['id']);
         // $data['responded_by'] = $data['responded_by'];
         $data['responded_at'] = now()->format('Y-m-d H:i:s');
+        $data['vacancy_date'] = date('Y-m-d', strtotime($data['vacancy_date']));
         return $query->update($data);
     }
 

@@ -46,7 +46,7 @@ class AbsenceRequestService
 
             $file_name = str_replace(' ', '_', $plan_id . '_leave_request_file' . '_' . time() . '_' . $file->getClientOriginalName());
     
-            $storePath = tenant('id') . DIRECTORY_SEPARATOR . trim(config('constants.EMPLOYEE_ID_PATH'), DIRECTORY_SEPARATOR);
+            $storePath = tenant('id') . DIRECTORY_SEPARATOR . trim(config('constants.ABSENCE_FILES_PATH'), DIRECTORY_SEPARATOR);
     
             $filePath = Storage::disk('tenant')->putFileAs($storePath, $file, $file_name);
             

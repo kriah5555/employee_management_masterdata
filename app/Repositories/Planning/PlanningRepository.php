@@ -148,7 +148,7 @@ class PlanningRepository implements PlanningRepositoryInterface
         $query->orderBy('end_date_time');
         return $query->get();
     }
-
+    
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $startDateOfMonth, $endDateOfMonth)
     {
         $startDateOfMonth = date('Y-m-d 00:00:00', strtotime($startDateOfMonth));
@@ -161,7 +161,8 @@ class PlanningRepository implements PlanningRepositoryInterface
             $query->whereIn('employee_type_id', $employee_types);
         }
         $query->whereBetween('start_date_time', [$startDateOfMonth, $endDateOfMonth]);
-        $query->selectRaw('DATE(start_date_time) as date, COUNT(*) as count')->groupBy('date');
+        $query->selectRaw('DATE(start_date_time) as date, COUNT(*) as count') // Select only DATE(start_date_time) for counting
+            ->groupBy('date'); // Group by DATE(start_date_time)
         return $query->get();
     }
 

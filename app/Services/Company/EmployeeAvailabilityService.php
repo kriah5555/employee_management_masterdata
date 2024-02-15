@@ -419,7 +419,8 @@ class EmployeeAvailabilityService
                         'company_name'    => $company->company_name,
                         'company_id'      => $company->id,
                         'type'            => $existingAvailabilityDate->availability,
-                        'remark'          => $remarkString
+                        'remark'          => $remarkString,
+                        'date'            => $date,
                     ];
                 }
             }

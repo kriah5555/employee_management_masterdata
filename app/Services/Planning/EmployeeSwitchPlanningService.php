@@ -20,15 +20,16 @@ class EmployeeSwitchPlanningService
         $plan      = $this->planningRepository->getPlanningById($plan_id);
         $plan_date = date('Y-m-d', strtotime($plan->start_date_time));
 
+
         $contracts = EmployeeContract::with('employeeProfile.user.userBasicDetails')
-                    ->where(function ($query) use ($plan_date) {
-                        $query->where('end_date', '<=', $plan_date)
-                            ->orWhereNull('end_date');
-                            
-                    })
-                    ->where('employee_type_id', $plan->employee_type_id)
-                    ->where('employee_profile_id', '!=', $plan->employee_profile_id)
-                    ->get();
+            ->where('employee_profile_id', '!=', $plan->employee_profile_id)
+            ->where('employee_type_id', $plan->employee_type_id)
+            ->where('start_date', '<=', $plan_date)
+            ->where(function ($query) use ($plan_date) {
+                $query->where('end_date', '>=', $plan_date)
+                    ->orWhereNull('end_date');
+            })
+            ->get();
 
         $activeEmployees = [];
         foreach ($contracts as $contract) {

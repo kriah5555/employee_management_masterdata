@@ -29,6 +29,7 @@ use App\Http\Controllers\Employee\{
     EmployeeController,
     EmployeeAccessController,
     EmployeeIdCardController,
+    ImportEmployeeController,
     EmployeeCommuteController,
     EmployeeContractController,
     EmployeeBenefitsController,
@@ -136,7 +137,7 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
             ],
             'cost-centers'               => [
                 'controller' => CostCenterController::class,
-                'methods'    => ['index', 'showyteyyd', 'create', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
             ],
             'company-contract-templates' => [
                 'controller' => CompanyContractTemplateController::class,
@@ -203,6 +204,8 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
 
         Route::get('employee-holiday-count-overview/{employee_profile_id}', [EmployeeHolidayCountController::class, 'getEmployeeHolidayCountOverview']);
 
+        Route::get('user-holiday-count-overview', [EmployeeHolidayCountController::class, 'getUserHolidayCountOverview']);
+
         Route::controller(EmployeeController::class)->group(function () {
 
             Route::post('employee-function-salary-option', 'getFunctionSalaryToCreateEmployee');
@@ -249,6 +252,12 @@ Route::middleware([SetActiveUser::class])->group(function () use ($integerRule) 
 
         Route::post('get-company-parameters', [ParameterController::class, 'getCompanyParameters'])->name('get-company-parameters');
 
+        Route::controller(ImportEmployeeController::class)->group(function () {
+            
+            Route::post('upload-import-employee-file', 'store');
+
+            Route::get('get-import-employee-files', 'index');
+        });
         Route::put('update-company-parameter/{parameter_name}', [ParameterController::class, 'updateCompanyParameter'])->name('update-company-parameters');
         Route::get('get-company-employees', [EmployeeController::class, 'getCompanyEmployees']);
         Route::get('get-dashboard-access-key-for-company', [DashboardAccessController::class, 'getDashboardAccessKeyForCompany']);

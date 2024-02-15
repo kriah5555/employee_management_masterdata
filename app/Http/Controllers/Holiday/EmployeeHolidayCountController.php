@@ -68,6 +68,28 @@ class EmployeeHolidayCountController extends Controller
         }
     }
 
+    public function getUserHolidayCountOverview()
+    {
+        try {
+            $employee_profile_id = getEmployeeProfileByUserId(getActiveUser()->id)->id;
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->employeeHolidayCountService->getEmployeeCountOverview($employee_profile_id, config('absence.HOLIDAY'))
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (\Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
     /**
      * Display the specified resource.
      */
