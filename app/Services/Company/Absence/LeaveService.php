@@ -2,19 +2,20 @@
 
 namespace App\Services\Company\Absence;
 
+use DateTime;
+use Exception;
+use App\Services\BaseService;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company\Absence\Absence;
-use App\Services\BaseService;
-use App\Repositories\Company\Absence\LeaveRepository;
-use App\Services\Company\Absence\AbsenceService;
 use App\Services\Holiday\HolidayCodeService;
+use App\Services\Company\Absence\AbsenceService;
+use App\Repositories\Company\Absence\LeaveRepository;
+use App\Services\Company\Absence\AbsenceRequestService;
 use App\Repositories\Employee\EmployeeProfileRepository;
-use Exception;
-use DateTime;
 
 class LeaveService
 {
-    public function __construct(protected LeaveRepository $leave_repository, protected AbsenceService $absence_service)
+    public function __construct(protected LeaveRepository $leave_repository, protected AbsenceService $absence_service, protected AbsenceRequestService $absenceRequestService)
     {
     }
 
@@ -42,7 +43,23 @@ class LeaveService
     {
         try {
             if ($mobile) {
-                return $this->absence_service->formatAbsenceDataForMobileOverview($leaves, config('absence.LEAVE'));
+                $leaves = $this->absence_service->formatAbsenceDataForMobileOverview($leaves, config('absence.LEAVE'));
+                $leaves['pending'] = $this->absenceRequestService->getEmployeeLeaveRequests()->map(function ($absenceRequest) {
+                    return [
+                        'plan_id'             => $absenceRequest->plan_id,
+                        'plan_timings'        => $absenceRequest->plan->start_time . '-' . $absenceRequest->plan->end_time ,
+                        'plan_date'           => $absenceRequest->plan->plan_date,
+                        'start_date_time'     => $absenceRequest->plan->start_date_time,
+                        'end_date_time'       => $absenceRequest->plan->end_date_time,
+                        'contract_hours'      => $absenceRequest->plan->contract_hours,
+                        'employee_profile_id' => $absenceRequest->plan->employee_profile_id,
+                        'employee_name'       => $absenceRequest->plan->employeeProfile->full_name,
+                        'file_urls'           => $absenceRequest->file_urls,
+                        'location_id'         => $absenceRequest->plan->location_id,
+                        'location_name'       => $absenceRequest->plan->location->location_name,
+                    ];
+                });
+                return $leaves;
             } else {
                 return $leaves->map(function ($leave) {
                     $leave->actions = $this->absence_service->getAbsenceActions($leave->absence_type, $leave->absence_status);
