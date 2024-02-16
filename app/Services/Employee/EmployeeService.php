@@ -79,6 +79,7 @@ class EmployeeService
                         'employees'     => []
                     ];
                 }
+                $employee->profile_picture_url = $employee->user->userProfilePicture ? $employee->user->userProfilePicture->profile_picture_url : null;
                 $response[$currentContract->employeeType->id]['employees'][] = $employee;
             } else {
                 $noContractEmployees[] = $employee;

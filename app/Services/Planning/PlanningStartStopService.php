@@ -92,7 +92,7 @@ class PlanningStartStopService
                     'leave_codes'              => $leave_status ? $leaves->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
                     'plan_started'             => $plan->plan_started ?? false,
                     'break_started'            => $plan->break_started ?? false,
-                    'deletable'                => $plan->timeRegistrations->isEmpty() &&!$leave_status,
+                    'deletable'                => $plan->timeRegistrations->isEmpty() && !$leave_status,
                 ];
             });
 

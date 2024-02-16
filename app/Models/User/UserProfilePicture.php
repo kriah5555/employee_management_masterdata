@@ -60,4 +60,11 @@ class UserProfilePicture extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $appends = ['profile_picture_url'];
+
+    public function getProfilePictureUrlAttribute()
+    {
+        return env('IDENTITY_MANAGER_URL') . '/storage/' . $this->image_path; 
+    }
 }

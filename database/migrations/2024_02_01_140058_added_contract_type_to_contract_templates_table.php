@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('contract_templates', function (Blueprint $table) {
-            $table->foreignId('contract_type_id')->references('id')->on('contract_types')->onDelete('cascade');
+            $table->foreignId('contract_type_id')->nullable()->references('id')->on('contract_types')->onDelete('cascade');
             $table->dropColumn('employee_type_id');
             $table->dropColumn('language');
         });
