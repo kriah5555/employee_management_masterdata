@@ -29,7 +29,7 @@ class ClonePlanningRequest extends ApiRequest
             'to_week' => ['required'],
             'employee_names' => ['required'],
             // 'employee_types' => ['required'],
-            'location_id' => ['required']
+            'location_id' => ['required', 'integer']
         ];
     }
 
