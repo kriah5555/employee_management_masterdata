@@ -45,7 +45,7 @@ class PlanningRepository implements PlanningRepositoryInterface
         }
     }
 
-    public function getPlansBetweenDates($location_id = '', $workstations = [], $employee_types = '', $startDateOfWeek, $endDateOfWeek, $employee_profile_id = '', $relations = [])
+    public function getPlansBetweenDates($location_id = '', $workstations = [], $employee_types = [], $startDateOfWeek, $endDateOfWeek, $employee_profile_id = '', $relations = [])
     {
         $startDateOfWeek = date('Y-m-d 00:00:00', strtotime($startDateOfWeek));
         $endDateOfWeek = date('Y-m-d 23:59:59', strtotime($endDateOfWeek));
@@ -141,7 +141,7 @@ class PlanningRepository implements PlanningRepositoryInterface
         if (!empty($ignore_plan_id)) {
             $query->where('id', '!=', $ignore_plan_id);
         }
-        
+
         $query->where('employee_profile_id', $employee_profile_id);
         $query->where('plan_started', true);
         $query->orderBy('start_date_time');
