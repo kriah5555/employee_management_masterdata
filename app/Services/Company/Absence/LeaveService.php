@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Company\Absence\LeaveRepository;
 use App\Services\Company\Absence\AbsenceService;
-use App\Services\Company\Absence\AbsenceRequestSer
+use App\Services\Company\Absence\AbsenceRequestService;
 
 class LeaveService
 {
