@@ -3,21 +3,19 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
-use App\Services\BaseService;
 use App\Models\Company\CostCenter;
 use App\Services\WorkstationService;
 use App\Services\Company\LocationService;
 use App\Services\Employee\EmployeeService;
 
-class CostCenterService extends BaseService
+class CostCenterService
 {
     protected $workstationService;
     protected $employeeProfile;
     protected $locationService;
 
-    public function __construct(CostCenter $costCenter)
+    public function __construct()
     {
-        parent::__construct($costCenter);
         $this->workstationService = app(WorkstationService::class);
         $this->employeeService = app(EmployeeService::Class);
         $this->locationService = app(LocationService::class);
@@ -26,16 +24,15 @@ class CostCenterService extends BaseService
     public function getCostCenters($id, $with = [])
     {
         if ($with) {
-            return $this->model::with($with)->findOrFail($id);
+            return CostCenter::with($with)->findOrFail($id);
         } else {
-            return $this->model::findOrFail($id);
+            return CostCenter::findOrFail($id);
         }
     }
 
     public function getAll(array $args = [])
     {
-        return $this->model
-            ->when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
+        return CostCenter::when(isset($args['status']) && $args['status'] !== 'all', fn($q) => $q->where('status', $args['status']))
             ->when(isset($args['with']), fn($q) => $q->with($args['with']))
             ->get();
     }
@@ -45,7 +42,7 @@ class CostCenterService extends BaseService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-            $costCenter = $this->model->create($values);
+            $costCenter = CostCenter::create($values);
             $workstations = $values['workstations'] ?? [];
             $employees = $values['employees'] ?? [];
             $costCenter->workstations()->sync($workstations);
@@ -63,7 +60,7 @@ class CostCenterService extends BaseService
     {
         try {
             DB::connection('tenant')->beginTransaction();
-            $costCenter = $this->model->find($costCenterId);
+            $costCenter = CostCenter::find($costCenterId);
             $workstations = $values['workstations'] ?? [];
             $employees = $values['employees'] ?? [];
             $costCenter->workstations()->sync($workstations);
@@ -106,7 +103,7 @@ class CostCenterService extends BaseService
     public function deleteCostCenter($costCenterId)
     {
         try {
-            $costCenter = $this->model->find($costCenterId);
+            $costCenter = CostCenter::find($costCenterId);
             if ($costCenter) {
                 $costCenter->delete();
             }

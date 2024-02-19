@@ -9,13 +9,19 @@ use App\Repositories\Holiday\HolidayCodeRepository;
 
 class HolidayCodeService
 {
-    public function __construct(protected HolidayCodeRepository $holidayCodeRepository, public HolidayCode $model)
-    {
+    public function __construct(
+        protected HolidayCodeRepository $holidayCodeRepository
+    ) {
     }
 
     public function getHolidayCodes()
     {
-        return $this->holidayCodeRepository->getHolidayCodes();
+        return $this->holidayCodeRepository->get();
+    }
+
+    public function find($id)
+    {
+        return $this->holidayCodeRepository->find($id);
     }
 
     public function getCompanyHolidayCodes($company_id) # will return all holiday codes
@@ -36,6 +42,20 @@ class HolidayCodeService
             ->where('status', true)
             ->where('type', config('absence.LEAVE'))
             ->get();
+    }
+    public function getCompanyLeaveCodesTest($company_id) # will return all holiday codes
+    {
+        $conditions = [
+            'status' => true,
+            'type'   => config('absence.LEAVE')
+        ];
+        $has = [
+            'companies' => function ($query) use ($company_id) {
+                $query->where('company_id', $company_id);
+            }
+        ];
+        // return $this->holidayCodeRepository->getHolidayCodes();
+        return $this->holidayCodeRepository->getByConditions($conditions, [], $has);
     }
 
     public function getHolidayCodeDetails($id)
@@ -70,12 +90,12 @@ class HolidayCodeService
         return $holidayCode;
         // return $this->holidayCodeRepository->getHolidayCodeById($id);
     }
-    
+
     public function getHolidayCodeTypeOptions()
     {
         return getValueLabelOptionsFromConfig('absence.HOLIDAY_TYPE_OPTIONS');
     }
-    
+
     public function getHolidayCodeCountTypeOptions()
     {
         return getValueLabelOptionsFromConfig('absence.HOLIDAY_COUNT_TYPE_OPTIONS');
@@ -98,21 +118,14 @@ class HolidayCodeService
 
     public function createHolidayCode($values)
     {
-        return DB::transaction(function () use ($values) {
-            $values['employee_category'] = json_encode($values['employee_category']); // Encode the employee_category array as JSON before saving
-            $holidayCode = $this->holidayCodeRepository->createHolidayCode($values);
-            $employee_types = $values['employee_types'] ?? [];
-            $holidayCode->employeeTypes()->sync($employee_types);
-            $holidayCode->linkCompanies($values['link_companies'], $values['companies'] ?? []);
-            return $holidayCode;
-        });
+        return $this->holidayCodeRepository->create($values);
     }
 
     public function updateHolidayCode($holidayCode, $values)
     {
         return DB::transaction(function () use ($holidayCode, $values) {
             $values['employee_category'] = json_encode($values['employee_category']); // Encode the employee_category array as JSON before saving
-            $this->holidayCodeRepository->updateHolidayCode($holidayCode, $values);
+            $this->holidayCodeRepository->update($holidayCode, $values);
             $employee_types = $values['employee_types'] ?? [];
             $holidayCode->employeeTypes()->sync($employee_types);
             return $holidayCode;
@@ -130,9 +143,9 @@ class HolidayCodeService
             // Format the holiday codes with their status
             $formattedHolidayCodes = $allHolidayCodes->map(function ($holidayCode) use ($linkedHolidayCodesIds) {
                 return [
-                    'holiday_code_id'    => $holidayCode->id,
-                    'holiday_code_name'  => $holidayCode->holiday_code_name,
-                    'status'             => in_array($holidayCode->id, $linkedHolidayCodesIds),
+                    'holiday_code_id'   => $holidayCode->id,
+                    'holiday_code_name' => $holidayCode->holiday_code_name,
+                    'status'            => in_array($holidayCode->id, $linkedHolidayCodesIds),
                 ];
             });
 

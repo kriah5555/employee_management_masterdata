@@ -7,13 +7,10 @@ use Illuminate\Support\Carbon;
 use App\Models\Planning\PlanningBase;
 use App\Models\Company\Absence\AbsenceDates;
 use App\Models\Company\Absence\AbsenceHours;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Company\Employee\EmployeeProfile;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Absence extends BaseModel
 {
-    use HasFactory, SoftDeletes;
 
     protected $connection = 'tenant';
 
@@ -41,7 +38,7 @@ class Absence extends BaseModel
     public function getPlanTimingsAttribute()
     {
         $return_data = [];
-        
+
         $this->load('plans');
 
         foreach ($this->plans as $plan) {
@@ -82,7 +79,7 @@ class Absence extends BaseModel
             // Delete related AbsenceDates
             $absence->absenceDates()->delete();
         });
-          
+
     }
 
     public function employee()

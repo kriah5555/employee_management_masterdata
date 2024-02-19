@@ -291,7 +291,7 @@ class PlanningService implements PlanningInterface
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($locationId, $workstationIds, $employee_types, $weekNo, $year);
         $response = $this->formatWeeklyData($plannings, $weekNo, $year, $response);
-        $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
+        // $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
 
         return $response;
     }
@@ -307,7 +307,7 @@ class PlanningService implements PlanningInterface
         $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         $absenceService = app(AbsenceService::class);
         return $plannings->map(function ($plan) use ($absenceService) {
-            $leaves       = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'), $plan->employee_profile_id);
+            $leaves = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'), $plan->employee_profile_id);
             $leave_status = $leaves->isNotEmpty();
             return [
                 'plan_id'                  => $plan->id,
@@ -458,29 +458,29 @@ class PlanningService implements PlanningInterface
     public function getPlanStartStopStatus($plan) # $plan => object of planning Base model
     {
         $currentDateTime = strtotime(date('Y-m-d H:i'));
-        $startPlan = $stopPlan = $startBreak = $stopBreak =false;
+        $startPlan = $stopPlan = $startBreak = $stopBreak = false;
 
         if ($currentDateTime >= strtotime($plan->start_date_time) && $currentDateTime <= strtotime($plan->end_date_time)) {
             $startPlan = true;
-            $stopPlan  = false;
+            $stopPlan = false;
         }
         // Check if the plan has already been started
         if ($plan->plan_started) {
             $startPlan = false; // Don't start the plan
-            $stopPlan  = true;  // Stop the plan
+            $stopPlan = true;  // Stop the plan
         }
 
         if ($plan->break_started) { # if plan already started and break is also started
             $startBreak = false;
-            $stopBreak  = true;
+            $stopBreak = true;
         } elseif ($stopPlan) {
             $startBreak = true;
-            $stopBreak  = false;
+            $stopBreak = false;
         }
 
         if ($stopBreak) { # cannot stop plan if break is active
             $startPlan = false;
-            $stopPlan  = false;
+            $stopPlan = false;
         }
         return [
             'startPlan'  => $startPlan,
@@ -550,7 +550,7 @@ class PlanningService implements PlanningInterface
 
         foreach ($plans as $plan) {
             if ($plan->absence->isNotEmpty()) {
-                dd($plan->id,$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,[
+                dd($plan->id, $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted, [
                     'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
                     'plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
                     'shift_leave' => $plan->absence->isNotEmpty(), # add this status true if there is leave for this plan
