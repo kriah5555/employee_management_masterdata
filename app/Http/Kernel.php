@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
 
         'api' => [
                 // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \App\Http\Middleware\SetLanguageMiddleware::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
@@ -69,5 +70,6 @@ class Kernel extends HttpKernel
         'validate.api.token' => \App\Http\Middleware\ValidateApiToken::class,
         'setactiveuser'      => \App\Http\Middleware\SetActiveUser::class,
         'initialize-tenancy' => \App\Http\Middleware\InitializeTenancy::class,
+        'set-language'       => \App\Http\Middleware\SetLanguageMiddleware::class,
     ];
 }
