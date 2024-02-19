@@ -2,34 +2,30 @@
 
 namespace App\Services\Planning;
 
-use App\Models\Planning\PlanningBase;
-use App\Interfaces\Planning\PlanningInterface;
 use App\Repositories\Planning\PlanningRepository;
 use App\Models\Company\Location;
 use App\Models\Company\Company;
-use App\Models\EmployeeType\EmployeeType;
-use App\Models\EmployeeFunction\FunctionTitle;
 use App\Services\Employee\EmployeeService;
 use App\Services\Planning\PlanningContractService;
 use App\Services\Planning\PlanningShiftsService;
 use App\Services\Company\Absence\AbsenceService;
 use App\Services\Employee\EmployeeContractService;
 
-class PlanningService implements PlanningInterface
+class PlanningService
 {
 
     public function __construct(
-        protected PlanningBase $planningBase,
-        protected Location $location,
-        protected Company $company,
-        protected EmployeeType $employeeType,
-        protected FunctionTitle $functionTitle,
         protected EmployeeService $employeeService,
         protected PlanningRepository $planningRepository,
         protected PlanningContractService $planningContractService,
         protected PlanningShiftsService $planningShiftsService,
         protected EmployeeContractService $employeeContractService,
     ) {
+    }
+
+    public function find($id, $with = [])
+    {
+        return $this->planningRepository->find($id, $with);
     }
 
     /**
@@ -41,10 +37,9 @@ class PlanningService implements PlanningInterface
     public function getEmployeeTypes($companyId)
     {
         $response = [];
-        $employeeTypes = [];
-        $data = $this->company->employeeTypes($companyId)->get()->toArray();
+        $data = Company::find($companyId)->employeeTypes()->get()->toArray();
 
-        if (count($data) > 0) {
+        if (count($data)) {
             $data = reset($data);
             foreach ($data['sectors'] as $values) {
                 $response += $values['employee_types_value'];
@@ -77,7 +72,7 @@ class PlanningService implements PlanningInterface
     public function getWorkstations()
     {
         $data = $response = [];
-        $data = $this->location->with(['workstationsValues'])->get()->toArray();
+        $data = Location::with(['workstationsValues'])->get()->toArray();
 
         foreach ($data as $value) {
             //$response[$value['id']]['id'] = $value['id'];
@@ -104,7 +99,7 @@ class PlanningService implements PlanningInterface
 
     public function getPlanningOverviewFilterService($companyId)
     {
-        $output['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
+        $output['locations'] = Location::all(['id as value', 'location_name as label'])->toArray();
 
         //$response['locations'] = $this->optionsFormat($output['locations']);
         $response['locations'] = $output['locations'];
@@ -118,7 +113,6 @@ class PlanningService implements PlanningInterface
     {
         $response = [];
         $data = $this->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year);
-        // $data = $this->planningBase->monthPlanning($year, $month, $location, $workstations, $employee_types);
         foreach ($data as $value) {
 
             $response[date('d-m-Y', strtotime($value['date']))] = $value['count'];

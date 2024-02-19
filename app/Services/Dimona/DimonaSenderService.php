@@ -59,6 +59,9 @@ class DimonaSenderService
     public function sendDimonaByPlan($companyId, $planId)
     {
         try {
+            $plan = $this->planningService->find($planId, [
+                'employeeType'
+            ]);
             DB::connection('tenant')->beginTransaction();
             setTenantDBByCompanyId($companyId);
             $dimona = ['unique_id' => Str::uuid()];
@@ -66,7 +69,6 @@ class DimonaSenderService
             $dimona['type'] = 'plan';
             $dimona['dimona_type'] = 'IN';
             $dimonaDeclarations = $this->createDimonaRecords($dimona);
-            $plan = $this->planningService->getPlanningById($planId);
             $this->setCompanyData($companyId, $dimona);
             $this->setEmployeeData($plan->employeeProfile, $dimona);
             $this->setPlanningData($planId, $dimona);

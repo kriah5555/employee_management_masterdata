@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Dimona;
 use App\Http\Controllers\Controller;
 use App\Models\Company\Employee\EmployeeContract;
 use App\Services\Dimona\DimonaBaseService;
-use App\Services\Dimona\DimonaSenderService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
-use App\Jobs\SendDimonaByPlanJob;
 use App\Jobs\SendLongTermDimonaJob;
+use Illuminate\Validation\Rule;
+use App\Services\Dimona\DimonaSenderService;
 
 class DimonaController extends Controller
 {
@@ -43,7 +43,11 @@ class DimonaController extends Controller
     {
         try {
             $rules = [
-                'plans' => 'required|array'
+                'plans' => [
+                    'required',
+                    'array',
+                    Rule::exists('tenant.planning_base', 'id')->whereNull('deleted_at'),
+                ]
             ];
             $validator = Validator::make(request()->all(), $rules);
             if ($validator->fails()) {
