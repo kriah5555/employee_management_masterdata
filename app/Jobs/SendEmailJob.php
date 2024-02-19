@@ -32,7 +32,8 @@ class SendEmailJob implements ShouldQueue
 
     public function handle()
     {
-        $this->recipientEmail = 'vishaldudalkar.infanion@gmail.com';
+	#$this->recipientEmail = 'vishaldudalkar.infanion@gmail.com';
+	$this->recipientEmail = 'indii.2.0.test@gmail.com';
 
         Mail::to($this->recipientEmail, $this->recipientName)->send(new SendMail($this->subject, $this->body));
     }
