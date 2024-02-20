@@ -123,7 +123,6 @@ class TenancyServiceProvider extends ServiceProvider
         if (file_exists(base_path('routes/tenant.php'))) {
             Route::namespace(static::$controllerNamespace)
                 ->prefix('api')
-                ->middleware('set-language')
                 ->group(base_path('routes/tenant.php'));
         }
     }

@@ -28,12 +28,11 @@ class PlanningContractService implements PlanningInterface
 
     public function getPlanningContractContract(PlanningBase $plan)
     {
-        $dailyContract = $plan->employeeType()->whereHas('contractTypes', function ($query) {
-            $query->where('contract_renewal_type_id', 2);
-	    })->get();
-        if (!$dailyContract->isEmpty() && $dailyContract->first()) {
+        $plan_daily_renewal_contract = $plan->employeeType->contractTypes->where('contract_renewal_type_id', config('constants.DAILY_CONTRACT_RENEWAL_ID'))->first();
+
+        if (!$plan_daily_renewal_contract) {
             if ($plan->contract_status != config('contracts.SIGNED') && empty($plan->contracts)) {
-                $template = $daily_contracts ? $this->contractTemplateService->getContractTemplate($dailyContract->first()->id, '', $plan->employeeProfile->user->userBasicDetails->language): null;
+                $template = $daily_contracts ? $this->contractTemplateService->getContractTemplate($plan_daily_renewal_contract->id, '', $plan->employeeProfile->user->userBasicDetails->language): null;
     
                 if ($template) {
                     $tokenData = [
@@ -48,7 +47,8 @@ class PlanningContractService implements PlanningInterface
                     return env('CONTRACTS_URL') . '/' . $files['pdf_file_path'];
                 }
             } else { # if contract signed return the signed contract only
-                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, getCompanyId()); # if contract exists use that else generate new contract and use that
+                $plan_daily_renewal_contract = $plan->employeeType->contractTypes->where('contract_renewal_type_id', config('constants.DAILY_CONTRACT_RENEWAL_ID'))->first();
+                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, $plan_daily_renewal_contract->id, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, getCompanyId()); # if contract exists use that else generate new contract and use that
                 return env('CONTRACTS_URL') . '/' . $contract->files->file_path;
             }
         }

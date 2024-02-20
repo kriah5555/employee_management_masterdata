@@ -38,7 +38,7 @@ class AbsenceRequest extends BaseModel
         $urls = [];
         if ($this->files) {
             foreach ($this->files as $file) {
-                $urls[] = asset('storage/tenants/'.$file->file_path);
+                $urls[] = secure_asset('storage/tenants/'.$file->file_path);
             }
         }
         return $urls;

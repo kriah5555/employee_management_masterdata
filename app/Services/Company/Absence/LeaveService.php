@@ -57,6 +57,8 @@ class LeaveService
                         'file_urls'           => $absenceRequest->file_urls,
                         'location_id'         => $absenceRequest->plan->location_id,
                         'location_name'       => $absenceRequest->plan->location->location_name,
+                        'reason'              => $absenceRequest->reason,
+                        'applied_date'        => formatDate($absenceRequest->created_at)
                     ];
                 });
                 return $leaves;

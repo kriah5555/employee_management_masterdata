@@ -31,7 +31,7 @@ class HolidayCodeRepository implements HolidayCodeRepositoryInterface
         if ($holidayCode->delete()) {
             return true;
         } else {
-            throw new ModelDeleteFailedException('Failed to delete employee type');
+            throw new ModelDeleteFailedException('Failed to delete holiday code');
         }
     }
 
@@ -45,7 +45,7 @@ class HolidayCodeRepository implements HolidayCodeRepositoryInterface
         if ($holidayCode->update($updatedDetails)) {
             return true;
         } else {
-            throw new ModelUpdateFailedException('Failed to update employee type');
+            throw new ModelUpdateFailedException('Failed to update holiday code');
         }
     }
     public function updateHolidayCodeContractTypes(HolidayCode $holidayCode, array $contractTypes)

@@ -47,7 +47,7 @@ class HolidayCode extends BaseModel
     {
         parent::boot();
 
-        self::creating(function ($holidayCode) {
+        static::saving(function ($holidayCode) {
             // $holidayCode->processCountAttribute();
             $holidayCode->count_type = 1;
         });
