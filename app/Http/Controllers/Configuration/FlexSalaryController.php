@@ -19,6 +19,7 @@ class FlexSalaryController extends Controller
     {
         try {
 
+            $this->flexSalaryService->createOrUpdateFlexSalary($request);
             return returnResponse(
                 [
                     'success' => true,
