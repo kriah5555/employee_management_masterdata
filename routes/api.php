@@ -37,6 +37,7 @@ use App\Http\Controllers\{
     EmployeeFunction\FunctionCategoryController,
     NotificationController\NotificationController,
     Dimona\EmployeeTypeDimoanConfigurationController,
+    Configuration\FlexSalaryController,
 };
 
 use App\Http\Controllers\Employee\{
@@ -199,7 +200,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
 
         Route::resource('translations', TranslationController::class)->only(['show', 'index', 'update']);
-
     });
 
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
@@ -223,7 +223,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 
         Route::post('salary-increment-calculation', 'salaryIncrementCalculation');
-
     });
 
     Route::controller(ReasonController::class)->group(function () {
@@ -236,7 +235,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
 
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
-
     });
 
     Route::get('user/responsible-companies', [CompanyController::class, 'getUserResponsibleCompanies']);
@@ -262,6 +260,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
 
     Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
+
+    Route::post('flex-salary', [FlexSalaryController::class, 'createOrUpdateFlexSalary']);
+    Route::get('flex-salary/{key}', [FlexSalaryController::class, 'getFlexSalaryByKey']);
 });
 Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
 
