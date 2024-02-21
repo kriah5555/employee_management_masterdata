@@ -13,7 +13,7 @@ class MealVoucherRepository implements MealVoucherRepositoryInterface
     }
     public function getActiveMealVouchers()
     {
-        return MealVoucher::allActive();
+        return MealVoucher::getActive();
     }
 
 

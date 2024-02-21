@@ -188,7 +188,7 @@ class CompanyService implements CompanyServiceInterface
     {
         $companies = [];
         if ($user->is_admin || $user->is_moderator) {
-            $companies = $this->getActiveCompanies();
+            $companies = CompanyResource::collection($this->getActiveCompanies());
         } else {
             $companies = $this->getAccessibleCompanies($user);
         }

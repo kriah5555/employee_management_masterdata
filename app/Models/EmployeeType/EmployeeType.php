@@ -13,13 +13,13 @@ use App\Models\Sector\Sector;
 class EmployeeType extends BaseModel
 {
     use UserAudit;
-    
+
     protected $connection = 'master';
-    
+
     protected $table = 'employee_types';
 
     protected static $sort = ['name'];
-    
+
     protected $columnsToLog = ['name', 'description', 'employee_type_category_id', 'status', 'salary_type'];
     /**
      * The table associated with the model.
@@ -90,12 +90,17 @@ class EmployeeType extends BaseModel
     {
         return $this->belongsToMany(Sector::class, 'sector_to_employee_types');
     }
-    
+
     public function getEmployeeTypeDetails($employeeIds)
     {
         return $this->with(['employeeTypeConfig', 'dimonaConfig', 'contractTypes'])
-        ->whereIn('id', (array)$employeeIds)
-        ->get()
-        ->toArray();
+            ->whereIn('id', (array) $employeeIds)
+            ->get()
+            ->toArray();
+    }
+
+    public function getDimonaType()
+    {
+        return $this->dimonaConfig->dimonaType->dimona_type_key;
     }
 }

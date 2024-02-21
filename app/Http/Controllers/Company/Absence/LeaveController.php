@@ -5,16 +5,20 @@ namespace App\Http\Controllers\Company\Absence;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use App\Services\Company\Absence\LeaveService;
 use App\Services\Company\Absence\AbsenceService;
 use App\Http\Requests\Company\Absence\LeaveRequest;
 use App\Http\Requests\Company\Absence\AbsenceChangeReportingManagerRequest;
+use App\Services\Holiday\HolidayCodeService;
+use App\Repositories\Employee\EmployeeProfileRepository;
+use App\Http\Resources\Absence\HolidayCodeResource;
 
 class LeaveController extends Controller
 {
-    public function __construct(protected LeaveService $leave_service)
-    {
+    public function __construct(
+        protected LeaveService $leave_service,
+        protected HolidayCodeService $holidayCodeService
+    ) {
     }
 
     /**
@@ -117,7 +121,10 @@ class LeaveController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->leave_service->getOptionsToCreate(getCompanyId())
+                    'data'    => [
+                        'leave_codes' => HolidayCodeResource::collection($this->holidayCodeService->getCompanyLeaveCodesTest(getCurrentCompanyId())),
+                        'employees'   => app(EmployeeProfileRepository::class)->getEmployeesForHoliday()
+                    ]
                 ],
                 JsonResponse::HTTP_CREATED,
             );
@@ -162,9 +169,9 @@ class LeaveController extends Controller
     public function addLeave(LeaveRequest $request)
     {
         try {
-            $request_name   = $request->route()->getName();
+            $request_name = $request->route()->getName();
             $absence_status = $request_name == 'add-leave' || $request_name == 'update-leave' || $request_name == 'shift-leave' ? config('absence.APPROVE') : config('absence.PENDING');
-            $shift_leave    = in_array($request_name, ['shift-leave', 'employee-shift-leave']);
+            $shift_leave = in_array($request_name, ['shift-leave', 'employee-shift-leave']);
             return returnResponse(
                 [
                     'success' => true,

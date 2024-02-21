@@ -2,16 +2,20 @@
 
 namespace App\Repositories\Planning;
 
-use App\Models\Company\Company;
 use App\Models\Planning\PlanningBase;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exceptions\ModelDeleteFailedException;
 use App\Exceptions\ModelUpdateFailedException;
-use App\Interfaces\Planning\PlanningRepositoryInterface;
+use App\Repositories\BaseRepository;
 
-class PlanningRepository implements PlanningRepositoryInterface
+class PlanningRepository extends BaseRepository
 {
+
+    public function __construct(PlanningBase $planningBase)
+    {
+        parent::__construct($planningBase);
+    }
     public function getPlannings(): Collection
     {
         return PlanningBase::all();
@@ -141,14 +145,14 @@ class PlanningRepository implements PlanningRepositoryInterface
         if (!empty($ignore_plan_id)) {
             $query->where('id', '!=', $ignore_plan_id);
         }
-        
+
         $query->where('employee_profile_id', $employee_profile_id);
         $query->where('plan_started', true);
         $query->orderBy('start_date_time');
         $query->orderBy('end_date_time');
         return $query->get();
     }
-    
+
     public function getMonthlyPlanningDayCount($location, $workstations, $employee_types, $startDateOfMonth, $endDateOfMonth)
     {
         $startDateOfMonth = date('Y-m-d 00:00:00', strtotime($startDateOfMonth));

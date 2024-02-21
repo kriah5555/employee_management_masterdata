@@ -17,6 +17,7 @@ class RequestDimona
                 'Content-Type' => 'application/json',
             ];
             $requestUrl = env('DIMONA_SERVICE_URL') . $url;
+            // dd($requestUrl, $headers, $data);
             $request = new Request('POST', $requestUrl, $headers, $data);
             $res = $client->send($request);
             $body = json_decode($res->getBody()->getContents());

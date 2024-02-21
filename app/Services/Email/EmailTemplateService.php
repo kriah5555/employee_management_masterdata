@@ -6,18 +6,17 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Email\EmailTemplate;
 use App\Services\BaseService;
 
-class EmailTemplateService extends BaseService
+class EmailTemplateService
 {
-    public function __construct(protected EmailTemplate $emailTemplate)
+    public function __construct()
     {
-        parent::__construct($emailTemplate);
     }
 
     public function create($values)
     {
         try {
             return DB::transaction(function () use ($values) {
-                $emailTemplate = $this->model::create([
+                $emailTemplate = EmailTemplate::create([
                     'template_type' => $values['template_type'],
                 ]);
 
@@ -82,7 +81,7 @@ class EmailTemplateService extends BaseService
 
     public function getEmailTemplateDetailsByType($email_template_type)
     {
-        return $this->model::where(['template_type' => $email_template_type])->get()->first();
+        return EmailTemplate::where(['template_type' => $email_template_type])->get()->first();
     }
 
     public function getOptionsToEdit($email_template_id)

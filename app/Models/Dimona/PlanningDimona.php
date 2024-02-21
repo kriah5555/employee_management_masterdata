@@ -56,4 +56,9 @@ class PlanningDimona extends BaseModel
     {
         return $this->belongsTo(PlanningBase::class, 'planning_id');
     }
+
+    public function dimona()
+    {
+        return $this->belongsTo(Dimona::class, 'dimona_id');
+    }
 }
