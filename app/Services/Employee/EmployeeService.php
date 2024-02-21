@@ -26,6 +26,7 @@ use App\Services\Employee\EmployeeContractService;
 use App\Services\Employee\EmployeeBenefitService;
 use App\Services\Employee\EmployeeCommuteService;
 use App\Models\Company\Company;
+use App\Services\Configuration\FlexSalaryService;
 
 class EmployeeService
 {
@@ -36,6 +37,7 @@ class EmployeeService
         protected CompanyService $companyService,
         protected EmployeeProfileRepository $employeeProfileRepository,
         protected EmployeeFunctionDetailsRepository $employeeFunctionDetailsRepository,
+        protected FlexSalaryService $flexSalaryService,
     ) {
     }
     /**
@@ -238,7 +240,6 @@ class EmployeeService
 
             if ($existingEmpProfile) {
                 $user = $this->userService->updateEmployeePersonal($values);
-
             } else {
                 $user = $existingEmpProfile->last();
             }
@@ -248,9 +249,6 @@ class EmployeeService
             DB::connection('userdb')->commit();
 
             return $user;
-
-
-
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();
@@ -269,7 +267,6 @@ class EmployeeService
 
             if ($existingEmpProfile) {
                 $user = $this->userService->updateEmployeeAddress($values);
-
             } else {
                 $user = $existingEmpProfile->last();
             }
@@ -279,9 +276,6 @@ class EmployeeService
             DB::connection('userdb')->commit();
 
             return $user;
-
-
-
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();
@@ -313,9 +307,6 @@ class EmployeeService
             DB::connection('userdb')->commit();
 
             return $user;
-
-
-
         } catch (Exception $e) {
             DB::connection('master')->rollback();
             DB::connection('userdb')->rollback();
@@ -416,13 +407,18 @@ class EmployeeService
                             $function_category_number = 999;
                         }
 
-                        $function_category_number = max(1, $function_category_number); # get group function category
+                        if ($function_category_number != 999) {
+                            $function_category_number = max(1, $function_category_number); # get group function category
 
-                        $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
-                            ->where('category_number', $function_category_number);
+                            $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
+                                ->where('category_number', $function_category_number);
 
-                        if ($minimumSalaries->isNotEmpty()) {
-                            $minimumSalary = $minimumSalaries->first()->$return_salary_type;
+                            if ($minimumSalaries->isNotEmpty()) {
+                                $minimumSalary = $minimumSalaries->first()->$return_salary_type;
+                            }
+                        } else {
+                            $data = $this->flexSalaryService->getFlexSalaryByKey('flex_min_salary');
+                            $minimumSalary = $data['number_format'];
                         }
                     }
                 }
