@@ -123,7 +123,7 @@ class UurroosterService
                 'end_time'            => [],
                 'end_dimona_status'   => [],
             ];
-            if ($planning->timeRegistrations) {
+            if (count($planning->timeRegistrations)) {
                 $count = 0;
             } else {
                 $count = 1;
