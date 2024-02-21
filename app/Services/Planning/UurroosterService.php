@@ -82,8 +82,9 @@ class UurroosterService
     public function getVacancies($location_id, $workstation_id = '', $date = '')
     {
         return Vacancy::when(!empty($location_id), fn ($query) => $query->where('location_id', $location_id))
-                        ->when(!empty($workstation_id), fn ($query) => $query->where('location_id', $workstation_id))
+                        ->when(!empty($workstation_id), fn ($query) => $query->where('workstation_id', $workstation_id))
                         ->when(!empty($date), fn ($query) => $query->where('start_date', formatDate($date, 'Y-m-d')))
+                        ->where('status', 1)
                         ->get();
 
     }
