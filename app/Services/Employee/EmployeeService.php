@@ -373,7 +373,7 @@ class EmployeeService
         return config('constants.EMPLOYEE_SALARY_TYPE_OPTIONS');
     }
 
-    function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '', $employee_subtype = '') # get salary options to create employee
+    public function getSalary($employee_type_id, $function_title_id = '', $experience_in_months = '', $employee_subtype = '')
     {
         try {
             $employeeType = app(EmployeeTypeService::class)->getEmployeeTypeDetails($employee_type_id);
@@ -381,45 +381,43 @@ class EmployeeService
             # for all employee types hourly salary will be returned, 1 => if teh employee type has long term contract with servant sub type then monthly salary will be returned
             $return_salary_type = ($employeeType->employeeTypeCategory->id == config('constants.LONG_TERM_CONTRACT_ID') && $employee_subtype == 'servant') ? 'monthly_minimum_salary' : 'hourly_minimum_salary';
 
-            $minimumSalary = 0;
-            if (!empty($salary_type) && array_key_exists($salary_type, config('constants.SALARY_TYPES'))) {
-                // Retrieve the FunctionTitle based on its
+            // Retrieve function title and its category
+            $functionTitle = FunctionTitle::findOrFail($function_title_id);
+            $functionCategory = $functionTitle->functionCategory;
 
-                $functionTitle = FunctionTitle::findOrFail($function_title_id);
-                $functionCategory = $functionTitle->functionCategory;
+            // Retrieve sector salary configuration
+            if ($functionCategory && $functionCategory->sector) {
+                $sectorSalarySteps = $functionCategory->sector->salaryConfig->salarySteps()
+                    ->where('from', '<=', $experience_in_months)
+                    ->where('to', '>=', $experience_in_months)
+                    ->get();
 
-                if ($functionCategory && $functionCategory->sector) {
-                    $sectorSalarySteps = $functionCategory->sector->salaryConfig->salarySteps()
-                        ->where('from', '<=', $experience_in_months)
-                        ->where('to', '>=', $experience_in_months)
-                        ->get();
+                if ($sectorSalarySteps->isNotEmpty()) {
+                    $function_category_number = $functionCategory->category;
 
-                    if ($sectorSalarySteps->isNotEmpty()) {
-                        $function_category_number = $functionCategory->category;
+                    // Adjust function category number based on salary type
+                    if ($salary_type === 'min1') {
+                        $function_category_number -= 1;
+                    } elseif ($salary_type === 'min2') {
+                        $function_category_number -= 2;
+                    } elseif ($salary_type === 'flex') {
+                        $function_category_number = 999;
+                    }
 
-                        if ($salary_type === 'min') {
-                            $function_category_number = $function_category_number;
-                        } elseif ($salary_type === 'min1') {
-                            $function_category_number -= 1;
-                        } elseif ($salary_type === 'min2') {
-                            $function_category_number -= 2;
-                        } elseif ($salary_type === 'flex') {
-                            $function_category_number = 999;
+                    if ($function_category_number != 999) {
+                        $function_category_number = max(1, $function_category_number); // Get group function category
+
+                        // Retrieve minimum salary based on function category number
+                        $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
+                            ->where('category_number', $function_category_number);
+
+                        if ($minimumSalaries->isNotEmpty()) {
+                            $minimumSalary = $minimumSalaries->first()->$return_salary_type;
                         }
-
-                        if ($function_category_number != 999) {
-                            $function_category_number = max(1, $function_category_number); # get group function category
-
-                            $minimumSalaries = $sectorSalarySteps->first()->minimumSalary
-                                ->where('category_number', $function_category_number);
-
-                            if ($minimumSalaries->isNotEmpty()) {
-                                $minimumSalary = $minimumSalaries->first()->$return_salary_type;
-                            }
-                        } else {
-                            $data = $this->flexSalaryService->getFlexSalaryByKey('flex_min_salary');
-                            $minimumSalary = $data['number_format'];
-                        }
+                    } else {
+                        // Retrieve flex salary
+                        $data = $this->flexSalaryService->getFlexSalaryByKey('flex_min_salary');
+                        $minimumSalary = $data['number_format'];
                     }
                 }
             }
