@@ -153,7 +153,7 @@ class UurroosterService
                 $absence_status      = false;
                 $absence_codes       = null;
                 $start_time          = formatDate($planning->start_time, 'H:i');
-                $end_time            = formatDate($planning->end_time);
+                $end_time            = formatDate($planning->end_time, 'H:i');
                 $employee_type       = 'Open Shifts';
                 $employee_type_color = null;
                 $function_name       = $planning->functions->name;
