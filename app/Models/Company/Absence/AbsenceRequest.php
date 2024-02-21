@@ -25,4 +25,22 @@ class AbsenceRequest extends BaseModel
     {
         return $this->belongsToMany(Files::class, 'absence_requests_files', 'absence_request_id', 'file_id');
     }
+
+    public function plan()
+    {
+        return $this->belongsTo(PlanningBase::class, 'plan_id');
+    }
+
+    protected $appends = ['file_urls'];
+
+    public function getFileUrlsAttribute()
+    {
+        $urls = [];
+        if ($this->files) {
+            foreach ($this->files as $file) {
+                $urls[] = secure_asset('storage/tenants/'.$file->file_path);
+            }
+        }
+        return $urls;
+    }
 }

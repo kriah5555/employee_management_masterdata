@@ -52,7 +52,7 @@ return [
 
     'LONG_TERM_CONTRACT_ID'        => 1,
 
-    'DAILY_CONTRACT_ID'            => 2,
+    'DAILY_CONTRACT_RENEWAL_ID'    => 2, # daily
 
     'DEFAULT_DATE_FORMAT'          => 'd-m-Y',
 

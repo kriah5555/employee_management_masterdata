@@ -3,6 +3,9 @@
 return [
 
 
+    'IMPORT_EMPLOYEE_FILES_PATH' => 'import_employee',
+
+
     'IMPORT_EMPLOYEE_FEEDBACK_COLUMN' => 'AI',
 
     # file import status

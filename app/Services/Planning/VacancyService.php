@@ -289,6 +289,7 @@ class VacancyService implements VacancyInterface
             $data['employee_profile_id'] = $employeeProfileId[0]->id ?? 0;
             $data['request_at'] = now()->format('Y-m-d H:i:s');
             $data['vacancy_date'] = date('Y-m-d', strtotime($data['vacancy_date']));
+            $data['status'] = 0;
         }
 
         return $this->vacancyPostEmployees->updateOrCreate(
