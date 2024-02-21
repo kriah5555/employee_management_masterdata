@@ -32,7 +32,7 @@ class PlanningContractService implements PlanningInterface
 
         if (!$plan_daily_renewal_contract) {
             if ($plan->contract_status != config('contracts.SIGNED') && empty($plan->contracts)) {
-                $template = $daily_contracts ? $this->contractTemplateService->getContractTemplate($plan_daily_renewal_contract->id, '', $plan->employeeProfile->user->userBasicDetails->language): null;
+                $template = $plan_daily_renewal_contract ? $this->contractTemplateService->getContractTemplate($plan_daily_renewal_contract->id, '', $plan->employeeProfile->user->userBasicDetails->language): null;
     
                 if ($template) {
                     $tokenData = [
