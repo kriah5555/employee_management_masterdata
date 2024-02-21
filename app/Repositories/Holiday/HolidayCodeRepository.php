@@ -31,6 +31,28 @@ class HolidayCodeRepository extends BaseRepository
         return $this->model::with($relations)->findOrFail($holidayCodeId);
     }
 
+    public function deleteHolidayCode(HolidayCode $holidayCode): bool
+    {
+        if ($holidayCode->delete()) {
+            return true;
+        } else {
+            throw new ModelDeleteFailedException('Failed to delete holiday code');
+        }
+    }
+
+    public function createHolidayCode(array $details): HolidayCode
+    {
+        return HolidayCode::create($details);
+    }
+
+    public function updateHolidayCode(HolidayCode $holidayCode, array $updatedDetails): bool
+    {
+        if ($holidayCode->update($updatedDetails)) {
+            return true;
+        } else {
+            throw new ModelUpdateFailedException('Failed to update holiday code');
+        }
+    }
     public function updateHolidayCodeContractTypes(HolidayCode $holidayCode, array $contractTypes)
     {
         return $holidayCode->contractTypes()->sync($contractTypes ?? []);
