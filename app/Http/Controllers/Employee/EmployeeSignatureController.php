@@ -53,7 +53,7 @@ class EmployeeSignatureController extends Controller
             } else {
                 return returnResponse(
                     [
-                        'success' => true,
+                        'success' => false,
                         'message' => 'Employee profile not found',
                     ],
                     JsonResponse::HTTP_OK,
