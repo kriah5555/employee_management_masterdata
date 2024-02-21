@@ -70,7 +70,7 @@ class UurroosterService
                 $response['planning_data'][$value->id]['plannings'] = [];
             }
             $data = $this->planningRepository->getPlansBetweenDates($location_id, [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType.employeeTypeConfig', 'functionTitle', 'timeRegistrations']);
-            return $this->formatUurroosterData($data->merge($this->getVacancies($location_id)), $response);
+            return $this->formatUurroosterData($data->merge($this->getVacancies($location_id), '', $date), $response);
         } else {
             $response['qr_token'] = null;
             $response['location_name'] = 'No locations';
@@ -79,10 +79,11 @@ class UurroosterService
         }
     }
 
-    public function getVacancies($location_id, $workstation_id = '')
+    public function getVacancies($location_id, $workstation_id = '', $date = '')
     {
         return Vacancy::when(!empty($location_id), fn ($query) => $query->where('location_id', $location_id))
                         ->when(!empty($workstation_id), fn ($query) => $query->where('location_id', $workstation_id))
+                        ->when(!empty($date), fn ($query) => $query->where('start_date', formatDate($date, 'Y-m-d')))
                         ->get();
 
     }
@@ -105,17 +106,17 @@ class UurroosterService
                 $employee_type_color = $planning->employeeType->employeeTypeConfig->icon_color;
                 $function_name = $planning->functionTitle->name;
             } else {
-                $employeeName   = $planning->shift_name;
+                $employeeName   = $planning->name;
                 $workstation_id = $planning->workstation_id;
                 $absence_status = false;
                 $absence_codes  = null;
-                $start_time     = $planning->start_time;
-                $end_time       = $planning->end_time;
-                $employee_type  = null;
+                $start_time     = formatDate($planning->start_time, 'H:i');
+                $end_time       = formatDate($planning->end_time);
+                $employee_type  = 'Open Shifts';
                 $employee_type_color = null;
                 $function_name = $planning->functions->name;
             }
-            
+
             $timeRegistrations = [
                 'start_time'          => [],
                 'start_dimona_status' => [],
@@ -128,7 +129,8 @@ class UurroosterService
                 $count = 1;
             }
             if ($class == 'Vacancy') {
-                $count = $planning->vacancy_count;
+                $count = 1;
+                // $count = $planning->vacancy_count;
             }
             $messages = [
                 [
