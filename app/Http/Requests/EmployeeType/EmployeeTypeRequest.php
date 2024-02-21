@@ -5,6 +5,7 @@ namespace App\Http\Requests\EmployeeType;
 use App\Http\Requests\ApiRequest;
 use Illuminate\Validation\Rule;
 use App\Rules\HexColor;
+use App\Models\Contract\ContractType;
 
 class EmployeeTypeRequest extends ApiRequest
 {
@@ -53,6 +54,21 @@ class EmployeeTypeRequest extends ApiRequest
         ];
 
     }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if (!empty($this->contract_types)) {
+                $contract_types = ContractType::whereIn('id', $this->contract_types)
+                ->where('contract_renewal_type_id', config('constants.DAILY_CONTRACT_RENEWAL_ID'))->get();
+                if ($contract_types->count() > 1) {
+                    $contract_type_names = $contract_types->pluck('name')->implode(', ');
+                    $this->validator->errors()->add('contract_types', "cannot link more than one contract type with daily renewal periods '$contract_type_names'");
+                };
+            }
+        });
+    }
+
     public function messages()
     {
         return [
