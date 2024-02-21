@@ -56,7 +56,31 @@ class ResponsiblePersonService
     {
         try {
             return $this->getCompanyResponsiblePersons($company_id);
-            // return $this->responsiblePersonRepository->getCompanyResponsiblePersonOptions($company_id);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getResponsiblePersonListForChat($companyIds)
+    {
+        try {
+            $responsiblePersons = [];
+
+            foreach ($companyIds as $companyId) {
+                connectCompanyDataBase($companyId);
+                $companyResponsiblePersons = $this->responsiblePersonRepository->getCompanyResponsiblePersons($companyId);
+                
+                foreach ($companyResponsiblePersons as $companyResponsiblePerson) {
+                    $responsiblePersons[$companyResponsiblePerson->user_id] = [
+                        'user_id'       => $companyResponsiblePerson->user_id,
+                        'user_name'     => $companyResponsiblePerson->user->username,
+                        'employee_name' => $companyResponsiblePerson->full_name,
+                    ];
+                }
+            }
+
+            return array_values($responsiblePersons);
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;

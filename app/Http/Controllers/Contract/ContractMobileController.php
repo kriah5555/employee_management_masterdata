@@ -21,17 +21,20 @@ class ContractMobileController extends Controller
         
     }
 
-    public function index()
+    public function index($employee_profile_id = '')
     {
         try {
-            // $user_id     = 4;
-            $user_id     = Auth::guard('web')->user()->id;
-            $company_ids = getUserCompanies($user_id);
-
+            $user_id = '';
+            if (request()->route()->getName() == 'manager-get-employee-contracts') {
+                $company_ids = [getCompanyId()];
+            } else {
+                $user_id     = Auth::guard('web')->user()->id;
+                $company_ids = getUserCompanies($user_id);
+            }
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->contractMobileService->getEmployeeContractFiles($company_ids, $user_id, '', '', ''),
+                    'data'    => $this->contractMobileService->getEmployeeContractFiles($company_ids, $user_id, '', '', '', $employee_profile_id),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -44,7 +47,6 @@ class ContractMobileController extends Controller
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
-        
     }
 
     public function employeeSignPlanContract(EmployeePlanSignContractRequest $request)

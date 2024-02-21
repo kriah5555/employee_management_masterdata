@@ -44,7 +44,6 @@ class PublicHoliday extends BaseModel
 
         static::saving(function ($publicHoliday) {
             $publicHoliday->date = date('Y-m-d', strtotime($publicHoliday->date));
-    //        dd($publicHoliday->toArray());
         });
     }
 

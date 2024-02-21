@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Http\Requests\Employee\ResponsiblePersonRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\Employee\ResponsiblePersonService;
+use App\Http\Requests\Employee\ResponsiblePersonRequest;
 
 class ResponsiblePersonController extends Controller
 {
@@ -42,6 +43,29 @@ class ResponsiblePersonController extends Controller
                 [
                     'success' => true,
                     'data'    => ['responsible_persons' => $this->responsible_person_service->getCompanyResponsiblePersonOptions(getCompanyId())],
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    
+    public function getResponsiblePersonListForChat()
+    {
+        try {
+            $user        = Auth::guard('web')->user()->id;
+            $company_ids = getUserCompanies($user);
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->responsible_person_service->getResponsiblePersonListForChat($company_ids),
                 ],
                 JsonResponse::HTTP_OK,
             );

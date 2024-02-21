@@ -2,16 +2,20 @@
 
 namespace App\Repositories\Planning;
 
-use App\Models\Company\Company;
 use App\Models\Planning\PlanningBase;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exceptions\ModelDeleteFailedException;
 use App\Exceptions\ModelUpdateFailedException;
-use App\Interfaces\Planning\PlanningRepositoryInterface;
+use App\Repositories\BaseRepository;
 
-class PlanningRepository implements PlanningRepositoryInterface
+class PlanningRepository extends BaseRepository
 {
+
+    public function __construct(PlanningBase $planningBase)
+    {
+        parent::__construct($planningBase);
+    }
     public function getPlannings(): Collection
     {
         return PlanningBase::all();
@@ -161,7 +165,8 @@ class PlanningRepository implements PlanningRepositoryInterface
             $query->whereIn('employee_type_id', $employee_types);
         }
         $query->whereBetween('start_date_time', [$startDateOfMonth, $endDateOfMonth]);
-        $query->selectRaw('DATE(start_date_time) as date, COUNT(*) as count')->groupBy('date');
+        $query->selectRaw('DATE(start_date_time) as date, COUNT(*) as count') // Select only DATE(start_date_time) for counting
+            ->groupBy('date'); // Group by DATE(start_date_time)
         return $query->get();
     }
 

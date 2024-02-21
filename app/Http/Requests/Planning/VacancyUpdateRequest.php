@@ -23,6 +23,7 @@ class VacancyUpdateRequest extends ApiRequest
     public function rules(): array
     {
         return [
+            'vacancy_id'     => 'nullable',
             'id'             => 'nullable',
             'name'           => 'nullable|string',
             'location'       => 'required|integer|exists:locations,id',

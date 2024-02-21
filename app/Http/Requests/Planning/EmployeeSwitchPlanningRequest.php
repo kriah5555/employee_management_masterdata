@@ -35,7 +35,7 @@ class EmployeeSwitchPlanningRequest extends ApiRequest
 
     protected function prepareForValidation()
     {       
-        if ($this->input('company_id')) {
+        if ($this->input('company_id')) {               
             setTenantDBByCompanyId($this->input('company_id'));
         }
         $this->merge(['request_from' => getEmployeeProfileByUserId(Auth::guard('web')->user()->id)->id]);

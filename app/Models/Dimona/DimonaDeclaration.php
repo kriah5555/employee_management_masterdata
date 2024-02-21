@@ -53,6 +53,7 @@ class DimonaDeclaration extends BaseModel
         'dimona_id',
         'type',
         'dimona_declartion_status',
+        'data'
     ];
     public function dimonaDeclarationErrors()
     {

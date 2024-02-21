@@ -11,6 +11,8 @@ use App\Repositories\Company\CompanyRepository;
 use App\Interfaces\Services\Company\CompanyServiceInterface;
 use Exception;
 use App\Services\Email\MailService;
+use App\Http\Resources\Company\CompanyResource;
+use App\Models\User\CompanyUser;
 
 use App\Services\Company\CompanyTenancyService;
 
@@ -32,11 +34,11 @@ class CompanyService implements CompanyServiceInterface
     {
         return $this->companyRepository->getCompanies();
     }
-    public function getCompaniesForOverview()
+    public function getCompaniesForOverview($user)
     {
         return [
-            'active'   => $this->companyRepository->getActiveCompanies(),
-            'archived' => $this->companyRepository->getArchivedCompanies(),
+            'active'   => $this->getResponsibleCompaniesForUser($user),
+            'archived' => CompanyResource::collection($this->companyRepository->getArchivedCompanies()),
         ];
     }
     public function getActiveCompanies()
@@ -75,6 +77,7 @@ class CompanyService implements CompanyServiceInterface
             $this->companyWorkstationService->createCompanyWorkstations($values, $location_ids, $company->id); # add workstations to location with function titles
             DB::connection('tenant')->commit();
         } catch (Exception $e) {
+            DB::connection('tenant')->rollback();
             error_log($e->getMessage());
             throw $e;
         }
@@ -179,6 +182,28 @@ class CompanyService implements CompanyServiceInterface
     public function getCompanyById($companyId): Company
     {
         return $this->companyRepository->getCompanyById($companyId);
+    }
+
+    public function getResponsibleCompaniesForUser($user)
+    {
+        $companies = [];
+        if ($user->is_admin || $user->is_moderator) {
+            $companies = CompanyResource::collection($this->getActiveCompanies());
+        } else {
+            $companies = $this->getAccessibleCompanies($user);
+        }
+        return $companies;
+    }
+
+    public function getAccessibleCompanies($user)
+    {
+        $companyUsers = CompanyUser::where('user_id', $user->id)->get();
+        foreach ($companyUsers as $companyUser) {
+            if ($companyUser->company->status && $companyUser->hasPermissionTo('Web app access')) {
+                $companies[] = new CompanyResource($companyUser->company);
+            }
+        }
+        return $companies;
     }
 
 }

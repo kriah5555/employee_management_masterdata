@@ -61,12 +61,12 @@ class PlanningStartStopController extends Controller
             $time                = date('H:i');
             $input['start_time'] = $time;
 
-            $plan = $this->planningStartStopService->getPlanByQrCode($input['QR_code'], $input['user_id'], $time, $time)->first();
-
-            if (($plan->contract_status != config('contracts.SIGNED') || empty($plan->contracts)) && $plan->employeeType->employeeTypeCategory->id == config('constants.DAILY_CONTRACT_ID')) { # if contract not generated or if the contract is unsigned
-                $qr_data = decodeData($input['QR_code']);
-
-                $contract = $plan->contracts()->exists() ?  $plan->contracts->first() : app(ContractService::class)->generateEmployeeContract($plan->employee_profile_id, null, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id'] ); # if contract exists use that else generate new contract and use that
+            $plan                        = $this->planningStartStopService->getPlanByQrCode($input['QR_code'], $input['user_id'], $time, $time)->first();
+            $plan_daily_renewal_contract = $plan->employeeType->contractTypes->where('contract_renewal_type_id', config('constants.DAILY_CONTRACT_RENEWAL_ID'))->first();
+            if (($plan->contract_status != config('contracts.SIGNED') || empty($plan->contracts)) && $plan_daily_renewal_contract) { # if contract not generated or if the contract is unsigned
+                $qr_data           = decodeData($input['QR_code']);
+                
+                $contract          = $plan->contracts()->exists() ?  $plan->contracts->first() : app(ContractService::class)->generateEmployeePlanContract($plan->employee_profile_id, $plan_daily_renewal_contract->id, config('contracts.CONTRACT_STATUS_UNSIGNED'), $plan->id, $qr_data['company_id'] ); # if contract exists use that else generate new contract and use that
 
                 return response()->json([   
                         'success'             => false,
@@ -143,7 +143,7 @@ class PlanningStartStopController extends Controller
                 $now             = Carbon::now();
                 $hoursDifference = $now->diffInHours($endTime);
 
-                if ($hoursDifference > config('constants.PLANNING_STOP_MAX_TIME')) {
+                if (strtotime(date('Y-m-d H:i')) > strtotime($plans->first()->end_date_time) && $hoursDifference > config('constants.PLANNING_STOP_MAX_TIME')) {
                     return response()->json([   
                         'success'             => false,
                         'message'             => t('Cannot stop plan, please enter stop time.'),
@@ -210,6 +210,27 @@ class PlanningStartStopController extends Controller
                 'trace'   => $e->getTraceAsString(),
                 'file'    => $e->getFile(),
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getDayPlanningToStartAndStop(Request $request)
+    {
+        try {
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->planningStartStopService->getDayPlanningToStartAndStop($request->location_id)
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return returnResponse(
+                [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }

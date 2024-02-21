@@ -52,7 +52,7 @@ return [
 
     'LONG_TERM_CONTRACT_ID'        => 1,
 
-    'DAILY_CONTRACT_ID'            => 2,
+    'DAILY_CONTRACT_RENEWAL_ID'    => 2, # daily
 
     'DEFAULT_DATE_FORMAT'          => 'd-m-Y',
 
@@ -115,7 +115,10 @@ return [
 
     'EMPLOYEE_ID_PATH' => 'employee_id_cards',
 
+    'ABSENCE_FILES_PATH' => 'absence_files',
+
     'SWITCH_PLAN_PENDING'  => 1,
     'SWITCH_PLAN_APPROVE'  => 2,
     'SWITCH_PLAN_REJECT'   => 3,
 ];
+

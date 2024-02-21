@@ -3,19 +3,17 @@
 namespace App\Services\Holiday;
 
 use Illuminate\Support\Facades\DB;
-use App\Services\BaseService;
 use App\Models\Holiday\PublicHoliday;
 use App\Services\CompanyService;
 
-class PublicHolidayService extends BaseService
+class PublicHolidayService
 {
     protected $public_holiday;
 
     protected $company_service;
 
-    public function __construct(PublicHoliday $public_holiday)
+    public function __construct()
     {
-        parent::__construct($public_holiday);
         $this->company_service = app(CompanyService::class);
     }
 
@@ -31,24 +29,12 @@ class PublicHolidayService extends BaseService
         }
     }
 
-    public function getOptionsToEdit($public_holiday_id)
-    {
-        try {
-            #$options = $this->getOptionsToCreate();
-            $options = $this->get($public_holiday_id, ['companiesValue']);
-            return $options;
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
     public function create($values)
     {
         try {
             DB::beginTransaction();
-                $public_holiday = $this->model::create($values);
-                $public_holiday->companies()->sync($values['companies'] ?? []);
+            $public_holiday = PublicHoliday::create($values);
+            $public_holiday->companies()->sync($values['companies'] ?? []);
             DB::commit();
             return $public_holiday;
         } catch (\Exception $e) {
@@ -62,8 +48,8 @@ class PublicHolidayService extends BaseService
     {
         try {
             DB::beginTransaction();
-                $public_holiday_model->update($values);
-                $public_holiday_model->companies()->sync($values['companies'] ?? []);
+            $public_holiday_model->update($values);
+            $public_holiday_model->companies()->sync($values['companies'] ?? []);
             DB::commit();
             return $public_holiday_model;
         } catch (\Exception $e) {

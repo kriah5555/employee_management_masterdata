@@ -103,6 +103,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::post('clone-planning', [ClonePlanningController::class, "clonePlanning"]);
 
         Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
+        Route::post('/vacancy/update', [VacancyController::class, 'update']);
         Route::post('uurrooster', [UurroosterController::class, 'getUurroosterData'])->name('uurrooster');
         Route::post('store-planning-shifts', [PlanningShiftController::class, 'storePlanningShifts']);
         Route::get('employee-long-term-plannings/{employee_id}', [LongTermPlanningController::class, 'getEmployeeLongTermPlannings']);
@@ -115,7 +116,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
             ],
             'vacancy'            => [
                 'controller' => VacancyController::class,
-                'methods'    => ['index', 'show', 'create', 'store', 'update', 'destroy']
+                'methods'    => ['index', 'show', 'create', 'store', 'destroy']
             ],
         ];
         foreach ($resources as $uri => ['controller' => $controller, 'methods' => $methods]) {
@@ -124,7 +125,7 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::controller(DimonaController::class)->group(function () {
             Route::get('/dimona-test-plan/{planId}', [DimonaController::class, 'testDimona']);
             Route::post('/send-dimona-by-plan', [DimonaController::class, 'sendDimonaByPlan']);
-            Route::get('/dimona-test-contract/{dimonaType}/{employeeContract}', [DimonaController::class, 'sendDimonaByEmployeeContract']);
+            Route::post('/send-long-term-dimona', [DimonaController::class, 'sendLongTermDimona']);
         });
 
         Route::controller(DimonaOverviewController::class)->group(function () {

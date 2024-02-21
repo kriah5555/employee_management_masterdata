@@ -2,10 +2,6 @@
 
 namespace App\Services\Email;
 
-use Config;
-use App\Mail\SendMail;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use App\Services\Email\EmailTemplateService;
 use App\Repositories\Company\CompanyRepository;
 use App\Repositories\Employee\EmployeeProfileRepository;
@@ -36,7 +32,7 @@ class MailService
             $body = replaceTokens($body, $employeeData);
             $subject = replaceTokens($subject, $employeeData);
 
-            self::triggerMail($this->redirect_mail != '' ? $this->redirect_mail : $employeeData['employee_email'], $subject, $body);
+            $this->triggerMail($this->redirect_mail != '' ? $this->redirect_mail : $employeeData['employee_email'], $subject, $body);
         }
     }
 
@@ -70,7 +66,7 @@ class MailService
             "{employee_date_of_birth}" => $employee->user->userBasicDetails->date_of_birth ? date('d-m-Y', strtotime($employee->user->userBasicDetails->date_of_birth)) : null,
             "{employee_nationality}"   => $employee->user->userBasicDetails->nationality,
             "{employee_ssn}"           => $employee->user->social_security_number,
-            "{employee_gender}"        => $employee->user->userBasicDetails->gender->name,
+            "{employee_gender}"        => $employee->user->userBasicDetails->gender ? $employee->user->userBasicDetails->gender->name : null,
             "{employee_email}"         => $employee->user->userContactDetails ? $employee->user->userContactDetails->email : null,
             "{employee_phone}"         => $employee->user->userContactDetails ? $employee->user->userContactDetails->phone_number : null,
             "{employee_bank}"          => $employee->user->userBankAccount ? $employee->user->userBankAccount->account_number : null,

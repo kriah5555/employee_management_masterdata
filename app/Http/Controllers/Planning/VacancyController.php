@@ -130,11 +130,17 @@ class VacancyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(VacancyUpdateRequest $request, $vacancy)
+    public function update(VacancyUpdateRequest $request)
     {
         try {
             $inputData = $request->validated();
-            return returnResponse(
+	    $vacancy = $inputData['vacancy_id'];
+
+	    if (empty($vacancy)) {
+               throw new \Exception("Problem with vacancy id");
+	    }
+	    
+	    return returnResponse(
                 [
                     'success' => true,
                     'message' => t('Vacancies updated successfully'),
@@ -196,7 +202,7 @@ class VacancyController extends Controller
             }
             return returnResponse(
                 [
-
+                    
                     'success' => true,
                     'message' => $message,
                     'data'    => $this->vacancyService->applyVacancyService($data)

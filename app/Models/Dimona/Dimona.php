@@ -51,6 +51,7 @@ class Dimona extends BaseModel
     protected $fillable = [
         'type',
         'dimona_period_id',
+        'active',
     ];
 
     public function dimonaDeclarations()

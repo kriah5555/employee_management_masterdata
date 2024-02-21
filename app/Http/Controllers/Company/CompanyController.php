@@ -12,6 +12,7 @@ use App\Services\Sector\SectorService;
 use App\Services\SocialSecretary\SocialSecretaryService;
 use App\Services\Interim\InterimAgencyService;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
@@ -35,7 +36,7 @@ class CompanyController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->companyService->getCompaniesForOverview(),
+                    'data'    => $this->companyService->getCompaniesForOverview(Auth::user()),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -181,5 +182,24 @@ class CompanyController extends Controller
             ],
             JsonResponse::HTTP_OK,
         );
+    }
+
+    public function getUserResponsibleCompanies()
+    {
+        try {
+
+            return returnResponse(
+                [
+                    'success' => true,
+                    'data'    => $this->companyService->getResponsibleCompaniesForUser(Auth::user())
+                ],
+                JsonResponse::HTTP_OK,
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Services\Planning;
 
 use App\Models\Planning\PlanningBase;
-use App\Interfaces\Planning\PlanningInterface;
 use App\Repositories\Planning\PlanningRepository;
 use App\Services\Company\CompanyService;
 use App\Services\Company\DashboardAccessService;
@@ -11,7 +10,7 @@ use App\Models\Company\Location;
 use App\Services\Company\Absence\AbsenceService;
 use App\Services\Company\LocationService;
 
-class UurroosterService implements PlanningInterface
+class UurroosterService
 {
 
     public function __construct(

@@ -1,7 +1,8 @@
-FROM php:8.2-fpm-bookworm
+FROM php:8.3-fpm-bullseye
 
-# Get frequently used tools
-RUN apt-get update && apt-get install -y \
+# Install dependencies and frequently used tools
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
     build-essential \
     libicu-dev \
     libzip-dev \
@@ -20,28 +21,37 @@ RUN apt-get update && apt-get install -y \
     curl \
     wget \
     zsh \
-    libpq-dev
+    libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql
-
-RUN docker-php-ext-configure zip
-
-RUN docker-php-ext-install \
+# Install necessary PHP extensions
+RUN docker-php-ext-install -j$(nproc) \
     bcmath \
-    mbstring \
-    pcntl \
     intl \
-    zip \
+    mbstring \
     opcache \
-    pgsql
+    pcntl \
+    pdo \
+    pdo_pgsql \
+    pgsql \
+    zip \
+    gd \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Set locale to CET (Central European Time)
+RUN echo "Europe/Brussels" > /etc/timezone && \
+    ln -fs /usr/share/zoneinfo/Europe/Brussels /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
+# Set locale
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
 
 # Copy existing app directory
 COPY ./ /var/www/masterdata
 WORKDIR /var/www/masterdata
-
 
 # Configure non-root user.
 ARG PUID=1000
@@ -57,11 +67,10 @@ USER www-data
 
 # Copy and run composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-RUN composer install --no-interaction
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# For Laravel Installations
-#RUN php artisan key:generate
-
+# Expose port 80
 EXPOSE 80
 
+# Start PHP-FPM
 CMD ["php-fpm"]

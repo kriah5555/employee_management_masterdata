@@ -2,34 +2,30 @@
 
 namespace App\Services\Planning;
 
-use App\Models\Planning\PlanningBase;
-use App\Interfaces\Planning\PlanningInterface;
 use App\Repositories\Planning\PlanningRepository;
 use App\Models\Company\Location;
 use App\Models\Company\Company;
-use App\Models\EmployeeType\EmployeeType;
-use App\Models\EmployeeFunction\FunctionTitle;
 use App\Services\Employee\EmployeeService;
 use App\Services\Planning\PlanningContractService;
 use App\Services\Planning\PlanningShiftsService;
 use App\Services\Company\Absence\AbsenceService;
 use App\Services\Employee\EmployeeContractService;
 
-class PlanningService implements PlanningInterface
+class PlanningService
 {
 
     public function __construct(
-        protected PlanningBase $planningBase,
-        protected Location $location,
-        protected Company $company,
-        protected EmployeeType $employeeType,
-        protected FunctionTitle $functionTitle,
         protected EmployeeService $employeeService,
         protected PlanningRepository $planningRepository,
         protected PlanningContractService $planningContractService,
         protected PlanningShiftsService $planningShiftsService,
         protected EmployeeContractService $employeeContractService,
     ) {
+    }
+
+    public function find($id, $with = [])
+    {
+        return $this->planningRepository->find($id, $with);
     }
 
     /**
@@ -41,10 +37,9 @@ class PlanningService implements PlanningInterface
     public function getEmployeeTypes($companyId)
     {
         $response = [];
-        $employeeTypes = [];
-        $data = $this->company->employeeTypes($companyId)->get()->toArray();
+        $data = Company::find($companyId)->employeeTypes($companyId)->get()->toArray();
 
-        if (count($data) > 0) {
+        if (count($data)) {
             $data = reset($data);
             foreach ($data['sectors'] as $values) {
                 $response += $values['employee_types_value'];
@@ -77,7 +72,7 @@ class PlanningService implements PlanningInterface
     public function getWorkstations()
     {
         $data = $response = [];
-        $data = $this->location->with(['workstationsValues'])->get()->toArray();
+        $data = Location::with(['workstationsValues'])->get()->toArray();
 
         foreach ($data as $value) {
             //$response[$value['id']]['id'] = $value['id'];
@@ -104,7 +99,7 @@ class PlanningService implements PlanningInterface
 
     public function getPlanningOverviewFilterService($companyId)
     {
-        $output['locations'] = $this->location->all(['id as value', 'location_name as label'])->toArray();
+        $output['locations'] = Location::all(['id as value', 'location_name as label'])->toArray();
 
         //$response['locations'] = $this->optionsFormat($output['locations']);
         $response['locations'] = $output['locations'];
@@ -118,7 +113,6 @@ class PlanningService implements PlanningInterface
     {
         $response = [];
         $data = $this->getMonthlyPlanningDayCount($location, $workstations, $employee_types, $month, $year);
-        // $data = $this->planningBase->monthPlanning($year, $month, $location, $workstations, $employee_types);
         foreach ($data as $value) {
 
             $response[date('d-m-Y', strtotime($value['date']))] = $value['count'];
@@ -291,23 +285,24 @@ class PlanningService implements PlanningInterface
         //Getting the data from the query.
         $plannings = $this->getWeeklyPlannings($locationId, $workstationIds, $employee_types, $weekNo, $year);
         $response = $this->formatWeeklyData($plannings, $weekNo, $year, $response);
-        $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
+        // $response['employee_list'] = app(EmployeeContractService::class)->getActiveContractEmployeesByWeek($weekNo, $year);
 
         return $response;
     }
 
-    public function getDayPlanningService($location, $workstations, $employee_types, $date)
+    public function getDayPlanningService($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
-        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         return $this->formatDayPlanning($plannings);
     }
 
-    public function getDayPlanningMobileService($location, $workstations, $employee_types, $date)
+    public function getDayPlanningMobileService($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
-        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         $absenceService = app(AbsenceService::class);
         return $plannings->map(function ($plan) use ($absenceService) {
-            $leave_status = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'))->isNotEmpty();
+            $leaves = $absenceService->getAbsenceForDate($plan->plan_date, config('absence.LEAVE'), $plan->employee_profile_id);
+            $leave_status = $leaves->isNotEmpty();
             return [
                 'plan_id'                  => $plan->id,
                 'plan_date'                => $plan->plan_date,
@@ -326,7 +321,8 @@ class PlanningService implements PlanningInterface
                 'employee_type_id'         => $plan->employee_type_id,
                 'employee_type'            => $plan->employeeType->name,
                 'leave_status'             => $leave_status,
-                'leave_reason'             => $leave_status ? "Something" : null,
+                'leave_reason'             => $leave_status ? $leaves->pluck('reason')->implode(', ') : null,
+                'leave_codes'              => $leave_status ? $leaves->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
             ];
         });
     }
@@ -334,7 +330,7 @@ class PlanningService implements PlanningInterface
     public function getEmployeeDayPlanningService($employee_profile_id, $date = '')
     {
         $date = $date == '' ? date('d-m-Y') : $date;
-        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date);
+        $plannings = $this->getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id);
         return $this->formatDayPlanning($plannings);
     }
 
@@ -453,50 +449,50 @@ class PlanningService implements PlanningInterface
         return $response;
     }
 
+    public function getPlanStartStopStatus($plan) # $plan => object of planning Base model
+    {
+        $currentDateTime = strtotime(date('Y-m-d H:i'));
+        $startPlan = $stopPlan = $startBreak = $stopBreak = false;
+
+        if ($currentDateTime >= strtotime($plan->start_date_time) && $currentDateTime <= strtotime($plan->end_date_time)) {
+            $startPlan = true;
+            $stopPlan = false;
+        }
+        // Check if the plan has already been started
+        if ($plan->plan_started) {
+            $startPlan = false; // Don't start the plan
+            $stopPlan = true;  // Stop the plan
+        }
+
+        if ($plan->break_started) { # if plan already started and break is also started
+            $startBreak = false;
+            $stopBreak = true;
+        } elseif ($stopPlan) {
+            $startBreak = true;
+            $stopBreak = false;
+        }
+
+        if ($stopBreak) { # cannot stop plan if break is active
+            $startPlan = false;
+            $stopPlan = false;
+        }
+        return [
+            'startPlan'  => $startPlan,
+            'stopPlan'   => $stopPlan,
+            'startBreak' => $startBreak,
+            'stopBreak'  => $stopBreak,
+        ];
+    }
+
     public function formatPlanDetailsForDayOverview($details)
     {
         $startPlan = $stopPlan = false;
         $sendPlanDimona = $details->dimona_status ? false : true;
-        // if (strtotime($details->start_date_time) <= strtotime(date('Y-m-d H:i')) && strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-        // if ($details->plan_started) {
-        //     $startPlan = false;
-        //     $stopPlan = true;
-        // } else {
-        //     $startPlan = true;
-        //     $stopPlan = false;
-        // }
-
-        // if (strtotime($details->end_date_time) >= strtotime(date('Y-m-d H:i'))) {
-        //     $startPlan = false;
-        // }
-
-        // }
 
         // Get the current date and time
         $currentDateTime = strtotime(date('Y-m-d H:i'));
 
-        // Initialize variables for start and stop plans
-        $startPlan = $stopPlan = false;
-
-        // Check if the start time is less than or equal to the current time
-        // if (strtotime($details->start_date_time) <= $currentDateTime) {
-        //     $startPlan = $stopPlan = false; // Don't start or stop the plan
-        // }
-        // if (strtotime($details->end_date_time) > $currentDateTime && strtotime($details->start_date_time) > $currentDateTime) {
-        //     $startPlan = $stopPlan = false; // Don't start or stop the plan
-        // }
-
-        // if current time is in between start and end time
-        if ($currentDateTime >= strtotime($details->start_date_time) && $currentDateTime <= strtotime($details->end_date_time)) {
-            $startPlan = true;
-            $stopPlan = false;
-        }
-
-        // Check if the plan has already been started
-        if ($details->plan_started) {
-            $startPlan = false; // Don't start the plan
-            $stopPlan = true;  // Stop the plan
-        }
+        $plan_status = $this->getPlanStartStopStatus($details);
 
         $response = [
             'start_time'       => date('H:i', strtotime($details->start_date_time)),
@@ -504,8 +500,10 @@ class PlanningService implements PlanningInterface
             'employee_type'    => $details->employeeType->name,
             'function'         => $details->functionTitle->name,
             'workstation'      => $details->workstation->workstation_name,
-            'start_plan'       => $startPlan,
-            'stop_plan'        => $stopPlan,
+            'start_plan'       => $plan_status['startPlan'],
+            'stop_plan'        => $plan_status['stopPlan'],
+            'start_break'      => $plan_status['startBreak'],
+            'stop_break'       => $plan_status['stopBreak'],
             'send_plan_dimona' => $sendPlanDimona,
             'contract'         => $this->planningContractService->getPlanningContractContract($details),
         ];
@@ -531,7 +529,7 @@ class PlanningService implements PlanningInterface
 
     public function getDayPlannings($location, $workstations, $employee_types, $date, $employee_profile_id = '')
     {
-        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
+        return $this->planningRepository->getPlansBetweenDates($location, $workstations, $employee_types, $date, $date, $employee_profile_id, ['workStation', 'employeeProfile.user', 'employeeType', 'functionTitle']);
     }
 
     public function getPlans($from_date = '', $to_date = '', $location = '', $workstations = '', $employee_types = '', $employee_id = '', $relations = [])
@@ -545,12 +543,10 @@ class PlanningService implements PlanningInterface
         $plans = $this->planningRepository->getPlansByDatesArray($dates_array, $employee_profile_id);
 
         foreach ($plans as $plan) {
-            // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
-            // $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted;
             $return_data[$plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted] = [
                 'plan_id'     => $plan->start_time . '-' . $plan->end_time . '-' . $plan->contract_hours_formatted,
                 'plan_time'   => $plan->start_time . '-' . $plan->end_time . ' ' . $plan->contract_hours_formatted,
-                'shift_leave' => false,
+                'shift_leave' => $plan->absence->isNotEmpty(), # add this status true if there is leave for this plan
             ];
         }
         return array_values($return_data);
@@ -656,7 +652,7 @@ class PlanningService implements PlanningInterface
         $activeDimonaEmployeeTypes = $company->dimoanEmployeeTypes->pluck('id')->toArray();
         $plans = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], '', $values['date'], $values['date'], '', ['employeeProfile.user.userBasicDetails']);
         foreach ($plans as $plan) {
-            if ($plan->employeeType->employeeTypeCategory->id != 1 && !$plan->dimona_status && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
+            if ($plan->employeeType->employeeTypeCategory->id != 1 && !count($plan->planningDimona) && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
                 $response[] = [
                     'id'      => $plan->id,
                     'name'    => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name,

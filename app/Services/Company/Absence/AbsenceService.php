@@ -26,16 +26,15 @@ class AbsenceService
         }
     }
 
-    public function createAbsenceRelatedData(Absence $absence, $absence_hours, $dates_data, $plan_timings = [])
+    public function createAbsenceRelatedData(Absence $absence, $absence_hours, $dates_data, $plan_timings = [], $plan_ids = [])
     {
         try {
             $absence->absenceHours()->createMany($absence_hours);
 
             $absence->absenceDates()->create($dates_data);
 
-            if (!empty($plan_timings)) {
-                $plan_ids = $this->getPlanIdsForTimings($dates_data['dates'], $plan_timings, $absence->employee_profile_id);
-                // $plan_ids = $this->getPlanIdsForTimings(json_decode($dates_data['dates']), $plan_timings, $absence->employee_profile_id);
+            if (!empty($plan_timings) || !empty($plan_ids)) {
+                $plan_ids = !empty($plan_timings) ? $this->getPlanIdsForTimings($dates_data['dates'], $plan_timings, $absence->employee_profile_id) : $plan_ids;
                 $absence->plans()->sync($plan_ids);
             }
 
@@ -173,7 +172,7 @@ class AbsenceService
         return $absence->update(['manager_id' => $responsible_person_id]);
     }
 
-    public function getAbsenceDetailsForWeek($week_number, $year)
+    public function getAbsenceDetailsForWeek($week_number, $year, $employee_profile_id = '')
     {
         try {
             $dates  = getWeekDates($week_number, $year, 'd-m-Y');
@@ -187,7 +186,7 @@ class AbsenceService
 
             
             foreach ($dates as $date) {
-                $absences = $this->getAbsenceForDate($date);
+                $absences = $this->getAbsenceForDate($date, '', $employee_profile_id);
                 foreach ($absences as $absence) {
                     $return[$date][$absence->absence_type == config('absence.Holiday') ? 'holidays' : 'leaves'][] = $this->formatAbsenceDataForOverview($absence);
                 }
@@ -341,6 +340,7 @@ class AbsenceService
                     'reason'         => $leave->reason,
                     'plan_timings'   => $leave->plan_timings,
                     'plan_ids'       => $leave->plan_ids,
+                    'shift_leave'    => $leave->duration_type == config('absence.SHIFT_LEAVE'),
                     'actions'        => $this->getAbsenceActions($leave->absence_type, $leave->absence_status, $employee_flow),
                 ];
             } else {  # Holiday
@@ -354,9 +354,9 @@ class AbsenceService
                 $half_day = null;
                 if ($duration_type == config('absence.FULL_DAYS')) {
                     $half_day = 0;
-                } elseif ($duration_type == config('absence.FIRST_HALF')) {
+                } elseif ($duration_type == config('absence.FIRST_HALF') || $duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_FIRST_HALF')) {
                     $half_day = 1;
-                } elseif ($duration_type == config('absence.SECOND_HALF')) {
+                } elseif ($duration_type == config('absence.SECOND_HALF') || $duration_type == config('absence.MULTIPLE_HOLIDAY_CODES_SECOND_HALF')) {
                     $half_day = 2;
                 } elseif ($duration_type == config('absence.FIRST_AND_SECOND_HALF')) {
                     $half_day = 3;
@@ -367,7 +367,7 @@ class AbsenceService
                 
                 foreach ($leave->absenceHours as $absence_hours) {
 
-                    if ($absence_hours->duration_type == config('absence.FULL_DAYS') || $absence_hours->duration_type == config('absence.PLANNING_LEAVES') || $absence_hours->duration_type == config('absence.MULTIPLE_DATES')) {
+                    if ($absence_hours->duration_type == config('absence.FULL_DAYS') || $absence_hours->duration_type == config('absence.MULTIPLE_DATES')) {
                         $holiday_code = [
                             'id'   => $absence_hours->holiday_code_id,
                             'name' => $absence_hours->holidayCode->holiday_code_name,
@@ -515,8 +515,7 @@ class AbsenceService
                 $d_type = config('absence.SECOND_HALF');
                 $h_code = $holiday_code_second_half;
             } 
-            
-            if ($duration_type == config('absence.FULL_DAY') || $duration_type == config('absence.FULL_DAY')) { # fill day
+            if ($duration_type == config('absence.FULL_DAYS') || $duration_type == config('absence.FULL_DAYS')) { # fill day
                 $h_code = $holiday_code;
             }
 

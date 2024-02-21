@@ -9,11 +9,16 @@ use App\Http\Requests\Holiday\HolidayCodeRequest;
 use App\Http\Controllers\Controller;
 use App\Services\EmployeeType\EmployeeTypeService;
 use App\Services\CompanyService;
+use App\Http\Resources\Absence\HolidayCodeResource;
+use App\Http\Resources\Absence\HolidayCodeCollection;
 
 class HolidayCodeController extends Controller
 {
-    public function __construct(protected HolidayCodeService $holidayCodeService, protected EmployeeTypeService $employeeTypeService, protected CompanyService $companyService)
-    {
+    public function __construct(
+        protected HolidayCodeService $holidayCodeService,
+        protected EmployeeTypeService $employeeTypeService,
+        protected CompanyService $companyService
+    ) {
     }
     /**
      * Display a listing of the resource.
@@ -23,7 +28,7 @@ class HolidayCodeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holidayCodeService->getHolidayCodes()
+                'data'    => new HolidayCodeCollection($this->holidayCodeService->getHolidayCodes()),
             ],
             JsonResponse::HTTP_OK,
         );
@@ -52,7 +57,7 @@ class HolidayCodeController extends Controller
         return returnResponse(
             [
                 'success' => true,
-                'data'    => $this->holidayCodeService->getHolidayCodeDetails($id),
+                'data'    => new HolidayCodeResource($this->holidayCodeService->find($id))
             ],
             JsonResponse::HTTP_OK,
         );
@@ -68,10 +73,9 @@ class HolidayCodeController extends Controller
                     'count_type'              => $this->holidayCodeService->getHolidayCodeCountTypeOptions(),
                     'icon_type'               => $this->holidayCodeService->getHolidayCodeIconTypeOptions(),
                     'employee_category'       => $this->employeeTypeService->getEmployeeCategoryOptions(),
-                    'employee_types'          => $this->employeeTypeService->getEmployeeTypeOptions(),
                     'contract_type'           => $this->employeeTypeService->getEmployeeContractTypeOptions(),
                     'type'                    => $this->holidayCodeService->getHolidayTypeOptions(),
-                    'companies'               => $this->companyService->getCompanies(),
+                    'companies'               => collectionToValueLabelFormat($this->companyService->getCompanies(), 'id', 'company_name'),
                     'holiday_include_options' => $this->holidayCodeService->getCompanyLinkingOptions(),
                 ],
             ],

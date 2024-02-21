@@ -16,7 +16,7 @@ class ContractMobileService
     {}
 
 
-    public function getEmployeeContractFiles($company_ids, $user_id, $contract_status = '', $employee_contract_id = '', $plan_id ='') # ['signed', 'unsigned']
+    public function getEmployeeContractFiles($company_ids, $user_id, $contract_status = '', $employee_contract_id = '', $plan_id ='', $employee_id = '') # ['signed', 'unsigned']
     {
         try {
             $response = [
@@ -27,14 +27,14 @@ class ContractMobileService
             foreach ($company_ids as $company_id) {
                 setTenantDBByCompanyId($company_id);
     
-                $employee_profile = EmployeeProfile::where('user_id', $user_id)->first();
+                $employee_profile_id = !empty($employee_id) ? $employee_id : EmployeeProfile::where('user_id', $user_id)->first()->id;
     
-                if (!empty($employee_profile)) {
+                if (!empty($employee_profile_id)) {
     
                     $company       = $this->companyRepository->getCompanyById($company_id);
                     $company_name  = $company->company_name;
                     $company_image = $company->logo_file ? $company->logo_file->file_path : null; 
-                    $contracts     = $this->contractService->getEmployeeContractFiles($employee_profile->id, $contract_status, $employee_contract_id, $plan_id);
+                    $contracts     = $this->contractService->getEmployeeContractFiles(!empty($employee_profile_id) ? $employee_profile_id : $employee_profile->id, $contract_status, $employee_contract_id, $plan_id);
     
                     $contracts->each(function ($contract) use(&$response, $company_name, $company_id, $company_image) {
                         $contractData = [
@@ -51,10 +51,10 @@ class ContractMobileService
                             'long_term_contract' => $contract->employeeContract ? true : false,
                         ];
     
-                        if ($contract->contract_status == 2) {
-                            $response['unsigned_contracts'][] = $contractData;
-                        } else {
+                        if ($contract->contract_status == config('contracts.CONTRACT_STATUS_SIGNED')) {
                             $response['signed_contracts'][] = $contractData;
+                        } else {
+                            $response['unsigned_contracts'][] = $contractData;
                         }
                     });
                 }

@@ -37,12 +37,17 @@ use App\Http\Controllers\{
     EmployeeFunction\FunctionCategoryController,
     NotificationController\NotificationController,
     Dimona\EmployeeTypeDimoanConfigurationController,
+    Configuration\FlexSalaryController,
+};
+
+use App\Http\Controllers\Employee\{
+    EmployeeInvitationController,
+    ImportEmployeeController
 };
 
 use App\Http\Controllers\Planning\VacancyController;
 use App\Models\User\CompanyUser;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Employee\EmployeeInvitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,6 +191,8 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     }
     Route::post('get-availability', [EmployeeAvailabilityController::class, 'index'])->name('get-employee-availability');
 
+    Route::delete('availability', [EmployeeAvailabilityController::class, 'destroy'])->name('delete-employee-availability');
+
     Route::post('convert-pdf-to-html', [ContractTemplateController::class, 'convertPDFHtml']);
 
     Route::controller(TranslationController::class)->group(function () {
@@ -193,7 +200,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('/extract-translatable-strings', 'extractTranslatableStrings');
 
         Route::resource('translations', TranslationController::class)->only(['show', 'index', 'update']);
-
     });
 
     Route::get('get-minimum-salaries/{sector_id}', [SalaryController::class, 'getOptionsForEmployeeContractCreation']);
@@ -217,7 +223,6 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::post('hourly-minimum-salaries/{sector_id}/update', 'updateMinimumSalaries')->where(['id' => $integerRule]);
 
         Route::post('salary-increment-calculation', 'salaryIncrementCalculation');
-
     });
 
     Route::controller(ReasonController::class)->group(function () {
@@ -230,10 +235,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
         Route::get('social-secretary-holiday-configuration/{social_secretary_id}', 'getSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
 
         Route::put('social-secretary-holiday-configuration', 'updateSocialSecretaryHolidayConfiguration')->where(['sector_id' => $integerRule]);
-
     });
 
-    Route::get('user/responsible-companies', [EmployeeController::class, 'getUserResponsibleCompanies']);
+    Route::get('user/responsible-companies', [CompanyController::class, 'getUserResponsibleCompanies']);
 
     Route::post('/user-details', [EmployeeController::class, 'getUserDetails']);
 
@@ -256,6 +260,9 @@ Route::group(['middleware' => 'setactiveuser'], function () use ($integerRule) {
     Route::post('get-parameters', [ParameterController::class, 'getParameters'])->name('get-parameters');
 
     Route::put('update-parameter/{parameter_id}', [ParameterController::class, 'updateParameter'])->name('update-parameter');
+
+    Route::post('flex-salary', [FlexSalaryController::class, 'createOrUpdateFlexSalary']);
+    Route::get('flex-salary/{key}', [FlexSalaryController::class, 'getFlexSalaryByKey']);
 });
 Route::post('/translate', [TranslationController::class, 'getStringTranslation']);
 
@@ -263,39 +270,4 @@ Route::post('validate-employee-invitations', [EmployeeInvitationController::clas
 
 Route::post('employee-registration', [EmployeeInvitationController::class, 'employeeRegistration'])->name('employee-registration');
 
-Route::get('/script', function () {
-    return response()->json([
-        'message' => 'No script'
-    ]);
-    DB::connection('master')->beginTransaction();
-    $results = DB::connection('userdb')
-        ->table('model_has_roles')
-        ->select('*')  // You can replace '*' with specific column names if needed
-        ->where('model_type', '=', "App\Models\User\CompanyUser")
-        ->get();
-    foreach ($results as $val) {
-        if (in_array($val->role_id, [4, 5, 6, 7, 8, 9])) {
-            if ($val->role_id == 4) {
-                $role = 'customer_admin';
-            } elseif ($val->role_id == 5) {
-                $role = 'hr_manager';
-            } elseif ($val->role_id == 6) {
-                $role = 'manager';
-            } elseif ($val->role_id == 7) {
-                $role = 'planner';
-            } elseif ($val->role_id == 8) {
-                $role = 'staff';
-            } elseif ($val->role_id == 9) {
-                $role = 'employee';
-            }
-            $companyUser = CompanyUser::find($val->model_id);
-            if ($companyUser) {
-                $companyUser->assignRole($role);
-            }
-        }
-    }
-    DB::connection('master')->commit();
-    return response()->json([
-        'message' => 'Done'
-    ]);
-});
+Route::get('import-employee-sample-file', [ImportEmployeeController::class, 'downloadImportEmployeeSampleFile']);

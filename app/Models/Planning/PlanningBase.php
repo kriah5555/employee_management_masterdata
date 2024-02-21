@@ -2,18 +2,17 @@
 
 namespace App\Models\Planning;
 
-use App\Models\EmployeeFunction\FunctionTitle;
-use App\Models\EmployeeType\EmployeeType;
-use Illuminate\Support\Facades\DB;
-use App\Models\Company\{Workstation, Location};
-use App\Models\Company\Employee\EmployeeProfile;
-use App\Models\Planning\{PlanningBreak, PlanningContracts, TimeRegistration};
-use App\Models\Dimona\PlanningDimona;
 use App\Models\BaseModel;
 use App\Traits\UserAudit;
 use Illuminate\Support\Carbon;
-use App\Models\Company\Employee\EmployeeContractFile;
+use Illuminate\Support\Facades\DB;
+use App\Models\Dimona\PlanningDimona;
 use App\Models\Company\Absence\Absence;
+use App\Models\EmployeeType\EmployeeType;
+use App\Models\EmployeeFunction\FunctionTitle;
+use App\Models\Company\{Workstation, Location};
+use App\Models\Company\Employee\EmployeeProfile;
+use App\Models\Planning\{PlanningBreak, PlanningContract, TimeRegistration};
 
 
 class PlanningBase extends BaseModel
@@ -29,7 +28,7 @@ class PlanningBase extends BaseModel
      */
     protected $table = 'planning_base';
 
-    protected static $sort = ['start_date_time'];
+    // protected static $sort = ['start_date_time'];
     /**
      * The primary key associated with the table.
      *
@@ -142,12 +141,14 @@ class PlanningBase extends BaseModel
 
     public function contracts()
     {
-        return $this->hasMany(EmployeeContractFile::class)->where('status', true);
+        return $this->hasMany(PlanningContract::class)->where('status', true);
     }
 
     public function planningDimona()
     {
-        return $this->hasMany(PlanningDimona::class, 'planning_base_id');
+        return $this->hasMany(PlanningDimona::class, 'planning_id')->whereHas('dimona', function ($query) {
+            $query->where('active', true);
+        });
     }
 
     /**
@@ -265,8 +266,8 @@ class PlanningBase extends BaseModel
         return $query->get();
     }
 
-    public function plans()
+    public function absence()
     {
-        return $this->belongsToMany(Absence::class, 'absence_plans', 'absence_id', 'planning_base_id');
+        return $this->belongsToMany(Absence::class, 'absence_plans', 'planning_base_id', 'absence_id');
     }
 }

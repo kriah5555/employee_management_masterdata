@@ -26,7 +26,9 @@ class ContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->contractService->getEmployeeContractFiles($employee_profile_id, $contract_status),
+                    'data'    => $this->contractService->getEmployeeContractFiles($employee_profile_id, $contract_status)->merge(
+                        $this->contractService->getEmployeePlanContractFiles($contract_status, '', $employee_profile_id = '')
+                    ),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -91,7 +93,7 @@ class ContractController extends Controller
             return returnResponse(
                 [
                     'success' => true,
-                    'data'    => $this->contractService->getEmployeeContractFiles('', '', '', $plan_id)->first(),
+                    'data'    => $this->contractService->getEmployeePlanContractFiles('', $plan_id)->first(),
                 ],
                 JsonResponse::HTTP_OK,
             );
@@ -120,7 +122,7 @@ class ContractController extends Controller
                 [
                     'success' => true,
                     'message' => t('Contract generated successfully.'),
-                    'data'    => $this->contractService->generateEmployeeContract($request->employee_profile_id, $request->employee_contract_id, $contract_status),
+                    'data'    => $this->contractService->generateEmployeeContract($request->employee_profile_id, $request->employee_contract_id, $request->contract_type_id, $contract_status),
                 ],
                 JsonResponse::HTTP_OK,
             );

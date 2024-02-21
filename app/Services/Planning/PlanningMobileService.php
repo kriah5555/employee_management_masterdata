@@ -3,14 +3,13 @@
 namespace App\Services\Planning;
 
 use App\Models\Planning\PlanningBase;
-use App\Interfaces\Planning\PlanningInterface;
 use App\Repositories\Planning\PlanningRepository;
 use App\Services\Employee\EmployeeContractService;
 use App\Services\Planning\PlanningService;
 use App\Repositories\Company\CompanyRepository;
 use App\Models\Company\Employee\EmployeeProfile;
 
-class PlanningMobileService implements PlanningInterface
+class PlanningMobileService
 {
 
     public function __construct(
