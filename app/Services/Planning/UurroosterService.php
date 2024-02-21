@@ -66,7 +66,7 @@ class UurroosterService
             foreach ($workstations as $value) {
                 $response['planning_data'][$value->id]['workstation_id'] = $value->id;
                 $response['planning_data'][$value->id]['workstation_name'] = $value->workstation_name;
-                $response['planning_data'][$value->id]['count'] = 1;
+                $response['planning_data'][$value->id]['count'] = 0;
                 $response['planning_data'][$value->id]['plannings'] = [];
             }
             $data = $this->planningRepository->getPlansBetweenDates($location_id, [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType.employeeTypeConfig', 'functionTitle', 'timeRegistrations']);
@@ -94,44 +94,12 @@ class UurroosterService
         foreach ($plannings as $planning) {
             $class = class_basename($planning);
 
-            if ($class == 'PlanningBase') {
-                $employeeName   = $planning->employeeProfile->full_name;
-                $workstation_id = $planning->workstation_id;
-                $absence        = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);
-                $absence_status = $absence->isNotEmpty();
-                $absence_codes  = $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null;
-                $start_time     = $planning->start_time;
-                $end_time       = $planning->end_time;
-                $employee_type  = $planning->employeeType->name;
-                $employee_type_color = $planning->employeeType->employeeTypeConfig->icon_color;
-                $function_name = $planning->functionTitle->name;
-            } else {
-                $employeeName   = $planning->name;
-                $workstation_id = $planning->workstation_id;
-                $absence_status = false;
-                $absence_codes  = null;
-                $start_time     = formatDate($planning->start_time, 'H:i');
-                $end_time       = formatDate($planning->end_time);
-                $employee_type  = 'Open Shifts';
-                $employee_type_color = '#111';
-                $function_name = $planning->functions->name;
-            }
-
             $timeRegistrations = [
                 'start_time'          => [],
                 'start_dimona_status' => [],
                 'end_time'            => [],
                 'end_dimona_status'   => [],
             ];
-            if ($planning->timeRegistrations) {
-                $count = 1;
-            } else {
-                $count = 1;
-            }
-            if ($class == 'Vacancy') {
-                $count = 1;
-                // $count = $planning->vacancy_count;
-            }
             $messages = [
                 [
                     'status'  => 'success',
@@ -153,7 +121,23 @@ class UurroosterService
                     ]
                 ],
             ];
+
             if ($class == 'PlanningBase') {
+                $employeeName   = $planning->employeeProfile->full_name;
+                $workstation_id = $planning->workstation_id;
+                $absence        = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);
+                $absence_status = $absence->isNotEmpty();
+                $absence_codes  = $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null;
+                $start_time     = $planning->start_time;
+                $end_time       = $planning->end_time;
+                $employee_type  = $planning->employeeType->name;
+                $employee_type_color = $planning->employeeType->employeeTypeConfig->icon_color;
+                $function_name = $planning->functionTitle->name;
+                if ($planning->timeRegistrations->count()) {
+                    $count = 0;
+                } else {
+                    $count = 1;
+                }
                 foreach ($planning->timeRegistrations as $timeRegistration) {
                     $timeRegistrations['start_time'][] = $timeRegistration->actual_start_time ? date('H:i', strtotime($timeRegistration->actual_start_time)) : '';
                     $timeRegistrations['start_dimona_status'][] = $messages[$planning->id % 4];
@@ -163,6 +147,17 @@ class UurroosterService
                     }
                     $count += 1;
                 }
+            } else {
+                $employeeName        = $planning->name;
+                $workstation_id      = $planning->workstation_id;
+                $absence_status      = false;
+                $absence_codes       = null;
+                $start_time          = formatDate($planning->start_time, 'H:i');
+                $end_time            = formatDate($planning->end_time);
+                $employee_type       = 'Open Shifts';
+                $employee_type_color = null;
+                $function_name       = $planning->functions->name;
+                $count               = 1;
             }
 
             $response['planning_data'][$workstation_id]['plannings'][] = [
