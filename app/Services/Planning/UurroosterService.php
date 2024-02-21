@@ -64,7 +64,7 @@ class UurroosterService
             $response['location_name'] = $location->location_name;
             $response['planning_data'] = [];
             foreach ($workstations as $value) {
-                $response['planning_data'][$value->id]['workstation_id'] = $value->workstation_name;
+                $response['planning_data'][$value->id]['workstation_id'] = $value->workstation_id;
                 $response['planning_data'][$value->id]['workstation_name'] = $value->workstation_name;
                 $response['planning_data'][$value->id]['count'] = 0;
                 $response['planning_data'][$value->id]['plannings'] = [];
@@ -96,7 +96,7 @@ class UurroosterService
 
             if ($class == 'PlanningBase') {
                 $employeeName   = $planning->employeeProfile->full_name;
-                $workstation_id = $planning->workStation->id;
+                $workstation_id = $planning->workstation_id;
                 $absence        = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);
                 $absence_status = $absence->isNotEmpty();
                 $absence_codes  = $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null;
