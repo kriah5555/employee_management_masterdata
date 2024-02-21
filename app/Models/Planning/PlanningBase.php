@@ -147,7 +147,9 @@ class PlanningBase extends BaseModel
 
     public function planningDimona()
     {
-        return $this->hasMany(PlanningDimona::class, 'planning_base_id');
+        return $this->hasMany(PlanningDimona::class, 'planning_id')->whereHas('dimona', function ($query) {
+            $query->where('active', true);
+        });
     }
 
     /**

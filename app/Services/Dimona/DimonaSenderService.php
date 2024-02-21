@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\CompanyService;
 use Illuminate\Support\Str;
 use App\Models\Dimona\Dimona;
+use App\Models\Dimona\PlanningDimona;
 
 class DimonaSenderService
 {
@@ -59,23 +60,37 @@ class DimonaSenderService
     public function sendDimonaByPlan($companyId, $planId)
     {
         try {
-            $plan = $this->planningService->find($planId, [
-                'employeeType'
-            ]);
-            DB::connection('tenant')->beginTransaction();
             setTenantDBByCompanyId($companyId);
-            $dimona = ['unique_id' => Str::uuid()];
-            $dimona['plan_id'] = $planId;
-            $dimona['type'] = 'plan';
-            $dimona['dimona_type'] = 'IN';
-            $dimonaDeclarations = $this->createDimonaRecords($dimona);
-            $this->setCompanyData($companyId, $dimona);
-            $this->setEmployeeData($plan->employeeProfile, $dimona);
-            $this->setPlanningData($planId, $dimona);
-            DB::connection('tenant')->commit();
-            $response = $this->requestDimona->sendDimonaRequest($dimona, '/api/send-planning-dimona');
-            if (!$response) {
-                $this->setDimonaRequestFailed($dimonaDeclarations);
+            $plan = $this->planningService->find($planId);
+            if (!count($plan->planningDimona)) {
+                $dimona = ['unique_id' => Str::uuid()];
+                $dimona['plan_id'] = $planId;
+                $dimona['type'] = 'plan';
+                $dimona['dimona_type'] = 'IN';
+                $dimona['active_dimona'] = false;
+                $dimonaType = $plan->employeeType->getDimonaType();
+
+                // We have to always send dimona update if active dimona exists for the day for student employee
+                if ($dimonaType == 'student') {
+                    $activeStudentDimona = $this->checkActiveStudentDimona($plan->employee_profile_id, date('Y-m-d', strtotime($plan->start_date_time)));
+                    if ($activeStudentDimona) {
+                        $dimona['dimona_type'] = 'UPDATE';
+                        $dimona['declaration']['dimona_period_id'] = $activeStudentDimona->dimona->dimona_period_id;
+                        $dimona['active_dimona'] = $activeStudentDimona->dimona;
+                    }
+                }
+                DB::connection('tenant')->beginTransaction();
+                $this->setCompanyData($companyId, $dimona);
+                $this->setEmployeeData($plan->employeeProfile, $dimona);
+                $this->setPlanningData($planId, $dimona);
+                $dimonaDeclarations = $this->createDimonaRecords($dimona);
+                unset($dimona['active_dimona']);
+                $response = $this->requestDimona->sendDimonaRequest($dimona, '/api/send-planning-dimona');
+                // $response = false;
+                if (!$response) {
+                    $this->setDimonaRequestFailed($dimonaDeclarations);
+                }
+                DB::connection('tenant')->commit();
             }
         } catch (Exception $e) {
             DB::connection('tenant')->rollback();
@@ -83,10 +98,34 @@ class DimonaSenderService
         }
     }
 
-    public function setDimonaRequestFailed($dimonaDeclarations)
+    public function checkActiveStudentDimona($employeeProfileId, $date)
     {
+        $activeDimona = PlanningDimona::whereHas('dimona', function ($query) {
+            // $query->where('active', true);
+        })
+            ->whereHas('planningBase', function ($query) use ($employeeProfileId, $date) {
+                $from_date = date('Y-m-d 00:00:00', strtotime($date));
+                $to_date = date('Y-m-d 23:59:59', strtotime($date));
+                $query->where('employee_profile_id', $employeeProfileId);
+                $query->whereBetween('start_date_time', [$from_date, $to_date]);
+            })->first();
+        if ($activeDimona) {
+            return $activeDimona;
+        } else {
+            return false;
+        }
+    }
+
+    public function setDimonaRequestFailed($dimonaDeclaration)
+    {
+        if (!$dimonaDeclaration->dimona->dimona_period_id) {
+            $dimonaDeclaration->dimona->active = false;
+            $dimonaDeclaration->dimona->save();
+        }
+        $dimonaDeclaration->dimona_declartion_status = 'failed';
+        $dimonaDeclaration->save();
         $dimonaError = DimonaErrorCode::where('error_code', '00000-000')->first();
-        $dimonaDeclarations->dimonaDeclarationErrors()->create([
+        $dimonaDeclaration->dimonaDeclarationErrors()->create([
             'dimona_error_code_id' => $dimonaError->id
         ]);
     }
@@ -94,13 +133,18 @@ class DimonaSenderService
     // public function check
     public function createDimonaRecords(&$dimona)
     {
-        $dimonaRecord = Dimona::create([
-            'type' => $dimona['type'],
-        ]);
+        if ($dimona['active_dimona']) {
+            $dimonaRecord = $dimona['active_dimona'];
+        } else {
+            $dimonaRecord = Dimona::create([
+                'type' => $dimona['type'],
+            ]);
+        }
         $dimonaDeclarations = $dimonaRecord->dimonaDeclarations()->create(
             [
                 'unique_id' => $dimona['unique_id'],
-                'type'      => $dimona['dimona_type']
+                'type'      => $dimona['dimona_type'],
+                'data'      => json_encode($dimona['declaration'])
             ]
         );
         if ($dimona['type'] == 'plan') {
@@ -150,7 +194,13 @@ class DimonaSenderService
             $dimona['declaration']['end_date'] = date('Y-m-d', strtotime($plan->end_date_time));
             $dimona['declaration']['end_time'] = date('H:i', strtotime($plan->end_date_time));
             if ($dimona['declaration']['dimona_type_category'] == 'student') {
-                $dimona['declaration']['hours'] = (int) ceil(timeDifferenceinHours($plan->start_date_time, $plan->end_date_time));
+                $hoursToReserve = (int) ceil(timeDifferenceinHours($plan->start_date_time, $plan->end_date_time));
+                if ($dimona['active_dimona']) {
+                    $previousDeclaration = $dimona['active_dimona']->dimonaDeclarations->last();
+                    $previousDeclarationData = json_decode($previousDeclaration->data);
+                    $hoursToReserve = $hoursToReserve + $previousDeclarationData->hours ?? 0;
+                }
+                $dimona['declaration']['hours'] = $hoursToReserve;
             }
         }
     }

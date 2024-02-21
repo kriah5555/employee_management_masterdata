@@ -37,7 +37,7 @@ class PlanningService
     public function getEmployeeTypes($companyId)
     {
         $response = [];
-        $data = Company::find($companyId)->employeeTypes()->get()->toArray();
+        $data = Company::find($companyId)->employeeTypes($companyId)->get()->toArray();
 
         if (count($data)) {
             $data = reset($data);
@@ -659,7 +659,7 @@ class PlanningService
         $activeDimonaEmployeeTypes = $company->dimoanEmployeeTypes->pluck('id')->toArray();
         $plans = $this->planningRepository->getPlansBetweenDates($values['location_id'], [], '', $values['date'], $values['date'], '', ['employeeProfile.user.userBasicDetails']);
         foreach ($plans as $plan) {
-            if ($plan->employeeType->employeeTypeCategory->id != 1 && !$plan->dimona_status && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
+            if ($plan->employeeType->employeeTypeCategory->id != 1 && !count($plan->planningDimona) && in_array($plan->employee_type_id, $activeDimonaEmployeeTypes)) {
                 $response[] = [
                     'id'      => $plan->id,
                     'name'    => $plan->employeeProfile->user->userBasicDetails->first_name . ' ' . $plan->employeeProfile->user->userBasicDetails->last_name,
