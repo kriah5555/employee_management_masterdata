@@ -16,6 +16,10 @@ class AbsenceRequestService
 
     }
    
+    public function getEmployeeLeaveRequests()
+    {
+        return AbsenceRequest::where('status', true)->get();
+    }
     public function employeeLeaveRequest($values) 
     {
         try {
@@ -25,8 +29,8 @@ class AbsenceRequestService
 
             $absence_request = AbsenceRequest::create($values);
 
-            if (!empty($values['files'])) {
-                $absence_request->sync($file_ids);
+            if (!empty($values['file'])) {
+                $absence_request->files()->sync($file_ids);
             }
     
             DB::connection('tenant')->commit();
@@ -55,9 +59,7 @@ class AbsenceRequestService
                 'file_path' => $filePath, 
             ]);
 
-            return $fileData->id;
-    
-            $this->employeeIdCardRepository->updateEmployeeIdCardsByEmployeeProfileId($details);
+            return $fileData->id;        
         }
-        }
+    }
 }

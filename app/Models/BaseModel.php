@@ -44,7 +44,7 @@ class BaseModel extends Model
             }
         });
     }
-    protected static function allActive()
+    protected static function getActive()
     {
         return parent::where('status', true)->get();
     }
@@ -92,6 +92,37 @@ class BaseModel extends Model
             if ($this->$field) {
                 $this->$field = date('Y-m-d H:i:s', strtotime($this->$field));
             }
+        }
+    }
+    // Example
+    // $conditions = ['status' => 1];
+    // $with = ['comments'];
+    // $has = ['comments' => function ($query) {
+    //     $query->where('approved', true);
+    // }];
+    // $results = $userService->getByConditions($conditions, $with, $has);
+
+    protected static function getByConditions(array $conditions = [], array $with = [], array $has = [])
+    {
+        try {
+            $query = parent::query();
+
+            foreach ($conditions as $field => $value) {
+                $query->where($field, $value);
+            }
+
+            if (!empty($with)) {
+                $query->with($with);
+            }
+
+            foreach ($has as $relation => $callback) {
+                $query->whereHas($relation, $callback);
+            }
+
+            return $query->get();
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
         }
     }
 }

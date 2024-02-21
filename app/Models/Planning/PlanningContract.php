@@ -2,11 +2,11 @@
 
 namespace App\Models\Planning;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Contract\ContractType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
-class PlanningContracts extends Model
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+class PlanningContract extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -51,21 +51,34 @@ class PlanningContracts extends Model
      */
 
      protected $fillable = [
-        'plan_id',
         'file_id',
+        'planning_base_id',
+        'contract_type_id',
         'contract_status',
-        'signed_type', 
+        'status', 
         'created_by',
         'updated_by',
     ];
 
-    public function planningBase()
+    protected $appends = ['file_url'];
+
+    public function plan()
     {
-        return $this->belongsTo(PlanningBase::class, 'plan_id');
+        return $this->belongsTo(PlanningBase::class, 'planning_base_id');
     }
 
     public function files()
     {
         return $this->belongsTo(Files::class, 'file_id');
     }
+
+    public function getFileUrlAttribute()
+    {
+        return env('CONTRACTS_URL') . '/' . $this->files->file_path;
+    }
+    
+    public function contractType()
+    {
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
+    } 
 }

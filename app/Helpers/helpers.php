@@ -497,7 +497,7 @@ if (!function_exists('formatDate')) {
     function formatDate($date, $format = '')
     {
         $format = !empty($format) ? $format : config('constants.DEFAULT_DATE_FORMAT');
-        return date($format, strtotime($date));
+        return date($format, strtotime(str_replace('/', '-', $date)));
     }
 }
 

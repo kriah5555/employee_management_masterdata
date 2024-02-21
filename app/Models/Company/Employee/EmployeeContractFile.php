@@ -7,6 +7,7 @@ use App\Models\Company\Employee\EmployeeContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Planning\Files;
 use App\Models\Planning\PlanningBase;
+use App\Models\Contract\ContractType;
 
 class EmployeeContractFile extends Model
 {
@@ -20,6 +21,7 @@ class EmployeeContractFile extends Model
         'employee_profile_id',
         'employee_contract_id',
         'planning_base_id',
+        'contract_type_id',
         'file_id',
         'contract_status', # [1 => unsigned, 2 => signed]
         'status',
@@ -47,4 +49,9 @@ class EmployeeContractFile extends Model
     {
         return env('CONTRACTS_URL') . '/' . $this->files->file_path;
     }
+
+    public function contractType()
+    {
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
+    } 
 }

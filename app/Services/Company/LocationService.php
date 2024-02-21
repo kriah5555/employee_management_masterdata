@@ -5,14 +5,11 @@ namespace App\Services\Company;
 use App\Models\Company\Workstation;
 use App\Services\Company\AddressService;
 use App\Rules\AddressRule;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Company\LocationRepository;
-use App\Services\BaseService;
-use App\Models\Company\Location;
 use App\Services\Employee\ResponsiblePersonService;
 
-class LocationService extends BaseService
+class LocationService
 {
 
     public function __construct(protected LocationRepository $locationRepository, protected AddressService $addressService)
@@ -70,8 +67,8 @@ class LocationService extends BaseService
             DB::connection('tenant')->beginTransaction();
             $address = $this->addressService->createNewAddress($values['address']);
             $values['address'] = $address->id;
-	    $location = $this->locationRepository->createLocation($values);
-	    $location->responsiblePersons()->sync($values['responsible_persons'] ?? []);
+            $location = $this->locationRepository->createLocation($values);
+            $location->responsiblePersons()->sync($values['responsible_persons'] ?? []);
             DB::connection('tenant')->commit();
             return $location;
         } catch (\Exception $e) {

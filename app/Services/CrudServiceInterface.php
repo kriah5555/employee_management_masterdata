@@ -13,5 +13,5 @@ interface CrudServiceInterface
 
     public function update($model, $data);
 
-    public function getAllActive();
+    public function getgetActive();
 }

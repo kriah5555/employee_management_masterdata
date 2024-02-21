@@ -30,7 +30,7 @@ class ContractTemplateService
             $language = empty($language) ? config('constants.DEFAULT_LANGUAGE') : $language ;
 
             $employee_contract_template = CompanyContractTemplate::where([
-                'contract_type_id' => $contract_type_id,
+                'contract_type_id' => $contract_type_id, #contract renewal type
                 'status'           => true,
             ])->get()->first();
 

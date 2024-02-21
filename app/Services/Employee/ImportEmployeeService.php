@@ -51,7 +51,7 @@ class ImportEmployeeService
             DB::connection('tenant')->beginTransaction();
 
             $file_name      = str_replace(' ', '_', 'Import_planning_' . time() . '_' . $values['file']->getClientOriginalName());
-            $file_id        = $this->fileService->saveFile($values['file'], $file_name, config('constants.ABSENCE_FILES_PATH'));
+            $file_id        = $this->fileService->saveFile($values['file'], $file_name, config('import_employee.IMPORT_EMPLOYEE_FILES_PATH'));
             $importEmployee = $this->importEmployeeRepository->createImportEmployeeFile(['file_id' => $file_id, 'import_status' => config('import_employee.IMPORT_STATUS_PENDING'), 'feedback' => ['']]);
             // $this->importEmployee($importEmployee);
             event(new ImportEmployeeEvent($importEmployee));
@@ -127,9 +127,9 @@ class ImportEmployeeService
                             'email'                 => $data[config('import_employee.EMAIL')],
                             'license_expiry_date'   => $data[config('import_employee.LICENSE_EXPIRE_DATE')],
                             'account_number'        => $data[config('import_employee.BANK_ACCOUNT_NUMBER')],
-                            'language'              => isset($data[config('import_employee.LANGUAGE')]) ? $data[config('import_employee.LANGUAGE')] : 'nl',
+                            'language'              => isset($data[config('import_employee.LANGUAGE')]) ? strtolower(trim($data[config('import_employee.LANGUAGE')])) : 'nl',
                             'marital_status_id'     => $marital_status_id,
-                            'dependent_spouse'      => $data[config('import_employee.DEPENDANT_SPOUSE')],
+                            'dependent_spouse'      => str_replace(' ', '_', trim(strtolower($data[config('import_employee.DEPENDANT_SPOUSE')]))),
                             'children'              => $data[config('import_employee.CHILDREN')],
                             'employee_contract_details' => [
                                 'employee_type_id'      => $employee_type_id,
@@ -137,8 +137,8 @@ class ImportEmployeeService
                                 'schedule_type'         => str_replace(' ', '_', trim(strtolower($data[config('import_employee.SCHEDULE_TYPE')]))),
                                 'employment_type'       => str_replace(' ', '_', trim(strtolower($data[config('import_employee.EMPLOYMENT_TYPE')]))),
                                 'weekly_contract_hours' => $data[config('import_employee.WEEKLY_CONTRACT_HOURS')],
-                                'start_date'            => $data[config('import_employee.CONTRACT_START_DATE')],
-                                'end_date'              => $data[config('import_employee.CONTRACT_END_DATE')],
+                                'start_date'            => formatDate(trim($data[config('import_employee.CONTRACT_START_DATE')])),
+                                'end_date'              => formatDate(trim($data[config('import_employee.CONTRACT_END_DATE')])) ? formatDate(trim($data[config('import_employee.CONTRACT_END_DATE')])) : null,
                                 'work_days_per_week'    => $data[config('import_employee.WORK_DAYS_PER_WEEK')],
                             ],
                             'employee_function_details' => [[
@@ -208,7 +208,7 @@ class ImportEmployeeService
                     'nullable',
                     'integer',
                 ],
-                'dependent_spouse'      => 'nullable|string|max:255',
+                'dependent_spouse'      => 'nullable|string|max:255|in:' . implode(',', array_keys(config('constants.DEPENDENT_SPOUSE_OPTIONS'))),
                 'children'              => 'nullable|integer',
                 'fuel_card' => 'nullable|boolean',
                 'company_car' => 'nullable|boolean',
@@ -295,7 +295,7 @@ class ImportEmployeeService
     { 
         $inputFileType = IOFactory::identify($full_path); # will get the extension of the file
         $objReader = IOFactory::createReader($inputFileType); # will create the reader
-        $objReader->setReadDataOnly(true); # will ifnore all styling data and read only the cell data
+        $objReader->setReadDataOnly(true); # will ignore all styling data and read only the cell data
         $objPHPExcel = $objReader->load($full_path); # load the data of xl sheet
         $objWorksheet = $objPHPExcel->setActiveSheetIndex(0); # The following line of code sets the active sheet index to the first sheet
 

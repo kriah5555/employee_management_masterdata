@@ -3,8 +3,7 @@
 use App\Http\Controllers\Planning\UurroosterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Planning\
-{
+use App\Http\Controllers\Planning\{
     VacancyController,
     PlanningController,
     EventDetailsController,
@@ -14,6 +13,7 @@ use App\Http\Controllers\Planning\
     PlanningStartStopController,
     PlanningCreateEditController,
     EmployeeSwitchPlanningController,
+    ClonePlanningController,
 };
 use App\Http\Controllers\Planning\PlanningShiftController;
 use App\Http\Middleware\InitializeTenancy;
@@ -60,7 +60,6 @@ Route::middleware([SetActiveUser::class])->group(function () {
                 foreach ($planningResources as $api) {
                     Route::POST($api['path'], $api['function']);
                 }
-
             });
 
         Route::controller(PlanningController::class)->group(function () {
@@ -90,7 +89,6 @@ Route::middleware([SetActiveUser::class])->group(function () {
             Route::delete('delete-plan/{plan_id}', 'destroy');
 
             Route::post('delete-week-plans', 'deleteWeekPlans');
-
         });
 
         Route::controller(PlanningStartStopController::class)->group(function () {
@@ -100,9 +98,9 @@ Route::middleware([SetActiveUser::class])->group(function () {
             Route::post('start-plan-by-manager', 'startPlanByManager');
 
             Route::post('stop-plan-by-manager', 'stopPlanByManager');
-
         });
 
+        Route::post('clone-planning', [ClonePlanningController::class, "clonePlanning"]);
 
         Route::post('/vacancy/respond-to-vacancy', [VacancyController::class, 'respondToVacancy']);
         Route::post('/vacancy/update', [VacancyController::class, 'update']);
@@ -141,7 +139,6 @@ Route::middleware([SetActiveUser::class])->group(function () {
             Route::get('manager-get-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan')->name('manager-get-switch-plan-requests');
 
             Route::post('manager-update-switch-plan-status', 'updateSwitchPlanStatus');
-
         });
     });
 
@@ -155,7 +152,6 @@ Route::middleware([SetActiveUser::class])->group(function () {
         Route::post('employee-update-switch-plan-status', 'updateSwitchPlanStatus');
 
         Route::get('employee-switch-plan-requests', 'getAllEmployeeRequestsForSwitchPlan');
-
     });
 });
 
@@ -165,5 +161,4 @@ Route::middleware([InitializeTenancy::class])->group(function () {
     Route::controller(DimonaController::class)->group(function () {
         Route::post('/update-dimona-response', [DimonaController::class, 'updateDimonaResponse']);
     });
-
 });
