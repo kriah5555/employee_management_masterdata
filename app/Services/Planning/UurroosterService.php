@@ -113,7 +113,7 @@ class UurroosterService
                 $start_time     = formatDate($planning->start_time, 'H:i');
                 $end_time       = formatDate($planning->end_time);
                 $employee_type  = 'Open Shifts';
-                $employee_type_color = null;
+                $employee_type_color = '#111';
                 $function_name = $planning->functions->name;
             }
 
