@@ -64,7 +64,7 @@ class UurroosterService
             $response['location_name'] = $location->location_name;
             $response['planning_data'] = [];
             foreach ($workstations as $value) {
-                $response['planning_data'][$value->id]['workstation_id'] = $value->workstation_id;
+                $response['planning_data'][$value->id]['workstation_id'] = $value->id;
                 $response['planning_data'][$value->id]['workstation_name'] = $value->workstation_name;
                 $response['planning_data'][$value->id]['count'] = 0;
                 $response['planning_data'][$value->id]['plannings'] = [];
