@@ -61,7 +61,7 @@ class EmployeeRequest extends ApiRequest
                     'integer',
                     // Rule::exists('marital_statuses', 'id'),
                 ],
-                'dependent_spouse'      => 'string|max:255',
+                'dependent_spouse'      => 'nullable|string|max:255|in:' . implode(',', array_keys(config('constants.DEPENDENT_SPOUSE_OPTIONS'))),
                 'children'              => 'nullable|integer',
             ];
             if ($this->isMethod('post')) {

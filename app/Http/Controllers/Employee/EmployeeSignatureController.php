@@ -41,14 +41,24 @@ class EmployeeSignatureController extends Controller
             }
 
             $employee_profile = getEmployeeProfileIdByUserIdCompanyId($user_id, getCompanyId());
-            $this->employee_service->createEmployeeSignature($employee_profile->id, $request->all());
-            return returnResponse(
-                [
-                    'success' => true,
-                    'message' => 'Employee signature added successfully',
-                ],
-                JsonResponse::HTTP_OK,
-            );
+            if ($employee_profile) {
+                $this->employee_service->createEmployeeSignature($employee_profile->id, $request->all());
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => 'Employee signature added successfully',
+                    ],
+                    JsonResponse::HTTP_OK,
+                );
+            } else {
+                return returnResponse(
+                    [
+                        'success' => true,
+                        'message' => 'Employee profile not found',
+                    ],
+                    JsonResponse::HTTP_OK,
+                );
+            }
         } catch (Exception $e) {
             return returnResponse(
                 [

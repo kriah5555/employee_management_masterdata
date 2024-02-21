@@ -129,7 +129,7 @@ class ImportEmployeeService
                             'account_number'        => $data[config('import_employee.BANK_ACCOUNT_NUMBER')],
                             'language'              => isset($data[config('import_employee.LANGUAGE')]) ? strtolower(trim($data[config('import_employee.LANGUAGE')])) : 'nl',
                             'marital_status_id'     => $marital_status_id,
-                            'dependent_spouse'      => $data[config('import_employee.DEPENDANT_SPOUSE')],
+                            'dependent_spouse'      => str_replace(' ', '_', trim(strtolower($data[config('import_employee.DEPENDANT_SPOUSE')]))),
                             'children'              => $data[config('import_employee.CHILDREN')],
                             'employee_contract_details' => [
                                 'employee_type_id'      => $employee_type_id,
@@ -208,7 +208,7 @@ class ImportEmployeeService
                     'nullable',
                     'integer',
                 ],
-                'dependent_spouse'      => 'nullable|string|max:255',
+                'dependent_spouse'      => 'nullable|string|max:255|in:' . implode(',', array_keys(config('constants.DEPENDENT_SPOUSE_OPTIONS'))),
                 'children'              => 'nullable|integer',
                 'fuel_card' => 'nullable|boolean',
                 'company_car' => 'nullable|boolean',
