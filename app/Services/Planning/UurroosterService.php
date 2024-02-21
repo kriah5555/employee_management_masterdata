@@ -9,6 +9,7 @@ use App\Services\Company\DashboardAccessService;
 use App\Models\Company\Location;
 use App\Services\Company\Absence\AbsenceService;
 use App\Services\Company\LocationService;
+use App\Models\Planning\Vacancy;
 
 class UurroosterService
 {
@@ -57,18 +58,19 @@ class UurroosterService
             ];
             $qr_token = encodeData($qr_token);
             //Week dates.
-            $workstationsRaw = Location::find($location_id)->with('workstations')->first();
+            $location = Location::find($location_id);
+            $workstations = $location ? $location->workstations : null;
             $response['qr_token'] = $qr_token;
-            $response['location_name'] = $workstationsRaw->location_name;
+            $response['location_name'] = $location->location_name;
             $response['planning_data'] = [];
-            foreach ($workstationsRaw['workstations'] as $value) {
+            foreach ($workstations as $value) {
                 $response['planning_data'][$value->id]['workstation_id'] = $value->workstation_name;
                 $response['planning_data'][$value->id]['workstation_name'] = $value->workstation_name;
                 $response['planning_data'][$value->id]['count'] = 0;
                 $response['planning_data'][$value->id]['plannings'] = [];
             }
             $data = $this->planningRepository->getPlansBetweenDates($location_id, [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType.employeeTypeConfig', 'functionTitle', 'timeRegistrations']);
-            return $this->formatUurroosterData($data, $response);
+            return $this->formatUurroosterData($data->merge($this->getVacancies($location_id)), $response);
         } else {
             $response['qr_token'] = null;
             $response['location_name'] = 'No locations';
@@ -76,21 +78,57 @@ class UurroosterService
             return $response;
         }
     }
+
+    public function getVacancies($location_id, $workstation_id = '')
+    {
+        return Vacancy::when(!empty($location_id), fn ($query) => $query->where('location_id', $location_id))
+                        ->when(!empty($workstation_id), fn ($query) => $query->where('location_id', $workstation_id))
+                        ->get();
+
+    }
+
     public function formatUurroosterData($plannings, $response)
     {
         $absenceService = app(AbsenceService::class);
         foreach ($plannings as $planning) {
-            $employeeName = $planning->employeeProfile->user->userBasicDetails->first_name . ' ' . $planning->employeeProfile->user->userBasicDetails->last_name;
+            $class = class_basename($planning);
+
+            if ($class == 'PlanningBase') {
+                $employeeName   = $planning->employeeProfile->full_name;
+                $workstation_id = $planning->workStation->id;
+                $absence        = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);
+                $absence_status = $absence->isNotEmpty();
+                $absence_codes  = $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null;
+                $start_time     = $planning->start_time;
+                $end_time       = $planning->end_time;
+                $employee_type  = $planning->employeeType->name;
+                $employee_type_color = $planning->employeeType->employeeTypeConfig->icon_color;
+                $function_name = $planning->functionTitle->name;
+            } else {
+                $employeeName   = $planning->shift_name;
+                $workstation_id = $planning->workstation_id;
+                $absence_status = false;
+                $absence_codes  = null;
+                $start_time     = $planning->start_time;
+                $end_time       = $planning->end_time;
+                $employee_type  = null;
+                $employee_type_color = null;
+                $function_name = $planning->functions->name;
+            }
+            
             $timeRegistrations = [
                 'start_time'          => [],
                 'start_dimona_status' => [],
                 'end_time'            => [],
                 'end_dimona_status'   => [],
             ];
-            if (count($planning->timeRegistrations)) {
+            if ($planning->timeRegistrations) {
                 $count = 0;
             } else {
                 $count = 1;
+            }
+            if ($class == 'Vacancy') {
+                $count = $planning->vacancy_count;
             }
             $messages = [
                 [
@@ -113,35 +151,37 @@ class UurroosterService
                     ]
                 ],
             ];
-            foreach ($planning->timeRegistrations as $timeRegistration) {
-                $timeRegistrations['start_time'][] = $timeRegistration->actual_start_time ? date('H:i', strtotime($timeRegistration->actual_start_time)) : '';
-                $timeRegistrations['start_dimona_status'][] = $messages[$planning->id % 4];
-                $timeRegistrations['end_time'][] = $timeRegistration->actual_end_time ? date('H:i', strtotime($timeRegistration->actual_end_time)) : '';
-                if ($timeRegistration->actual_end_time) {
-                    $timeRegistrations['end_dimona_status'][] = $messages[$planning->id % 4];
+            if ($class == 'PlanningBase') {
+                foreach ($planning->timeRegistrations as $timeRegistration) {
+                    $timeRegistrations['start_time'][] = $timeRegistration->actual_start_time ? date('H:i', strtotime($timeRegistration->actual_start_time)) : '';
+                    $timeRegistrations['start_dimona_status'][] = $messages[$planning->id % 4];
+                    $timeRegistrations['end_time'][] = $timeRegistration->actual_end_time ? date('H:i', strtotime($timeRegistration->actual_end_time)) : '';
+                    if ($timeRegistration->actual_end_time) {
+                        $timeRegistrations['end_dimona_status'][] = $messages[$planning->id % 4];
+                    }
+                    $count += 1;
                 }
-                $count += 1;
             }
-            $absence = $absenceService->getAbsenceForDate($planning->plan_date, '', $planning->employee_profile_id);
-            $response['planning_data'][$planning->workStation->id]['plannings'][] = [
+
+            $response['planning_data'][$workstation_id]['plannings'][] = [
                 'employee_id'           => $planning->employee_profile_id,
-                'employee_type'         => $planning->employeeType->name,
-                'employee_type_color'   => $planning->employeeType->employeeTypeConfig->icon_color,
+                'employee_type'         => $employee_type,
+                'employee_type_color'   => $employee_type_color,
                 'employee_name'         => $employeeName,
-                'function_name'         => $planning->functionTitle->name,
-                'start_time'            => date('H:i', strtotime($planning->start_date_time)),
+                'function_name'         => $function_name,
+                'start_time'            => $start_time,
                 'actual_start_timings'  => $timeRegistrations['start_time'],
                 'start_dimona_status'   => $timeRegistrations['start_dimona_status'],
-                'end_time'              => date('H:i', strtotime($planning->end_date_time)),
+                'end_time'              => $end_time,
                 'actual_end_timings'    => $timeRegistrations['end_time'],
                 'end_dimona_status'     => $timeRegistrations['end_dimona_status'],
                 'break_timings'         => [],
                 'cost'                  => '',
-                'absence_status'        => $absence->isNotEmpty(),
-                'absence_holiday_codes' => $absence->isNotEmpty() ? $absence->pluck('absenceHours')->flatten()->pluck('holidayCode.holiday_code_name')->filter()->implode(', ') : null,
+                'absence_status'        => $absence_status,
+                'absence_holiday_codes' => $absence_codes,
                 'count'                 => $count
             ];
-            $response['planning_data'][$planning->workStation->id]['count'] += $count;
+            $response['planning_data'][$workstation_id]['count'] += $count;
         }
         $response['planning_data'] = array_values($response['planning_data']);
         return $response;
