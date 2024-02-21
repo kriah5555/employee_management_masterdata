@@ -124,7 +124,7 @@ class UurroosterService
                 'end_dimona_status'   => [],
             ];
             if ($planning->timeRegistrations) {
-                $count = 0;
+                $count = 1;
             } else {
                 $count = 1;
             }
