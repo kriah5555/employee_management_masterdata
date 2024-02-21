@@ -66,7 +66,7 @@ class UurroosterService
             foreach ($workstations as $value) {
                 $response['planning_data'][$value->id]['workstation_id'] = $value->id;
                 $response['planning_data'][$value->id]['workstation_name'] = $value->workstation_name;
-                $response['planning_data'][$value->id]['count'] = 0;
+                $response['planning_data'][$value->id]['count'] = 1;
                 $response['planning_data'][$value->id]['plannings'] = [];
             }
             $data = $this->planningRepository->getPlansBetweenDates($location_id, [], [], $date, $date, '', ['workStation', 'employeeProfile.user', 'employeeType.employeeTypeConfig', 'functionTitle', 'timeRegistrations']);
